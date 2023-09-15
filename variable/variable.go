@@ -67,3 +67,12 @@ func (v *Variable) Backward() {
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
 }
+
+func gxs(v []Variable) []Data {
+	gxs := make([]Data, len(v))
+	for i := 0; i < len(v); i++ {
+		gxs[i] = v[i].Grad
+	}
+
+	return gxs
+}
