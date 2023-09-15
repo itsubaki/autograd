@@ -8,38 +8,29 @@ import (
 )
 
 func ExampleExp() {
-	// p16
-	A := &F.SquareT{}
-	B := &F.ExpT{}
-	C := &F.SquareT{}
+	v := variable.New(1, 2, 3, 4, 5)
+	y := F.Exp(v)
+	y.Backward()
 
-	x := variable.New(0.5)
-	a := A.Apply(x)
-	b := B.Apply(a)
-	y := C.Apply(b)
-
-	fmt.Println(y)
-
-	b.Grad = C.Backward([]float64{1})
-	a.Grad = B.Backward(b.Grad)
-	x.Grad = A.Backward(a.Grad)
-
-	fmt.Println(x.Grad)
-
-	// p40
-	fmt.Println(y.Creator.Input() == b)
-	fmt.Println(y.Creator.Input().Creator == B)
-	fmt.Println(y.Creator.Input().Creator.Input() == a)
-	fmt.Println(y.Creator.Input().Creator.Input().Creator == A)
-	fmt.Println(y.Creator.Input().Creator.Input().Creator.Input() == x)
+	fmt.Println(v.Grad)
 
 	// Output:
-	// variable([1.648721270700128])
-	// [3.297442541400256]
-	// true
-	// true
-	// true
-	// true
-	// true
+	// [2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]
+}
+
+func ExampleExpT() {
+	v := variable.New(1, 2, 3, 4, 5)
+	fmt.Println(v)
+
+	f := F.ExpT{}
+	fmt.Println(f.Apply(v))
+
+	v.Grad = f.Backward([]float64{1, 1, 1, 1, 1})
+	fmt.Println(v.Grad)
+
+	// Output:
+	// variable([1 2 3 4 5])
+	// variable([2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766])
+	// [2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]
 
 }
