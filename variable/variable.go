@@ -40,18 +40,27 @@ func OneLike(x Data) Data {
 }
 
 func (v *Variable) Backward() {
-	f := v.Creator
-	if f == nil {
-		return
-	}
-
 	if len(v.Grad) == 0 {
 		v.Grad = OneLike(v.Data)
 	}
 
-	x := f.Input()
-	x.Grad = f.Backward(v.Grad)
-	x.Backward()
+	fs := []Function{v.Creator}
+	for {
+		if len(fs) == 0 || fs[0] == nil {
+			break
+		}
+
+		// pop
+		f := fs[len(fs)-1]
+		fs = fs[:len(fs)-1]
+
+		x, y := f.Input(), f.Output()
+		x.Grad = f.Backward(y.Grad)
+
+		if x.Creator != nil {
+			fs = append(fs, x.Creator)
+		}
+	}
 }
 
 func (v Variable) String() string {
