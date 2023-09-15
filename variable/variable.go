@@ -54,6 +54,7 @@ func (v *Variable) Backward() {
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
 
+		// backward
 		x, y := f.Input(), f.Output()
 		x.Grad = f.Backward(y.Grad)
 
