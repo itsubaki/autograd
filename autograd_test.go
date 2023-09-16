@@ -16,7 +16,6 @@ func Example() {
 
 	// Output:
 	// [3.297442541400256]
-
 }
 
 func Example_func() {
@@ -31,7 +30,6 @@ func Example_func() {
 
 	// Output:
 	// [3.297442541400256]
-
 }
 
 func Example_creator() {
@@ -65,5 +63,4 @@ func Example_creator() {
 	// true
 	// function.SquareT([0.5])
 	// true
-
 }

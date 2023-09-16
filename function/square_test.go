@@ -5,6 +5,7 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
+	"github.com/itsubaki/autograd/vector"
 )
 
 func ExampleSquare() {
@@ -16,7 +17,6 @@ func ExampleSquare() {
 
 	// Output:
 	// [2 4 6 8 10]
-
 }
 
 func ExampleSquareT() {
@@ -26,12 +26,11 @@ func ExampleSquareT() {
 	f := F.SquareT{}
 	fmt.Println(f.Forward(v.Data))
 
-	v.Grad = f.Backward(variable.OneLike(v).Data)
+	v.Grad = f.Backward(vector.OneLike(v.Data))
 	fmt.Println(v.Grad)
 
 	// Output:
 	// variable([1 2 3 4 5])
 	// [1 4 9 16 25]
 	// [2 4 6 8 10]
-
 }
