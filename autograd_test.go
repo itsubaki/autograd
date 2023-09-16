@@ -32,6 +32,22 @@ func Example_func() {
 	// [3.297442541400256]
 }
 
+func Example_numericalDiff() {
+	// p23
+	v := variable.New(0.5)
+	f := func(x *variable.Variable) *variable.Variable {
+		A := F.Square
+		B := F.Exp
+		C := F.Square
+		return C(B(A(x)))
+	}
+
+	fmt.Println(F.NumericalDiff(f, v))
+
+	// Output:
+	// variable([3.2974426293330694])
+}
+
 func Example_creator() {
 	x := variable.New(0.5)
 

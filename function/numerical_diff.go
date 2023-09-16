@@ -5,7 +5,14 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-func NumericalDiff(f func(x *variable.Variable) *variable.Variable, x *variable.Variable, h ...float64) *variable.Variable {
+type F func(x *variable.Variable) *variable.Variable
+
+var (
+	_ F = Square
+	_ F = Exp
+)
+
+func NumericalDiff(f F, x *variable.Variable, h ...float64) *variable.Variable {
 	if len(h) == 0 {
 		h = append(h, 1e-4)
 	}
