@@ -44,9 +44,13 @@ func (v *Variable) Backward() {
 		v.Grad = OneLike(v).Data
 	}
 
+	if v.Creator == nil {
+		return
+	}
+
 	fs := []Function{v.Creator}
 	for {
-		if len(fs) == 0 || fs[0] == nil {
+		if len(fs) == 0 {
 			break
 		}
 
