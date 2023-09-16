@@ -23,6 +23,15 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: v}
 }
 
+func OneLike(v *Variable) *Variable {
+	w := NewData(len(v.Data))
+	for i := 0; i < len(v.Data); i++ {
+		w[i] = 1
+	}
+
+	return &Variable{Data: w}
+}
+
 func Copy(v *Variable) *Variable {
 	w := NewData(len(v.Data))
 	copy(w, v.Data)
@@ -30,18 +39,9 @@ func Copy(v *Variable) *Variable {
 	return &Variable{Data: w}
 }
 
-func OneLike(x Data) Data {
-	w := NewData(len(x))
-	for i := 0; i < len(x); i++ {
-		w[i] = 1
-	}
-
-	return w
-}
-
 func (v *Variable) Backward() {
 	if len(v.Grad) == 0 {
-		v.Grad = OneLike(v.Data)
+		v.Grad = OneLike(v).Data
 	}
 
 	fs := []Function{v.Creator}
