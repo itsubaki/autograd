@@ -23,14 +23,14 @@ func ExampleExpT() {
 	fmt.Println(v)
 
 	f := F.ExpT{}
-	fmt.Println(f.Apply(v))
+	fmt.Println(f.Forward(v.Data))
 
-	v.Grad = f.Backward([]float64{1, 1, 1, 1, 1})
+	v.Grad = f.Backward(variable.OneLike(v).Data)
 	fmt.Println(v.Grad)
 
 	// Output:
 	// variable([1 2 3 4 5])
-	// variable([2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766])
+	// [2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]
 	// [2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]
 
 }

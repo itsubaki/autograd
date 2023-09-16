@@ -24,14 +24,14 @@ func ExampleSquareT() {
 	fmt.Println(v)
 
 	f := F.SquareT{}
-	fmt.Println(f.Apply(v))
+	fmt.Println(f.Forward(v.Data))
 
-	v.Grad = f.Backward([]float64{1, 1, 1, 1, 1})
+	v.Grad = f.Backward(variable.OneLike(v).Data)
 	fmt.Println(v.Grad)
 
 	// Output:
 	// variable([1 2 3 4 5])
-	// variable([1 4 9 16 25])
+	// [1 4 9 16 25]
 	// [2 4 6 8 10]
 
 }
