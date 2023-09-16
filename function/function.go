@@ -1,9 +1,6 @@
 package function
 
-import (
-	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/variable"
 
 type Forwarder interface {
 	Forward(x variable.Data) variable.Data
@@ -31,14 +28,11 @@ func (f *Function) Apply(x *variable.Variable) *variable.Variable {
 	return f.out
 }
 
-func NumericalDiff(f func(x *variable.Variable) *variable.Variable, x *variable.Variable, eps ...float64) *variable.Variable {
-	if len(eps) == 0 {
-		eps = append(eps, 1e-4)
+func Data(v ...*variable.Variable) []variable.Data {
+	data := make([]variable.Data, len(v))
+	for i := range v {
+		data[i] = v[i].Data
 	}
 
-	y0 := f(variable.New(vector.AddC(x.Data, eps[0])...))
-	y1 := f(variable.New(vector.SubC(x.Data, eps[0])...))
-	diff := vector.F2(y0.Data, y1.Data, func(a, b float64) float64 { return (a - b) / (2 * eps[0]) })
-
-	return &variable.Variable{Data: diff}
+	return data
 }
