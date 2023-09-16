@@ -36,13 +36,15 @@ func Example_func() {
 
 func Example_creator() {
 	x := variable.New(0.5)
-	fmt.Println(x)
 
 	a := F.Square(x)
 	b := F.Exp(a)
 	y := F.Square(b)
 
 	y.Backward()
+
+	fmt.Println(x)
+	fmt.Println(y)
 	fmt.Println(x.Grad)
 
 	// p40
@@ -55,6 +57,7 @@ func Example_creator() {
 
 	// Output:
 	// variable([0.5])
+	// variable([1.648721270700128])
 	// [3.297442541400256]
 	// function.SquareT([1.2840254166877414])
 	// true
