@@ -1,12 +1,12 @@
 package variable
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/itsubaki/autograd/vector"
+)
 
 type Data = []float64
-
-func NewData(n int) Data {
-	return make(Data, n)
-}
 
 type Function interface {
 	Input() *Variable
@@ -24,16 +24,11 @@ func New(v ...float64) *Variable {
 }
 
 func OneLike(v *Variable) *Variable {
-	w := NewData(len(v.Data))
-	for i := 0; i < len(v.Data); i++ {
-		w[i] = 1
-	}
-
-	return &Variable{Data: w}
+	return &Variable{Data: vector.OneLike(v.Data)}
 }
 
 func Copy(v *Variable) *Variable {
-	w := NewData(len(v.Data))
+	w := vector.NewLike(v.Data)
 	copy(w, v.Data)
 
 	return &Variable{Data: w}
@@ -41,7 +36,7 @@ func Copy(v *Variable) *Variable {
 
 func (v *Variable) Backward() {
 	if len(v.Grad) == 0 {
-		v.Grad = OneLike(v).Data
+		v.Grad = vector.OneLike(v.Data)
 	}
 
 	if v.Creator == nil {
@@ -70,13 +65,4 @@ func (v *Variable) Backward() {
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
-}
-
-func gxs(v []Variable) []Data {
-	gxs := make([]Data, len(v))
-	for i := 0; i < len(v); i++ {
-		gxs[i] = v[i].Grad
-	}
-
-	return gxs
 }
