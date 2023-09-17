@@ -28,6 +28,4 @@ func (f *SinT) Backward(gy ...variable.Data) []variable.Data {
 
 func sin(a float64) float64 { return math.Sin(a) }
 
-func dsin(x, gy float64) float64 { return cos(x, gy) }
-
-func cos(x, gy float64) float64 { return math.Cos(x) * gy }
+func dsin(x, gy float64) float64 { return math.Cos(x) * gy }
