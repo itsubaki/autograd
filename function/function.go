@@ -33,7 +33,7 @@ func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
 	f.X, f.Y = data, f.Forward(data)
 
 	f.in, f.out = x, make([]*variable.Variable, len(f.Y))
-	for i := range f.out {
+	for i := range f.Y {
 		f.out[i] = &variable.Variable{Data: f.Y[i], Creator: f}
 	}
 
