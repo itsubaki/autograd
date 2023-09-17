@@ -1,7 +1,6 @@
 package function
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/itsubaki/autograd/variable"
@@ -28,8 +27,4 @@ func (f *ExpT) Backward(gy variable.Data) variable.Data {
 	dexp := func(a, b float64) float64 { return math.Exp(a) * b }
 	grad := vector.F2(f.x, gy, dexp)
 	return grad
-}
-
-func (f ExpT) String() string {
-	return fmt.Sprintf("%T(%v)", f, f.x)
 }
