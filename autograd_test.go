@@ -246,3 +246,46 @@ func Example_sgd() {
 	// variable([0.9917613994572028]) variable([0.9835575421346807])
 	// variable([0.9944984367782456]) variable([0.9890050527419593])
 }
+
+func Example_newton() {
+	// p214
+	f := func(x ...*variable.Variable) *variable.Variable {
+		// y = x^4 - 2x^2
+		y0 := F.Pow(4.0)(x[0])[0]                    // x^4
+		y1 := F.Pow(2.0)(x[0])[0]                    // x^2
+		y2 := F.Mul(variable.NewLikeWith(2, y1), y1) // 2x^2
+		return F.Sub(y0, y2)                         // x^4 - 2x^2
+	}
+
+	gx2 := func(x ...*variable.Variable) *variable.Variable {
+		// y = 12x^2 + 4
+		y0 := F.Pow(2.0)(x[0])[0]                       // x^2
+		y1 := F.Mul(variable.NewLikeWith(12, y0), y0)   // 12x^2
+		return F.Add(y1, variable.NewLikeWith(4.0, y1)) // 12x^2 + 4
+	}
+
+	x := variable.New(2.0)
+	iter := 10
+
+	for i := 0; i < iter; i++ {
+		fmt.Println(x)
+
+		y := f(x)
+		x.Cleargrad()
+		y.Backward()
+
+		x.Data = vector.Sub(x.Data, vector.Div(x.Grad, gx2(variable.New(x.Data...)).Data))
+	}
+
+	// Output:
+	// variable([2])
+	// variable([1.5384615384615383])
+	// variable([1.2788672248131707])
+	// variable([1.1412694400970145])
+	// variable([1.070921967012372])
+	// variable([1.0355011504284684])
+	// variable([1.017755880582409])
+	// variable([1.0088786217209345])
+	// variable([1.0044393971932233])
+	// variable([1.0022197094606984])
+}
