@@ -181,7 +181,7 @@ func Example_rosenbrock() {
 	// p208
 	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
 		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
-		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // y0 = (x1 - x0^2)^2
+		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // (x1 - x0^2)^2
 		y1 := F.Mul(variable.NewLikeWith(100, y0), y0)        // 100 * (x1 - x0^2)^2
 		y2 := F.Sub(x[0], variable.OneLike(y0))               // x0 - 1
 		y3 := F.Pow(2.0)(y2)[0]                               // (x0 - 1)^2
