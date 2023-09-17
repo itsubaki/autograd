@@ -51,7 +51,7 @@ func Example_func() {
 
 func Example_numericalDiff() {
 	// p23
-	v := variable.New(0.5)
+	v := []*variable.Variable{variable.New(0.5)}
 	f := func(x ...*variable.Variable) []*variable.Variable {
 		A := F.Square
 		B := F.Exp
@@ -59,7 +59,7 @@ func Example_numericalDiff() {
 		return C(B(A(x...)...)...)
 	}
 
-	fmt.Println(numerical.Diff(f, []*variable.Variable{v}))
+	fmt.Println(numerical.Diff(f, v))
 
 	// Output:
 	// [variable([3.2974426293330694])]
