@@ -55,19 +55,8 @@ func (v *Variable) Backward(retain ...bool) {
 		return
 	}
 
-	fs := make([]Function, 0)
 	seen := make(map[Function]bool)
-	add := func(f Function) {
-		if _, ok := seen[f]; ok {
-			return
-		}
-
-		seen[f] = true
-		fs = append(fs, f)
-		sort.Slice(fs, func(i, j int) bool { return fs[i].Generation() < fs[j].Generation() })
-	}
-
-	add(v.Creator)
+	fs := addfunc(make([]Function, 0), v.Creator, seen)
 
 	for {
 		if len(fs) == 0 {
@@ -86,7 +75,7 @@ func (v *Variable) Backward(retain ...bool) {
 			x[i].Grad = gx(gxs[i], x[i].Grad)
 
 			if x[i].Creator != nil {
-				add(x[i].Creator)
+				fs = addfunc(fs, x[i].Creator, seen)
 			}
 
 			// clear unnecessary grad
@@ -97,6 +86,17 @@ func (v *Variable) Backward(retain ...bool) {
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
+}
+
+func addfunc(fs []Function, f Function, seen map[Function]bool) []Function {
+	if _, ok := seen[f]; ok {
+		return fs
+	}
+
+	seen[f] = true
+	fs = append(fs, f)
+	sort.Slice(fs, func(i, j int) bool { return fs[i].Generation() < fs[j].Generation() })
+	return fs
 }
 
 func cleargrad(output []*Variable, retain ...bool) {
