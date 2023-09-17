@@ -6,6 +6,7 @@ import (
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/numerical"
 	"github.com/itsubaki/autograd/variable"
+	"github.com/itsubaki/autograd/vector"
 )
 
 func Example() {
@@ -178,7 +179,7 @@ func Example_retain() {
 }
 
 func Example_rosenbrock() {
-	// p208
+	// p205
 	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
 		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // (x1 - x0^2)^2
@@ -199,4 +200,49 @@ func Example_rosenbrock() {
 	// Output:
 	// [-2]
 	// [400]
+}
+
+func Example_sgd() {
+	// p206
+	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
+		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // (x1 - x0^2)^2
+		y1 := F.Mul(variable.NewLikeWith(100, y0), y0)        // 100 * (x1 - x0^2)^2
+		y2 := F.Sub(x[0], variable.OneLike(y0))               // x0 - 1
+		y3 := F.Pow(2.0)(y2)[0]                               // (x0 - 1)^2
+		return F.Add(y1, y3)                                  // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+	}
+
+	x0 := variable.New(0.0)
+	x1 := variable.New(2.0)
+
+	lr := 0.001
+	iters := 10000
+
+	for i := 0; i < iters+1; i++ {
+		if i%1000 == 0 {
+			fmt.Println(x0, x1)
+		}
+
+		y := rosenbrock(x0, x1)
+		x0.Cleargrad()
+		x1.Cleargrad()
+		y.Backward()
+
+		x0.Data = vector.Sub(x0.Data, vector.MulC(x0.Grad, lr))
+		x1.Data = vector.Sub(x1.Data, vector.MulC(x1.Grad, lr))
+	}
+
+	// Output:
+	// variable([0]) variable([2])
+	// variable([0.6837118569138317]) variable([0.4659526837427042])
+	// variable([0.8263177857050957]) variable([0.6820311873361097])
+	// variable([0.8947837494333546]) variable([0.8001896451930564])
+	// variable([0.9334871723401226]) variable([0.8711213202579401])
+	// variable([0.9569899983530249]) variable([0.9156532462021957])
+	// variable([0.9718168065095137]) variable([0.9443132014542008])
+	// variable([0.9813809710644894]) variable([0.9630332658658076])
+	// variable([0.9876355102559093]) variable([0.9753740541653942])
+	// variable([0.9917613994572028]) variable([0.9835575421346807])
+	// variable([0.9944984367782456]) variable([0.9890050527419593])
 }
