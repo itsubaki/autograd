@@ -11,7 +11,7 @@ import (
 func ExampleSquare() {
 	v := variable.New(1, 2, 3, 4, 5)
 	y := F.Square(v)
-	y.Backward()
+	y[0].Backward()
 
 	fmt.Println(v.Grad)
 
@@ -24,13 +24,11 @@ func ExampleSquareT() {
 	fmt.Println(v)
 
 	f := F.SquareT{}
-	fmt.Println(f.Forward(v.Data))
-
-	v.Grad = f.Backward(vector.OneLike(v.Data))
-	fmt.Println(v.Grad)
+	fmt.Println(f.Forward([]variable.Data{v.Data}))
+	fmt.Println(f.Backward([]variable.Data{vector.OneLike(v.Data)}))
 
 	// Output:
 	// variable([1 2 3 4 5])
-	// [1 4 9 16 25]
-	// [2 4 6 8 10]
+	// [[1 4 9 16 25]]
+	// [[2 4 6 8 10]]
 }

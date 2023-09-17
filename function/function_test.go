@@ -19,6 +19,6 @@ func ExampleFunction() {
 	fmt.Println(f.Output())
 
 	// Output:
-	// variable([1 2 3 4 5])
-	// variable([1 4 9 16 25])
+	// [variable([1 2 3 4 5])]
+	// [variable([1 4 9 16 25])]
 }
