@@ -132,3 +132,32 @@ func Example_cleargrad() {
 	// [2]
 	// [3]
 }
+
+func Example_retain() {
+	// p122
+	x0 := variable.New(1.0)
+	x1 := variable.New(1.0)
+	t := F.Add(x0, x1)
+	y := F.Add(x0, t)
+	y.Backward(true)
+
+	fmt.Println(y.Grad, t.Grad)
+	fmt.Println(x0.Grad, x1.Grad)
+	fmt.Println()
+
+	x0.Cleargrad()
+	x1.Cleargrad()
+	t = F.Add(x0, x1)
+	y = F.Add(x0, t)
+	y.Backward()
+
+	fmt.Println(y.Grad, t.Grad)
+	fmt.Println(x0.Grad, x1.Grad)
+
+	// Output:
+	// [1] [1]
+	// [2] [1]
+	//
+	// [] []
+	// [2] [1]
+}
