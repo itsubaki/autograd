@@ -5,15 +5,14 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-type AddT struct {
-	x []variable.Data
+func Add(x ...*variable.Variable) []*variable.Variable {
+	return (&Function{Forwarder: &AddT{}}).Apply(x...)
 }
 
-func (f *AddT) Forward(x ...variable.Data) []variable.Data {
-	f.x = x
+type AddT struct{}
 
-	add := func(a, b float64) float64 { return a + b }
-	y := vector.F2(x[0], x[1], add)
+func (f *AddT) Forward(x ...variable.Data) []variable.Data {
+	y := vector.Add(x[0], x[1])
 	return []variable.Data{y}
 }
 
