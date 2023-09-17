@@ -19,6 +19,22 @@ func Example() {
 	// [3.297442541400256]
 }
 
+func Example_add() {
+	x := variable.New(2.0)
+	y := variable.New(3.0)
+	z := F.Add(F.Square(x)[0], F.Square(y)[0])
+
+	z[0].Backward()
+	fmt.Println(z)
+	fmt.Println(x.Grad)
+	fmt.Println(y.Grad)
+
+	// Output:
+	// [variable([13])]
+	// [4]
+	// [6]
+}
+
 func Example_func() {
 	// p44
 	x := variable.New(0.5)
