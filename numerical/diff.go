@@ -6,7 +6,7 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-type Func func(x ...*variable.Variable) []*variable.Variable
+type Func func(x ...*variable.Variable) *variable.Variable
 
 var (
 	_ Func = F.Add
@@ -14,27 +14,20 @@ var (
 	_ Func = F.Square
 )
 
-func Diff(f Func, x []*variable.Variable, h ...float64) []*variable.Variable {
+func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
 	if len(h) == 0 {
 		h = append(h, 1e-4)
 	}
 
-	y0 := f(add(x, h[0])...)  // f(x+h)
-	y1 := f(sub(x, h[0])...)  // f(x-h)
-	return diff(y0, y1, h[0]) // (f(x+h) - f(x-h)) / (2*h)
+	y0 := f(add(x, h[0])...)                      // f(x+h)
+	y1 := f(sub(x, h[0])...)                      // f(x-h)
+	df := vector.F2(y0.Data, y1.Data, diff(h[0])) // (f(x+h) - f(x-h)) / 2h
+
+	return &variable.Variable{Data: df}
 }
 
-func diff(y0, y1 []*variable.Variable, h float64) []*variable.Variable {
-	diff := func(a, b float64) float64 { return (a - b) / (2 * h) }
-
-	out := make([]*variable.Variable, len(y0))
-	for i := range y0 {
-		out[i] = &variable.Variable{
-			Data: vector.F2(y0[i].Data, y1[i].Data, diff),
-		}
-	}
-
-	return out
+func diff(h float64) func(a, b float64) float64 {
+	return func(a, b float64) float64 { return (a - b) / (2 * h) }
 }
 
 func add(x []*variable.Variable, h float64) []*variable.Variable {

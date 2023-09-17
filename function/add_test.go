@@ -13,7 +13,7 @@ func ExampleAdd() {
 	w := variable.New(3, 4)
 
 	y := F.Add(v, w)
-	y[0].Backward()
+	y.Backward()
 
 	fmt.Println(v.Grad)
 	fmt.Println(w.Grad)

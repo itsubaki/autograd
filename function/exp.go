@@ -7,8 +7,8 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-func Exp(x ...*variable.Variable) []*variable.Variable {
-	return (&Function{Forwarder: &ExpT{}}).Apply(x...)
+func Exp(x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &ExpT{}}).Apply(x...)[0]
 }
 
 type ExpT struct {
