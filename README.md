@@ -2,6 +2,7 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/autograd)](https://pkg.go.dev/github.com/itsubaki/autograd)
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/autograd?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/autograd)
+[![tests](https://github.com/itsubaki/autograd/workflows/tests/badge.svg?branch=main)](https://github.com/itsubaki/autograd/actions)
 
  - Automatic differentiation library for Go
 
