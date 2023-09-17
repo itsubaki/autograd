@@ -5,7 +5,7 @@ func NewLike(v []float64) []float64 {
 }
 
 func OneLike(v []float64) []float64 {
-	return F(make([]float64, len(v)), func(a float64) float64 { return a + 1 })
+	return AddC(NewLike(v), 1)
 }
 
 func AddC(v []float64, c float64) []float64 {

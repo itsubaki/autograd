@@ -59,18 +59,10 @@ func (v *Variable) Backward() {
 
 		// backward
 		x, y := f.Input(), f.Output()
-		gys := make([]Data, len(y))
-		for i := range gys {
-			gys[i] = y[i].Grad
-		}
-		gxs := f.Backward(gys...)
+		gxs := f.Backward(gys(y)...)
 
 		for i := range x {
-			if len(x[i].Grad) == 0 {
-				x[i].Grad = gxs[i]
-			} else {
-				x[i].Grad = vector.Add(x[i].Grad, gxs[i])
-			}
+			x[i].Grad = gx(gxs[i], x[i].Grad)
 
 			if x[i].Creator != nil {
 				fs = append(fs, x[i].Creator)
@@ -81,4 +73,21 @@ func (v *Variable) Backward() {
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
+}
+
+func gx(gxs, xgrad []float64) []float64 {
+	if len(xgrad) > 0 {
+		gxs = vector.Add(gxs, xgrad)
+	}
+
+	return gxs
+}
+
+func gys(y []*Variable) []Data {
+	gys := make([]Data, len(y))
+	for i := range gys {
+		gys[i] = y[i].Grad
+	}
+
+	return gys
 }
