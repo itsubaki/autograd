@@ -9,9 +9,9 @@ import (
 type Data = []float64
 
 type Function interface {
-	Input() *Variable
-	Output() *Variable
-	Backward(gy Data) Data
+	Input() []*Variable
+	Output() []*Variable
+	Backward(gy []Data) []Data
 }
 
 type Variable struct {
@@ -55,10 +55,17 @@ func (v *Variable) Backward() {
 
 		// backward
 		x, y := f.Input(), f.Output()
-		x.Grad = f.Backward(y.Grad)
+		gys := make([]Data, len(y))
+		for i := range gys {
+			gys[i] = y[i].Grad
+		}
+		gxs := f.Backward(gys)
 
-		if x.Creator != nil {
-			fs = append(fs, x.Creator)
+		for i := range x {
+			x[i].Grad = gxs[i]
+			if x[i].Creator != nil {
+				fs = append(fs, x[i].Creator)
+			}
 		}
 	}
 }
