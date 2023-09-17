@@ -10,6 +10,15 @@ func OneLike(v []float64) []float64 {
 	return AddC(NewLike(v), 1)
 }
 
+func NewLikeWith(v float64, w []float64) []float64 {
+	y := make([]float64, len(w))
+	for i := range y {
+		y[i] = v
+	}
+
+	return y
+}
+
 func AddC(v []float64, c float64) []float64 {
 	return F(v, func(a float64) float64 { return a + c })
 }

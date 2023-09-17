@@ -26,8 +26,12 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: v}
 }
 
+func NewLikeWith(c float64, v *Variable) *Variable {
+	return &Variable{Data: vector.NewLikeWith(c, v.Data)}
+}
+
 func OneLike(v *Variable) *Variable {
-	return &Variable{Data: vector.OneLike(v.Data)}
+	return NewLikeWith(1.0, v)
 }
 
 func Copy(v *Variable) *Variable {
