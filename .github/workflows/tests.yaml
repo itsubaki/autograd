@@ -30,3 +30,6 @@ jobs:
       - name: Tests
         run: |
           make test
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3
