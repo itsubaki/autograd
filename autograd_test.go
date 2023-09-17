@@ -213,6 +213,12 @@ func Example_sgd() {
 		return F.Add(y1, y3)                                  // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	}
 
+	sgd := func(lr float64) func(x, grad float64) float64 {
+		return func(a, b float64) float64 {
+			return a - lr*b
+		}
+	}
+
 	x0 := variable.New(0.0)
 	x1 := variable.New(2.0)
 
@@ -229,8 +235,8 @@ func Example_sgd() {
 		x1.Cleargrad()
 		y.Backward()
 
-		x0.Data = vector.Sub(x0.Data, vector.MulC(x0.Grad, lr))
-		x1.Data = vector.Sub(x1.Data, vector.MulC(x1.Grad, lr))
+		x0.Data = vector.F2(x0.Data, x0.Grad, sgd(lr)) // x0 = x0 - lr * x0.grad
+		x1.Data = vector.F2(x1.Data, x1.Grad, sgd(lr)) // x1 = x1 - lr * x1.grad
 	}
 
 	// Output:
