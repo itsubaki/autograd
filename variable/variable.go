@@ -11,7 +11,7 @@ type Data = []float64
 type Function interface {
 	Input() []*Variable
 	Output() []*Variable
-	Backward(gy []Data) []Data
+	Backward(gy ...Data) []Data
 }
 
 type Variable struct {
@@ -59,7 +59,7 @@ func (v *Variable) Backward() {
 		for i := range gys {
 			gys[i] = y[i].Grad
 		}
-		gxs := f.Backward(gys)
+		gxs := f.Backward(gys...)
 
 		for i := range x {
 			x[i].Grad = gxs[i]

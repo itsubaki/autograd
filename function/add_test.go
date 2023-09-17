@@ -30,8 +30,8 @@ func ExampleAddT() {
 	fmt.Println(w)
 
 	f := F.AddT{}
-	fmt.Println(f.Forward([]variable.Data{v.Data, w.Data}))
-	fmt.Println(f.Backward([]variable.Data{vector.OneLike(v.Data), vector.OneLike(w.Data)}))
+	fmt.Println(f.Forward(v.Data, w.Data))
+	fmt.Println(f.Backward(vector.OneLike(v.Data), vector.OneLike(w.Data)))
 
 	// Output:
 	// variable([2 3])

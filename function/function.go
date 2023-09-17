@@ -7,8 +7,8 @@ import (
 )
 
 type Forwarder interface {
-	Forward(x []variable.Data) []variable.Data
-	Backward(gy []variable.Data) []variable.Data
+	Forward(x ...variable.Data) []variable.Data
+	Backward(gy ...variable.Data) []variable.Data
 }
 
 type Function struct {
@@ -28,7 +28,7 @@ func (f *Function) Output() []*variable.Variable {
 func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
 	data := xdata(x)
 
-	f.X, f.Y = data, f.Forward(data)
+	f.X, f.Y = data, f.Forward(data...)
 	f.in, f.out = x, yvariable(f.Y, f)
 	return f.out
 }

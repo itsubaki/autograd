@@ -24,8 +24,8 @@ func ExampleExpT() {
 	fmt.Println(v)
 
 	f := F.ExpT{}
-	fmt.Println(f.Forward([]variable.Data{v.Data}))
-	fmt.Println(f.Backward([]variable.Data{vector.OneLike(v.Data)}))
+	fmt.Println(f.Forward(v.Data))
+	fmt.Println(f.Backward(vector.OneLike(v.Data)))
 
 	// Output:
 	// variable([1 2 3 4 5])
