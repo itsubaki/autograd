@@ -1,8 +1,6 @@
 package function
 
 import (
-	"fmt"
-
 	"github.com/itsubaki/autograd/variable"
 	"github.com/itsubaki/autograd/vector"
 )
@@ -27,8 +25,4 @@ func (f *SquareT) Backward(gy variable.Data) variable.Data {
 	dsquare := func(a, b float64) float64 { return 2 * a * b }
 	grad := vector.F2(f.x, gy, dsquare)
 	return grad
-}
-
-func (f SquareT) String() string {
-	return fmt.Sprintf("%T(%v)", f, f.x)
 }
