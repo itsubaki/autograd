@@ -10,10 +10,10 @@ import (
 
 func ExampleDiff() {
 	// p22
-	v := variable.New(2.0)
+	v := []*variable.Variable{variable.New(2.0)}
 	f := F.Square
 
-	fmt.Println(numerical.Diff(f, []*variable.Variable{v}))
+	fmt.Println(numerical.Diff(f, v))
 
 	// Output:
 	// [variable([4.000000000004])]
