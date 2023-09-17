@@ -14,6 +14,7 @@ var (
 	_ Func = F.Mul
 	_ Func = F.Sin
 	_ Func = F.Square
+	_ Func = F.Sub
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
