@@ -2,6 +2,7 @@ package variable
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/itsubaki/autograd/vector"
 )
@@ -63,7 +64,7 @@ func (v *Variable) Backward(retain ...bool) {
 
 		seen[f] = true
 		fs = append(fs, f)
-		sort(fs)
+		sort.Slice(fs, func(i, j int) bool { return fs[i].Generation() < fs[j].Generation() })
 	}
 
 	add(v.Creator)
@@ -96,16 +97,6 @@ func (v *Variable) Backward(retain ...bool) {
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
-}
-
-func sort(fs []Function) {
-	for i := range fs {
-		for j := range fs {
-			if fs[i].Generation() < fs[j].Generation() {
-				fs[i], fs[j] = fs[j], fs[i]
-			}
-		}
-	}
 }
 
 func cleargrad(output []*Variable, retain ...bool) {
