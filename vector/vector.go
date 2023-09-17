@@ -16,6 +16,10 @@ func SubC(v []float64, c float64) []float64 {
 	return F(v, func(a float64) float64 { return a - c })
 }
 
+func Add(v, w []float64) []float64 {
+	return F2(v, w, func(a, b float64) float64 { return a + b })
+}
+
 func F(v []float64, f func(a float64) float64) []float64 {
 	out := NewLike(v)
 	for i := range v {

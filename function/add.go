@@ -12,8 +12,7 @@ func Add(x ...*variable.Variable) []*variable.Variable {
 type AddT struct{}
 
 func (f *AddT) Forward(x ...variable.Data) []variable.Data {
-	add := func(a, b float64) float64 { return a + b }
-	y := vector.F2(x[0], x[1], add)
+	y := vector.Add(x[0], x[1])
 	return []variable.Data{y}
 }
 

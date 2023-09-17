@@ -19,36 +19,6 @@ func Example() {
 	// [3.297442541400256]
 }
 
-func Example_add() {
-	x := variable.New(2.0)
-	y := variable.New(3.0)
-	z := F.Add(F.Square(x)[0], F.Square(y)[0])
-
-	z[0].Backward()
-	fmt.Println(z)
-	fmt.Println(x.Grad)
-	fmt.Println(y.Grad)
-
-	// Output:
-	// [variable([13])]
-	// [4]
-	// [6]
-}
-
-func Example_func() {
-	// p44
-	x := variable.New(0.5)
-	a := F.Square(x)
-	b := F.Exp(a...)
-	y := F.Square(b...)
-
-	y[0].Backward()
-	fmt.Println(x.Grad)
-
-	// Output:
-	// [3.297442541400256]
-}
-
 func Example_numericalDiff() {
 	// p23
 	v := []*variable.Variable{variable.New(0.5)}
@@ -66,6 +36,7 @@ func Example_numericalDiff() {
 }
 
 func Example_creator() {
+	// p40
 	x := variable.New(0.5)
 
 	a := F.Square(x)
@@ -98,4 +69,66 @@ func Example_creator() {
 	// true
 	// *function.SquareT([[0.5]])
 	// true
+}
+
+func Example_func() {
+	// p44
+	x := variable.New(0.5)
+	a := F.Square(x)
+	b := F.Exp(a...)
+	y := F.Square(b...)
+
+	y[0].Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// [3.297442541400256]
+}
+
+func Example_add() {
+	// p85
+	x := variable.New(2.0)
+	y := variable.New(3.0)
+	z := F.Add(F.Square(x)[0], F.Square(y)[0])
+
+	z[0].Backward()
+	fmt.Println(z)
+	fmt.Println(x.Grad)
+	fmt.Println(y.Grad)
+
+	// Output:
+	// [variable([13])]
+	// [4]
+	// [6]
+}
+
+func Example_reuse() {
+	// p90
+	x := variable.New(3.0)
+	y := F.Add(F.Add(x, x)[0], x)
+
+	y[0].Backward()
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// [variable([9])]
+	// [3]
+}
+
+func Example_cleargrad() {
+	// p92
+	x := variable.New(3.0)
+	y := F.Add(x, x)
+	y[0].Backward()
+	fmt.Println(x.Grad)
+
+	x.Cleargrad()
+	y = F.Add(F.Add(x, x)[0], x)
+	y[0].Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// [2]
+	// [3]
 }
