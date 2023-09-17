@@ -23,8 +23,7 @@ func (f *ExpT) Forward(x ...variable.Data) []variable.Data {
 }
 
 func (f *ExpT) Backward(gy ...variable.Data) []variable.Data {
-	grad := vector.F2(f.x, gy[0], dexp)
-	return []variable.Data{grad}
+	return []variable.Data{vector.F2(f.x, gy[0], dexp)}
 }
 
 func exp(a float64) float64 { return math.Exp(a) }
