@@ -8,6 +8,21 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+func ExampleAdd() {
+	v := variable.New(2, 3)
+	w := variable.New(3, 4)
+
+	y := F.Add(v, w)
+	y[0].Backward()
+
+	fmt.Println(v.Grad)
+	fmt.Println(w.Grad)
+
+	// Output:
+	// [1 1]
+	// [1 1]
+}
+
 func ExampleAddT() {
 	v := variable.New(2, 3)
 	w := variable.New(3, 4)
