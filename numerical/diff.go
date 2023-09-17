@@ -11,6 +11,8 @@ type Func func(x ...*variable.Variable) *variable.Variable
 var (
 	_ Func = F.Add
 	_ Func = F.Exp
+	_ Func = F.Mul
+	_ Func = F.Sin
 	_ Func = F.Square
 )
 
