@@ -201,7 +201,7 @@ func Example_rosenbrock() {
 	// [400]
 }
 
-func Example_sgd() {
+func Example_gradientDescent() {
 	// p206
 	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
 		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
@@ -212,7 +212,7 @@ func Example_sgd() {
 		return F.Add(y1, y3)                                  // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	}
 
-	sgd := func(lr float64) func(x, grad float64) float64 {
+	gd := func(lr float64) func(x, grad float64) float64 {
 		return func(a, b float64) float64 {
 			return a - lr*b
 		}
@@ -229,13 +229,13 @@ func Example_sgd() {
 			fmt.Println(x0, x1)
 		}
 
-		y := rosenbrock(x0, x1)
 		x0.Cleargrad()
 		x1.Cleargrad()
+		y := rosenbrock(x0, x1)
 		y.Backward()
 
-		x0.Data = vector.F2(x0.Data, x0.Grad, sgd(lr)) // x0 = x0 - lr * x0.grad
-		x1.Data = vector.F2(x1.Data, x1.Grad, sgd(lr)) // x1 = x1 - lr * x1.grad
+		x0.Data = vector.F2(x0.Data, x0.Grad, gd(lr)) // x0 = x0 - lr * x0.grad
+		x1.Data = vector.F2(x1.Data, x1.Grad, gd(lr)) // x1 = x1 - lr * x1.grad
 	}
 
 	// Output:
@@ -275,8 +275,8 @@ func Example_newton() {
 	for i := 0; i < iter; i++ {
 		fmt.Println(x)
 
-		y := f(x)
 		x.Cleargrad()
+		y := f(x)
 		y.Backward()
 
 		x.Data = vector.Sub(x.Data, vector.Div(x.Grad, gx2(variable.New(x.Data...)).Data))
