@@ -27,12 +27,3 @@ func (f *Function) Apply(x *variable.Variable) *variable.Variable {
 	f.in, f.out = x, &variable.Variable{Data: f.Y, Creator: f}
 	return f.out
 }
-
-func Data(v ...*variable.Variable) []variable.Data {
-	data := make([]variable.Data, len(v))
-	for i := range v {
-		data[i] = v[i].Data
-	}
-
-	return data
-}
