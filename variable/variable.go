@@ -35,10 +35,10 @@ func Copy(v *Variable) *Variable {
 }
 
 func (v *Variable) Cleargrad() {
-	v.Grad = Data{}
+	v.Grad = nil
 }
 
-func (v *Variable) Backward() {
+func (v *Variable) Backward(retain ...bool) {
 	if len(v.Grad) == 0 {
 		v.Grad = vector.OneLike(v.Data)
 	}
@@ -67,12 +67,25 @@ func (v *Variable) Backward() {
 			if x[i].Creator != nil {
 				fs = append(fs, x[i].Creator)
 			}
+
+			// clear unnecessary grad
+			cleargrad(f.Output(), retain...)
 		}
 	}
 }
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
+}
+
+func cleargrad(output []*Variable, retain ...bool) {
+	if len(retain) > 0 && retain[0] {
+		return
+	}
+
+	for i := range output {
+		output[i].Cleargrad()
+	}
 }
 
 func gx(gxs, xgrad []float64) []float64 {
