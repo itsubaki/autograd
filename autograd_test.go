@@ -133,6 +133,21 @@ func Example_cleargrad() {
 	// [3]
 }
 
+func Example_generation() {
+	// p107
+	x := variable.New(2.0)
+	a := F.Square(x)
+	y := F.Add(F.Square(a), F.Square(a))
+	y.Backward(true)
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable([32])
+	// [64]
+}
+
 func Example_retain() {
 	// p122
 	x0 := variable.New(1.0)
@@ -160,19 +175,4 @@ func Example_retain() {
 	//
 	// [] []
 	// [2] [1]
-}
-
-func Example_generation() {
-	// p107
-	x := variable.New(2.0)
-	a := F.Square(x)
-	y := F.Add(F.Square(a), F.Square(a))
-	y.Backward(true)
-
-	fmt.Println(y)
-	fmt.Println(x.Grad)
-
-	// Output:
-	// variable([32])
-	// [64]
 }
