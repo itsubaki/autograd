@@ -5,8 +5,8 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-func Square(x ...*variable.Variable) []*variable.Variable {
-	return (&Function{Forwarder: &SquareT{}}).Apply(x...)
+func Square(x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &SquareT{}}).Apply(x...)[0]
 }
 
 type SquareT struct {

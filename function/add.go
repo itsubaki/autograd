@@ -5,8 +5,8 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-func Add(x ...*variable.Variable) []*variable.Variable {
-	return (&Function{Forwarder: &AddT{}}).Apply(x...)
+func Add(x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &AddT{}}).Apply(x...)[0]
 }
 
 type AddT struct{}

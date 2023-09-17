@@ -11,7 +11,7 @@ import (
 func ExampleExp() {
 	v := variable.New(1, 2, 3, 4, 5)
 	y := F.Exp(v)
-	y[0].Backward()
+	y.Backward()
 
 	fmt.Println(v.Grad)
 
