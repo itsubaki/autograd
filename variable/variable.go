@@ -63,6 +63,7 @@ func (v *Variable) Backward() {
 
 		for i := range x {
 			x[i].Grad = gxs[i]
+
 			if x[i].Creator != nil {
 				fs = append(fs, x[i].Creator)
 			}

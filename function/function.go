@@ -26,20 +26,31 @@ func (f *Function) Output() []*variable.Variable {
 }
 
 func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
-	data := make([]variable.Data, len(x))
-	for i := range data {
-		data[i] = x[i].Data
-	}
+	data := xdata(x)
+
 	f.X, f.Y = data, f.Forward(data)
-
-	f.in, f.out = x, make([]*variable.Variable, len(f.Y))
-	for i := range f.Y {
-		f.out[i] = &variable.Variable{Data: f.Y[i], Creator: f}
-	}
-
+	f.in, f.out = x, yvariable(f.Y, f)
 	return f.out
 }
 
 func (f Function) String() string {
 	return fmt.Sprintf("%T(%v)", f.Forwarder, f.X)
+}
+
+func xdata(x []*variable.Variable) []variable.Data {
+	data := make([]variable.Data, len(x))
+	for i := range x {
+		data[i] = x[i].Data
+	}
+
+	return data
+}
+
+func yvariable(y []variable.Data, f *Function) []*variable.Variable {
+	yvar := make([]*variable.Variable, len(y))
+	for i := range y {
+		yvar[i] = &variable.Variable{Data: y[i], Creator: f}
+	}
+
+	return yvar
 }
