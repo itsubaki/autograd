@@ -12,8 +12,8 @@ import (
 func Example() {
 	x := variable.New(0.5)
 	y := F.Square(F.Exp(F.Square(x)))
-
 	y.Backward()
+
 	fmt.Println(x.Grad)
 
 	// Output:
@@ -43,7 +43,6 @@ func Example_creator() {
 	a := F.Square(x)
 	b := F.Exp(a)
 	y := F.Square(b)
-
 	y.Backward()
 
 	fmt.Println(x)
@@ -78,8 +77,8 @@ func Example_func() {
 	a := F.Square(x)
 	b := F.Exp(a)
 	y := F.Square(b)
-
 	y.Backward()
+
 	fmt.Println(x.Grad)
 
 	// Output:
@@ -91,8 +90,8 @@ func Example_add() {
 	x := variable.New(2.0)
 	y := variable.New(3.0)
 	z := F.Add(F.Square(x), F.Square(y))
-
 	z.Backward()
+
 	fmt.Println(z)
 	fmt.Println(x.Grad)
 	fmt.Println(y.Grad)
@@ -107,8 +106,8 @@ func Example_reuse() {
 	// p90
 	x := variable.New(3.0)
 	y := F.Add(F.Add(x, x), x)
-
 	y.Backward()
+
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
