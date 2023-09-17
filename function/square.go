@@ -21,8 +21,7 @@ func (f *SquareT) Forward(x ...variable.Data) []variable.Data {
 }
 
 func (f *SquareT) Backward(gy ...variable.Data) []variable.Data {
-	grad := vector.F2(f.x, gy[0], dsquare)
-	return []variable.Data{grad}
+	return []variable.Data{vector.F2(f.x, gy[0], dsquare)}
 }
 
 func square(a float64) float64 { return a * a }
