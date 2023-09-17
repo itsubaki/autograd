@@ -34,6 +34,10 @@ func Copy(v *Variable) *Variable {
 	return &Variable{Data: w}
 }
 
+func (v *Variable) Cleargrad() {
+	v.Grad = Data{}
+}
+
 func (v *Variable) Backward() {
 	if len(v.Grad) == 0 {
 		v.Grad = vector.OneLike(v.Data)
@@ -62,7 +66,11 @@ func (v *Variable) Backward() {
 		gxs := f.Backward(gys...)
 
 		for i := range x {
-			x[i].Grad = gxs[i]
+			if len(x[i].Grad) == 0 {
+				x[i].Grad = gxs[i]
+			} else {
+				x[i].Grad = vector.Add(x[i].Grad, gxs[i])
+			}
 
 			if x[i].Creator != nil {
 				fs = append(fs, x[i].Creator)
