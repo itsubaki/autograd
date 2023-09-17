@@ -1,5 +1,7 @@
 package vector
 
+import "math"
+
 func NewLike(v []float64) []float64 {
 	return make([]float64, len(v))
 }
@@ -20,12 +22,20 @@ func MulC(v []float64, c float64) []float64 {
 	return F(v, func(a float64) float64 { return c * a })
 }
 
+func Pow(v []float64, c float64) []float64 {
+	return F(v, func(a float64) float64 { return math.Pow(a, c) })
+}
+
 func Add(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a + b })
 }
 
 func Sub(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a - b })
+}
+
+func Mul(v, w []float64) []float64 {
+	return F2(v, w, func(a, b float64) float64 { return a * b })
 }
 
 func F(v []float64, f func(a float64) float64) []float64 {
