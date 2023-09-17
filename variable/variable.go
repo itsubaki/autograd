@@ -11,12 +11,14 @@ type Data = []float64
 type Function interface {
 	Input() []*Variable
 	Output() []*Variable
+	Generation() int
 	Backward(gy ...Data) []Data
 }
 
 type Variable struct {
 	Data, Grad Data
 	Creator    Function
+	Generation int
 }
 
 func New(v ...float64) *Variable {
@@ -38,6 +40,11 @@ func (v *Variable) Cleargrad() {
 	v.Grad = nil
 }
 
+func (v *Variable) SetCreator(f Function) {
+	v.Creator = f
+	v.Generation = f.Generation() + 1
+}
+
 func (v *Variable) Backward(retain ...bool) {
 	if len(v.Grad) == 0 {
 		v.Grad = vector.OneLike(v.Data)
@@ -47,7 +54,20 @@ func (v *Variable) Backward(retain ...bool) {
 		return
 	}
 
-	fs := []Function{v.Creator}
+	fs := make([]Function, 0)
+	seen := make(map[Function]bool)
+	add := func(f Function) {
+		if _, ok := seen[f]; ok {
+			return
+		}
+
+		seen[f] = true
+		fs = append(fs, f)
+		sort(fs)
+	}
+
+	add(v.Creator)
+
 	for {
 		if len(fs) == 0 {
 			break
@@ -65,7 +85,7 @@ func (v *Variable) Backward(retain ...bool) {
 			x[i].Grad = gx(gxs[i], x[i].Grad)
 
 			if x[i].Creator != nil {
-				fs = append(fs, x[i].Creator)
+				add(x[i].Creator)
 			}
 
 			// clear unnecessary grad
@@ -76,6 +96,16 @@ func (v *Variable) Backward(retain ...bool) {
 
 func (v Variable) String() string {
 	return fmt.Sprintf("variable(%v)", v.Data)
+}
+
+func sort(fs []Function) {
+	for i := range fs {
+		for j := range fs {
+			if fs[i].Generation() < fs[j].Generation() {
+				fs[i], fs[j] = fs[j], fs[i]
+			}
+		}
+	}
 }
 
 func cleargrad(output []*Variable, retain ...bool) {
