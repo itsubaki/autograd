@@ -1,18 +1,19 @@
-package function
+package numerical
 
 import (
+	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 	"github.com/itsubaki/autograd/vector"
 )
 
-type F func(x *variable.Variable) *variable.Variable
+type Func func(x *variable.Variable) *variable.Variable
 
 var (
-	_ F = Square
-	_ F = Exp
+	_ Func = F.Square
+	_ Func = F.Exp
 )
 
-func NumericalDiff(f F, x *variable.Variable, h ...float64) *variable.Variable {
+func Diff(f Func, x *variable.Variable, h ...float64) *variable.Variable {
 	if len(h) == 0 {
 		h = append(h, 1e-4)
 	}

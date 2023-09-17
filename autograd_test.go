@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/numerical"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -42,7 +43,7 @@ func Example_numericalDiff() {
 		return C(B(A(x)))
 	}
 
-	fmt.Println(F.NumericalDiff(f, v))
+	fmt.Println(numerical.Diff(f, v))
 
 	// Output:
 	// variable([3.2974426293330694])
