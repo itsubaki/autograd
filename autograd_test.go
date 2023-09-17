@@ -43,7 +43,7 @@ func Example_numericalDiff() {
 		return C(B(A(x...)...)...)
 	}
 
-	fmt.Println(numerical.Diff(f, v))
+	fmt.Println(numerical.Diff(f, []*variable.Variable{v}))
 
 	// Output:
 	// [variable([3.2974426293330694])]
