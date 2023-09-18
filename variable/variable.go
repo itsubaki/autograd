@@ -13,11 +13,12 @@ type Function interface {
 	Input() []*Variable
 	Output() []*Variable
 	Generation() int
-	Backward(gy ...Data) []Data
+	Backward(gy ...*Variable) []*Variable
 }
 
 type Variable struct {
-	Data, Grad Data
+	Data       Data
+	Grad       *Variable
 	Creator    Function
 	Generation int
 }
@@ -51,8 +52,8 @@ func (v *Variable) SetCreator(f Function) {
 }
 
 func (v *Variable) Backward(retain ...bool) {
-	if len(v.Grad) == 0 {
-		v.Grad = vector.OneLike(v.Data)
+	if v.Grad == nil {
+		v.Grad = OneLike(v)
 	}
 
 	if v.Creator == nil {
@@ -113,19 +114,19 @@ func cleargrad(output []*Variable, retain ...bool) {
 	}
 }
 
-func gx(gxs, xgrad []float64) []float64 {
-	if len(xgrad) > 0 {
-		gxs = vector.Add(gxs, xgrad)
-	}
-
-	return gxs
-}
-
-func gys(y []*Variable) []Data {
-	gys := make([]Data, len(y))
-	for i := range gys {
+func gys(y []*Variable) []*Variable {
+	gys := make([]*Variable, len(y))
+	for i := range y {
 		gys[i] = y[i].Grad
 	}
 
 	return gys
+}
+
+func gx(gxs, xgrad *Variable) *Variable {
+	if xgrad == nil {
+		return gxs
+	}
+
+	return New(vector.Add(xgrad.Data, gxs.Data)...)
 }

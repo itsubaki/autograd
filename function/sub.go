@@ -16,6 +16,9 @@ func (f *SubT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *SubT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{gy[0], vector.MulC(gy[0], -1.0)}
+func (f *SubT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		gy[0],
+		variable.New(vector.MulC(gy[0].Data, -1.0)...),
+	}
 }

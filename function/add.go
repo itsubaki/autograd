@@ -16,6 +16,9 @@ func (f *AddT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *AddT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{gy[0], gy[0]}
+func (f *AddT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		gy[0],
+		gy[0],
+	}
 }

@@ -17,7 +17,7 @@ func Example() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// [3.297442541400256]
+	// variable([3.297442541400256])
 }
 
 func Example_numericalDiff() {
@@ -61,7 +61,7 @@ func Example_creator() {
 	// Output:
 	// variable([0.5])
 	// variable([1.648721270700128])
-	// [3.297442541400256]
+	// variable([3.297442541400256])
 	//
 	// *function.SquareT([[1.2840254166877414]])
 	// true
@@ -82,7 +82,7 @@ func Example_func() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// [3.297442541400256]
+	// variable([3.297442541400256])
 }
 
 func Example_add() {
@@ -98,8 +98,8 @@ func Example_add() {
 
 	// Output:
 	// variable([13])
-	// [4]
-	// [6]
+	// variable([4])
+	// variable([6])
 }
 
 func Example_reuse() {
@@ -113,7 +113,7 @@ func Example_reuse() {
 
 	// Output:
 	// variable([9])
-	// [3]
+	// variable([3])
 }
 
 func Example_cleargrad() {
@@ -129,8 +129,8 @@ func Example_cleargrad() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// [2]
-	// [3]
+	// variable([2])
+	// variable([3])
 }
 
 func Example_generation() {
@@ -145,7 +145,7 @@ func Example_generation() {
 
 	// Output:
 	// variable([32])
-	// [64]
+	// variable([64])
 }
 
 func Example_retain() {
@@ -170,11 +170,11 @@ func Example_retain() {
 	fmt.Println(x0.Grad, x1.Grad)
 
 	// Output:
-	// [1] [1]
-	// [2] [1]
+	// variable([1]) variable([1])
+	// variable([2]) variable([1])
 	//
-	// [] []
-	// [2] [1]
+	// <nil> <nil>
+	// variable([2]) variable([1])
 }
 
 func Example_rosenbrock() {
@@ -197,8 +197,8 @@ func Example_rosenbrock() {
 	fmt.Println(x1.Grad)
 
 	// Output:
-	// [-2]
-	// [400]
+	// variable([-2])
+	// variable([400])
 }
 
 func Example_gradientDescent() {
@@ -234,8 +234,8 @@ func Example_gradientDescent() {
 		y := rosenbrock(x0, x1)
 		y.Backward()
 
-		x0.Data = vector.F2(x0.Data, x0.Grad, gd(lr)) // x0 = x0 - lr * x0.grad
-		x1.Data = vector.F2(x1.Data, x1.Grad, gd(lr)) // x1 = x1 - lr * x1.grad
+		x0.Data = vector.F2(x0.Data, x0.Grad.Data, gd(lr)) // x0 = x0 - lr * x0.grad
+		x1.Data = vector.F2(x1.Data, x1.Grad.Data, gd(lr)) // x1 = x1 - lr * x1.grad
 	}
 
 	// Output:
@@ -279,7 +279,7 @@ func Example_newton() {
 		y := f(x)
 		y.Backward()
 
-		x.Data = vector.Sub(x.Data, vector.Div(x.Grad, gx2(variable.New(x.Data...)).Data))
+		x.Data = vector.Sub(x.Data, vector.Div(x.Grad.Data, gx2(variable.New(x.Data...)).Data))
 	}
 
 	// Output:

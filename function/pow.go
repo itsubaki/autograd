@@ -23,8 +23,10 @@ func (f *PowT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *PowT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{vector.F2(f.x, gy[0], dpow(f.C))}
+func (f *PowT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		variable.New(vector.F2(f.x, gy[0].Data, dpow(f.C))...),
+	}
 }
 
 func dpow(c float64) func(a, b float64) float64 {

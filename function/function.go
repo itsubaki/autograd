@@ -8,7 +8,7 @@ import (
 
 type Forwarder interface {
 	Forward(x ...variable.Data) []variable.Data
-	Backward(gy ...variable.Data) []variable.Data
+	Backward(gy ...*variable.Variable) []*variable.Variable
 }
 
 type Function struct {

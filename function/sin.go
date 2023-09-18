@@ -22,8 +22,10 @@ func (f *SinT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *SinT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{vector.F2(f.x, gy[0], dsin)}
+func (f *SinT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		variable.New(vector.F2(f.x, gy[0].Data, dsin)...),
+	}
 }
 
 func sin(a float64) float64 { return math.Sin(a) }

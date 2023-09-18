@@ -5,30 +5,33 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 func ExampleSquare() {
-	v := variable.New(1, 2, 3, 4, 5)
-	y := F.Square(v)
+	x := variable.New(1, 2, 3, 4, 5)
+	y := F.Square(x)
 	y.Backward()
 
-	fmt.Println(v.Grad)
+	fmt.Println(x)
+	fmt.Println(y)
+	fmt.Println(x.Grad)
 
 	// Output:
-	// [2 4 6 8 10]
+	// variable([1 2 3 4 5])
+	// variable([1 4 9 16 25])
+	// variable([2 4 6 8 10])
 }
 
 func ExampleSquareT() {
-	v := variable.New(1, 2, 3, 4, 5)
-	fmt.Println(v)
-
+	x := variable.New(1, 2, 3, 4, 5)
 	f := F.SquareT{}
-	fmt.Println(f.Forward(v.Data))
-	fmt.Println(f.Backward(vector.OneLike(v.Data)))
+
+	fmt.Println(x)
+	fmt.Println(f.Forward(x.Data))
+	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
 	// variable([1 2 3 4 5])
 	// [[1 4 9 16 25]]
-	// [[2 4 6 8 10]]
+	// [variable([2 4 6 8 10])]
 }
