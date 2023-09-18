@@ -1,8 +1,6 @@
 package function
 
 import (
-	"math"
-
 	"github.com/itsubaki/autograd/variable"
 	"github.com/itsubaki/autograd/vector"
 )
@@ -13,24 +11,21 @@ func Pow(c float64) func(x ...*variable.Variable) []*variable.Variable {
 
 type PowT struct {
 	C float64
-	x variable.Data
+	x *variable.Variable
 }
 
-func (f *PowT) Forward(x ...variable.Data) []variable.Data {
+func (f *PowT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
 
-	y := vector.Pow(f.x, f.C)
-	return []variable.Data{y}
+	y := vector.Pow(f.x.Data, f.C)
+	return []*variable.Variable{
+		variable.New(y...),
+	}
 }
 
 func (f *PowT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		variable.New(vector.F2(f.x, gy[0].Data, dpow(f.C))...),
-	}
-}
-
-func dpow(c float64) func(a, b float64) float64 {
-	return func(x, gy float64) float64 {
-		return c * math.Pow(x, c-1) * gy
+		// c * x^(c-1) * gy
+		Mul(Pow(f.C - 1)(f.x)[0], gy[0]).MulC(f.C),
 	}
 }

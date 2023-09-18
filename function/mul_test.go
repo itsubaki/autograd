@@ -12,7 +12,6 @@ func ExampleMul() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
 	c := variable.New(1.0)
-
 	y := F.Add(F.Mul(a, b), c)
 	y.Backward()
 
@@ -29,16 +28,16 @@ func ExampleMul() {
 func ExampleMulT() {
 	v := variable.New(3.0)
 	w := variable.New(2.0)
+	f := F.MulT{}
+
 	fmt.Println(v)
 	fmt.Println(w)
-
-	f := F.MulT{}
-	fmt.Println(f.Forward(v.Data, w.Data))
+	fmt.Println(f.Forward(v, w))
 	fmt.Println(f.Backward(variable.OneLike(v), variable.OneLike(w)))
 
 	// Output:
 	// variable[3]
 	// variable[2]
-	// [[6]]
+	// [variable[6]]
 	// [variable[2] variable[3]]
 }

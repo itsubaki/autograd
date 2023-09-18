@@ -10,19 +10,21 @@ func Mul(x ...*variable.Variable) *variable.Variable {
 }
 
 type MulT struct {
-	x0, x1 variable.Data
+	x0, x1 *variable.Variable
 }
 
-func (f *MulT) Forward(x ...variable.Data) []variable.Data {
+func (f *MulT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x0, f.x1 = x[0], x[1]
 
-	y := vector.Mul(f.x0, f.x1)
-	return []variable.Data{y}
+	y := vector.Mul(f.x0.Data, f.x1.Data)
+	return []*variable.Variable{
+		variable.New(y...),
+	}
 }
 
 func (f *MulT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(variable.New(f.x1...), gy[0]),
-		Mul(variable.New(f.x0...), gy[0]),
+		Mul(f.x1, variable.Clone(gy[0])),
+		Mul(f.x0, variable.Clone(gy[0])),
 	}
 }

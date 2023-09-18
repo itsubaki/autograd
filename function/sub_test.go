@@ -10,7 +10,6 @@ import (
 func ExampleSub() {
 	v := variable.New(2, 3)
 	w := variable.New(3, 4)
-
 	y := F.Sub(v, w)
 	y.Backward()
 

@@ -27,11 +27,11 @@ func ExampleSquareT() {
 	f := F.SquareT{}
 
 	fmt.Println(x)
-	fmt.Println(f.Forward(x.Data))
+	fmt.Println(f.Forward(x))
 	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
 	// variable[1 2 3 4 5]
-	// [[1 4 9 16 25]]
+	// [variable[1 4 9 16 25]]
 	// [variable[2 4 6 8 10]]
 }
