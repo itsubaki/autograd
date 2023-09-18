@@ -24,8 +24,9 @@ func (f *PowT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *PowT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	c := variable.NewLikeWith(f.C, f.x)
 	return []*variable.Variable{
 		// c * x^(c-1) * gy
-		Mul(Pow(f.C - 1)(f.x)[0], gy[0]).MulC(f.C),
+		Mul(c, Mul(Pow(f.C - 1)(f.x)[0], gy[0])),
 	}
 }

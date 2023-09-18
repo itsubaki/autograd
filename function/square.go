@@ -23,7 +23,8 @@ func (f *SquareT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *SquareT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	c := variable.NewLikeWith(2.0, f.x)
 	return []*variable.Variable{
-		Mul(f.x, gy[0]).MulC(2),
+		Mul(c, Mul(f.x, gy[0])),
 	}
 }
