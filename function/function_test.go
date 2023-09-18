@@ -9,7 +9,7 @@ import (
 
 func ExampleFunction() {
 	f := &F.Function{
-		Forwarder: &F.SquareT{},
+		Forwarder: &F.PowT{C: 2.0},
 	}
 
 	v := variable.New(1, 2, 3, 4, 5)

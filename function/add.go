@@ -20,7 +20,7 @@ func (f *AddT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *AddT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		variable.Clone(gy[0]),
-		variable.Clone(gy[0]),
+		gy[0],
+		gy[0],
 	}
 }
