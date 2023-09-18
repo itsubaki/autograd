@@ -28,12 +28,12 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: v}
 }
 
-func NewLikeWith(c float64, v *Variable) *Variable {
-	return &Variable{Data: vector.NewLikeWith(c, v.Data)}
+func ConstLike(c float64, v *Variable) *Variable {
+	return &Variable{Data: vector.ConstLike(c, v.Data)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return NewLikeWith(1.0, v)
+	return ConstLike(1.0, v)
 }
 
 func Clone(v *Variable) *Variable {

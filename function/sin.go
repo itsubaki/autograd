@@ -24,6 +24,6 @@ func (f *SinT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *SinT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(Cos(f.x), gy[0]),
+		Mul(Cos(f.x), gy[0]), // cos(x) * gy
 	}
 }

@@ -24,6 +24,6 @@ func (f *CosT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *CosT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(Neg(Sin(f.x)), gy[0]),
+		Mul(Neg(Sin(f.x)), gy[0]), // -1.0 * sin(x) * gy
 	}
 }
