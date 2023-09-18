@@ -37,3 +37,22 @@ func ExampleSinT() {
 	// [variable[0.7071067811865475]]
 	// [variable[0.7071067811865476]]
 }
+
+func ExampleSin_higher() {
+	// p243
+	x := variable.New(1.0)
+	y := F.Sin(x)
+	y.Backward()
+
+	for i := 0; i < 3; i++ {
+		gx := x.Grad
+		x.Cleargrad()
+		gx.Backward()
+		fmt.Println(x.Grad)
+	}
+
+	// Output:
+	// variable[-0.8414709848078965]
+	// variable[-0.5403023058681398]
+	// variable[0.8414709848078965]
+}

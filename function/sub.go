@@ -19,8 +19,9 @@ func (f *SubT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *SubT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	c := variable.NewLikeWith(-1.0, gy[0])
 	return []*variable.Variable{
-		variable.Clone(gy[0]),
-		variable.Clone(gy[0].MulC(-1.0)),
+		gy[0],
+		Mul(c, gy[0]),
 	}
 }
