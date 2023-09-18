@@ -16,6 +16,6 @@ func ExamplePow() {
 	fmt.Println(v.Grad)
 
 	// Output:
-	// [variable([8])]
-	// variable([12])
+	// [variable[8]]
+	// variable[12]
 }

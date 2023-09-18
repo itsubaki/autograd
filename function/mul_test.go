@@ -21,9 +21,9 @@ func ExampleMul() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable([7])
-	// variable([2])
-	// variable([3])
+	// variable[7]
+	// variable[2]
+	// variable[3]
 }
 
 func ExampleMulT() {
@@ -37,8 +37,8 @@ func ExampleMulT() {
 	fmt.Println(f.Backward(variable.OneLike(v), variable.OneLike(w)))
 
 	// Output:
-	// variable([3])
-	// variable([2])
+	// variable[3]
+	// variable[2]
 	// [[6]]
-	// [variable([2]) variable([3])]
+	// [variable[2] variable[3]]
 }

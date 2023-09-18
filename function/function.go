@@ -40,7 +40,7 @@ func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f Function) String() string {
-	return fmt.Sprintf("%T(%v)", f.Forwarder, f.X)
+	return fmt.Sprintf("%T%v", f.Forwarder, f.X)
 }
 
 func maxgen(x ...*variable.Variable) int {
