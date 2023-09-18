@@ -17,9 +17,9 @@ func ExampleSquare() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([1 2 3 4 5])
-	// variable([1 4 9 16 25])
-	// variable([2 4 6 8 10])
+	// variable[1 2 3 4 5]
+	// variable[1 4 9 16 25]
+	// variable[2 4 6 8 10]
 }
 
 func ExampleSquareT() {
@@ -31,7 +31,7 @@ func ExampleSquareT() {
 	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
-	// variable([1 2 3 4 5])
+	// variable[1 2 3 4 5]
 	// [[1 4 9 16 25]]
-	// [variable([2 4 6 8 10])]
+	// [variable[2 4 6 8 10]]
 }

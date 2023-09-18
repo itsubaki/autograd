@@ -17,6 +17,7 @@ type Function interface {
 }
 
 type Variable struct {
+	Name       string
 	Data       Data
 	Grad       *Variable
 	Creator    Function
@@ -90,7 +91,11 @@ func (v *Variable) Backward(retain ...bool) {
 }
 
 func (v Variable) String() string {
-	return fmt.Sprintf("variable(%v)", v.Data)
+	if v.Name == "" {
+		return fmt.Sprintf("variable%v", v.Data)
+	}
+
+	return fmt.Sprintf("%v%v", v.Name, v.Data)
 }
 
 func addfunc(fs []Function, f Function, seen map[Function]bool) []Function {
