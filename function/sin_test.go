@@ -6,7 +6,6 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 func ExampleSin() {
@@ -21,7 +20,7 @@ func ExampleSin() {
 
 	// Output:
 	// variable([0.7071067811865475])
-	// [0.7071067811865476]
+	// variable([0.7071067811865476])
 	// [0.7071067811865476]
 }
 
@@ -31,10 +30,10 @@ func ExampleSinT() {
 
 	f := F.SinT{}
 	fmt.Println(f.Forward(x.Data))
-	fmt.Println(f.Backward(vector.OneLike(x.Data)))
+	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
 	// variable([0.7853981633974483])
 	// [[0.7071067811865475]]
-	// [[0.7071067811865476]]
+	// [variable([0.7071067811865476])]
 }

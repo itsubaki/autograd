@@ -20,6 +20,6 @@ func ExampleSub() {
 
 	// Output:
 	// variable([-1 -1])
-	// [1 1]
-	// [-1 -1]
+	// variable([1 1])
+	// variable([-1 -1])
 }

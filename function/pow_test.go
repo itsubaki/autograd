@@ -17,5 +17,5 @@ func ExamplePow() {
 
 	// Output:
 	// [variable([8])]
-	// [12]
+	// variable([12])
 }

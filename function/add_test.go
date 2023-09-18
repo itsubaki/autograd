@@ -5,7 +5,6 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 func ExampleAdd() {
@@ -19,8 +18,8 @@ func ExampleAdd() {
 	fmt.Println(w.Grad)
 
 	// Output:
-	// [1 1]
-	// [1 1]
+	// variable([1 1])
+	// variable([1 1])
 }
 
 func ExampleAddT() {
@@ -31,11 +30,11 @@ func ExampleAddT() {
 
 	f := F.AddT{}
 	fmt.Println(f.Forward(v.Data, w.Data))
-	fmt.Println(f.Backward(vector.OneLike(v.Data), vector.OneLike(w.Data)))
+	fmt.Println(f.Backward(variable.OneLike(v), variable.OneLike(w)))
 
 	// Output:
 	// variable([2 3])
 	// variable([3 4])
 	// [[5 7]]
-	// [[1 1] [1 1]]
+	// [variable([1 1]) variable([1 1])]
 }

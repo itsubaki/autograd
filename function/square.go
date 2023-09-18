@@ -20,8 +20,10 @@ func (f *SquareT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *SquareT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{vector.F2(f.x, gy[0], dsquare)}
+func (f *SquareT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		variable.New(vector.F2(f.x, gy[0].Data, dsquare)...),
+	}
 }
 
 func square(a float64) float64 { return a * a }

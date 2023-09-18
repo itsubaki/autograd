@@ -20,10 +20,11 @@ func (f *MulT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *MulT) Backward(gy ...variable.Data) []variable.Data {
-	g0 := vector.F2(f.x1, gy[0], mul)
-	g1 := vector.F2(f.x0, gy[0], mul)
-	return []variable.Data{g0, g1}
+func (f *MulT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		variable.New(vector.F2(f.x1, gy[0].Data, mul)...),
+		variable.New(vector.F2(f.x0, gy[0].Data, mul)...),
+	}
 }
 
 func mul(a, b float64) float64 { return a * b }

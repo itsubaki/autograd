@@ -22,8 +22,10 @@ func (f *ExpT) Forward(x ...variable.Data) []variable.Data {
 	return []variable.Data{y}
 }
 
-func (f *ExpT) Backward(gy ...variable.Data) []variable.Data {
-	return []variable.Data{vector.F2(f.x, gy[0], dexp)}
+func (f *ExpT) Backward(gy ...*variable.Variable) []*variable.Variable {
+	return []*variable.Variable{
+		variable.New(vector.F2(f.x, gy[0].Data, dexp)...),
+	}
 }
 
 func exp(a float64) float64 { return math.Exp(a) }
