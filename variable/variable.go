@@ -36,11 +36,16 @@ func OneLike(v *Variable) *Variable {
 	return NewLikeWith(1.0, v)
 }
 
-func Copy(v *Variable) *Variable {
+func Clone(v *Variable) *Variable {
 	w := vector.NewLike(v.Data)
 	copy(w, v.Data)
 
 	return &Variable{Data: w}
+}
+
+func (v *Variable) MulC(c float64) *Variable {
+	v.Data = vector.MulC(v.Data, c)
+	return v
 }
 
 func (v *Variable) Cleargrad() {

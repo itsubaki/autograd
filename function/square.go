@@ -10,22 +10,20 @@ func Square(x ...*variable.Variable) *variable.Variable {
 }
 
 type SquareT struct {
-	x variable.Data
+	x *variable.Variable
 }
 
-func (f *SquareT) Forward(x ...variable.Data) []variable.Data {
+func (f *SquareT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
 
-	y := vector.F(f.x, square)
-	return []variable.Data{y}
+	y := vector.Pow(f.x.Data, 2)
+	return []*variable.Variable{
+		variable.New(y...),
+	}
 }
 
 func (f *SquareT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		variable.New(vector.F2(f.x, gy[0].Data, dsquare)...),
+		Mul(f.x, gy[0]).MulC(2),
 	}
 }
-
-func square(a float64) float64 { return a * a }
-
-func dsquare(a, b float64) float64 { return 2 * a * b }

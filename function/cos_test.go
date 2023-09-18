@@ -8,10 +8,10 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleSin() {
+func ExampleCos() {
 	// p198
 	x := variable.New(math.Pi / 4)
-	y := F.Sin(x)
+	y := F.Cos(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -19,14 +19,14 @@ func ExampleSin() {
 	fmt.Println([]float64{1.0 / math.Sqrt2})
 
 	// Output:
-	// variable[0.7071067811865475]
 	// variable[0.7071067811865476]
+	// variable[-0.7071067811865475]
 	// [0.7071067811865476]
 }
 
-func ExampleSinT() {
+func ExampleCosT() {
 	x := variable.New(math.Pi / 4)
-	f := F.SinT{}
+	f := F.CosT{}
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))
@@ -34,6 +34,6 @@ func ExampleSinT() {
 
 	// Output:
 	// variable[0.7853981633974483]
-	// [variable[0.7071067811865475]]
 	// [variable[0.7071067811865476]]
+	// [variable[-0.7071067811865475]]
 }
