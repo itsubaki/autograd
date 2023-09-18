@@ -182,7 +182,7 @@ func Example_rosenbrock() {
 	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
 		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // (x1 - x0^2)^2
-		y1 := F.Mul(variable.NewLikeWith(100, y0), y0)        // 100 * (x1 - x0^2)^2
+		y1 := F.Mul(variable.ConstLike(100, y0), y0)          // 100 * (x1 - x0^2)^2
 		y2 := F.Sub(x[0], variable.OneLike(y0))               // x0 - 1
 		y3 := F.Pow(2.0)(y2)[0]                               // (x0 - 1)^2
 		return F.Add(y1, y3)                                  // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
@@ -206,7 +206,7 @@ func Example_gradientDescent() {
 	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
 		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0])[0]))[0] // (x1 - x0^2)^2
-		y1 := F.Mul(variable.NewLikeWith(100, y0), y0)        // 100 * (x1 - x0^2)^2
+		y1 := F.Mul(variable.ConstLike(100, y0), y0)          // 100 * (x1 - x0^2)^2
 		y2 := F.Sub(x[0], variable.OneLike(y0))               // x0 - 1
 		y3 := F.Pow(2.0)(y2)[0]                               // (x0 - 1)^2
 		return F.Add(y1, y3)                                  // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
@@ -256,17 +256,17 @@ func Example_newton() {
 	// p214
 	f := func(x ...*variable.Variable) *variable.Variable {
 		// y = x^4 - 2x^2
-		y0 := F.Pow(4.0)(x[0])[0]                    // x^4
-		y1 := F.Pow(2.0)(x[0])[0]                    // x^2
-		y2 := F.Mul(variable.NewLikeWith(2, y1), y1) // 2x^2
-		return F.Sub(y0, y2)                         // x^4 - 2x^2
+		y0 := F.Pow(4.0)(x[0])[0]                  // x^4
+		y1 := F.Pow(2.0)(x[0])[0]                  // x^2
+		y2 := F.Mul(variable.ConstLike(2, y1), y1) // 2x^2
+		return F.Sub(y0, y2)                       // x^4 - 2x^2
 	}
 
 	gx2 := func(x ...*variable.Variable) *variable.Variable {
 		// y = 12x^2 + 4
-		y0 := F.Pow(2.0)(x[0])[0]                       // x^2
-		y1 := F.Mul(variable.NewLikeWith(12, y0), y0)   // 12x^2
-		return F.Add(y1, variable.NewLikeWith(4.0, y1)) // 12x^2 + 4
+		y0 := F.Pow(2.0)(x[0])[0]                     // x^2
+		y1 := F.Mul(variable.ConstLike(12, y0), y0)   // 12x^2
+		return F.Add(y1, variable.ConstLike(4.0, y1)) // 12x^2 + 4
 	}
 
 	x := variable.New(2.0)

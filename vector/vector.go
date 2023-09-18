@@ -7,16 +7,11 @@ func NewLike(v []float64) []float64 {
 }
 
 func OneLike(v []float64) []float64 {
-	return AddC(NewLike(v), 1)
+	return ConstLike(1.0, v)
 }
 
-func NewLikeWith(v float64, w []float64) []float64 {
-	y := make([]float64, len(w))
-	for i := range y {
-		y[i] = v
-	}
-
-	return y
+func ConstLike(c float64, v []float64) []float64 {
+	return AddC(NewLike(v), c)
 }
 
 func AddC(v []float64, c float64) []float64 {

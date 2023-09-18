@@ -24,6 +24,6 @@ func (f *ExpT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *ExpT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(Exp(f.x), gy[0]),
+		Mul(Exp(f.x), gy[0]), // exp(x) * gy
 	}
 }

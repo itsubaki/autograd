@@ -24,7 +24,7 @@ func (f *MulT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *MulT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(f.x1, gy[0]),
-		Mul(f.x0, gy[0]),
+		Mul(f.x1, gy[0]), // x1 * gy
+		Mul(f.x0, gy[0]), // x0 * gy
 	}
 }
