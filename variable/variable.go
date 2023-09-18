@@ -36,13 +36,6 @@ func OneLike(v *Variable) *Variable {
 	return ConstLike(1.0, v)
 }
 
-func Clone(v *Variable) *Variable {
-	w := vector.NewLike(v.Data)
-	copy(w, v.Data)
-
-	return &Variable{Data: w}
-}
-
 func (v *Variable) Cleargrad() {
 	v.Grad = nil
 }
