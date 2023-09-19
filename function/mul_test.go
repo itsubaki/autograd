@@ -41,3 +41,28 @@ func ExampleMulT() {
 	// [variable[6]]
 	// [variable[2] variable[3]]
 }
+
+func ExampleMul_higher() {
+	a := variable.New(2.0)
+	b := variable.New(3.0)
+	y := F.Mul(a, b)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(a.Grad, b.Grad)
+
+	for i := 0; i < 2; i++ {
+		ga, gb := a.Grad, b.Grad
+		a.Cleargrad()
+		b.Cleargrad()
+		ga.Backward()
+		gb.Backward()
+		fmt.Println(a.Grad, b.Grad)
+	}
+
+	// Output:
+	// variable[6]
+	// variable[3] variable[2]
+	// variable[1] variable[1]
+	// <nil> <nil>
+}
