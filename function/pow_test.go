@@ -10,13 +10,13 @@ import (
 func ExamplePow() {
 	x := variable.New(2.0)
 	y := F.Pow(3.0)(x)
-	y[0].Backward()
+	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
 	// Output:
-	// [variable[8]]
+	// variable[8]
 	// variable[12]
 }
 
@@ -37,7 +37,7 @@ func ExamplePowT() {
 func ExamplePow_higher() {
 	x := variable.New(2.0)
 	y := F.Pow(3.0)(x)
-	y[0].Backward()
+	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
@@ -50,7 +50,7 @@ func ExamplePow_higher() {
 	}
 
 	// Output:
-	// [variable[8]]
+	// variable[8]
 	// variable[12]
 	// variable[12]
 	// variable[6]

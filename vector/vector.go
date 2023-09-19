@@ -7,11 +7,33 @@ func NewLike(v []float64) []float64 {
 }
 
 func OneLike(v []float64) []float64 {
-	return ConstLike(1.0, v)
+	return AddC(NewLike(v), 1.0)
 }
 
-func ConstLike(c float64, v []float64) []float64 {
-	return AddC(NewLike(v), c)
+func Const(c float64) []float64 {
+	return []float64{c}
+}
+
+func Broadcast(v, w []float64) ([]float64, []float64) {
+	if len(v) == 1 {
+		out := NewLike(w)
+		for i := 0; i < len(w); i++ {
+			out[i] = v[0]
+		}
+
+		return out, w
+	}
+
+	if len(w) == 1 {
+		out := NewLike(v)
+		for i := 0; i < len(v); i++ {
+			out[i] = w[0]
+		}
+
+		return v, out
+	}
+
+	return v, w
 }
 
 func AddC(v []float64, c float64) []float64 {
@@ -68,6 +90,8 @@ func F(v []float64, f func(a float64) float64) []float64 {
 }
 
 func F2(v, w []float64, f func(a, b float64) float64) []float64 {
+	v, w = Broadcast(v, w)
+
 	out := NewLike(v)
 	for i := range v {
 		out[i] = f(v[i], w[i])

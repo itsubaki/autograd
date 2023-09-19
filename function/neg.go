@@ -6,7 +6,7 @@ import (
 )
 
 func Neg(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &NegT{}}).Apply(x...)[0]
+	return (&Function{Forwarder: &NegT{}}).ApplyS(x...)
 }
 
 type NegT struct {

@@ -6,7 +6,7 @@ import (
 )
 
 func Sub(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &SubT{}}).Apply(x...)[0]
+	return (&Function{Forwarder: &SubT{}}).ApplyS(x...)
 }
 
 type SubT struct{}
@@ -21,6 +21,6 @@ func (f *SubT) Forward(x ...*variable.Variable) []*variable.Variable {
 func (f *SubT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
 		gy[0],
-		Mul(variable.ConstLike(-1.0, gy[0]), gy[0]), // -1.0 * gy
+		Mul(variable.Const(-1.0), gy[0]), // -1.0 * gy
 	}
 }
