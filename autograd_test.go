@@ -164,7 +164,7 @@ func Example_retain() {
 	x1.Cleargrad()
 	t = F.Add(x0, x1)
 	y = F.Add(x0, t)
-	y.Backward()
+	y.Backward(false)
 
 	fmt.Println(y.Grad, t.Grad)
 	fmt.Println(x0.Grad, x1.Grad)
