@@ -6,7 +6,7 @@ import (
 )
 
 func Add(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &AddT{}}).ApplyS(x...)
+	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(x...)
 }
 
 type AddT struct{}

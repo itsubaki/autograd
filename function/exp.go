@@ -6,7 +6,7 @@ import (
 )
 
 func Exp(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &ExpT{}}).ApplyS(x...)
+	return (&Function{Forwarder: &ExpT{}}).ApplyAndFirst(x...)
 }
 
 type ExpT struct {

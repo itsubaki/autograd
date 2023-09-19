@@ -29,10 +29,12 @@ func (f *Function) Generation() int {
 	return f.gen
 }
 
-func (f *Function) ApplyS(x ...*variable.Variable) *variable.Variable {
+// ApplyAndFirst applies the function and returns the first output variable.
+func (f *Function) ApplyAndFirst(x ...*variable.Variable) *variable.Variable {
 	return f.Apply(x...)[0]
 }
 
+// Apply applies the function
 func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
 	f.gen = maxgen(x...)
 

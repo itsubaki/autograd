@@ -6,7 +6,7 @@ import (
 )
 
 func Cos(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &CosT{}}).ApplyS(x...)
+	return (&Function{Forwarder: &CosT{}}).ApplyAndFirst(x...)
 }
 
 type CosT struct {

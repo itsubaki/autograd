@@ -6,7 +6,7 @@ import (
 )
 
 func Pow(c float64) func(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &PowT{C: c}}).ApplyS
+	return (&Function{Forwarder: &PowT{C: c}}).ApplyAndFirst
 }
 
 type PowT struct {
