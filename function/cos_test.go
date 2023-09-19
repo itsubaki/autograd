@@ -37,3 +37,26 @@ func ExampleCosT() {
 	// [variable[0.7071067811865476]]
 	// [variable[-0.7071067811865475]]
 }
+
+func ExampleCos_higher() {
+	x := variable.New(1.0)
+	y := F.Cos(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	for i := 0; i < 3; i++ {
+		gx := x.Grad
+		x.Cleargrad()
+		gx.Backward()
+		fmt.Println(x.Grad)
+	}
+
+	// Output:
+	// variable[0.5403023058681398]
+	// variable[-0.8414709848078965]
+	// variable[-0.5403023058681398]
+	// variable[0.8414709848078965]
+	// variable[0.5403023058681398]
+}
