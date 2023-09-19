@@ -13,6 +13,8 @@ var (
 	_ Func = F.Cos
 	_ Func = F.Exp
 	_ Func = F.Mul
+	_ Func = F.Neg
+	_ Func = F.Pow(2.0)
 	_ Func = F.Sin
 	_ Func = F.Square
 	_ Func = F.Sub

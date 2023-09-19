@@ -44,6 +44,9 @@ func ExampleSin_higher() {
 	y := F.Sin(x)
 	y.Backward()
 
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
 	for i := 0; i < 3; i++ {
 		gx := x.Grad
 		x.Cleargrad()
@@ -52,6 +55,8 @@ func ExampleSin_higher() {
 	}
 
 	// Output:
+	// variable[0.8414709848078965]
+	// variable[0.5403023058681398]
 	// variable[-0.8414709848078965]
 	// variable[-0.5403023058681398]
 	// variable[0.8414709848078965]
