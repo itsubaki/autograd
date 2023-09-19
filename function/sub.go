@@ -6,7 +6,7 @@ import (
 )
 
 func Sub(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &SubT{}}).ApplyS(x...)
+	return (&Function{Forwarder: &SubT{}}).ApplyAndFirst(x...)
 }
 
 type SubT struct{}

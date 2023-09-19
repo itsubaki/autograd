@@ -6,7 +6,7 @@ import (
 )
 
 func Sin(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &SinT{}}).ApplyS(x...)
+	return (&Function{Forwarder: &SinT{}}).ApplyAndFirst(x...)
 }
 
 type SinT struct {

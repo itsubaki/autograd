@@ -5,7 +5,7 @@ import (
 )
 
 func Square(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &SquareT{PowT{C: 2.0}}}).ApplyS(x...)
+	return (&Function{Forwarder: &SquareT{PowT{C: 2.0}}}).ApplyAndFirst(x...)
 }
 
 type SquareT struct {
