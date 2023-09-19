@@ -28,12 +28,12 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: v}
 }
 
-func ConstLike(c float64, v *Variable) *Variable {
-	return &Variable{Data: vector.ConstLike(c, v.Data)}
+func Const(c float64) *Variable {
+	return &Variable{Data: vector.Const(c)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return ConstLike(1.0, v)
+	return New(vector.OneLike(v.Data)...)
 }
 
 func (v *Variable) Cleargrad() {

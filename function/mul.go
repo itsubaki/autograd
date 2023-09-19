@@ -6,7 +6,7 @@ import (
 )
 
 func Mul(x ...*variable.Variable) *variable.Variable {
-	return (&Function{Forwarder: &MulT{}}).Apply(x...)[0]
+	return (&Function{Forwarder: &MulT{}}).ApplyS(x...)
 }
 
 type MulT struct {
