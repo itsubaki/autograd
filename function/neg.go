@@ -9,14 +9,10 @@ func Neg(x ...*variable.Variable) *variable.Variable {
 	return (&Function{Forwarder: &NegT{}}).ApplyAndFirst(x...)
 }
 
-type NegT struct {
-	x *variable.Variable
-}
+type NegT struct{}
 
 func (f *NegT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x = x[0]
-
-	y := vector.MulC(f.x.Data, -1.0)
+	y := vector.MulC(x[0].Data, -1.0)
 	return []*variable.Variable{
 		variable.New(y...),
 	}
