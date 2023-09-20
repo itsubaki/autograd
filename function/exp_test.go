@@ -40,7 +40,7 @@ func ExampleExp_higher() {
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
 		gx.Backward()
@@ -48,6 +48,13 @@ func ExampleExp_higher() {
 	}
 
 	// Output:
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
+	// variable[7.38905609893065]
 	// variable[7.38905609893065]
 	// variable[7.38905609893065]
 	// variable[7.38905609893065]

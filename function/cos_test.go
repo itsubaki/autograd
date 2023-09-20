@@ -46,7 +46,7 @@ func ExampleCos_higher() {
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
 		gx.Backward()
@@ -59,4 +59,11 @@ func ExampleCos_higher() {
 	// variable[-0.5403023058681398]
 	// variable[0.8414709848078965]
 	// variable[0.5403023058681398]
+	// variable[-0.8414709848078965]
+	// variable[-0.5403023058681398]
+	// variable[0.8414709848078965]
+	// variable[0.5403023058681398]
+	// variable[-0.8414709848078965]
+	// variable[-0.5403023058681398]
+	// variable[0.8414709848078965]
 }
