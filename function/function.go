@@ -39,15 +39,19 @@ func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
 	y := f.Forward(x...)
 
 	f.gen = maxgen(x...)
-	for i := range y {
-		y[i].SetCreator(f)
-	}
+	f.setCreator(y)
 	f.in, f.out = x, y
 	return f.out
 }
 
 func (f Function) String() string {
 	return fmt.Sprintf("%T%v", f.Forwarder, f.in)
+}
+
+func (f *Function) setCreator(y []*variable.Variable) {
+	for i := range y {
+		y[i].SetCreator(f)
+	}
 }
 
 func maxgen(x ...*variable.Variable) int {
