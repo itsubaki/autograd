@@ -5,6 +5,10 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+func AddC(c float64, x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(variable.Const(c), x[0])
+}
+
 func Add(x ...*variable.Variable) *variable.Variable {
 	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(x...)
 }
