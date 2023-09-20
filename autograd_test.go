@@ -179,13 +179,10 @@ func Example_retain() {
 
 func Example_rosenbrock() {
 	// p205
-	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
-		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
-		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0]))) // (x1 - x0^2)^2
-		y1 := F.MulC(100, y0)                           // 100 * (x1 - x0^2)^2
-		y2 := F.Sub(x[0], variable.OneLike(y0))         // x0 - 1
-		y3 := F.Pow(2.0)(y2)                            // (x0 - 1)^2
-		return F.Add(y1, y3)                            // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+	rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
+		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0)))) // 100 * (x1 - x0^2)^2
+		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))                       // (x0 - 1)^2
+		return F.Add(y0, y1)                                     // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	}
 
 	x0 := variable.New(0.0)
@@ -203,13 +200,10 @@ func Example_rosenbrock() {
 
 func Example_gradientDescent() {
 	// p206
-	rosenbrock := func(x ...*variable.Variable) *variable.Variable {
-		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
-		y0 := F.Pow(2.0)(F.Sub(x[1], F.Pow(2.0)(x[0]))) // (x1 - x0^2)^2
-		y1 := F.MulC(100, y0)                           // 100 * (x1 - x0^2)^2
-		y2 := F.Sub(x[0], variable.OneLike(y0))         // x0 - 1
-		y3 := F.Pow(2.0)(y2)                            // (x0 - 1)^2
-		return F.Add(y1, y3)                            // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+	rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
+		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0)))) // 100 * (x1 - x0^2)^2
+		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))                       // (x0 - 1)^2
+		return F.Add(y0, y1)                                     // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	}
 
 	gd := func(lr float64) func(x, grad float64) float64 {
@@ -254,17 +248,17 @@ func Example_gradientDescent() {
 
 func Example_newton() {
 	// p214
-	f := func(x ...*variable.Variable) *variable.Variable {
+	f := func(x *variable.Variable) *variable.Variable {
 		// y = x^4 - 2x^2
-		y0 := F.Pow(4.0)(x[0]) // x^4
-		y1 := F.Pow(2.0)(x[0]) // x^2
-		y2 := F.MulC(2, y1)    // 2x^2
-		return F.Sub(y0, y2)   // x^4 - 2x^2
+		y0 := F.Pow(4.0)(x)  // x^4
+		y1 := F.Pow(2.0)(x)  // x^2
+		y2 := F.MulC(2, y1)  // 2x^2
+		return F.Sub(y0, y2) // x^4 - 2x^2
 	}
 
-	gx2 := func(x ...*variable.Variable) *variable.Variable {
+	gx2 := func(x *variable.Variable) *variable.Variable {
 		// y = 12x^2 + 4
-		return F.AddC(4.0, F.MulC(12, F.Pow(2.0)(x[0])))
+		return F.AddC(4.0, F.MulC(12, F.Pow(2.0)(x)))
 	}
 
 	x := variable.New(2.0)
