@@ -60,6 +60,10 @@ func Cos(v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Cos(a) })
 }
 
+func Tanh(v []float64) []float64 {
+	return F(v, func(a float64) float64 { return math.Tanh(a) })
+}
+
 func Pow(v []float64, c float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Pow(a, c) })
 }

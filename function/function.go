@@ -36,13 +36,12 @@ func (f *Function) ApplyAndFirst(x ...*variable.Variable) *variable.Variable {
 
 // Apply applies the function
 func (f *Function) Apply(x ...*variable.Variable) []*variable.Variable {
-	f.gen = maxgen(x...)
-
 	y := f.Forward(x...)
+
+	f.gen = maxgen(x...)
 	for i := range y {
 		y[i].SetCreator(f)
 	}
-
 	f.in, f.out = x, y
 	return f.out
 }
