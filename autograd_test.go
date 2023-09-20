@@ -271,7 +271,7 @@ func Example_newton() {
 		y := f(x)
 		y.Backward()
 
-		x.Data = vector.Sub(x.Data, vector.Div(x.Grad.Data, gx2(variable.New(x.Data...)).Data))
+		x.Data = vector.Sub(x.Data, vector.Div(x.Grad.Data, gx2(x).Data))
 	}
 
 	// Output:
