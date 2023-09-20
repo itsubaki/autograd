@@ -25,6 +25,6 @@ func (f *PowT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *PowT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(variable.Const(f.C), Mul(Pow(f.C-1)(f.x), gy[0])), // c * x^(c-1) * gy
+		MulC(f.C, Mul(Pow(f.C-1)(f.x), gy[0])), // c * x^(c-1) * gy
 	}
 }

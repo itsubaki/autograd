@@ -5,6 +5,10 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+func MulC(c float64, x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &MulT{}}).ApplyAndFirst(variable.Const(c), x[0])
+}
+
 func Mul(x ...*variable.Variable) *variable.Variable {
 	return (&Function{Forwarder: &MulT{}}).ApplyAndFirst(x...)
 }
