@@ -266,8 +266,8 @@ func Example_newton() {
 	}
 
 	gx2 := func(x *variable.Variable) *variable.Variable {
-		// y = 12x^2 + 4
-		return F.AddC(4.0, F.MulC(12, F.Pow(2.0)(x)))
+		// y = 12x^2 - 4
+		return F.AddC(-4.0, F.MulC(12, F.Pow(2.0)(x)))
 	}
 
 	x := variable.New(2.0)
@@ -285,15 +285,15 @@ func Example_newton() {
 
 	// Output:
 	// variable[2]
-	// variable[1.5384615384615383]
-	// variable[1.2788672248131707]
-	// variable[1.1412694400970145]
-	// variable[1.070921967012372]
-	// variable[1.0355011504284684]
-	// variable[1.017755880582409]
-	// variable[1.0088786217209345]
-	// variable[1.0044393971932233]
-	// variable[1.0022197094606984]
+	// variable[1.4545454545454546]
+	// variable[1.1510467893775467]
+	// variable[1.0253259289766978]
+	// variable[1.0009084519430513]
+	// variable[1.0000012353089454]
+	// variable[1.000000000002289]
+	// variable[1]
+	// variable[1]
+	// variable[1]
 }
 
 func Example_higher() {
