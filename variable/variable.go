@@ -45,7 +45,7 @@ func (v *Variable) SetCreator(f Function) {
 	v.Generation = f.Generation() + 1
 }
 
-func (v *Variable) Backward(opts ...Opts) {
+func (v *Variable) Backward() {
 	if v.Grad == nil {
 		v.Grad = OneLike(v)
 	}
@@ -77,9 +77,6 @@ func (v *Variable) Backward(opts ...Opts) {
 				fs = addfunc(fs, x[i].Creator, seen)
 			}
 		}
-
-		// clear unnecessary grad
-		cleargrad(f.Output(), opts...)
 	}
 }
 
@@ -100,16 +97,6 @@ func addfunc(fs []Function, f Function, seen map[Function]bool) []Function {
 	fs = append(fs, f)
 	sort.Slice(fs, func(i, j int) bool { return fs[i].Generation() < fs[j].Generation() })
 	return fs
-}
-
-func cleargrad(output []*Variable, opts ...Opts) {
-	if len(opts) > 0 && opts[0].Retain {
-		return
-	}
-
-	for i := range output {
-		output[i].Cleargrad()
-	}
 }
 
 func gys(y []*Variable) []*Variable {

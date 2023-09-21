@@ -148,35 +148,6 @@ func Example_generation() {
 	// variable[64]
 }
 
-func Example_retain() {
-	// p122
-	x0 := variable.New(1.0)
-	x1 := variable.New(1.0)
-	t := F.Add(x0, x1)
-	y := F.Add(x0, t)
-	y.Backward(variable.Opts{Retain: true})
-
-	fmt.Println(y.Grad, t.Grad)
-	fmt.Println(x0.Grad, x1.Grad)
-	fmt.Println()
-
-	x0.Cleargrad()
-	x1.Cleargrad()
-	t = F.Add(x0, x1)
-	y = F.Add(x0, t)
-	y.Backward(variable.Opts{Retain: false})
-
-	fmt.Println(y.Grad, t.Grad)
-	fmt.Println(x0.Grad, x1.Grad)
-
-	// Output:
-	// variable[1] variable[1]
-	// variable[2] variable[1]
-	//
-	// <nil> <nil>
-	// variable[2] variable[1]
-}
-
 func Example_shpere() {
 	// p167
 	shpere := func(x, y *variable.Variable) *variable.Variable {
@@ -323,4 +294,22 @@ func Example_newton() {
 	// variable[1.0088786217209345]
 	// variable[1.0044393971932233]
 	// variable[1.0022197094606984]
+}
+
+func Example_higher() {
+	// p258
+
+	x := variable.New(2.0)
+	y := F.Pow(2.0)(x)
+	y.Backward()
+	gx := x.Grad
+	x.Cleargrad()
+	y.Cleargrad()
+
+	z := F.Add(F.Pow(3.0)(gx), y)
+	z.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[100]
 }
