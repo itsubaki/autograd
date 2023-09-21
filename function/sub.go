@@ -27,6 +27,6 @@ func (f *SubT) Forward(x ...*variable.Variable) []*variable.Variable {
 func (f *SubT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
 		gy[0],
-		MulC(-1.0, gy[0]), // -1.0 * gy
+		Neg(gy[0]), // -1.0 * gy
 	}
 }

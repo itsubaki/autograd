@@ -7,10 +7,10 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleSub() {
-	a := variable.New(2, 3)
-	b := variable.New(3, 4)
-	y := F.Sub(a, b)
+func ExampleDiv() {
+	a := variable.New(10)
+	b := variable.New(2)
+	y := F.Div(a, b)
 	y.Backward()
 
 	fmt.Println(y)
@@ -18,21 +18,21 @@ func ExampleSub() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable[-1 -1]
-	// variable[1 1]
-	// variable[-1 -1]
+	// variable[5]
+	// variable[0.5]
+	// variable[-2.5]
 }
 
-func ExampleSub_higher() {
-	a := variable.New(3.0)
-	b := variable.New(2.0)
-	y := F.Sub(a, b)
+func ExampleDiv_higher() {
+	a := variable.New(10)
+	b := variable.New(2)
+	y := F.Div(a, b)
 	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(a.Grad, b.Grad)
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 2; i++ {
 		ga, gb := a.Grad, b.Grad
 		a.Cleargrad()
 		b.Cleargrad()
@@ -42,7 +42,8 @@ func ExampleSub_higher() {
 	}
 
 	// Output:
-	// variable[1]
-	// variable[1] variable[-1]
-	// <nil> <nil>
+	// variable[5]
+	// variable[0.5] variable[-2.5]
+	// variable[-0.25] variable[2.25]
+	// <nil> variable[0.25]
 }

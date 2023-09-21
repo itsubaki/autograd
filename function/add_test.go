@@ -8,13 +8,13 @@ import (
 )
 
 func ExampleAdd() {
-	v := variable.New(2, 3)
-	w := variable.New(3, 4)
-	y := F.Add(v, w)
+	a := variable.New(2, 3)
+	b := variable.New(3, 4)
+	y := F.Add(a, b)
 	y.Backward()
 
-	fmt.Println(v.Grad)
-	fmt.Println(w.Grad)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
 
 	// Output:
 	// variable[1 1]
@@ -22,14 +22,14 @@ func ExampleAdd() {
 }
 
 func ExampleAddT() {
-	v := variable.New(2, 3)
-	w := variable.New(3, 4)
+	a := variable.New(2, 3)
+	b := variable.New(3, 4)
 	f := F.AddT{}
 
-	fmt.Println(v)
-	fmt.Println(w)
-	fmt.Println(f.Forward(v, w))
-	fmt.Println(f.Backward(variable.OneLike(v), variable.OneLike(w)))
+	fmt.Println(a)
+	fmt.Println(b)
+	fmt.Println(f.Forward(a, b))
+	fmt.Println(f.Backward(variable.OneLike(a), variable.OneLike(b)))
 
 	// Output:
 	// variable[2 3]
