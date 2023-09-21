@@ -76,10 +76,10 @@ func (v *Variable) Backward(retain ...bool) {
 			if x[i].Creator != nil {
 				fs = addfunc(fs, x[i].Creator, seen)
 			}
-
-			// clear unnecessary grad
-			cleargrad(f.Output(), retain...)
 		}
+
+		// clear unnecessary grad
+		cleargrad(f.Output(), retain...)
 	}
 }
 
