@@ -138,7 +138,7 @@ func Example_generation() {
 	x := variable.New(2.0)
 	a := F.Square(x)
 	y := F.Add(F.Square(a), F.Square(a))
-	y.Backward(true)
+	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
