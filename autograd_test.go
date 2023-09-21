@@ -294,7 +294,6 @@ func Example_newton() {
 
 func Example_higher() {
 	// p258
-
 	x := variable.New(2.0)
 	y := F.Pow(2.0)(x)
 	y.Backward()
