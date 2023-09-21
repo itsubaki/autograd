@@ -27,17 +27,17 @@ func ExampleNeg_higher() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(x.Grad)
+	fmt.Println(x.Grad, y.Grad)
 
 	for i := 0; i < 1; i++ {
 		gx := x.Grad
 		x.Cleargrad()
 		gx.Backward()
-		fmt.Println(x.Grad)
+		fmt.Println(x.Grad, y.Grad, y.Grad.Grad)
 	}
 
 	// Output:
 	// variable[-2]
-	// variable[-1]
-	// <nil>
+	// variable[-1] variable[1]
+	// <nil> variable[1] variable[-1]
 }
