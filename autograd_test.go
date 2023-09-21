@@ -154,7 +154,7 @@ func Example_retain() {
 	x1 := variable.New(1.0)
 	t := F.Add(x0, x1)
 	y := F.Add(x0, t)
-	y.Backward(true)
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(y.Grad, t.Grad)
 	fmt.Println(x0.Grad, x1.Grad)
@@ -164,7 +164,7 @@ func Example_retain() {
 	x1.Cleargrad()
 	t = F.Add(x0, x1)
 	y = F.Add(x0, t)
-	y.Backward(false)
+	y.Backward(variable.Opts{Retain: false})
 
 	fmt.Println(y.Grad, t.Grad)
 	fmt.Println(x0.Grad, x1.Grad)
@@ -175,6 +175,44 @@ func Example_retain() {
 	//
 	// <nil> <nil>
 	// variable[2] variable[1]
+}
+
+func Example_shpere() {
+	// p167
+	shpere := func(x, y *variable.Variable) *variable.Variable {
+		z0 := F.Pow(2.0)(x)
+		z1 := F.Pow(2.0)(y)
+		return F.Add(z0, z1)
+	}
+
+	x := variable.New(1.0)
+	y := variable.New(1.0)
+	z := shpere(x, y)
+	z.Backward()
+
+	fmt.Println(x.Grad, y.Grad)
+
+	// Output:
+	// variable[2] variable[2]
+}
+
+func Example_matyas() {
+	// p167
+	matyas := func(x, y *variable.Variable) *variable.Variable {
+		z0 := F.MulC(0.26, F.Add(F.Pow(2.0)(x), F.Pow(2.0)(y)))
+		z1 := F.MulC(0.48, F.Mul(x, y))
+		return F.Sub(z0, z1)
+	}
+
+	x := variable.New(1.0)
+	y := variable.New(1.0)
+	z := matyas(x, y)
+	z.Backward()
+
+	fmt.Println(x.Grad, y.Grad)
+
+	// Output:
+	// variable[0.040000000000000036] variable[0.040000000000000036]
 }
 
 func Example_rosenbrock() {

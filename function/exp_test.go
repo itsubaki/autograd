@@ -35,7 +35,7 @@ func ExampleExpT() {
 func ExampleExp_higher() {
 	x := variable.New(2.0)
 	y := F.Exp(x)
-	y.Backward()
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
@@ -43,7 +43,7 @@ func ExampleExp_higher() {
 	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{Retain: true})
 		fmt.Println(x.Grad)
 	}
 

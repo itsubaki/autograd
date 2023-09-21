@@ -11,14 +11,14 @@ func Example_tanh() {
 	// p249
 	x := variable.New(1.0)
 	y := F.Tanh(x)
-	y.Backward()
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(x.Grad)
 
 	for i := 0; i < 3; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{Retain: true})
 		fmt.Println(x.Grad)
 	}
 
