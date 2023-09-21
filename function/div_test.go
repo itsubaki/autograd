@@ -27,7 +27,7 @@ func ExampleDiv_higher() {
 	a := variable.New(10)
 	b := variable.New(2)
 	y := F.Div(a, b)
-	y.Backward()
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(y)
 	fmt.Println(a.Grad, b.Grad)
@@ -36,8 +36,8 @@ func ExampleDiv_higher() {
 		ga, gb := a.Grad, b.Grad
 		a.Cleargrad()
 		b.Cleargrad()
-		ga.Backward()
-		gb.Backward()
+		ga.Backward(variable.Opts{Retain: true})
+		gb.Backward(variable.Opts{Retain: true})
 		fmt.Println(a.Grad, b.Grad)
 	}
 
@@ -45,5 +45,5 @@ func ExampleDiv_higher() {
 	// variable[5]
 	// variable[0.5] variable[-2.5]
 	// variable[-0.25] variable[2.25]
-	// <nil> variable[0.25]
+	// <nil> variable[2.75]
 }

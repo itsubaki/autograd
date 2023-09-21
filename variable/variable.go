@@ -45,7 +45,7 @@ func (v *Variable) SetCreator(f Function) {
 	v.Generation = f.Generation() + 1
 }
 
-func (v *Variable) Backward(retain ...bool) {
+func (v *Variable) Backward(opts ...Opts) {
 	if v.Grad == nil {
 		v.Grad = OneLike(v)
 	}
@@ -79,7 +79,7 @@ func (v *Variable) Backward(retain ...bool) {
 		}
 
 		// clear unnecessary grad
-		cleargrad(f.Output(), retain...)
+		cleargrad(f.Output(), opts...)
 	}
 }
 
@@ -102,8 +102,8 @@ func addfunc(fs []Function, f Function, seen map[Function]bool) []Function {
 	return fs
 }
 
-func cleargrad(output []*Variable, retain ...bool) {
-	if len(retain) > 0 && retain[0] {
+func cleargrad(output []*Variable, opts ...Opts) {
+	if len(opts) > 0 && opts[0].Retain {
 		return
 	}
 

@@ -42,7 +42,7 @@ func ExampleAdd_higher() {
 	a := variable.New(2.0)
 	b := variable.New(3.0)
 	y := F.Add(a, b)
-	y.Backward()
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(y)
 	fmt.Println(a.Grad, b.Grad)
@@ -51,8 +51,8 @@ func ExampleAdd_higher() {
 		ga, gb := a.Grad, b.Grad
 		a.Cleargrad()
 		b.Cleargrad()
-		ga.Backward()
-		gb.Backward()
+		ga.Backward(variable.Opts{Retain: true})
+		gb.Backward(variable.Opts{Retain: true})
 		fmt.Println(a.Grad, b.Grad)
 	}
 

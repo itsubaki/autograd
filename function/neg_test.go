@@ -24,7 +24,7 @@ func ExampleNeg() {
 func ExampleNeg_higher() {
 	x := variable.New(2.0)
 	y := F.Neg(x)
-	y.Backward()
+	y.Backward(variable.Opts{Retain: true})
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
@@ -32,7 +32,7 @@ func ExampleNeg_higher() {
 	for i := 0; i < 1; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{Retain: true})
 		fmt.Println(x.Grad)
 	}
 
