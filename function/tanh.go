@@ -24,6 +24,6 @@ func (f *TanhT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *TanhT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(Sub(variable.Const(1), Pow(2.0)(Tanh(f.x))), gy[0]), // (1-y^2) * gy
+		Mul(SubC(1.0, Pow(2.0)(Tanh(f.x))), gy[0]), // (1-y^2) * gy
 	}
 }
