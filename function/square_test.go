@@ -25,7 +25,7 @@ func ExampleSquare() {
 func ExampleSquare_higher() {
 	x := variable.New(1, 2, 3, 4, 5)
 	y := F.Square(x)
-	y.Backward(variable.Opts{Retain: true})
+	y.Backward()
 
 	fmt.Println(x)
 	fmt.Println(y)
@@ -34,7 +34,7 @@ func ExampleSquare_higher() {
 	for i := 0; i < 2; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward(variable.Opts{Retain: true})
+		gx.Backward()
 		fmt.Println(x.Grad)
 	}
 

@@ -42,7 +42,7 @@ func ExampleSin_higher() {
 	// p243
 	x := variable.New(1.0)
 	y := F.Sin(x)
-	y.Backward(variable.Opts{Retain: true})
+	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
@@ -50,7 +50,7 @@ func ExampleSin_higher() {
 	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward(variable.Opts{Retain: true})
+		gx.Backward()
 		fmt.Println(x.Grad)
 	}
 
