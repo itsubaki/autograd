@@ -93,13 +93,11 @@ func Example_add() {
 	z.Backward()
 
 	fmt.Println(z)
-	fmt.Println(x.Grad)
-	fmt.Println(y.Grad)
+	fmt.Println(x.Grad, y.Grad)
 
 	// Output:
 	// variable[13]
-	// variable[4]
-	// variable[6]
+	// variable[4] variable[6]
 }
 
 func Example_reuse() {
@@ -199,12 +197,10 @@ func Example_rosenbrock() {
 	y := rosenbrock(x0, x1)
 	y.Backward()
 
-	fmt.Println(x0.Grad)
-	fmt.Println(x1.Grad)
+	fmt.Println(x0.Grad, x1.Grad)
 
 	// Output:
-	// variable[-2]
-	// variable[400]
+	// variable[-2] variable[400]
 }
 
 func Example_gradientDescent() {
