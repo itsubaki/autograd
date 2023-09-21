@@ -303,10 +303,10 @@ func Example_higher() {
 	y := F.Pow(2.0)(x)
 	y.Backward()
 	gx := x.Grad
-	x.Cleargrad()
-	y.Cleargrad()
 
 	z := F.Add(F.Pow(3.0)(gx), y)
+	x.Cleargrad()
+	y.Cleargrad()
 	z.Backward()
 	fmt.Println(x.Grad)
 

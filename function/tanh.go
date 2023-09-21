@@ -10,20 +10,16 @@ func Tanh(x ...*variable.Variable) *variable.Variable {
 }
 
 type TanhT struct {
-	x *variable.Variable
+	y *variable.Variable
 }
 
 func (f *TanhT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x = x[0]
-
-	y := vector.Tanh(f.x.Data)
-	return []*variable.Variable{
-		variable.New(y...),
-	}
+	f.y = variable.New(vector.Tanh(x[0].Data)...)
+	return []*variable.Variable{f.y}
 }
 
 func (f *TanhT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
-		Mul(AddC(1.0, Neg(Pow(2.0)(Tanh(f.x)))), gy[0]), // (1-y^2) * gy
+		Mul(AddC(1.0, Neg(Pow(2.0)(f.y))), gy[0]), // (1-y^2) * gy
 	}
 }
