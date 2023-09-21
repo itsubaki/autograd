@@ -5,6 +5,12 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+// SubC returns a variable that c - x[0].
+func SubC(c float64, x ...*variable.Variable) *variable.Variable {
+	return (&Function{Forwarder: &SubT{}}).ApplyAndFirst(variable.Const(c), x[0])
+}
+
+// Sub returns a variable that x[0] - x[1].
 func Sub(x ...*variable.Variable) *variable.Variable {
 	return (&Function{Forwarder: &SubT{}}).ApplyAndFirst(x...)
 }
