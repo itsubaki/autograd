@@ -113,6 +113,7 @@ func Example_addFunc() {
 	seen := make(map[variable.Function]bool)
 	fs := []variable.Function{c1, c2, c4, c3} // 1, 2, 4, 3
 	fs = variable.AddFunc(fs, c0, seen)       // add 0
+	fs = variable.AddFunc(fs, c0, seen)       // already added
 
 	for _, f := range fs {
 		fmt.Print(f.Generation())
