@@ -23,6 +23,19 @@ func ExampleSub() {
 	// variable[-1 -1]
 }
 
+func ExampleSubC() {
+	x := variable.New(1, 2, 3, 4, 5)
+	y := F.SubC(10.0, x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[9 8 7 6 5]
+	// variable[-1 -1 -1 -1 -1]
+}
+
 func ExampleSub_double() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
