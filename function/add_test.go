@@ -38,7 +38,7 @@ func ExampleAddT() {
 	// [variable[1 1] variable[1 1]]
 }
 
-func ExampleAdd_higher() {
+func ExampleAdd_double() {
 	a := variable.New(2.0)
 	b := variable.New(3.0)
 	y := F.Add(a, b)

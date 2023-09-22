@@ -23,7 +23,7 @@ func ExampleSub() {
 	// variable[-1 -1]
 }
 
-func ExampleSub_higher() {
+func ExampleSub_double() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
 	y := F.Sub(a, b)

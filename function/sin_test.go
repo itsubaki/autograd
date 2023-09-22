@@ -38,7 +38,7 @@ func ExampleSinT() {
 	// [variable[0.7071067811865476]]
 }
 
-func ExampleSin_higher() {
+func ExampleSin_double() {
 	// p243
 	x := variable.New(1.0)
 	y := F.Sin(x)

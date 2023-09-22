@@ -22,7 +22,7 @@ func ExampleSquare() {
 	// variable[2 4 6 8 10]
 }
 
-func ExampleSquare_higher() {
+func ExampleSquare_double() {
 	x := variable.New(1, 2, 3, 4, 5)
 	y := F.Square(x)
 	y.Backward()

@@ -38,7 +38,7 @@ func ExampleCosT() {
 	// [variable[-0.7071067811865475]]
 }
 
-func ExampleCos_higher() {
+func ExampleCos_double() {
 	x := variable.New(1.0)
 	y := F.Cos(x)
 	y.Backward()
