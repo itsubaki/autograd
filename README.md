@@ -34,7 +34,7 @@ fmt.Println(x.Grad, y.Grad)
 
 ```go
 rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
-    // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+	// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
 	y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
 	return F.Add(y0, y1)
