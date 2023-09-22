@@ -12,28 +12,29 @@
 ## Composite functions
 
 ```go
-// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
-rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
-	y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
-	y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
-	return F.Add(y0, y1)
+matyas := func(x, y *variable.Variable) *variable.Variable {
+	// 0.26(x^2 + y^2) - 0.48xy
+	z0 := F.MulC(0.26, F.Add(F.Pow(2.0)(x), F.Pow(2.0)(y)))
+	z1 := F.MulC(0.48, F.Mul(x, y))
+	return F.Sub(z0, z1)
 }
 
-x0 := variable.New(0.0)
-x1 := variable.New(2.0)
-y := rosenbrock(x0, x1)
-y.Backward()
+x := variable.New(1.0)
+y := variable.New(1.0)
+z := matyas(x, y)
+z.Backward()
 
-fmt.Println(x0.Grad, x1.Grad)
+fmt.Println(x.Grad, y.Grad)
 
 // Output:
-// variable[-2] variable[400]
+// variable[0.040000000000000036] variable[0.040000000000000036]
 ```
 
 ## Gradient descent
 
 ```go
 rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
+    // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
 	y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
 	y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
 	return F.Add(y0, y1)
