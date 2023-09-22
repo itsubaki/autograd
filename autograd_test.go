@@ -149,9 +149,8 @@ func Example_generation() {
 func Example_shpere() {
 	// p167
 	shpere := func(x, y *variable.Variable) *variable.Variable {
-		z0 := F.Pow(2.0)(x)
-		z1 := F.Pow(2.0)(y)
-		return F.Add(z0, z1)
+		// x^2 + y^2
+		return F.Add(F.Pow(2.0)(x), F.Pow(2.0)(y))
 	}
 
 	x := variable.New(1.0)
@@ -168,6 +167,7 @@ func Example_shpere() {
 func Example_matyas() {
 	// p167
 	matyas := func(x, y *variable.Variable) *variable.Variable {
+		// 0.26(x^2 + y^2) - 0.48xy
 		z0 := F.MulC(0.26, F.Add(F.Pow(2.0)(x), F.Pow(2.0)(y)))
 		z1 := F.MulC(0.48, F.Mul(x, y))
 		return F.Sub(z0, z1)
@@ -187,9 +187,10 @@ func Example_matyas() {
 func Example_rosenbrock() {
 	// p205
 	rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
-		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0)))) // 100 * (x1 - x0^2)^2
-		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))                       // (x0 - 1)^2
-		return F.Add(y0, y1)                                     // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
+		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
+		return F.Add(y0, y1)
 	}
 
 	x0 := variable.New(0.0)
@@ -206,9 +207,10 @@ func Example_rosenbrock() {
 func Example_gradientDescent() {
 	// p206
 	rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
-		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0)))) // 100 * (x1 - x0^2)^2
-		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))                       // (x0 - 1)^2
-		return F.Add(y0, y1)                                     // 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+		// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+		y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
+		y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
+		return F.Add(y0, y1)
 	}
 
 	gd := func(lr float64) func(x, grad float64) float64 {
