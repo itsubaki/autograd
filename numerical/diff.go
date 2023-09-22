@@ -11,6 +11,7 @@ type Func func(x ...*variable.Variable) *variable.Variable
 var (
 	_ Func = F.Add
 	_ Func = F.Cos
+	_ Func = F.Div
 	_ Func = F.Exp
 	_ Func = F.Mul
 	_ Func = F.Neg
@@ -18,6 +19,7 @@ var (
 	_ Func = F.Sin
 	_ Func = F.Square
 	_ Func = F.Sub
+	_ Func = F.Tanh
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
