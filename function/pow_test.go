@@ -34,7 +34,7 @@ func ExamplePowT() {
 	// [variable[3 12 27 48 75]]
 }
 
-func ExamplePow_higher() {
+func ExamplePow_double() {
 	x := variable.New(2.0)
 	y := F.Pow(3.0)(x)
 	y.Backward()

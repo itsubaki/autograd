@@ -42,7 +42,7 @@ func ExampleMulT() {
 	// [variable[2] variable[3]]
 }
 
-func ExampleMul_higher() {
+func ExampleMul_double() {
 	a := variable.New(2.0)
 	b := variable.New(3.0)
 	y := F.Mul(a, b)

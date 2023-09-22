@@ -292,7 +292,7 @@ func Example_newton() {
 	// variable[1]
 }
 
-func Example_higher() {
+func Example_double() {
 	// p258
 	x := variable.New(2.0)
 	y := F.Pow(2.0)(x)

@@ -32,7 +32,7 @@ func ExampleExpT() {
 	// [variable[2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]]
 }
 
-func ExampleExp_higher() {
+func ExampleExp_double() {
 	x := variable.New(2.0)
 	y := F.Exp(x)
 	y.Backward()

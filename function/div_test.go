@@ -23,7 +23,7 @@ func ExampleDiv() {
 	// variable[-2.5]
 }
 
-func ExampleDiv_higher() {
+func ExampleDiv_double() {
 	a := variable.New(10)
 	b := variable.New(2)
 	y := F.Div(a, b)

@@ -21,7 +21,7 @@ func ExampleNeg() {
 	// variable[-1]
 }
 
-func ExampleNeg_higher() {
+func ExampleNeg_double() {
 	x := variable.New(2.0)
 	y := F.Neg(x)
 	y.Backward()
