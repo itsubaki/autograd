@@ -79,7 +79,7 @@ for i := 0; i < iters+1; i++ {
 // variable[0.9944984367782456] variable[0.9890050527419593]
 ```
 
-## Double Backpropagation
+## Double backpropagation
 
 ```go
 x := variable.New(1.0)
