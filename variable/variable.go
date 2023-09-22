@@ -55,7 +55,7 @@ func (v *Variable) Backward() {
 	}
 
 	seen := make(map[Function]bool)
-	fs := addfunc(make([]Function, 0), v.Creator, seen)
+	fs := addFunc(make([]Function, 0), v.Creator, seen)
 
 	for {
 		if len(fs) == 0 {
@@ -74,7 +74,7 @@ func (v *Variable) Backward() {
 			x[i].Grad = gx(gxs[i], x[i].Grad)
 
 			if x[i].Creator != nil {
-				fs = addfunc(fs, x[i].Creator, seen)
+				fs = addFunc(fs, x[i].Creator, seen)
 			}
 		}
 	}
@@ -88,7 +88,7 @@ func (v Variable) String() string {
 	return fmt.Sprintf("%v%v", v.Name, v.Data)
 }
 
-func addfunc(fs []Function, f Function, seen map[Function]bool) []Function {
+func addFunc(fs []Function, f Function, seen map[Function]bool) []Function {
 	if _, ok := seen[f]; ok {
 		return fs
 	}

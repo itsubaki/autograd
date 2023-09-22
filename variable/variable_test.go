@@ -52,6 +52,15 @@ func ExampleVariable_Backward() {
 	// variable[1]
 }
 
+func Example_gx() {
+	fmt.Println(variable.Gx(variable.New(1), nil))
+	fmt.Println(variable.Gx(variable.New(1), variable.New(2)))
+
+	// Output:
+	// variable[1]
+	// variable[3]
+}
+
 type Creator struct {
 	In, Out []*variable.Variable
 	Gen     int
@@ -92,4 +101,23 @@ func ExampleVariable_SetCreator() {
 	// Output:
 	// 101
 	// variable[2 2 2 2]
+}
+
+func Example_addFunc() {
+	c0 := &Creator{Gen: 0}
+	c1 := &Creator{Gen: 1}
+	c2 := &Creator{Gen: 2}
+	c3 := &Creator{Gen: 3}
+	c4 := &Creator{Gen: 4}
+
+	seen := make(map[variable.Function]bool)
+	fs := []variable.Function{c1, c2, c4, c3} // 1, 2, 4, 3
+	fs = variable.AddFunc(fs, c0, seen)       // add 0
+
+	for _, f := range fs {
+		fmt.Print(f.Generation())
+	}
+
+	// Output:
+	// 01234
 }
