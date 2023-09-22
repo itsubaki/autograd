@@ -4,8 +4,107 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/autograd?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/autograd)
 [![tests](https://github.com/itsubaki/autograd/workflows/tests/badge.svg?branch=main)](https://github.com/itsubaki/autograd/actions)
 
- - Automatic differentiation library for Go
+- Automatic differentiation library for Go
+
+# Example
+
+## Composite functions
+
+```go
+// 100 * (x1 - x0^2)^2 + (x0 - 1)^2
+rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
+	y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
+	y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
+	return F.Add(y0, y1)
+}
+
+x0 := variable.New(0.0)
+x1 := variable.New(2.0)
+y := rosenbrock(x0, x1)
+y.Backward()
+
+fmt.Println(x0.Grad, x1.Grad)
+
+// Output:
+// variable[-2] variable[400]
+```
+
+## Gradient descent
+
+```go
+rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
+	y0 := F.MulC(100, F.Pow(2.0)(F.Sub(x1, F.Pow(2.0)(x0))))
+	y1 := F.Pow(2.0)(F.AddC(-1.0, x0))
+	return F.Add(y0, y1)
+}
+
+gd := func(lr float64) func(x, grad float64) float64 {
+	return func(a, b float64) float64 {
+		return a - lr*b
+	}
+}
+
+x0 := variable.New(0.0)
+x1 := variable.New(2.0)
+
+lr := 0.001
+iters := 10000
+
+for i := 0; i < iters+1; i++ {
+	if i%1000 == 0 {
+		fmt.Println(x0, x1)
+	}
+
+	x0.Cleargrad()
+	x1.Cleargrad()
+	y := rosenbrock(x0, x1)
+	y.Backward()
+
+	x0.Data = vector.F2(x0.Data, x0.Grad.Data, gd(lr)) // x0 = x0 - lr * x0.grad
+	x1.Data = vector.F2(x1.Data, x1.Grad.Data, gd(lr)) // x1 = x1 - lr * x1.grad
+}
+
+// Output:
+// variable[0] variable[2]
+// variable[0.6837118569138317] variable[0.4659526837427042]
+// variable[0.8263177857050957] variable[0.6820311873361097]
+// variable[0.8947837494333546] variable[0.8001896451930564]
+// variable[0.9334871723401226] variable[0.8711213202579401]
+// variable[0.9569899983530249] variable[0.9156532462021957]
+// variable[0.9718168065095137] variable[0.9443132014542008]
+// variable[0.9813809710644894] variable[0.9630332658658076]
+// variable[0.9876355102559093] variable[0.9753740541653942]
+// variable[0.9917613994572028] variable[0.9835575421346807]
+// variable[0.9944984367782456] variable[0.9890050527419593]
+```
+
+## Double Backpropagation
+
+```go
+x := variable.New(1.0)
+y := F.Sin(x)
+y.Backward()
+
+fmt.Println(y)
+fmt.Println(x.Grad)
+
+for i := 0; i < 5; i++ {
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+}
+
+// Output:
+// variable[0.8414709848078965]
+// variable[0.5403023058681398]
+// variable[-0.8414709848078965]
+// variable[-0.5403023058681398]
+// variable[0.8414709848078965]
+// variable[0.5403023058681398]
+// variable[-0.8414709848078965]
+```
 
 # Links
 
- - [oreilly-japan/deep-learning-from-scratch-3](https://github.com/oreilly-japan/deep-learning-from-scratch-3)
+- [oreilly-japan/deep-learning-from-scratch-3](https://github.com/oreilly-japan/deep-learning-from-scratch-3)
