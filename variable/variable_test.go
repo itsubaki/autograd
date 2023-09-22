@@ -53,15 +53,16 @@ func ExampleVariable_Backward() {
 }
 
 type Creator struct {
-	Gen int
+	In, Out []*variable.Variable
+	Gen     int
 }
 
 func (c *Creator) Input() []*variable.Variable {
-	return []*variable.Variable{}
+	return c.In
 }
 
 func (c *Creator) Output() []*variable.Variable {
-	return []*variable.Variable{}
+	return c.Out
 }
 
 func (c *Creator) Generation() int {
@@ -73,12 +74,22 @@ func (c *Creator) Backward(gy ...*variable.Variable) []*variable.Variable {
 }
 
 func ExampleVariable_SetCreator() {
-	c := &Creator{Gen: 100}
 	v := variable.New(1, 2, 3, 4)
+	w := variable.New(5, 6, 7, 8)
+
+	c := &Creator{
+		Gen: 100,
+		In:  []*variable.Variable{v},
+		Out: []*variable.Variable{w},
+	}
 	v.SetCreator(c)
+	w.Backward() // w.Grad = variable[1 1 1 1]
+	v.Backward() // v.Grad = variable[1 1 1 1] + w.Grad
 
 	fmt.Println(v.Generation)
+	fmt.Println(v.Grad)
 
 	// Output:
 	// 101
+	// variable[2 2 2 2]
 }
