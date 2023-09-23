@@ -47,17 +47,17 @@ func ExampleAdd_double() {
 	fmt.Println(y)
 	fmt.Println(a.Grad, b.Grad)
 
-	for i := 0; i < 1; i++ {
-		ga, gb := a.Grad, b.Grad
-		a.Cleargrad()
-		b.Cleargrad()
-		ga.Backward()
-		gb.Backward()
-		fmt.Println(a.Grad, b.Grad)
-	}
+	ga, gb := a.Grad, b.Grad
+	a.Cleargrad()
+	b.Cleargrad()
+	ga.Backward()
+	gb.Backward()
+	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(y.Grad, y.Grad.Grad)
 
 	// Output:
 	// variable[5]
 	// variable[1] variable[1]
 	// <nil> <nil>
+	// variable[1] variable[1]
 }
