@@ -8,19 +8,17 @@ import (
 )
 
 func ExampleSub() {
-	a := variable.New(2, 3)
-	b := variable.New(3, 4)
+	a := variable.New(3)
+	b := variable.New(2)
 	y := F.Sub(a, b)
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad)
-	fmt.Println(b.Grad)
+	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[-1 -1]
-	// variable[1 1]
-	// variable[-1 -1]
+	// variable[1]
+	// variable[1] variable[-1]
 }
 
 func ExampleSubC() {

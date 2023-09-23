@@ -13,12 +13,10 @@ func ExampleAdd() {
 	y := F.Add(a, b)
 	y.Backward()
 
-	fmt.Println(a.Grad)
-	fmt.Println(b.Grad)
+	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 1]
-	// variable[1 1]
+	// variable[1 1] variable[1 1]
 }
 
 func ExampleAddC() {

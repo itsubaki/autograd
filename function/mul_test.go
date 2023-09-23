@@ -16,13 +16,11 @@ func ExampleMul() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad)
-	fmt.Println(b.Grad)
+	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
 	// variable[7]
-	// variable[2]
-	// variable[3]
+	// variable[2] variable[3]
 }
 
 func ExampleMulT() {
@@ -64,4 +62,38 @@ func ExampleMul_double() {
 	// variable[3] variable[2]
 	// variable[1] variable[1]
 	// variable[1] variable[5]
+}
+
+func ExampleMul_double_a() {
+	a := variable.New(2.0)
+	b := variable.New(3.0)
+	y := F.Mul(a, b)
+	y.Backward()
+
+	ga := a.Grad
+	b.Cleargrad()
+	ga.Backward()
+	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(y.Grad.Grad)
+
+	// Output:
+	// variable[3] variable[1]
+	// variable[3]
+}
+
+func ExampleMul_double_b() {
+	a := variable.New(2.0)
+	b := variable.New(3.0)
+	y := F.Mul(a, b)
+	y.Backward()
+
+	gb := b.Grad
+	a.Cleargrad()
+	gb.Backward()
+	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(y.Grad.Grad)
+
+	// Output:
+	// variable[1] variable[2]
+	// variable[2]
 }
