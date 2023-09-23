@@ -68,6 +68,15 @@ func Pow(v []float64, c float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Pow(a, c) })
 }
 
+func Sum(v []float64) float64 {
+	var sum float64
+	for i := range v {
+		sum += v[i]
+	}
+
+	return sum
+}
+
 func Add(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a + b })
 }
