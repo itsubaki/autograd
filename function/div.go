@@ -25,6 +25,6 @@ func (f *DivT) Forward(x ...*variable.Variable) []*variable.Variable {
 func (f *DivT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
 		Div(gy[0], f.x1),
-		Mul(Div(Neg(f.x0), Pow(2.0)(f.x1)), gy[0]), // -x0 / x1^2 * gy
+		Mul(gy[0], Div(Neg(f.x0), Pow(2.0)(f.x1))), // gy * (-x0 / x1^2)
 	}
 }

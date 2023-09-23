@@ -15,13 +15,11 @@ func Example_tanh() {
 
 	fmt.Println(x.Grad)
 
-	for i := 0; i < 2; i++ {
-		gx := x.Grad
-		x.Cleargrad()
-		y.Cleargrad()
-		gx.Backward()
-		fmt.Println(x.Grad)
-	}
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+	fmt.Println(y.Grad, y.Grad.Grad)
 
 	// 1-tanh(1)^2                          =  0.41997434161
 	// −2*tanh(1)*(1−tanh(1)^2)             = -0.63970000844
@@ -31,5 +29,5 @@ func Example_tanh() {
 	// Output:
 	// variable[0.41997434161402614]
 	// variable[-0.6397000084492246]
-	// variable[0.6216266807712962]
+	// variable[1] variable[0.41997434161402614]
 }
