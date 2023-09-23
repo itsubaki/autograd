@@ -54,7 +54,7 @@ func ExampleSub_double() {
 	gb.Backward()
 	fmt.Println(ga.Grad, gb.Grad)       // gb has neg creator
 	fmt.Println(y.Grad.Grad)            // ggy = ggb + Neg(ggb)
-	fmt.Println(y.Grad.Grad == ga.Grad) // ggy is gga
+	fmt.Println(y.Grad.Grad == ga.Grad) // ggy is gga, gga is 0
 
 	// Output:
 	// variable[1] <nil>
