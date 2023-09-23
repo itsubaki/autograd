@@ -21,6 +21,19 @@ func ExampleAdd() {
 	// variable[1 1]
 }
 
+func ExampleAddC() {
+	x := variable.New(1, 2, 3, 4, 5)
+	y := F.AddC(10.0, x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[11 12 13 14 15]
+	// variable[1 1 1 1 1]
+}
+
 func ExampleAddT() {
 	a := variable.New(2, 3)
 	b := variable.New(3, 4)
@@ -39,25 +52,64 @@ func ExampleAddT() {
 }
 
 func ExampleAdd_double() {
-	a := variable.New(2.0)
-	b := variable.New(3.0)
+	a := variable.New(3.0)
+	b := variable.New(2.0)
 	y := F.Add(a, b)
 	y.Backward()
-
-	fmt.Println(y)
-	fmt.Println(a.Grad, b.Grad)
 
 	ga, gb := a.Grad, b.Grad
 	a.Cleargrad()
 	b.Cleargrad()
+
 	ga.Backward()
+	fmt.Println(y.Grad.Grad, ga.Grad, gb.Grad)
+	fmt.Println(y.Grad.Grad == ga.Grad, y.Grad.Grad == gb.Grad)
+
 	gb.Backward()
-	fmt.Println(a.Grad, b.Grad)
-	fmt.Println(y.Grad, y.Grad.Grad)
+	fmt.Println(y.Grad.Grad, ga.Grad, gb.Grad)
+	fmt.Println(y.Grad.Grad == ga.Grad, y.Grad.Grad == gb.Grad)
 
 	// Output:
-	// variable[5]
-	// variable[1] variable[1]
-	// <nil> <nil>
-	// variable[1] variable[1]
+	// variable[1] variable[1] variable[1]
+	// true true
+	// variable[1] variable[1] variable[1]
+	// true true
+}
+
+func ExampleAdd_double_a() {
+	a := variable.New(3.0)
+	b := variable.New(2.0)
+	y := F.Add(a, b)
+	y.Backward()
+
+	ga := a.Grad
+	b.Cleargrad()
+	ga.Backward()
+	fmt.Println(a.Grad, b.Grad)             // ga has no creator
+	fmt.Println(a.Grad.Grad)                // 1
+	fmt.Println(y.Grad.Grad == a.Grad.Grad) // ggy = gga
+
+	// Output:
+	// variable[1] <nil>
+	// variable[1]
+	// true
+}
+
+func ExampleAdd_double_b() {
+	a := variable.New(3.0)
+	b := variable.New(2.0)
+	y := F.Add(a, b)
+	y.Backward()
+
+	gb := b.Grad
+	a.Cleargrad()
+	gb.Backward()
+	fmt.Println(a.Grad, b.Grad)             // gb has no creator
+	fmt.Println(b.Grad.Grad)                // 1
+	fmt.Println(y.Grad.Grad == b.Grad.Grad) // ggy = ggb
+
+	// Output:
+	// <nil> variable[1]
+	// variable[1]
+	// true
 }
