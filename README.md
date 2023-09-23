@@ -40,9 +40,13 @@ rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
 	return F.Add(y0, y1)
 }
 
-gd := func(lr float64) func(x, grad float64) float64 {
-	return func(a, b float64) float64 {
-		return a - lr*b
+gd := func(lr float64) func(a, b float64) float64 {
+	return func(a, b float64) float64 { return a - lr*b }
+}
+
+update := func(lr float64, v ...*variable.Variable) {
+	for _, w := range v {
+		w.Data = vector.F2(w.Data, w.Grad.Data, gd(lr))
 	}
 }
 
@@ -62,8 +66,7 @@ for i := 0; i < iters+1; i++ {
 	y := rosenbrock(x0, x1)
 	y.Backward()
 
-	x0.Data = vector.F2(x0.Data, x0.Grad.Data, gd(lr)) // x0 = x0 - lr * x0.grad
-	x1.Data = vector.F2(x1.Data, x1.Grad.Data, gd(lr)) // x1 = x1 - lr * x1.grad
+	update(lr, x0, x1)
 }
 
 // Output:
