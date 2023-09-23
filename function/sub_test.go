@@ -74,14 +74,14 @@ func ExampleSub_double_a() {
 	ga := a.Grad
 	b.Cleargrad()
 	ga.Backward()
-	fmt.Println(a.Grad, b.Grad) // ga has no creator
-	fmt.Println(a.Grad.Grad)    // 1
-	fmt.Println(y.Grad.Grad)    // ggy = gga
+	fmt.Println(a.Grad, b.Grad)             // ga has no creator
+	fmt.Println(a.Grad.Grad)                // 1
+	fmt.Println(y.Grad.Grad == a.Grad.Grad) // ggy = gga
 
 	// Output:
 	// variable[1] <nil>
 	// variable[1]
-	// variable[1]
+	// true
 }
 
 func ExampleSub_double_b() {
