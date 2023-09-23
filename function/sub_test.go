@@ -42,20 +42,63 @@ func ExampleSub_double() {
 	y := F.Sub(a, b)
 	y.Backward()
 
-	fmt.Println(y)
-	fmt.Println(a.Grad, b.Grad)
-
 	ga, gb := a.Grad, b.Grad
 	a.Cleargrad()
 	b.Cleargrad()
+
 	ga.Backward()
+	fmt.Println(ga.Grad, gb.Grad)
+	fmt.Println(y.Grad.Grad)            // ggy = gga
+	fmt.Println(y.Grad.Grad == ga.Grad) // ggy is gga
+
 	gb.Backward()
-	fmt.Println(a.Grad, b.Grad)
-	fmt.Println(y.Grad, y.Grad.Grad)
+	fmt.Println(ga.Grad, gb.Grad)       // gb has neg creator
+	fmt.Println(y.Grad.Grad)            // ggy = ggb + Neg(ggb)
+	fmt.Println(y.Grad.Grad == ga.Grad) // ggy is gga
 
 	// Output:
+	// variable[1] <nil>
 	// variable[1]
-	// variable[1] variable[-1]
-	// <nil> <nil>
-	// variable[1] variable[0]
+	// true
+	// variable[0] variable[1]
+	// variable[0]
+	// true
+}
+
+func ExampleSub_double_a() {
+	a := variable.New(3.0)
+	b := variable.New(2.0)
+	y := F.Sub(a, b)
+	y.Backward()
+
+	ga := a.Grad
+	b.Cleargrad()
+	ga.Backward()
+	fmt.Println(a.Grad, b.Grad) // ga has no creator
+	fmt.Println(a.Grad.Grad)    // 1
+	fmt.Println(y.Grad.Grad)    // ggy = gga
+
+	// Output:
+	// variable[1] <nil>
+	// variable[1]
+	// variable[1]
+}
+
+func ExampleSub_double_b() {
+	a := variable.New(3.0)
+	b := variable.New(2.0)
+	y := F.Sub(a, b)
+	y.Backward()
+
+	gb := b.Grad
+	a.Cleargrad()
+	gb.Backward()
+	fmt.Println(a.Grad, b.Grad) // gb has neg creator
+	fmt.Println(b.Grad.Grad)    // 1
+	fmt.Println(y.Grad.Grad)    // ggy = Neg(ggb)
+
+	// Output:
+	// <nil> variable[-1]
+	// variable[1]
+	// variable[-1]
 }
