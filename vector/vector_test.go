@@ -30,6 +30,14 @@ func ExampleConst() {
 	// [1]
 }
 
+func ExampleSum() {
+	v := []float64{1, 2, 3, 4, 5}
+	fmt.Println(vector.Sum(v))
+
+	// Output:
+	// 15
+}
+
 func ExampleBroadcast() {
 	v := []float64{1}
 	w := []float64{5, 6, 7, 8, 9}
