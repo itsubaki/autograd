@@ -213,13 +213,9 @@ func Example_gradientDescent() {
 		return F.Add(y0, y1)
 	}
 
-	gd := func(lr float64) func(a, b float64) float64 {
-		return func(a, b float64) float64 { return a - lr*b }
-	}
-
 	update := func(lr float64, v ...*variable.Variable) {
 		for _, w := range v {
-			w.Data = vector.F2(w.Data, w.Grad.Data, gd(lr))
+			w.Data = vector.F2(w.Data, w.Grad.Data, func(a, b float64) float64 { return a - lr*b })
 		}
 	}
 
