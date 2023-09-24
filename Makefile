@@ -9,4 +9,4 @@ install:
 
 .PHONY: dot
 dot:
-	go run cmd/main.go > sample.dot; dot sample.dot -T png -o sample.png
+	go run cmd/main.go -verbose > sample.dot; dot sample.dot -T png -o sample.png
