@@ -42,7 +42,7 @@ func ExampleFunc() {
 	fmt.Println(dot.Func(f0)[0] == dot.Func(f1)[0])
 
 	// Output:
-	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
 	// false
 }
 
@@ -61,7 +61,7 @@ func Example_func() {
 	}
 
 	// Output:
-	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
 	// "0x**********" -> "0x**********"
 	// "0x**********" -> "0x**********"
 }
@@ -82,7 +82,7 @@ func ExampleGraph() {
 	// Output:
 	// digraph g {
 	// "0x**********" [label="y", color=orange, style=filled]
-	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
 	// "0x**********" -> "0x**********"
 	// "0x**********" -> "0x**********"
 	// "0x**********" [label="x", color=orange, style=filled]
@@ -106,11 +106,11 @@ func ExampleGraph_composite() {
 	// Output:
 	// digraph g {
 	// "0x**********" [label="z", color=orange, style=filled]
-	// "0x**********" [label="CosT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="Cos", color=lightblue, style=filled, shape=box]
 	// "0x**********" -> "0x**********"
 	// "0x**********" -> "0x**********"
 	// "0x**********" [label="y", color=orange, style=filled]
-	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
 	// "0x**********" -> "0x**********"
 	// "0x**********" -> "0x**********"
 	// "0x**********" [label="x", color=orange, style=filled]
