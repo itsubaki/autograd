@@ -110,10 +110,15 @@ for i := 0; i < 5; i++ {
 // variable[-0.8414709848078965]
 ```
 
-## Dot Graph
+## Dot graph
 
 ```shell
-$ go run cmd/main.go -verbose > sample.dot; dot sample.dot -T png -o sample.png
+$ brew install graphviz
+```
+
+```shell
+$ go run cmd/main.go -verbose > sample.dot
+$ dot sample.dot -T png -o sample.png
 ```
 
 ![d/dx tanh(x)](dtanh.png "d/dx tanh(x)")
