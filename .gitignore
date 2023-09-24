@@ -23,5 +23,5 @@ go.work
 # add
 coverage.html
 coverage.txt
-*.dot
-*.png
+sample.dot
+sample.png

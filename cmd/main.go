@@ -11,7 +11,9 @@ import (
 
 func main() {
 	var iter int
+	var verbose bool
 	flag.IntVar(&iter, "iter", 0, "")
+	flag.BoolVar(&verbose, "verbose", false, "")
 	flag.Parse()
 
 	// input
@@ -32,9 +34,8 @@ func main() {
 		gx.Backward()
 	}
 
-	gx := x.Grad
-	gx.Name = fmt.Sprintf("gx%d", iter+1)
-	for _, txt := range dot.Graph(gx) {
+	x.Grad.Name = fmt.Sprintf("gx%d", iter+1)
+	for _, txt := range dot.Graph(x.Grad, dot.Opt{Verbose: verbose}) {
 		fmt.Println(txt)
 	}
 }
