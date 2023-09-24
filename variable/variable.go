@@ -113,5 +113,6 @@ func gx(gxs, xgrad *Variable) *Variable {
 		return gxs
 	}
 
+	// FIXME: use F.Add
 	return New(vector.Add(xgrad.Data, gxs.Data)...)
 }
