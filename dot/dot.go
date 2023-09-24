@@ -3,29 +3,31 @@ package dot
 import (
 	"fmt"
 	"strings"
-	"unsafe"
 
 	"github.com/itsubaki/autograd/variable"
 )
 
+const (
+	varfmt = "\"%p\" [label=\"%v\", color=orange, style=filled]"
+	fncfmt = "\"%p\" [label=\"%s\", color=lightblue, style=filled, shape=box]"
+	arrow  = "\"%p\" -> \"%p\""
+)
+
 func Var(v *variable.Variable) string {
-	format := "%d [label=\"%v\", color=orange, style=filled]"
-	return fmt.Sprintf(format, unsafe.Pointer(v), v.Name)
+	return fmt.Sprintf(varfmt, v, v.Name)
 }
 
 func Func(f variable.Function) []string {
-	format := "%d [label=\"%s\", color=lightblue, style=filled, shape=box]"
-
 	str := fmt.Sprintf("%s", f)
 	begin, end := strings.Index(str, "."), strings.Index(str, "[")
-	out := []string{fmt.Sprintf(format, unsafe.Pointer(&f), str[begin+1:end])}
+	out := []string{fmt.Sprintf(fncfmt, f, str[begin+1:end])}
 
 	for _, v := range f.Input() {
-		out = append(out, fmt.Sprintf("%d -> %d", unsafe.Pointer(v), unsafe.Pointer(&f)))
+		out = append(out, fmt.Sprintf(arrow, v, f))
 	}
 
 	for _, v := range f.Output() {
-		out = append(out, fmt.Sprintf("%d -> %d", unsafe.Pointer(&f), unsafe.Pointer(v)))
+		out = append(out, fmt.Sprintf(arrow, f, v))
 	}
 
 	return out
