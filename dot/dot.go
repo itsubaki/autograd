@@ -27,7 +27,7 @@ func Var(v *variable.Variable, opt ...Opt) string {
 
 func Func(f variable.Function) []string {
 	str := fmt.Sprintf("%s", f)
-	begin, end := strings.Index(str, "."), strings.Index(str, "[")
+	begin, end := strings.Index(str, "."), strings.Index(str, "T[")
 	out := []string{fmt.Sprintf(fncfmt, f, str[begin+1:end])}
 
 	for _, v := range f.Input() {
