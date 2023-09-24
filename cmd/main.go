@@ -21,6 +21,8 @@ func main() {
 	// func
 	y := F.Tanh(x)
 	y.Name = "y"
+
+	// backward
 	y.Backward()
 	y.Grad.Name = "gy"
 
@@ -31,7 +33,7 @@ func main() {
 	}
 
 	gx := x.Grad
-	gx.Name = fmt.Sprintf("gx%d", iter)
+	gx.Name = fmt.Sprintf("gx%d", iter+1)
 	for _, txt := range dot.Graph(gx) {
 		fmt.Println(txt)
 	}

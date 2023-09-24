@@ -10,13 +10,13 @@ import (
 )
 
 func ExampleVar() {
-	var re = regexp.MustCompile("[0-9]")
+	var re = regexp.MustCompile("[0-9a-f]{10}")
 
 	x := variable.New(1)
 	x.Name = "x"
 
 	dotx := dot.Var(x)
-	fmt.Println(re.ReplaceAllString(dotx, "*"))
+	fmt.Println(re.ReplaceAllString(dotx, "**********"))
 	fmt.Println(dotx == dot.Var(x))
 
 	y := variable.New(1)
@@ -26,29 +26,29 @@ func ExampleVar() {
 	fmt.Println(dotx == doty)
 
 	// Output:
-	// ************ [label="x", color=orange, style=filled]
+	// "0x**********" [label="x", color=orange, style=filled]
 	// true
 	// false
 }
 
 func ExampleFunc() {
-	var re = regexp.MustCompile("[0-9]")
+	var re = regexp.MustCompile("[0-9a-f]{10}")
 
 	f0 := &F.Function{Forwarder: &F.SinT{}}
 	for _, txt := range dot.Func(f0) {
-		fmt.Println(re.ReplaceAllString(txt, "*"))
+		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
 	f1 := &F.Function{Forwarder: &F.SinT{}}
 	fmt.Println(dot.Func(f0)[0] == dot.Func(f1)[0])
 
 	// Output:
-	// ************ [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
 	// false
 }
 
 func Example_func() {
-	var re = regexp.MustCompile("[0-9]")
+	var re = regexp.MustCompile("[0-9a-f]{10}")
 
 	f := &F.Function{
 		In:        []*variable.Variable{variable.New(1)},
@@ -58,17 +58,17 @@ func Example_func() {
 
 	dotf := dot.Func(f)
 	for _, txt := range dotf {
-		fmt.Println(re.ReplaceAllString(txt, "*"))
+		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
-	// Unordered output:
-	// ************ [label="SinT", color=lightblue, style=filled, shape=box]
-	// ************ -> ************
-	// ************ -> ************
+	// Output:
+	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" -> "0x**********"
+	// "0x**********" -> "0x**********"
 }
 
 func ExampleGraph() {
-	var re = regexp.MustCompile("[0-9]")
+	var re = regexp.MustCompile("[0-9a-f]{10}")
 
 	x := variable.New(1.0)
 	x.Name = "x"
@@ -77,15 +77,15 @@ func ExampleGraph() {
 	y.Name = "y"
 
 	for _, txt := range dot.Graph(y) {
-		fmt.Println(re.ReplaceAllString(txt, "*"))
+		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
-	// Unordered output:
+	// Output:
 	// digraph g {
-	// ************ [label="y", color=orange, style=filled]
-	// ************ [label="SinT", color=lightblue, style=filled, shape=box]
-	// ************ -> ************
-	// ************ -> ************
-	// ************ [label="x", color=orange, style=filled]
+	// "0x**********" [label="y", color=orange, style=filled]
+	// "0x**********" [label="SinT", color=lightblue, style=filled, shape=box]
+	// "0x**********" -> "0x**********"
+	// "0x**********" -> "0x**********"
+	// "0x**********" [label="x", color=orange, style=filled]
 	// }
 }
