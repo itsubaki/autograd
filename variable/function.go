@@ -8,21 +8,9 @@ type Forwarder interface {
 }
 
 type Function struct {
-	In, Out []*Variable
-	Gen     int
+	Input, Output []*Variable
+	Generation    int
 	Forwarder
-}
-
-func (f *Function) Input() []*Variable {
-	return f.In
-}
-
-func (f *Function) Output() []*Variable {
-	return f.Out
-}
-
-func (f *Function) Generation() int {
-	return f.Gen
 }
 
 // ApplyAndFirst applies the function and returns the first output
@@ -34,13 +22,14 @@ func (f *Function) ApplyAndFirst(x ...*Variable) *Variable {
 func (f *Function) Apply(x ...*Variable) []*Variable {
 	y := f.Forward(x...)
 
+	f.Generation = maxgen(x...)
 	f.setCreator(y)
-	f.In, f.Out, f.Gen = x, y, maxgen(x...)
-	return f.Out
+	f.Input, f.Output = x, y
+	return f.Output
 }
 
 func (f Function) String() string {
-	return fmt.Sprintf("%T%v", f.Forwarder, f.In)
+	return fmt.Sprintf("%T%v", f.Forwarder, f.Input)
 }
 
 func (f *Function) setCreator(y []*Variable) {
