@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/vector"
 
 func Pow(c float64) func(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &PowT{C: c}}).ApplyAndFirst

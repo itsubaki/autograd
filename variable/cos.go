@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/vector"
 
 func Cos(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &CosT{}}).ApplyAndFirst(x...)
