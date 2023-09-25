@@ -1,15 +1,14 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleSquare() {
 	x := variable.New(1, 2, 3, 4, 5)
-	y := F.Square(x)
+	y := variable.Square(x)
 	y.Backward()
 
 	fmt.Println(x)
@@ -24,7 +23,7 @@ func ExampleSquare() {
 
 func ExampleSquare_double() {
 	x := variable.New(1, 2, 3, 4, 5)
-	y := F.Square(x)
+	y := variable.Square(x)
 	y.Backward()
 
 	fmt.Println(x)
@@ -34,6 +33,7 @@ func ExampleSquare_double() {
 	for i := 0; i < 2; i++ {
 		gx := x.Grad
 		x.Cleargrad()
+		y.Cleargrad()
 		gx.Backward()
 		fmt.Println(x.Grad)
 	}

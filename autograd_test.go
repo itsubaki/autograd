@@ -63,11 +63,11 @@ func Example_creator() {
 	// variable[1.648721270700128]
 	// variable[3.297442541400256]
 	//
-	// *function.SquareT[variable[1.2840254166877414]]
+	// *variable.SquareT[variable[1.2840254166877414]]
 	// true
-	// *function.ExpT[variable[0.25]]
+	// *variable.ExpT[variable[0.25]]
 	// true
-	// *function.SquareT[variable[0.5]]
+	// *variable.SquareT[variable[0.5]]
 	// true
 }
 

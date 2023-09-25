@@ -7,7 +7,7 @@ func NewLike(v []float64) []float64 {
 }
 
 func OneLike(v []float64) []float64 {
-	return AddC(NewLike(v), 1.0)
+	return AddC(1.0, NewLike(v))
 }
 
 func Const(c float64) []float64 {
@@ -36,20 +36,24 @@ func Broadcast(v, w []float64) ([]float64, []float64) {
 	return v, w
 }
 
-func AddC(v []float64, c float64) []float64 {
-	return F(v, func(a float64) float64 { return a + c })
+func AddC(c float64, v []float64) []float64 {
+	return F(v, func(a float64) float64 { return c + a })
 }
 
-func SubC(v []float64, c float64) []float64 {
-	return F(v, func(a float64) float64 { return a - c })
+func SubC(c float64, v []float64) []float64 {
+	return F(v, func(a float64) float64 { return c - a })
 }
 
-func MulC(v []float64, c float64) []float64 {
+func MulC(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return c * a })
 }
 
 func Exp(v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Exp(a) })
+}
+
+func Log(v []float64) []float64 {
+	return F(v, func(a float64) float64 { return math.Log(a) })
 }
 
 func Sin(v []float64) []float64 {
@@ -64,7 +68,7 @@ func Tanh(v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Tanh(a) })
 }
 
-func Pow(v []float64, c float64) []float64 {
+func Pow(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Pow(a, c) })
 }
 
