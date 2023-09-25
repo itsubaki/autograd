@@ -273,11 +273,53 @@ func Example_newton() {
 	for i := 0; i < iter; i++ {
 		fmt.Println(x)
 
-		x.Cleargrad()
 		y := f(x)
+		x.Cleargrad()
 		y.Backward()
 
 		x.Data = vector.Sub(x.Data, vector.Div(x.Grad.Data, gx2(x).Data))
+	}
+
+	// Output:
+	// variable[2]
+	// variable[1.4545454545454546]
+	// variable[1.1510467893775467]
+	// variable[1.0253259289766978]
+	// variable[1.0009084519430513]
+	// variable[1.0000012353089454]
+	// variable[1.000000000002289]
+	// variable[1]
+	// variable[1]
+	// variable[1]
+}
+
+func Example_newton_double() {
+	// p239
+	f := func(x *variable.Variable) *variable.Variable {
+		// y = x^4 - 2x^2
+		y0 := F.Pow(4.0)(x)  // x^4
+		y1 := F.Pow(2.0)(x)  // x^2
+		y2 := F.MulC(2, y1)  // 2x^2
+		return F.Sub(y0, y2) // x^4 - 2x^2
+	}
+
+	x := variable.New(2.0)
+	iter := 10
+
+	for i := 0; i < iter; i++ {
+		fmt.Println(x)
+
+		y := f(x)
+		x.Cleargrad()
+		y.Backward()
+
+		gx := x.Grad
+		x.Cleargrad()
+		y.Cleargrad()
+		gx.Backward()
+		gx2 := x.Grad
+
+		x.Data = vector.Sub(x.Data, vector.Div(gx.Data, gx2.Data))
 	}
 
 	// Output:
