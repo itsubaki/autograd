@@ -117,8 +117,7 @@ $ go run cmd/main.go -func tanh -order 2 -verbose > sample.dot
 $ dot sample.dot -T png -o sample.png
 ```
 
-<img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="320px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="320px">
-
+<img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh3.png" height="240px">
 
 # Links
 
