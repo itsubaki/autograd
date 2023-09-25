@@ -113,12 +113,12 @@ $ brew install graphviz
 ```
 
 ```shell
-$ go run cmd/main.go -verbose > sample.dot
+$ go run cmd/main.go -func tanh -order 2 -verbose > sample.dot
 $ dot sample.dot -T png -o sample.png
 ```
 
-![d/dx tanh(x)](dtanh.png "d/dx tanh(x)")
-![d^2/dx^2 tanh(x)](dtanh2.png "d^2/dx^2 tanh(x)")
+<img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="320px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="320px">
+
 
 # Links
 
