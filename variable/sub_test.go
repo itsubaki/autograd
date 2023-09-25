@@ -1,16 +1,15 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleSub() {
 	a := variable.New(3)
 	b := variable.New(2)
-	y := F.Sub(a, b)
+	y := variable.Sub(a, b)
 	y.Backward()
 
 	fmt.Println(y)
@@ -23,7 +22,7 @@ func ExampleSub() {
 
 func ExampleSubC() {
 	x := variable.New(1, 2, 3, 4, 5)
-	y := F.SubC(10.0, x)
+	y := variable.SubC(10.0, x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -37,7 +36,7 @@ func ExampleSubC() {
 func ExampleSub_double() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Sub(a, b)
+	y := variable.Sub(a, b)
 	y.Backward()
 
 	ga, gb := a.Grad, b.Grad
@@ -66,7 +65,7 @@ func ExampleSub_double() {
 func ExampleSub_double_a() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Sub(a, b)
+	y := variable.Sub(a, b)
 	y.Backward()
 
 	ga := a.Grad
@@ -85,7 +84,7 @@ func ExampleSub_double_a() {
 func ExampleSub_double_b() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Sub(a, b)
+	y := variable.Sub(a, b)
 	y.Backward()
 
 	gb := b.Grad

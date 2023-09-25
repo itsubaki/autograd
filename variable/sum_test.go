@@ -1,16 +1,15 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleSum() {
 	// p292
 	x := variable.New(1, 2, 3, 4, 5, 6)
-	y := F.Sum(x)
+	y := variable.Sum(x)
 	y.Backward()
 
 	fmt.Println(y)

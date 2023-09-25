@@ -1,22 +1,22 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func Example_tanh() {
 	// p249
 	x := variable.New(1.0)
-	y := F.Tanh(x)
+	y := variable.Tanh(x)
 	y.Backward()
 
 	fmt.Println(x.Grad)
 
 	gx := x.Grad
 	x.Cleargrad()
+	y.Cleargrad()
 	gx.Backward()
 	fmt.Println(x.Grad)
 

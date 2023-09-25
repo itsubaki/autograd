@@ -1,41 +1,15 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
-
-func ExampleAdd() {
-	a := variable.New(2, 3)
-	b := variable.New(3, 4)
-	y := F.Add(a, b)
-	y.Backward()
-
-	fmt.Println(a.Grad, b.Grad)
-
-	// Output:
-	// variable[1 1] variable[1 1]
-}
-
-func ExampleAddC() {
-	x := variable.New(1, 2, 3, 4, 5)
-	y := F.AddC(10.0, x)
-	y.Backward()
-
-	fmt.Println(y)
-	fmt.Println(x.Grad)
-
-	// Output:
-	// variable[11 12 13 14 15]
-	// variable[1 1 1 1 1]
-}
 
 func ExampleAddT() {
 	a := variable.New(2, 3)
 	b := variable.New(3, 4)
-	f := F.AddT{}
+	f := variable.AddT{}
 
 	fmt.Println(a)
 	fmt.Println(b)
@@ -49,10 +23,35 @@ func ExampleAddT() {
 	// [variable[1 1] variable[1 1]]
 }
 
+func ExampleAdd() {
+	a := variable.New(2, 3)
+	b := variable.New(3, 4)
+	y := variable.Add(a, b)
+	y.Backward()
+
+	fmt.Println(a.Grad, b.Grad)
+
+	// Output:
+	// variable[1 1] variable[1 1]
+}
+
+func ExampleAddC() {
+	x := variable.New(1, 2, 3, 4, 5)
+	y := variable.AddC(10.0, x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[11 12 13 14 15]
+	// variable[1 1 1 1 1]
+}
+
 func ExampleAdd_double() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Add(a, b)
+	y := variable.Add(a, b)
 	y.Backward()
 
 	ga, gb := a.Grad, b.Grad
@@ -77,7 +76,7 @@ func ExampleAdd_double() {
 func ExampleAdd_double_a() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Add(a, b)
+	y := variable.Add(a, b)
 	y.Backward()
 
 	ga := a.Grad
@@ -96,7 +95,7 @@ func ExampleAdd_double_a() {
 func ExampleAdd_double_b() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)
-	y := F.Add(a, b)
+	y := variable.Add(a, b)
 	y.Backward()
 
 	gb := b.Grad

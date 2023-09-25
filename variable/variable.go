@@ -9,18 +9,11 @@ import (
 
 type Data = []float64
 
-type Function interface {
-	Input() []*Variable
-	Output() []*Variable
-	Generation() int
-	Backward(gy ...*Variable) []*Variable
-}
-
 type Variable struct {
 	Name       string
 	Data       Data
 	Grad       *Variable
-	Creator    Function
+	Creator    *Function
 	Generation int
 }
 
@@ -29,7 +22,7 @@ func New(v ...float64) *Variable {
 }
 
 func Const(c float64) *Variable {
-	return &Variable{Data: vector.Const(c)}
+	return &Variable{Name: "const", Data: vector.Const(c)}
 }
 
 func OneLike(v *Variable) *Variable {
@@ -40,7 +33,7 @@ func (v *Variable) Cleargrad() {
 	v.Grad = nil
 }
 
-func (v *Variable) SetCreator(f Function) {
+func (v *Variable) SetCreator(f *Function) {
 	v.Creator = f
 	v.Generation = f.Generation() + 1
 }
@@ -54,8 +47,8 @@ func (v *Variable) Backward() {
 		return
 	}
 
-	seen := make(map[Function]bool)
-	fs := addFunc(make([]Function, 0), v.Creator, seen)
+	seen := make(map[*Function]bool)
+	fs := addFunc(make([]*Function, 0), v.Creator, seen)
 
 	for {
 		if len(fs) == 0 {
@@ -71,7 +64,7 @@ func (v *Variable) Backward() {
 		gxs := f.Backward(gys(y)...)
 
 		for i := range x {
-			x[i].Grad = gx(gxs[i], x[i].Grad)
+			x[i].Grad = gx(x[i].Grad, gxs[i])
 
 			if x[i].Creator != nil {
 				fs = addFunc(fs, x[i].Creator, seen)
@@ -88,7 +81,7 @@ func (v Variable) String() string {
 	return fmt.Sprintf("%v%v", v.Name, v.Data)
 }
 
-func addFunc(fs []Function, f Function, seen map[Function]bool) []Function {
+func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
 	if _, ok := seen[f]; ok {
 		return fs
 	}
@@ -108,11 +101,11 @@ func gys(y []*Variable) []*Variable {
 	return gys
 }
 
-func gx(gxs, xgrad *Variable) *Variable {
+func gx(xgrad, gx *Variable) *Variable {
 	if xgrad == nil {
-		return gxs
+		return gx
 	}
 
-	// FIXME: use F.Add
-	return New(vector.Add(xgrad.Data, gxs.Data)...)
+	// NOTE: create graph
+	return Add(xgrad, gx)
 }

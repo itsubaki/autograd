@@ -33,12 +33,12 @@ func ExampleVar() {
 func ExampleFunc() {
 	var re = regexp.MustCompile("[0-9a-f]{10}")
 
-	f0 := &F.Function{Forwarder: &F.SinT{}}
+	f0 := &variable.Function{Forwarder: &variable.SinT{}}
 	for _, txt := range dot.Func(f0) {
 		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
-	f1 := &F.Function{Forwarder: &F.SinT{}}
+	f1 := &variable.Function{Forwarder: &variable.SinT{}}
 	fmt.Println(dot.Func(f0)[0] == dot.Func(f1)[0])
 
 	// Output:
@@ -49,10 +49,10 @@ func ExampleFunc() {
 func Example_func() {
 	var re = regexp.MustCompile("[0-9a-f]{10}")
 
-	f := &F.Function{
+	f := &variable.Function{
 		In:        []*variable.Variable{variable.New(1)},
 		Out:       []*variable.Variable{variable.New(1)},
-		Forwarder: &F.SinT{},
+		Forwarder: &variable.SinT{},
 	}
 
 	dotf := dot.Func(f)

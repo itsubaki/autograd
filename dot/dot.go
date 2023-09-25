@@ -25,7 +25,7 @@ func Var(v *variable.Variable, opt ...Opt) string {
 	return fmt.Sprintf(varfmt, v, v.Name)
 }
 
-func Func(f variable.Function) []string {
+func Func(f *variable.Function) []string {
 	str := fmt.Sprintf("%s", f)
 	begin, end := strings.Index(str, "."), strings.Index(str, "T[")
 	out := []string{fmt.Sprintf(fncfmt, f, str[begin+1:end])}
@@ -42,8 +42,8 @@ func Func(f variable.Function) []string {
 }
 
 func Graph(v *variable.Variable, opt ...Opt) []string {
-	seen := make(map[variable.Function]bool)
-	fs := addFunc(make([]variable.Function, 0), v.Creator, seen)
+	seen := make(map[*variable.Function]bool)
+	fs := addFunc(make([]*variable.Function, 0), v.Creator, seen)
 
 	out := append([]string{"digraph g {"}, Var(v, opt...))
 	for {
@@ -70,7 +70,7 @@ func Graph(v *variable.Variable, opt ...Opt) []string {
 	return out
 }
 
-func addFunc(fs []variable.Function, f variable.Function, seen map[variable.Function]bool) []variable.Function {
+func addFunc(fs []*variable.Function, f *variable.Function, seen map[*variable.Function]bool) []*variable.Function {
 	if _, ok := seen[f]; ok {
 		return fs
 	}
