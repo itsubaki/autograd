@@ -12,13 +12,14 @@ import (
 type Func func(x ...*variable.Variable) *variable.Variable
 
 var fmap = map[string]Func{
-	"cos":    F.Cos,
-	"exp":    F.Exp,
-	"neg":    F.Neg,
-	"pow":    F.Pow(3.0),
 	"sin":    F.Sin,
-	"square": F.Square,
+	"cos":    F.Cos,
 	"tanh":   F.Tanh,
+	"exp":    F.Exp,
+	"log":    F.Log,
+	"pow":    F.Pow(3.0),
+	"square": F.Square,
+	"neg":    F.Neg,
 }
 
 func main() {
