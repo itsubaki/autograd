@@ -14,6 +14,7 @@ var (
 	Cos    = variable.Cos
 	Tanh   = variable.Tanh
 	Exp    = variable.Exp
+	Log    = variable.Log
 	Pow    = variable.Pow
 	Square = variable.Square
 	Neg    = variable.Neg

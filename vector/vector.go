@@ -52,6 +52,10 @@ func Exp(v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Exp(a) })
 }
 
+func Log(v []float64) []float64 {
+	return F(v, func(a float64) float64 { return math.Log(a) })
+}
+
 func Sin(v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Sin(a) })
 }
