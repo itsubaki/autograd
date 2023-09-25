@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/vector"
 
 func MulC(c float64, x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MulT{}}).ApplyAndFirst(Const(c), x[0])

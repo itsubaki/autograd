@@ -106,6 +106,6 @@ func gx(xgrad, gx *Variable) *Variable {
 		return gx
 	}
 
-	// NOTE: creating graph
+	// NOTE: create graph
 	return Add(xgrad, gx)
 }
