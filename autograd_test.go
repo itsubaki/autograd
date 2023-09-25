@@ -52,11 +52,11 @@ func Example_creator() {
 
 	// p40
 	fmt.Println(y.Creator)
-	fmt.Println(y.Creator.Input()[0] == b)
-	fmt.Println(y.Creator.Input()[0].Creator)
-	fmt.Println(y.Creator.Input()[0].Creator.Input()[0] == a)
-	fmt.Println(y.Creator.Input()[0].Creator.Input()[0].Creator)
-	fmt.Println(y.Creator.Input()[0].Creator.Input()[0].Creator.Input()[0] == x)
+	fmt.Println(y.Creator.Input[0] == b)
+	fmt.Println(y.Creator.Input[0].Creator)
+	fmt.Println(y.Creator.Input[0].Creator.Input[0] == a)
+	fmt.Println(y.Creator.Input[0].Creator.Input[0].Creator)
+	fmt.Println(y.Creator.Input[0].Creator.Input[0].Creator.Input[0] == x)
 
 	// Output:
 	// variable[0.5]

@@ -35,7 +35,7 @@ func (v *Variable) Cleargrad() {
 
 func (v *Variable) SetCreator(f *Function) {
 	v.Creator = f
-	v.Generation = f.Generation() + 1
+	v.Generation = f.Generation + 1
 }
 
 func (v *Variable) Backward() {
@@ -60,7 +60,7 @@ func (v *Variable) Backward() {
 		fs = fs[:len(fs)-1]
 
 		// backward
-		x, y := f.Input(), f.Output()
+		x, y := f.Input, f.Output
 		gxs := f.Backward(gys(y)...)
 
 		for i := range x {
@@ -88,7 +88,7 @@ func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
 
 	seen[f] = true
 	fs = append(fs, f)
-	sort.Slice(fs, func(i, j int) bool { return fs[i].Generation() < fs[j].Generation() })
+	sort.Slice(fs, func(i, j int) bool { return fs[i].Generation < fs[j].Generation })
 	return fs
 }
 

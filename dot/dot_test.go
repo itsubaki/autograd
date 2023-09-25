@@ -50,8 +50,8 @@ func Example_func() {
 	var re = regexp.MustCompile("[0-9a-f]{10}")
 
 	f := &variable.Function{
-		In:        []*variable.Variable{variable.New(1)},
-		Out:       []*variable.Variable{variable.New(1)},
+		Input:     []*variable.Variable{variable.New(1)},
+		Output:    []*variable.Variable{variable.New(1)},
 		Forwarder: &variable.SinT{},
 	}
 
