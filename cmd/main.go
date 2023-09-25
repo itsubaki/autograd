@@ -25,9 +25,11 @@ func main() {
 	var order int
 	var verbose bool
 	var fn string
+	var xval float64
 	flag.IntVar(&order, "order", 1, "")
 	flag.BoolVar(&verbose, "verbose", false, "")
 	flag.StringVar(&fn, "func", "tanh", "")
+	flag.Float64Var(&xval, "x", 1.0, "")
 	flag.Parse()
 
 	if order < 1 {
@@ -35,7 +37,7 @@ func main() {
 	}
 
 	// input
-	x := variable.New(1.0)
+	x := variable.New(xval)
 	x.Name = "x"
 
 	// func
@@ -53,7 +55,9 @@ func main() {
 	for i := 0; i < order-1; i++ {
 		gx := x.Grad
 		x.Cleargrad()
+		y.Cleargrad()
 		gx.Backward()
+		gx.Grad.Name = fmt.Sprintf("ggx%d", i+1)
 	}
 
 	x.Grad.Name = fmt.Sprintf("gx%d", order)
