@@ -1,17 +1,16 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 	"math"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleCos() {
+func ExampleSin() {
 	// p198
 	x := variable.New(math.Pi / 4)
-	y := F.Cos(x)
+	y := variable.Sin(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -19,14 +18,14 @@ func ExampleCos() {
 	fmt.Println([]float64{1.0 / math.Sqrt2})
 
 	// Output:
+	// variable[0.7071067811865475]
 	// variable[0.7071067811865476]
-	// variable[-0.7071067811865475]
 	// [0.7071067811865476]
 }
 
-func ExampleCosT() {
+func ExampleSinT() {
 	x := variable.New(math.Pi / 4)
-	f := F.CosT{}
+	f := variable.SinT{}
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))
@@ -34,13 +33,14 @@ func ExampleCosT() {
 
 	// Output:
 	// variable[0.7853981633974483]
+	// [variable[0.7071067811865475]]
 	// [variable[0.7071067811865476]]
-	// [variable[-0.7071067811865475]]
 }
 
-func ExampleCos_double() {
+func ExampleSin_double() {
+	// p243
 	x := variable.New(1.0)
-	y := F.Cos(x)
+	y := variable.Sin(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -49,14 +49,12 @@ func ExampleCos_double() {
 	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
+		y.Cleargrad()
 		gx.Backward()
 		fmt.Println(x.Grad)
 	}
 
 	// Output:
-	// variable[0.5403023058681398]
-	// variable[-0.8414709848078965]
-	// variable[-0.5403023058681398]
 	// variable[0.8414709848078965]
 	// variable[0.5403023058681398]
 	// variable[-0.8414709848078965]
@@ -66,4 +64,7 @@ func ExampleCos_double() {
 	// variable[-0.8414709848078965]
 	// variable[-0.5403023058681398]
 	// variable[0.8414709848078965]
+	// variable[0.5403023058681398]
+	// variable[-0.8414709848078965]
+	// variable[-0.5403023058681398]
 }

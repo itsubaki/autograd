@@ -1,16 +1,15 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleNeg() {
 	// p139
 	x := variable.New(3.0)
-	y := F.Neg(x)
+	y := variable.Neg(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -23,7 +22,7 @@ func ExampleNeg() {
 
 func ExampleNeg_double() {
 	x := variable.New(2.0)
-	y := F.Neg(x)
+	y := variable.Neg(x)
 	y.Backward()
 
 	fmt.Println(y)

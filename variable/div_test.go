@@ -1,16 +1,15 @@
-package function_test
+package variable_test
 
 import (
 	"fmt"
 
-	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleDiv() {
 	a := variable.New(10)
 	b := variable.New(2)
-	y := F.Div(a, b)
+	y := variable.Div(a, b)
 	y.Backward()
 
 	fmt.Println(y)
@@ -24,7 +23,7 @@ func ExampleDiv() {
 func ExampleDiv_double() {
 	a := variable.New(10)
 	b := variable.New(2)
-	y := F.Div(a, b)
+	y := variable.Div(a, b)
 	y.Backward()
 
 	ga, gb := a.Grad, b.Grad

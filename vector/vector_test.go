@@ -55,19 +55,19 @@ func ExampleF() {
 	v := []float64{1, 2, 3, 4, 5}
 	fmt.Println(vector.F(v, func(a float64) float64 { return a * a }))
 
-	fmt.Println(vector.AddC(v, 1))
-	fmt.Println(vector.SubC(v, 1))
-	fmt.Println(vector.MulC(v, 2))
+	fmt.Println(vector.AddC(1, v))
+	fmt.Println(vector.SubC(1, v))
+	fmt.Println(vector.MulC(2, v))
 	fmt.Println(vector.Exp(v))
 	fmt.Println(vector.Sin(v))
 	fmt.Println(vector.Cos(v))
 	fmt.Println(vector.Tanh(v))
-	fmt.Println(vector.Pow(v, 2.0))
+	fmt.Println(vector.Pow(2.0, v))
 
 	// Output:
 	// [1 4 9 16 25]
 	// [2 3 4 5 6]
-	// [0 1 2 3 4]
+	// [0 -1 -2 -3 -4]
 	// [2 4 6 8 10]
 	// [2.718281828459045 7.38905609893065 20.085536923187668 54.598150033144236 148.4131591025766]
 	// [0.8414709848078965 0.9092974268256816 0.1411200080598672 -0.7568024953079282 -0.9589242746631385]
