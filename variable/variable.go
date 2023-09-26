@@ -7,11 +7,9 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-type Data = []float64
-
 type Variable struct {
 	Name       string
-	Data       Data
+	Data       []float64
 	Grad       *Variable
 	Creator    *Function
 	Generation int
