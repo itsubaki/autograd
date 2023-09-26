@@ -110,8 +110,6 @@ func F(v []float64, f func(a float64) float64) []float64 {
 }
 
 func F2(v, w []float64, f func(a, b float64) float64) []float64 {
-	v, w = Broadcast(v, w)
-
 	out := NewLike(v)
 	for i := range v {
 		out[i] = f(v[i], w[i])

@@ -7,8 +7,8 @@ import (
 )
 
 func ExampleSub() {
-	a := variable.New(3)
-	b := variable.New(2)
+	a := variable.New(3.0)
+	b := variable.New(2.0)
 	y := variable.Sub(a, b)
 	y.Backward()
 
@@ -21,7 +21,7 @@ func ExampleSub() {
 }
 
 func ExampleSubC() {
-	x := variable.New(1, 2, 3, 4, 5)
+	x := variable.New(3.0)
 	y := variable.SubC(10.0, x)
 	y.Backward()
 
@@ -29,8 +29,8 @@ func ExampleSubC() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[9 8 7 6 5]
-	// variable[-1 -1 -1 -1 -1]
+	// variable[7]
+	// variable[-1]
 }
 
 func ExampleSub_double() {

@@ -36,7 +36,7 @@ func ExampleAdd() {
 }
 
 func ExampleAddC() {
-	x := variable.New(1, 2, 3, 4, 5)
+	x := variable.New(3)
 	y := variable.AddC(10.0, x)
 	y.Backward()
 
@@ -44,8 +44,8 @@ func ExampleAddC() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[11 12 13 14 15]
-	// variable[1 1 1 1 1]
+	// variable[13]
+	// variable[1]
 }
 
 func ExampleAdd_double() {
