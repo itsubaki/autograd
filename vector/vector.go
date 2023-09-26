@@ -40,6 +40,7 @@ func AddC(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return c + a })
 }
 
+// SubC returns c - v
 func SubC(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return c - a })
 }
@@ -85,6 +86,7 @@ func Add(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a + b })
 }
 
+// Sub returns v - w
 func Sub(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a - b })
 }
@@ -93,6 +95,7 @@ func Mul(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a * b })
 }
 
+// Div returns v / w
 func Div(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a / b })
 }

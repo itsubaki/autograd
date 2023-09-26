@@ -215,7 +215,9 @@ func Example_gradientDescent() {
 
 	update := func(lr float64, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = vector.F2(v.Data, v.Grad.Data, func(a, b float64) float64 { return a - lr*b })
+			v.Data = vector.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+				return a - lr*b
+			})
 		}
 	}
 
