@@ -7,17 +7,17 @@ import (
 )
 
 func ExamplePowT() {
-	x := variable.New(1, 2, 3, 4, 5)
-	f := variable.PowT{C: 3.0}
+	x := variable.New(3.0)
+	f := variable.PowT{C: 4.0}
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))
 	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
-	// variable[1 2 3 4 5]
-	// [variable[1 8 27 64 125]]
-	// [variable[3 12 27 48 75]]
+	// variable[3]
+	// [variable[81]]
+	// [variable[108]]
 }
 
 func ExamplePow() {

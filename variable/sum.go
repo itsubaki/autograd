@@ -7,21 +7,20 @@ func Sum(x ...*Variable) *Variable {
 }
 
 type SumT struct {
-	x *Variable
+	Shape int
 }
 
 func (f *SumT) Forward(x ...*Variable) []*Variable {
-	f.x = x[0]
+	f.Shape = len(x[0].Data)
 
-	y := vector.Sum(f.x.Data)
+	y := vector.Sum(x[0].Data)
 	return []*Variable{
 		New(y),
 	}
 }
 
 func (f *SumT) Backward(gy ...*Variable) []*Variable {
-	y, _ := vector.Broadcast(gy[0].Data, f.x.Data)
 	return []*Variable{
-		New(y...),
+		Broadcast(f.Shape)(gy[0]),
 	}
 }

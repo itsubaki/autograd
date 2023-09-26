@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleSquare() {
-	x := variable.New(1, 2, 3, 4, 5)
+	x := variable.New(3.0)
 	y := variable.Square(x)
 	y.Backward()
 
@@ -16,13 +16,13 @@ func ExampleSquare() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[1 2 3 4 5]
-	// variable[1 4 9 16 25]
-	// variable[2 4 6 8 10]
+	// variable[3]
+	// variable[9]
+	// variable[6]
 }
 
 func ExampleSquare_double() {
-	x := variable.New(1, 2, 3, 4, 5)
+	x := variable.New(3.0)
 	y := variable.Square(x)
 	y.Backward()
 
@@ -39,9 +39,9 @@ func ExampleSquare_double() {
 	}
 
 	// Output:
-	// variable[1 2 3 4 5]
-	// variable[1 4 9 16 25]
-	// variable[2 4 6 8 10]
-	// variable[2 2 2 2 2]
-	// variable[0 0 0 0 0]
+	// variable[3]
+	// variable[9]
+	// variable[6]
+	// variable[2]
+	// variable[0]
 }
