@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/vector"
 
 func Broadcast(n int) func(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &BroadcastT{Shape: n}}).ApplyAndFirst
