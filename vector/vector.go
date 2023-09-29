@@ -14,26 +14,8 @@ func Const(c float64) []float64 {
 	return []float64{c}
 }
 
-func Broadcast(v, w []float64) ([]float64, []float64) {
-	if len(v) == 1 {
-		out := NewLike(w)
-		for i := 0; i < len(w); i++ {
-			out[i] = v[0]
-		}
-
-		return out, w
-	}
-
-	if len(w) == 1 {
-		out := NewLike(v)
-		for i := 0; i < len(v); i++ {
-			out[i] = w[0]
-		}
-
-		return v, out
-	}
-
-	return v, w
+func Shape(v []float64) []int {
+	return []int{1, len(v)}
 }
 
 func AddC(c float64, v []float64) []float64 {
@@ -73,15 +55,6 @@ func Pow(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return math.Pow(a, c) })
 }
 
-func Sum(v []float64) float64 {
-	var sum float64
-	for i := range v {
-		sum += v[i]
-	}
-
-	return sum
-}
-
 func Add(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a + b })
 }
@@ -98,6 +71,47 @@ func Mul(v, w []float64) []float64 {
 // Div returns v / w
 func Div(v, w []float64) []float64 {
 	return F2(v, w, func(a, b float64) float64 { return a / b })
+}
+
+func BroadcastTo(shape []int, v []float64) []float64 {
+	out, _ := Broadcast(v, make([]float64, shape[1]))
+	return out
+}
+
+func Broadcast(v, w []float64) ([]float64, []float64) {
+	if len(v) == 1 {
+		out := NewLike(w)
+		for i := 0; i < len(w); i++ {
+			out[i] = v[0]
+		}
+
+		return out, w
+	}
+
+	if len(w) == 1 {
+		out := NewLike(v)
+		for i := 0; i < len(v); i++ {
+			out[i] = w[0]
+		}
+
+		return v, out
+	}
+
+	return v, w
+}
+
+func SumTo(shape []int, v []float64) float64 {
+	// NOTE: v is vector, shape has no effect.
+	return Sum(v)
+}
+
+func Sum(v []float64) float64 {
+	var sum float64
+	for i := range v {
+		sum += v[i]
+	}
+
+	return sum
 }
 
 func F(v []float64, f func(a float64) float64) []float64 {

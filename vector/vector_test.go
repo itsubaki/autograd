@@ -30,12 +30,35 @@ func ExampleConst() {
 	// [1]
 }
 
+func ExampleShape() {
+	fmt.Println(vector.Shape([]float64{1, 2, 3, 4, 5}))
+
+	// Output:
+	// [1 5]
+}
+
+func ExampleSumTo() {
+	v := []float64{1, 2, 3, 4, 5}
+	fmt.Println(vector.SumTo(nil, v))
+
+	// Output:
+	// 15
+}
+
 func ExampleSum() {
 	v := []float64{1, 2, 3, 4, 5}
 	fmt.Println(vector.Sum(v))
 
 	// Output:
 	// 15
+}
+
+func ExampleBroadcastTo() {
+	v := []float64{1}
+	fmt.Println(vector.BroadcastTo([]int{1, 10}, v))
+
+	// Output:
+	// [1 1 1 1 1 1 1 1 1 1]
 }
 
 func ExampleBroadcast() {
