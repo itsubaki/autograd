@@ -6,16 +6,15 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleSum() {
-	// p292
-	x := variable.New(1, 2, 3, 4, 5, 6, 7)
-	y := variable.Sum(x)
+func ExampleBroadcastTo() {
+	x := variable.New(2)
+	y := variable.BroadcastTo(1, 3)(x)
 	y.Backward()
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[28]
-	// variable[1 1 1 1 1 1 1]
+	// variable[2 2 2]
+	// variable[3]
 }

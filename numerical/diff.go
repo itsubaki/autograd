@@ -22,6 +22,8 @@ var (
 	_ Func = F.Square
 	_ Func = F.Neg
 	_ Func = F.Sum
+	_ Func = F.SumTo(1, 1)
+	_ Func = F.BroadcastTo(1, 3)
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
