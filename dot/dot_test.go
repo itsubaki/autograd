@@ -25,7 +25,7 @@ func ExampleVar() {
 
 	// Output:
 	// "0x**********" [label="x", color=orange, style=filled]
-	// "0x**********" [label="x[1]", color=orange, style=filled]
+	// "0x**********" [label="x([1])", color=orange, style=filled]
 	// true
 	// false
 }

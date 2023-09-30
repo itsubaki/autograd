@@ -16,6 +16,6 @@ func ExampleFunction() {
 	fmt.Println(y)
 
 	// Output:
-	// *variable.SinT[variable[1]]
-	// [variable[0.8414709848078965]]
+	// *variable.SinT[variable([1])]
+	// [variable([0.8414709848078965])]
 }

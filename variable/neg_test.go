@@ -16,8 +16,8 @@ func ExampleNeg() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[-3]
-	// variable[-1]
+	// variable([-3])
+	// variable([-1])
 }
 
 func ExampleNeg_double() {
@@ -34,7 +34,7 @@ func ExampleNeg_double() {
 	fmt.Println(y.Grad.Grad)
 
 	// Output:
-	// variable[-2]
-	// variable[-1]
-	// variable[-1]
+	// variable([-2])
+	// variable([-1])
+	// variable([-1])
 }

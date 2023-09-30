@@ -17,10 +17,10 @@ func ExampleAddT() {
 	fmt.Println(f.Backward(variable.OneLike(a), variable.OneLike(b)))
 
 	// Output:
-	// variable[2 3]
-	// variable[3 4]
-	// [variable[5 7]]
-	// [variable[1 1] variable[1 1]]
+	// variable([2 3])
+	// variable([3 4])
+	// [variable([5 7])]
+	// [variable([1 1]) variable([1 1])]
 }
 
 func ExampleAdd() {
@@ -32,7 +32,7 @@ func ExampleAdd() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 1] variable[1 1]
+	// variable([1 1]) variable([1 1])
 }
 
 func ExampleAddC() {
@@ -44,8 +44,8 @@ func ExampleAddC() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[13]
-	// variable[1]
+	// variable([13])
+	// variable([1])
 }
 
 func ExampleAdd_broadcast() {
@@ -59,8 +59,8 @@ func ExampleAdd_broadcast() {
 	fmt.Println(a.Grad)
 
 	// Output:
-	// variable[11 12 13]
-	// variable[3]
+	// variable([11 12 13])
+	// variable([3])
 }
 
 func ExampleAdd_double() {
@@ -82,9 +82,9 @@ func ExampleAdd_double() {
 	fmt.Println(y.Grad.Grad == ga.Grad, y.Grad.Grad == gb.Grad)
 
 	// Output:
-	// variable[1] variable[1] variable[1]
+	// variable([1]) variable([1]) variable([1])
 	// true true
-	// variable[1] variable[1] variable[1]
+	// variable([1]) variable([1]) variable([1])
 	// true true
 }
 
@@ -102,8 +102,8 @@ func ExampleAdd_double_a() {
 	fmt.Println(y.Grad.Grad == a.Grad.Grad) // ggy = gga
 
 	// Output:
-	// variable[1] <nil>
-	// variable[1]
+	// variable([1]) <nil>
+	// variable([1])
 	// true
 }
 
@@ -121,7 +121,7 @@ func ExampleAdd_double_b() {
 	fmt.Println(y.Grad.Grad == b.Grad.Grad) // ggy = ggb
 
 	// Output:
-	// <nil> variable[1]
-	// variable[1]
+	// <nil> variable([1])
+	// variable([1])
 	// true
 }

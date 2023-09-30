@@ -73,10 +73,10 @@ func (v *Variable) Backward() {
 
 func (v Variable) String() string {
 	if v.Name == "" {
-		return fmt.Sprintf("variable%v", v.Data)
+		return fmt.Sprintf("variable(%v)", v.Data)
 	}
 
-	return fmt.Sprintf("%v%v", v.Name, v.Data)
+	return fmt.Sprintf("%v(%v)", v.Name, v.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
