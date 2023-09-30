@@ -7,11 +7,11 @@ func Sum(x ...*Variable) *Variable {
 }
 
 type SumT struct {
-	XShape []int
+	xShape []int
 }
 
 func (f *SumT) Forward(x ...*Variable) []*Variable {
-	f.XShape = vector.Shape(x[0].Data)
+	f.xShape = vector.Shape(x[0].Data)
 
 	y := vector.Sum(x[0].Data)
 	return []*Variable{
@@ -21,6 +21,6 @@ func (f *SumT) Forward(x ...*Variable) []*Variable {
 
 func (f *SumT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
-		BroadcastTo(f.XShape...)(gy[0]),
+		BroadcastTo(f.xShape...)(gy[0]),
 	}
 }
