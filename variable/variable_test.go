@@ -11,7 +11,7 @@ func ExampleVariable() {
 	fmt.Println(v)
 
 	// Output:
-	// variable[1 2 3 4]
+	// variable([1 2 3 4])
 }
 
 func ExampleVariable_Name() {
@@ -20,14 +20,14 @@ func ExampleVariable_Name() {
 	fmt.Println(v)
 
 	// Output:
-	// v[1 2 3 4]
+	// v([1 2 3 4])
 }
 
 func ExampleConst() {
 	fmt.Println(variable.Const(1))
 
 	// Output:
-	// const[1]
+	// const([1])
 }
 
 func ExampleOneLike() {
@@ -35,7 +35,7 @@ func ExampleOneLike() {
 	fmt.Println(variable.OneLike(v))
 
 	// Output:
-	// variable[1 1 1 1]
+	// variable([1 1 1 1])
 }
 
 func ExampleVariable_Backward() {
@@ -48,8 +48,8 @@ func ExampleVariable_Backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[1]
-	// variable[1]
+	// variable([1])
+	// variable([1])
 }
 
 func Example_gx() {
@@ -57,6 +57,6 @@ func Example_gx() {
 	fmt.Println(variable.Gx(variable.New(1), variable.New(2)))
 
 	// Output:
-	// variable[1]
-	// variable[3]
+	// variable([1])
+	// variable([3])
 }

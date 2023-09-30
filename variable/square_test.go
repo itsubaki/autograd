@@ -16,9 +16,9 @@ func ExampleSquare() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[3]
-	// variable[9]
-	// variable[6]
+	// variable([3])
+	// variable([9])
+	// variable([6])
 }
 
 func ExampleSquare_double() {
@@ -39,9 +39,9 @@ func ExampleSquare_double() {
 	}
 
 	// Output:
-	// variable[3]
-	// variable[9]
-	// variable[6]
-	// variable[2]
-	// variable[0]
+	// variable([3])
+	// variable([9])
+	// variable([6])
+	// variable([2])
+	// variable([0])
 }

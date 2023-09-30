@@ -16,8 +16,8 @@ func ExampleSub() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1]
-	// variable[1] variable[-1]
+	// variable([1])
+	// variable([1]) variable([-1])
 }
 
 func ExampleSubC() {
@@ -29,8 +29,8 @@ func ExampleSubC() {
 	fmt.Println(x.Grad, y.Grad)
 
 	// Output:
-	// variable[7]
-	// variable[-1] variable[1]
+	// variable([7])
+	// variable([-1]) variable([1])
 }
 
 func ExampleSub_broadcast() {
@@ -44,8 +44,8 @@ func ExampleSub_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[0 1 2 3 4]
-	// variable[5] variable[-5]
+	// variable([0 1 2 3 4])
+	// variable([5]) variable([-5])
 }
 
 func ExampleSub_double() {
@@ -69,11 +69,11 @@ func ExampleSub_double() {
 	fmt.Println(y.Grad.Grad == ga.Grad) // ggy is gga, gga is 0
 
 	// Output:
-	// variable[1] <nil>
-	// variable[1]
+	// variable([1]) <nil>
+	// variable([1])
 	// true
-	// variable[0] variable[1]
-	// variable[0]
+	// variable([0]) variable([1])
+	// variable([0])
 	// true
 }
 
@@ -91,8 +91,8 @@ func ExampleSub_double_a() {
 	fmt.Println(y.Grad.Grad == a.Grad.Grad) // ggy = gga
 
 	// Output:
-	// variable[1] <nil>
-	// variable[1]
+	// variable([1]) <nil>
+	// variable([1])
 	// true
 }
 
@@ -110,7 +110,7 @@ func ExampleSub_double_b() {
 	fmt.Println(y.Grad.Grad)    // ggy = Neg(ggb)
 
 	// Output:
-	// <nil> variable[-1]
-	// variable[1]
-	// variable[-1]
+	// <nil> variable([-1])
+	// variable([1])
+	// variable([-1])
 }

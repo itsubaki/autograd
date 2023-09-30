@@ -15,6 +15,6 @@ func ExampleBroadcastTo() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[2 2 2]
-	// variable[3]
+	// variable([2 2 2])
+	// variable([3])
 }

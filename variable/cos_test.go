@@ -16,9 +16,9 @@ func ExampleCosT() {
 	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
-	// variable[0.7853981633974483]
-	// [variable[0.7071067811865476]]
-	// [variable[-0.7071067811865475]]
+	// variable([0.7853981633974483])
+	// [variable([0.7071067811865476])]
+	// [variable([-0.7071067811865475])]
 }
 
 func ExampleCos() {
@@ -32,8 +32,8 @@ func ExampleCos() {
 	fmt.Println([]float64{1.0 / math.Sqrt2})
 
 	// Output:
-	// variable[0.7071067811865476]
-	// variable[-0.7071067811865475]
+	// variable([0.7071067811865476])
+	// variable([-0.7071067811865475])
 	// [0.7071067811865476]
 }
 
@@ -54,16 +54,16 @@ func ExampleCos_double() {
 	}
 
 	// Output:
-	// variable[0.5403023058681398]
-	// variable[-0.8414709848078965]
-	// variable[-0.5403023058681398]
-	// variable[0.8414709848078965]
-	// variable[0.5403023058681398]
-	// variable[-0.8414709848078965]
-	// variable[-0.5403023058681398]
-	// variable[0.8414709848078965]
-	// variable[0.5403023058681398]
-	// variable[-0.8414709848078965]
-	// variable[-0.5403023058681398]
-	// variable[0.8414709848078965]
+	// variable([0.5403023058681398])
+	// variable([-0.8414709848078965])
+	// variable([-0.5403023058681398])
+	// variable([0.8414709848078965])
+	// variable([0.5403023058681398])
+	// variable([-0.8414709848078965])
+	// variable([-0.5403023058681398])
+	// variable([0.8414709848078965])
+	// variable([0.5403023058681398])
+	// variable([-0.8414709848078965])
+	// variable([-0.5403023058681398])
+	// variable([0.8414709848078965])
 }

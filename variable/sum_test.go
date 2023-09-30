@@ -16,6 +16,6 @@ func ExampleSum() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[28]
-	// variable[1 1 1 1 1 1 1]
+	// variable([28])
+	// variable([1 1 1 1 1 1 1])
 }
