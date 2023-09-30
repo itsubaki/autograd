@@ -12,18 +12,33 @@ func Sub(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &SubT{}}).ApplyAndFirst(x...)
 }
 
-type SubT struct{}
+type SubT struct {
+	x0Shape, x1Shape []int
+}
 
 func (f *SubT) Forward(x ...*Variable) []*Variable {
-	y := vector.Sub(x[0].Data, x[1].Data)
+	f.x0Shape, f.x1Shape = vector.Shape(x[0].Data), vector.Shape(x[1].Data)
+
+	x0, x1 := vector.Broadcast(x[0].Data, x[1].Data)
+	y := vector.Sub(x0, x1)
 	return []*Variable{
 		New(y...),
 	}
 }
 
 func (f *SubT) Backward(gy ...*Variable) []*Variable {
+	gx0 := gy[0]
+	gx1 := Neg(gy[0]) // -1.0 * gy
+
+	if vector.Equal(f.x0Shape, f.x1Shape) {
+		return []*Variable{
+			gx0,
+			gx1,
+		}
+	}
+
 	return []*Variable{
-		gy[0],
-		Neg(gy[0]), // -1.0 * gy
+		SumTo(f.x0Shape...)(gx0),
+		SumTo(f.x1Shape...)(gx1),
 	}
 }

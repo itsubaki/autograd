@@ -11,21 +11,34 @@ func Mul(x ...*Variable) *Variable {
 }
 
 type MulT struct {
-	x0, x1 *Variable
+	x0, x1           *Variable
+	x0Shape, x1Shape []int
 }
 
 func (f *MulT) Forward(x ...*Variable) []*Variable {
+	f.x0Shape, f.x1Shape = vector.Shape(x[0].Data), vector.Shape(x[1].Data)
 	f.x0, f.x1 = x[0], x[1]
 
-	y := vector.Mul(f.x0.Data, f.x1.Data)
+	x0, x1 := vector.Broadcast(x[0].Data, x[1].Data)
+	y := vector.Mul(x0, x1)
 	return []*Variable{
 		New(y...),
 	}
 }
 
 func (f *MulT) Backward(gy ...*Variable) []*Variable {
+	gx0 := Mul(gy[0], f.x1) // gy * x1
+	gx1 := Mul(gy[0], f.x0) // gy * x0
+
+	if vector.Equal(f.x0Shape, f.x1Shape) {
+		return []*Variable{
+			gx0,
+			gx1,
+		}
+	}
+
 	return []*Variable{
-		Mul(gy[0], f.x1), // gy * x1
-		Mul(gy[0], f.x0), // gy * x0
+		SumTo(f.x0Shape...)(gx0),
+		SumTo(f.x1Shape...)(gx1),
 	}
 }

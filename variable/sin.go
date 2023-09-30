@@ -13,7 +13,7 @@ type SinT struct {
 func (f *SinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := vector.Sin(f.x.Data)
+	y := vector.Sin(x[0].Data)
 	return []*Variable{
 		New(y...),
 	}
