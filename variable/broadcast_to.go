@@ -7,11 +7,11 @@ func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
 }
 
 type BroadcastToT struct {
-	Shape, XShape []int
+	Shape, xShape []int
 }
 
 func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
-	f.XShape = vector.Shape(x[0].Data)
+	f.xShape = vector.Shape(x[0].Data)
 
 	y := vector.BroadcastTo(f.Shape, x[0].Data)
 	return []*Variable{
@@ -21,6 +21,6 @@ func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
 
 func (f *BroadcastToT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
-		SumTo(f.XShape...)(gy[0]),
+		SumTo(f.xShape...)(gy[0]),
 	}
 }
