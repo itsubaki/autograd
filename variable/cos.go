@@ -13,7 +13,7 @@ type CosT struct {
 func (f *CosT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := vector.Cos(f.x.Data)
+	y := vector.Cos(x[0].Data)
 	return []*Variable{
 		New(y...),
 	}

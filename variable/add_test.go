@@ -48,6 +48,21 @@ func ExampleAddC() {
 	// variable[1]
 }
 
+func ExampleAdd_broadcast() {
+	// p305
+	a := variable.New(1, 2, 3)
+	b := variable.New(10)
+	y := variable.Add(a, b)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(a.Grad)
+
+	// Output:
+	// variable[11 12 13]
+	// variable[3]
+}
+
 func ExampleAdd_double() {
 	a := variable.New(3.0)
 	b := variable.New(2.0)

@@ -26,11 +26,26 @@ func ExampleSubC() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(x.Grad)
+	fmt.Println(x.Grad, y.Grad)
 
 	// Output:
 	// variable[7]
-	// variable[-1]
+	// variable[-1] variable[1]
+}
+
+func ExampleSub_broadcast() {
+	// p305
+	a := variable.New(1, 2, 3, 4, 5)
+	b := variable.New(1)
+	y := variable.Sub(a, b)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(a.Grad, b.Grad)
+
+	// Output:
+	// variable[0 1 2 3 4]
+	// variable[5] variable[-5]
 }
 
 func ExampleSub_double() {

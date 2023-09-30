@@ -39,6 +39,21 @@ func ExampleMul() {
 	// variable[2] variable[3]
 }
 
+func ExampleMul_broadcast() {
+	// p305
+	a := variable.New(2, 2, 2, 2, 2)
+	b := variable.New(3.0)
+	y := variable.Mul(a, b)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(a.Grad, b.Grad)
+
+	// Output:
+	// variable[6 6 6 6 6]
+	// variable[15] variable[10]
+}
+
 func ExampleMul_double() {
 	a := variable.New(2.0)
 	b := variable.New(3.0)

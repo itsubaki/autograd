@@ -131,3 +131,17 @@ func F2(v, w []float64, f func(a, b float64) float64) []float64 {
 
 	return out
 }
+
+func Equal[T comparable](v, w []T) bool {
+	if len(v) != len(w) {
+		return false
+	}
+
+	for i := range v {
+		if v[i] != w[i] {
+			return false
+		}
+	}
+
+	return true
+}

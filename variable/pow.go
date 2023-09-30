@@ -14,7 +14,7 @@ type PowT struct {
 func (f *PowT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := vector.Pow(f.C, f.x.Data)
+	y := vector.Pow(f.C, x[0].Data)
 	return []*Variable{
 		New(y...),
 	}
