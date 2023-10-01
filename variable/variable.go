@@ -58,14 +58,14 @@ func (v *Variable) Backward() {
 		fs = fs[:len(fs)-1]
 
 		// backward
-		x, y := f.Input, f.Output
-		gxs := f.Backward(gys(y)...)
+		gys := gys(f.Output)
+		gxs := f.Backward(gys...)
 
-		for i := range x {
-			x[i].Grad = gx(x[i].Grad, gxs[i])
+		for i, x := range f.Input {
+			x.Grad = gx(x.Grad, gxs[i])
 
-			if x[i].Creator != nil {
-				fs = addFunc(fs, x[i].Creator, seen)
+			if x.Creator != nil {
+				fs = addFunc(fs, x.Creator, seen)
 			}
 		}
 	}

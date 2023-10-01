@@ -30,3 +30,30 @@ func ExampleLog() {
 	// Output:
 	// variable([1 0.5 0.3333333333333333 0.25 0.2])
 }
+
+func ExampleLog_double() {
+	x := variable.New(2)
+	y := variable.Log(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	y.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	gx = x.Grad
+	x.Cleargrad()
+	y.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable([0.6931471805599453])
+	// variable([0.5])
+	// variable([-0.25])
+	// variable([0.25])
+}

@@ -30,12 +30,12 @@ func Func(f *variable.Function) []string {
 	begin, end := strings.Index(str, "."), strings.Index(str, "T[")
 	out := []string{fmt.Sprintf(fncfmt, f, str[begin+1:end])}
 
-	for _, v := range f.Input {
-		out = append(out, fmt.Sprintf(arrow, v, f))
+	for _, x := range f.Input {
+		out = append(out, fmt.Sprintf(arrow, x, f))
 	}
 
-	for _, v := range f.Output {
-		out = append(out, fmt.Sprintf(arrow, f, v))
+	for _, y := range f.Output {
+		out = append(out, fmt.Sprintf(arrow, f, y))
 	}
 
 	return out
