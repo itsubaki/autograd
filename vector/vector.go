@@ -74,6 +74,7 @@ func Div(v, w []float64) []float64 {
 }
 
 func BroadcastTo(shape []int, v []float64) []float64 {
+	// NOTE: v is vector, shape[0] has no effect. shape[0] is always 1.
 	out, _ := Broadcast(v, make([]float64, shape[1]))
 	return out
 }
@@ -132,7 +133,7 @@ func F2(v, w []float64, f func(a, b float64) float64) []float64 {
 	return out
 }
 
-func Equal[T comparable](v, w []T) bool {
+func Equals[T comparable](v, w []T) bool {
 	if len(v) != len(w) {
 		return false
 	}
