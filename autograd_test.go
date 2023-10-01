@@ -114,6 +114,22 @@ func Example_reuse() {
 	// variable([3])
 }
 
+func Example_inplace() {
+	// p503
+	x := variable.New(3.0)
+	y := F.Add(x, x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+	fmt.Println(y.Grad)
+
+	// Output:
+	// variable([6])
+	// variable([2])
+	// variable([1])
+}
+
 func Example_cleargrad() {
 	// p92
 	x := variable.New(3.0)

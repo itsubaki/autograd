@@ -119,10 +119,10 @@ func ExampleF2() {
 	// [0.16666666666666666 0.2857142857142857 0.375 0.4444444444444444 0.5]
 }
 
-func ExampleEqual() {
-	fmt.Println(vector.Equal([]float64{1, 2}, []float64{1, 2}))
-	fmt.Println(vector.Equal([]float64{1, 2}, []float64{2, 1}))
-	fmt.Println(vector.Equal([]float64{1, 2}, []float64{1}))
+func ExampleEquals() {
+	fmt.Println(vector.Equals([]float64{1, 2}, []float64{1, 2}))
+	fmt.Println(vector.Equals([]float64{1, 2}, []float64{2, 1}))
+	fmt.Println(vector.Equals([]float64{1, 2}, []float64{1}))
 
 	// Output:
 	// true

@@ -30,7 +30,7 @@ func (f *SubT) Backward(gy ...*Variable) []*Variable {
 	gx0 := gy[0]
 	gx1 := Neg(gy[0]) // -1.0 * gy
 
-	if vector.Equal(f.x0Shape, f.x1Shape) {
+	if vector.Equals(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,
