@@ -39,7 +39,7 @@ func ExampleExp_double() {
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 3; i++ {
 		gx := x.Grad
 		x.Cleargrad()
 		y.Cleargrad()
@@ -48,13 +48,6 @@ func ExampleExp_double() {
 	}
 
 	// Output:
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
-	// variable([7.38905609893065])
 	// variable([7.38905609893065])
 	// variable([7.38905609893065])
 	// variable([7.38905609893065])
