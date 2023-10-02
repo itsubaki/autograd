@@ -62,7 +62,7 @@ func (v *Variable) Backward() {
 		gxs := f.Backward(gys...)
 
 		for i, x := range f.Input {
-			x.Grad = gx(x.Grad, gxs[i])
+			x.Grad = add(x.Grad, gxs[i])
 
 			if x.Creator != nil {
 				fs = addFunc(fs, x.Creator, seen)
@@ -99,7 +99,7 @@ func gys(y []*Variable) []*Variable {
 	return gys
 }
 
-func gx(xgrad, gx *Variable) *Variable {
+func add(xgrad, gx *Variable) *Variable {
 	if xgrad == nil {
 		return gx
 	}
