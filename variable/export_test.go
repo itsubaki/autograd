@@ -2,6 +2,6 @@ package variable
 
 var (
 	AddFunc = addFunc
-	Gx      = gx
+	AddGrad = add
 	Gys     = gys
 )

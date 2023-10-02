@@ -52,9 +52,9 @@ func ExampleVariable_Backward() {
 	// variable([1])
 }
 
-func Example_gx() {
-	fmt.Println(variable.Gx(nil, variable.New(1)))
-	fmt.Println(variable.Gx(variable.New(1), variable.New(2)))
+func Example_add() {
+	fmt.Println(variable.AddGrad(nil, variable.New(1)))
+	fmt.Println(variable.AddGrad(variable.New(1), variable.New(2)))
 
 	// Output:
 	// variable([1])
