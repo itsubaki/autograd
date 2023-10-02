@@ -53,12 +53,13 @@ func main() {
 	y.Backward()
 	y.Grad.Name = "gy"
 
-	for i := 0; i < order-1; i++ {
+	for i := 1; i < order; i++ {
 		gx := x.Grad
 		x.Cleargrad()
 		y.Cleargrad()
 		gx.Backward()
-		gx.Grad.Name = fmt.Sprintf("ggx%d", i+1)
+		gx.Name = fmt.Sprintf("gx%d", i)
+		gx.Grad.Name = fmt.Sprintf("ggx%d", i)
 	}
 
 	x.Grad.Name = fmt.Sprintf("gx%d", order)
