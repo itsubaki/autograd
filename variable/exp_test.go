@@ -42,7 +42,6 @@ func ExampleExp_double() {
 	for i := 0; i < 3; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		y.Cleargrad()
 		gx.Backward()
 		fmt.Println(x.Grad)
 	}
