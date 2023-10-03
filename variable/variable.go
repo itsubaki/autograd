@@ -36,7 +36,7 @@ func (v *Variable) SetCreator(f *Function) {
 	v.Generation = f.Generation + 1
 }
 
-func (v *Variable) Backward() {
+func (v *Variable) Backward(opts ...Opts) {
 	if v.Grad == nil {
 		v.Grad = OneLike(v)
 	}
@@ -69,9 +69,7 @@ func (v *Variable) Backward() {
 			}
 		}
 
-		for _, y := range f.Output {
-			y.Cleargrad()
-		}
+		retaingrad(f.Output, opts...)
 	}
 }
 
@@ -110,4 +108,14 @@ func add(xgrad, gx *Variable) *Variable {
 
 	// NOTE: create graph
 	return Add(xgrad, gx)
+}
+
+func retaingrad(output []*Variable, opts ...Opts) {
+	if len(opts) > 0 && opts[0].RetainGrad {
+		return
+	}
+
+	for _, y := range output {
+		y.Cleargrad()
+	}
 }
