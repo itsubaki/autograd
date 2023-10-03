@@ -122,12 +122,10 @@ func Example_inplace() {
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
-	fmt.Println(y.Grad)
 
 	// Output:
 	// variable([6])
 	// variable([2])
-	// variable([1])
 }
 
 func Example_cleargrad() {
@@ -333,7 +331,6 @@ func Example_newton_double() {
 
 		gx := x.Grad
 		x.Cleargrad()
-		y.Cleargrad()
 		gx.Backward()
 		gx2 := x.Grad
 
@@ -362,7 +359,6 @@ func Example_double() {
 
 	z := F.Add(F.Pow(3.0)(gx), y)
 	x.Cleargrad()
-	y.Cleargrad()
 	z.Backward()
 	fmt.Println(x.Grad)
 
