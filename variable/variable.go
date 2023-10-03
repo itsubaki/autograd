@@ -68,6 +68,10 @@ func (v *Variable) Backward() {
 				fs = addFunc(fs, x.Creator, seen)
 			}
 		}
+
+		for _, y := range f.Output {
+			y.Cleargrad()
+		}
 	}
 }
 

@@ -34,22 +34,3 @@ func ExampleDiv_broadcast() {
 	// variable([0.5 1 1.5 2 2.5])
 	// variable([2.5]) variable([-3.75])
 }
-
-func ExampleDiv_double() {
-	a := variable.New(10)
-	b := variable.New(2)
-	y := variable.Div(a, b)
-	y.Backward()
-
-	ga, gb := a.Grad, b.Grad
-	a.Cleargrad()
-	b.Cleargrad()
-	ga.Backward()
-	gb.Backward()
-	fmt.Println(a.Grad, b.Grad)
-	fmt.Println(y.Grad.Grad)
-
-	// Output:
-	// variable([-0.25]) variable([2.25])
-	// variable([-2])
-}

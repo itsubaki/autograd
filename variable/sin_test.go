@@ -49,7 +49,6 @@ func ExampleSin_double() {
 	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		y.Cleargrad()
 		gx.Backward()
 		fmt.Println(x.Grad)
 	}
