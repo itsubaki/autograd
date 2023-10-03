@@ -12,7 +12,6 @@ func ExampleNewLike() {
 
 	// Output:
 	// [0 0 0 0 0]
-
 }
 
 func ExampleOneLike() {
