@@ -1,5 +1,6 @@
 package variable
 
 type Opts struct {
-	RetainGrad bool
+	RetainGrad  bool
+	CreateGraph bool
 }

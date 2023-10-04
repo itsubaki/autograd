@@ -41,7 +41,7 @@ func ExampleSin_double() {
 	// p243
 	x := variable.New(1.0)
 	y := variable.Sin(x)
-	y.Backward()
+	y.Backward(variable.Opts{CreateGraph: true})
 
 	fmt.Println(y)
 	fmt.Println(x.Grad)
@@ -49,7 +49,7 @@ func ExampleSin_double() {
 	for i := 0; i < 10; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{CreateGraph: true})
 		fmt.Println(x.Grad)
 	}
 
