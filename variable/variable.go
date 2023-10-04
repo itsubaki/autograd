@@ -62,7 +62,7 @@ func (v *Variable) Backward(opts ...Opts) {
 
 		// backward
 		func() {
-			if len(opts) == 0 || !opts[0].CreateGraph {
+			if !HasCreateGraph(opts...) {
 				defer Nograd().End()
 			}
 
@@ -76,7 +76,9 @@ func (v *Variable) Backward(opts ...Opts) {
 			}
 		}()
 
-		retaingrad(f.Output, opts...)
+		if !HasRetainGrad(opts...) {
+			cleargrad(f.Output)
+		}
 	}
 }
 
@@ -117,11 +119,7 @@ func add(xgrad, gx *Variable) *Variable {
 	return Add(xgrad, gx)
 }
 
-func retaingrad(output []*Variable, opts ...Opts) {
-	if len(opts) > 0 && opts[0].RetainGrad {
-		return
-	}
-
+func cleargrad(output []*Variable) {
 	for _, y := range output {
 		y.Cleargrad()
 	}
