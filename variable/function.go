@@ -22,10 +22,13 @@ func (f *Function) ApplyAndFirst(x ...*Variable) *Variable {
 func (f *Function) Apply(x ...*Variable) []*Variable {
 	y := f.Forward(x...)
 
-	f.Generation = maxgen(x...)
-	f.setCreator(y)
-	f.Input, f.Output = x, y
-	return f.Output
+	if Config.EnableBackprop {
+		f.Generation = maxgen(x...)
+		f.setCreator(y)
+		f.Input, f.Output = x, y
+	}
+
+	return y
 }
 
 func (f Function) String() string {

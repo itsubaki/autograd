@@ -327,7 +327,7 @@ func Example_newton_double() {
 
 		y := f(x)
 		x.Cleargrad()
-		y.Backward()
+		y.Backward(variable.Opts{CreateGraph: true})
 
 		gx := x.Grad
 		x.Cleargrad()
@@ -354,7 +354,7 @@ func Example_double() {
 	// p258
 	x := variable.New(2.0)
 	y := F.Pow(2.0)(x)
-	y.Backward()
+	y.Backward(variable.Opts{CreateGraph: true})
 	gx := x.Grad
 
 	z := F.Add(F.Pow(3.0)(gx), y)

@@ -24,7 +24,7 @@ func ExampleSquare() {
 func ExampleSquare_double() {
 	x := variable.New(3.0)
 	y := variable.Square(x)
-	y.Backward()
+	y.Backward(variable.Opts{CreateGraph: true})
 
 	fmt.Println(x)
 	fmt.Println(y)
@@ -33,7 +33,7 @@ func ExampleSquare_double() {
 	for i := 0; i < 2; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{CreateGraph: true})
 		fmt.Println(x.Grad)
 	}
 
