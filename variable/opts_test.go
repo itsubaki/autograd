@@ -37,3 +37,25 @@ func Example_retaingrad_false() {
 	// <nil> <nil>
 	// variable([2]) variable([1])
 }
+
+func ExampleHasRetainGrad() {
+	fmt.Println(variable.HasRetainGrad())
+	fmt.Println(variable.HasRetainGrad(variable.Opts{RetainGrad: false}))
+	fmt.Println(variable.HasRetainGrad(variable.Opts{RetainGrad: true}))
+
+	// Output:
+	// false
+	// false
+	// true
+}
+
+func ExampleHasCreateGraph() {
+	fmt.Println(variable.HasCreateGraph())
+	fmt.Println(variable.HasCreateGraph(variable.Opts{CreateGraph: false}))
+	fmt.Println(variable.HasCreateGraph(variable.Opts{CreateGraph: true}))
+
+	// Output:
+	// false
+	// false
+	// true
+}

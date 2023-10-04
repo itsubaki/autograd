@@ -21,13 +21,13 @@ func (f *Function) ApplyAndFirst(x ...*Variable) *Variable {
 // Apply applies the function
 func (f *Function) Apply(x ...*Variable) []*Variable {
 	y := f.Forward(x...)
-
-	if Config.EnableBackprop {
-		f.Generation = maxgen(x...)
-		f.setCreator(y)
-		f.Input, f.Output = x, y
+	if !Config.EnableBackprop {
+		return y
 	}
 
+	f.Generation = maxgen(x...) //
+	f.setCreator(y)             // set creator and increment generation
+	f.Input, f.Output = x, y    //
 	return y
 }
 
