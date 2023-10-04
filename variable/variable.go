@@ -57,17 +57,24 @@ func (v *Variable) Backward(opts ...Opts) {
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
 
-		// backward
+		// gys
 		gys := gys(f.Output)
-		gxs := f.Backward(gys...)
 
-		for i, x := range f.Input {
-			x.Grad = add(x.Grad, gxs[i])
-
-			if x.Creator != nil {
-				fs = addFunc(fs, x.Creator, seen)
+		// backward
+		func() {
+			if len(opts) == 0 || !opts[0].CreateGraph {
+				defer Nograd()()
 			}
-		}
+
+			gxs := f.Backward(gys...)
+			for i, x := range f.Input {
+				x.Grad = add(x.Grad, gxs[i])
+
+				if x.Creator != nil {
+					fs = addFunc(fs, x.Creator, seen)
+				}
+			}
+		}()
 
 		retaingrad(f.Output, opts...)
 	}

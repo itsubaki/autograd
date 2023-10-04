@@ -50,12 +50,12 @@ func main() {
 	y.Name = "y"
 
 	// backward
-	y.Backward()
+	y.Backward(variable.Opts{CreateGraph: true})
 
 	for i := 1; i < order; i++ {
 		gx := x.Grad
 		x.Cleargrad()
-		gx.Backward()
+		gx.Backward(variable.Opts{CreateGraph: true})
 		gx.Name = fmt.Sprintf("gx%d", i)
 	}
 

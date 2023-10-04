@@ -10,23 +10,23 @@ func Example_tanh() {
 	// p249
 	x := variable.New(1.0)
 	y := variable.Tanh(x)
-	y.Backward()
+	y.Backward(variable.Opts{CreateGraph: true})
 
 	fmt.Println(x.Grad)
 
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward()
+	gx.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(x.Grad)
 
 	gx = x.Grad
 	x.Cleargrad()
-	gx.Backward()
+	gx.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(x.Grad)
 
 	gx = x.Grad
 	x.Cleargrad()
-	gx.Backward()
+	gx.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(x.Grad)
 
 	// 1-tanh(1)^2                                   =  0.41997434161
