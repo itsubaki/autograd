@@ -20,7 +20,7 @@ func ExampleNograd() {
 	f()
 
 	func() {
-		defer variable.Nograd()()
+		defer variable.Nograd().End()
 
 		fmt.Println("backprop:", variable.Config.EnableBackprop)
 		f()
@@ -44,7 +44,7 @@ func ExampleTestMode() {
 	fmt.Println("train:", variable.Config.Train)
 
 	func() {
-		defer variable.TestMode()()
+		defer variable.TestMode().End()
 
 		fmt.Println("train:", variable.Config.Train)
 	}()
