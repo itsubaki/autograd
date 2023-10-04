@@ -10,16 +10,24 @@ var Config = config{
 	Train:          true,
 }
 
-func Nograd() func() {
+type Span struct {
+	End func()
+}
+
+func Nograd() *Span {
 	Config.EnableBackprop = false
-	return func() {
-		Config.EnableBackprop = true
+	return &Span{
+		End: func() {
+			Config.EnableBackprop = true
+		},
 	}
 }
 
-func TestMode() func() {
+func TestMode() *Span {
 	Config.Train = false
-	return func() {
-		Config.Train = true
+	return &Span{
+		End: func() {
+			Config.Train = true
+		},
 	}
 }
