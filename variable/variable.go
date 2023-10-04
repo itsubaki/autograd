@@ -63,7 +63,7 @@ func (v *Variable) Backward(opts ...Opts) {
 		// backward
 		func() {
 			if len(opts) == 0 || !opts[0].CreateGraph {
-				defer NoBackprop()()
+				defer Nograd()()
 			}
 
 			gxs := f.Backward(gys...)

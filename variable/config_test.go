@@ -6,7 +6,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleNoBackprop() {
+func ExampleNograd() {
 	f := func() {
 		x := variable.New(3)
 		y := variable.Square(x)
@@ -20,7 +20,7 @@ func ExampleNoBackprop() {
 	f()
 
 	func() {
-		defer variable.NoBackprop()()
+		defer variable.Nograd()()
 
 		fmt.Println("backprop:", variable.Config.EnableBackprop)
 		f()
