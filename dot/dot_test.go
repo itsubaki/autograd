@@ -116,3 +116,22 @@ func ExampleGraph_composite() {
 	// "0x**********" [label="x", color=orange, style=filled]
 	// }
 }
+
+func ExampleAddFunc() {
+	fs := make([]*variable.Function, 0)
+	seen := make(map[*variable.Function]bool)
+
+	sin := &variable.Function{Forwarder: &variable.SinT{}}
+	cos := &variable.Function{Forwarder: &variable.CosT{}}
+	fs = dot.AddFunc(fs, sin, seen)
+	fs = dot.AddFunc(fs, cos, seen)
+	fmt.Println(fs)
+
+	fs = dot.AddFunc(fs, sin, seen)
+	fs = dot.AddFunc(fs, cos, seen)
+	fmt.Println(fs)
+
+	// Output:
+	// [*variable.SinT[] *variable.CosT[]]
+	// [*variable.SinT[] *variable.CosT[]]
+}
