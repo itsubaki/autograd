@@ -50,6 +50,7 @@ func ExampleSin_double() {
 		gx := x.Grad
 		x.Cleargrad()
 		gx.Backward(variable.Opts{CreateGraph: true})
+
 		fmt.Println(x.Grad)
 	}
 
