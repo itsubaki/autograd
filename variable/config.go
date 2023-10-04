@@ -10,7 +10,7 @@ var Config = config{
 	Train:          true,
 }
 
-func Nograd() func() {
+func NoBackprop() func() {
 	Config.EnableBackprop = false
 	return func() {
 		Config.EnableBackprop = true

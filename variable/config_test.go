@@ -6,31 +6,37 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleNograd() {
-	fmt.Println("enable_backprop:", variable.Config.EnableBackprop)
-
-	func() {
-		defer variable.Nograd()()
-		fmt.Println("enable_backprop:", variable.Config.EnableBackprop)
-
+func ExampleNoBackprop() {
+	f := func() {
 		x := variable.New(3)
 		y := variable.Square(x)
 		y.Backward()
+
 		fmt.Println("gx: ", x.Grad)
+		fmt.Println()
+	}
+
+	fmt.Println("backprop:", variable.Config.EnableBackprop)
+	f()
+
+	func() {
+		defer variable.NoBackprop()()
+
+		fmt.Println("backprop:", variable.Config.EnableBackprop)
+		f()
 	}()
 
-	fmt.Println("enable_backprop:", variable.Config.EnableBackprop)
-
-	x := variable.New(3)
-	y := variable.Square(x)
-	y.Backward()
-	fmt.Println("gx: ", x.Grad)
+	fmt.Println("backprop:", variable.Config.EnableBackprop)
+	f()
 
 	// Output:
-	// enable_backprop: true
-	// enable_backprop: false
+	// backprop: true
+	// gx:  variable([6])
+	//
+	// backprop: false
 	// gx:  <nil>
-	// enable_backprop: true
+	//
+	// backprop: true
 	// gx:  variable([6])
 }
 
@@ -39,6 +45,7 @@ func ExampleTestMode() {
 
 	func() {
 		defer variable.TestMode()()
+
 		fmt.Println("train:", variable.Config.Train)
 	}()
 
