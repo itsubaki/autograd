@@ -86,7 +86,7 @@ for i := 0; i < iters+1; i++ {
 ```go
 x := variable.New(1.0)
 y := F.Sin(x)
-y.Backward()
+y.Backward(variable.Opts{CreateGraph: true})
 
 fmt.Println(y)
 fmt.Println(x.Grad)
@@ -94,7 +94,8 @@ fmt.Println(x.Grad)
 for i := 0; i < 5; i++ {
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward()
+	gx.Backward(variable.Opts{CreateGraph: true})
+
 	fmt.Println(x.Grad)
 }
 
