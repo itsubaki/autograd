@@ -32,5 +32,5 @@ func ExampleDiv_broadcast() {
 
 	// Output:
 	// variable([0.5 1 1.5 2 2.5])
-	// variable([2.5]) variable([-3.75])
+	// variable([0.5 0.5 0.5 0.5 0.5]) variable([-3.75])
 }

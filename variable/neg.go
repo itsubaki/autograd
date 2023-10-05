@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import "github.com/itsubaki/autograd/matrix"
 
 func Neg(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &NegT{}}).ApplyAndFirst(x...)
@@ -9,9 +9,9 @@ func Neg(x ...*Variable) *Variable {
 type NegT struct{}
 
 func (f *NegT) Forward(x ...*Variable) []*Variable {
-	y := vector.MulC(-1.0, x[0].Data)
+	y := matrix.MulC(-1.0, x[0].Data)
 	return []*Variable{
-		New(y...),
+		NewOf(y...),
 	}
 }
 

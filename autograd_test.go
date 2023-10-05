@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/numerical"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 func Example() {
@@ -229,7 +229,7 @@ func Example_gradientDescent() {
 
 	update := func(lr float64, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = vector.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+			v.Data = matrix.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
 				return a - lr*b
 			})
 		}
@@ -293,7 +293,7 @@ func Example_newton() {
 		x.Cleargrad()
 		y.Backward()
 
-		x.Data = vector.Sub(x.Data, vector.Div(x.Grad.Data, gx2(x).Data))
+		x.Data = matrix.Sub(x.Data, matrix.Div(x.Grad.Data, gx2(x).Data))
 	}
 
 	// Output:
@@ -334,7 +334,7 @@ func Example_newton_double() {
 		gx.Backward()
 		gx2 := x.Grad
 
-		x.Data = vector.Sub(x.Data, vector.Div(gx.Data, gx2.Data))
+		x.Data = matrix.Sub(x.Data, matrix.Div(gx.Data, gx2.Data))
 	}
 
 	// Output:

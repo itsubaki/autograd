@@ -1,6 +1,9 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import (
+	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/vector"
+)
 
 func AddC(c float64, x ...*Variable) *Variable {
 	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(Const(c), x[0])
@@ -15,12 +18,12 @@ type AddT struct {
 }
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {
-	f.x0Shape, f.x1Shape = vector.Shape(x[0].Data), vector.Shape(x[1].Data)
+	f.x0Shape, f.x1Shape = matrix.Shape(x[0].Data), matrix.Shape(x[1].Data)
 
-	x0, x1 := vector.Broadcast(x[0].Data, x[1].Data)
-	y := vector.Add(x0, x1)
+	x0, x1 := matrix.Broadcast(x[0].Data, x[1].Data)
+	y := matrix.Add(x0, x1)
 	return []*Variable{
-		New(y...),
+		NewOf(y...),
 	}
 }
 

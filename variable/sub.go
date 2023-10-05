@@ -1,6 +1,9 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import (
+	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/vector"
+)
 
 // SubC returns a variable that c - x[0].
 func SubC(c float64, x ...*Variable) *Variable {
@@ -17,12 +20,12 @@ type SubT struct {
 }
 
 func (f *SubT) Forward(x ...*Variable) []*Variable {
-	f.x0Shape, f.x1Shape = vector.Shape(x[0].Data), vector.Shape(x[1].Data)
+	f.x0Shape, f.x1Shape = matrix.Shape(x[0].Data), matrix.Shape(x[1].Data)
 
-	x0, x1 := vector.Broadcast(x[0].Data, x[1].Data)
-	y := vector.Sub(x0, x1)
+	x0, x1 := matrix.Broadcast(x[0].Data, x[1].Data)
+	y := matrix.Sub(x0, x1)
 	return []*Variable{
-		New(y...),
+		NewOf(y...),
 	}
 }
 

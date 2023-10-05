@@ -45,5 +45,5 @@ func ExampleSub_broadcast() {
 
 	// Output:
 	// variable([0 1 2 3 4])
-	// variable([5]) variable([-5])
+	// variable([1 1 1 1 1]) variable([-5])
 }

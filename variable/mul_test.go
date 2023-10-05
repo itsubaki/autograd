@@ -51,5 +51,5 @@ func ExampleMul_broadcast() {
 
 	// Output:
 	// variable([6 6 6 6 6])
-	// variable([15]) variable([10])
+	// variable([3 3 3 3 3]) variable([10])
 }
