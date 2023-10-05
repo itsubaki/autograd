@@ -6,9 +6,9 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-func ExampleNewLike() {
+func ExampleZeroLike() {
 	v := []float64{1, 2, 3, 4, 5}
-	fmt.Println(vector.NewLike(v))
+	fmt.Println(vector.ZeroLike(v))
 
 	// Output:
 	// [0 0 0 0 0]

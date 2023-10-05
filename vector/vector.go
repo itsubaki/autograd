@@ -2,12 +2,12 @@ package vector
 
 import "math"
 
-func NewLike(v []float64) []float64 {
+func ZeroLike(v []float64) []float64 {
 	return make([]float64, len(v))
 }
 
 func OneLike(v []float64) []float64 {
-	return AddC(1.0, NewLike(v))
+	return AddC(1.0, ZeroLike(v))
 }
 
 func Const(c float64) []float64 {
@@ -81,7 +81,7 @@ func BroadcastTo(shape []int, v []float64) []float64 {
 
 func Broadcast(v, w []float64) ([]float64, []float64) {
 	if len(v) == 1 {
-		out := NewLike(w)
+		out := ZeroLike(w)
 		for i := 0; i < len(w); i++ {
 			out[i] = v[0]
 		}
@@ -90,7 +90,7 @@ func Broadcast(v, w []float64) ([]float64, []float64) {
 	}
 
 	if len(w) == 1 {
-		out := NewLike(v)
+		out := ZeroLike(v)
 		for i := 0; i < len(v); i++ {
 			out[i] = w[0]
 		}
@@ -116,7 +116,7 @@ func Sum(v []float64) float64 {
 }
 
 func F(v []float64, f func(a float64) float64) []float64 {
-	out := NewLike(v)
+	out := ZeroLike(v)
 	for i := range v {
 		out[i] = f(v[i])
 	}
@@ -125,7 +125,7 @@ func F(v []float64, f func(a float64) float64) []float64 {
 }
 
 func F2(v, w []float64, f func(a, b float64) float64) []float64 {
-	out := NewLike(v)
+	out := ZeroLike(v)
 	for i := range v {
 		out[i] = f(v[i], w[i])
 	}
