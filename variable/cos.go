@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import "github.com/itsubaki/autograd/matrix"
 
 func Cos(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &CosT{}}).ApplyAndFirst(x...)
@@ -13,9 +13,9 @@ type CosT struct {
 func (f *CosT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := vector.Cos(x[0].Data)
+	y := matrix.Cos(x[0].Data)
 	return []*Variable{
-		New(y...),
+		NewOf(y...),
 	}
 }
 

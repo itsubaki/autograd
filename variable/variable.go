@@ -4,27 +4,31 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/itsubaki/autograd/vector"
+	"github.com/itsubaki/autograd/matrix"
 )
 
 type Variable struct {
 	Name       string
-	Data       []float64
+	Data       matrix.Matrix
 	Grad       *Variable
 	Creator    *Function
 	Generation int
 }
 
 func New(v ...float64) *Variable {
+	return &Variable{Data: matrix.New(v)}
+}
+
+func NewOf(v ...[]float64) *Variable {
 	return &Variable{Data: v}
 }
 
 func Const(c float64) *Variable {
-	return &Variable{Name: "const", Data: vector.Const(c)}
+	return &Variable{Name: "const", Data: matrix.Const(c)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return New(vector.OneLike(v.Data)...)
+	return NewOf(matrix.OneLike(v.Data)...)
 }
 
 func (v *Variable) Cleargrad() {
@@ -83,11 +87,16 @@ func (v *Variable) Backward(opts ...Opts) {
 }
 
 func (v Variable) String() string {
-	if v.Name == "" {
-		return fmt.Sprintf("variable(%v)", v.Data)
+	name := "variable"
+	if v.Name != "" {
+		name = v.Name
 	}
 
-	return fmt.Sprintf("%v(%v)", v.Name, v.Data)
+	if len(v.Data) == 1 {
+		return fmt.Sprintf("%s(%v)", name, v.Data[0])
+	}
+
+	return fmt.Sprintf("%s(%v)", name, v.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {

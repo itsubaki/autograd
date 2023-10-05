@@ -1,6 +1,8 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import (
+	"github.com/itsubaki/autograd/matrix"
+)
 
 func Sum(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &SumT{}}).ApplyAndFirst(x...)
@@ -11,9 +13,9 @@ type SumT struct {
 }
 
 func (f *SumT) Forward(x ...*Variable) []*Variable {
-	f.xShape = vector.Shape(x[0].Data)
+	f.xShape = matrix.Shape(x[0].Data)
 
-	y := vector.Sum(x[0].Data)
+	y := matrix.Sum(x[0].Data)
 	return []*Variable{
 		New(y),
 	}

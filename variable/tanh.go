@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/vector"
+import "github.com/itsubaki/autograd/matrix"
 
 func Tanh(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &TanhT{}}).ApplyAndFirst(x...)
@@ -11,9 +11,9 @@ type TanhT struct {
 }
 
 func (f *TanhT) Forward(x ...*Variable) []*Variable {
-	y := vector.Tanh(x[0].Data)
+	y := matrix.Tanh(x[0].Data)
 
-	f.y = New(y...)
+	f.y = NewOf(y...)
 	return []*Variable{
 		f.y,
 	}

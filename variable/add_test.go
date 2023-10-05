@@ -56,9 +56,9 @@ func ExampleAdd_broadcast() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad)
+	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
 	// variable([11 12 13])
-	// variable([3])
+	// variable([1 1 1]) variable([3])
 }

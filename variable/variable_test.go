@@ -23,6 +23,17 @@ func ExampleVariable_Name() {
 	// v([1 2 3 4])
 }
 
+func ExampleVariable_Name_matrix() {
+	v := variable.NewOf(
+		[]float64{1, 2, 3},
+		[]float64{4, 5, 6},
+	)
+	fmt.Println(v)
+
+	// Output:
+	// variable([[1 2 3] [4 5 6]])
+}
+
 func ExampleConst() {
 	fmt.Println(variable.Const(1))
 
