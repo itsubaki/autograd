@@ -17,7 +17,10 @@ func ExampleZero() {
 }
 
 func ExampleZeroLike() {
-	A := matrix.Zero(2, 3)
+	A := matrix.New(
+		[]float64{1, 2, 3},
+		[]float64{4, 5, 6},
+	)
 	for _, r := range matrix.ZeroLike(A) {
 		fmt.Println(r)
 	}
