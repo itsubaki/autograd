@@ -191,10 +191,10 @@ func SumAxis1(m Matrix) Matrix {
 		v = append(v, sum)
 	}
 
-	return T(New(v))
+	return Transpose(New(v))
 }
 
-func T(m Matrix) Matrix {
+func Transpose(m Matrix) Matrix {
 	shape := Shape(m)
 	p, q := shape[0], shape[1]
 
