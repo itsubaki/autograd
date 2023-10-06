@@ -2,6 +2,7 @@ package variable
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 
 	"github.com/itsubaki/autograd/matrix"
@@ -9,7 +10,7 @@ import (
 
 type Variable struct {
 	Name       string
-	Data       matrix.Matrix
+	Data       [][]float64
 	Grad       *Variable
 	Creator    *Function
 	Generation int
@@ -23,12 +24,24 @@ func NewOf(v ...[]float64) *Variable {
 	return &Variable{Data: v}
 }
 
+func OneLike(v *Variable) *Variable {
+	return &Variable{Data: matrix.OneLike(v.Data)}
+}
+
 func Const(c float64) *Variable {
 	return &Variable{Name: "const", Data: matrix.Const(c)}
 }
 
-func OneLike(v *Variable) *Variable {
-	return NewOf(matrix.OneLike(v.Data)...)
+func Rand(m, n int, s ...rand.Source) *Variable {
+	return &Variable{Data: matrix.Rand(m, n, s...)}
+}
+
+func Randn(m, n int, s ...rand.Source) *Variable {
+	return &Variable{Data: matrix.Randn(m, n, s...)}
+}
+
+func (v *Variable) Shape() []int {
+	return matrix.Shape(v.Data)
 }
 
 func (v *Variable) Cleargrad() {

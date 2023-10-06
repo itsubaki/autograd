@@ -2,6 +2,7 @@ package variable_test
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/itsubaki/autograd/variable"
 )
@@ -47,6 +48,28 @@ func ExampleOneLike() {
 
 	// Output:
 	// variable([1 1 1 1])
+}
+
+func ExampleRand() {
+	s := rand.NewSource(1)
+	for _, r := range variable.Rand(2, 3, s).Data {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [0.6046602879796196 0.9405090880450124 0.6645600532184904]
+	// [0.4377141871869802 0.4246374970712657 0.6868230728671094]
+}
+
+func ExampleRandn() {
+	s := rand.NewSource(1)
+	for _, r := range variable.Randn(2, 3, s).Data {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [-1.233758177597947 -0.12634751070237293 -0.5209945711531503]
+	// [2.28571911769958 0.3228052526115799 0.5900672875996937]
 }
 
 func ExampleVariable_Backward() {

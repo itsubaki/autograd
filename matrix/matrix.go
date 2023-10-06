@@ -1,6 +1,10 @@
 package matrix
 
-import "math"
+import (
+	"math"
+	"math/rand"
+	"time"
+)
 
 type Matrix [][]float64
 
@@ -30,6 +34,44 @@ func OneLike(m Matrix) Matrix {
 
 func Const(c float64) Matrix {
 	return [][]float64{{c}}
+}
+
+// Rand returns a matrix with elements that pseudo-random number in the half-open interval [0.0,1.0).
+// m, n is the dimension of the matrix.
+// s is the source of the pseudo-random number.
+func Rand(m, n int, s ...rand.Source) Matrix {
+	if len(s) == 0 {
+		s = append(s, rand.NewSource(time.Now().UnixNano()))
+	}
+	rng := rand.New(s[0])
+
+	out := Zero(m, n)
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			out[i][j] = rng.Float64()
+		}
+	}
+
+	return out
+}
+
+// Randn returns a matrix with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
+// m, n is the dimension of the matrix.
+// s is the source of the pseudo-random number.
+func Randn(m, n int, s ...rand.Source) Matrix {
+	if len(s) == 0 {
+		s = append(s, rand.NewSource(time.Now().UnixNano()))
+	}
+	rng := rand.New(s[0])
+
+	out := Zero(m, n)
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			out[i][j] = rng.NormFloat64()
+		}
+	}
+
+	return out
 }
 
 func Shape(m Matrix) []int {
@@ -87,6 +129,23 @@ func Mul(m, n Matrix) Matrix {
 
 func Div(m, n Matrix) Matrix {
 	return F2(m, n, func(a, b float64) float64 { return a / b })
+}
+
+// Dot returns the dot product of m and n.
+func Dot(m, n Matrix) Matrix {
+	msh, nsh := Shape(m), Shape(n)
+	a, b, p := msh[0], msh[1], nsh[1]
+
+	out := Zero(a, p)
+	for i := 0; i < a; i++ {
+		for j := 0; j < p; j++ {
+			for k := 0; k < b; k++ {
+				out[i][j] = out[i][j] + m[i][k]*n[k][j]
+			}
+		}
+	}
+
+	return out
 }
 
 func Broadcast(m, n Matrix) (Matrix, Matrix) {

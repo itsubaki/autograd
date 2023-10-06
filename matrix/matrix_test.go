@@ -2,6 +2,7 @@ package matrix_test
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/itsubaki/autograd/matrix"
 )
@@ -46,6 +47,44 @@ func ExampleConst() {
 
 	// Output:
 	// [[1]]
+}
+
+func ExampleRand() {
+	shape := matrix.Shape(matrix.Rand(2, 3))
+	fmt.Println(shape)
+
+	// Output:
+	// [2 3]
+}
+
+func ExampleRand_seed() {
+	s := rand.NewSource(1)
+	for _, r := range matrix.Rand(2, 3, s) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [0.6046602879796196 0.9405090880450124 0.6645600532184904]
+	// [0.4377141871869802 0.4246374970712657 0.6868230728671094]
+}
+
+func ExampleRandn() {
+	shape := matrix.Shape(matrix.Randn(2, 3))
+	fmt.Println(shape)
+
+	// Output:
+	// [2 3]
+}
+
+func ExampleRandn_seed() {
+	s := rand.NewSource(1)
+	for _, r := range matrix.Randn(2, 3, s) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [-1.233758177597947 -0.12634751070237293 -0.5209945711531503]
+	// [2.28571911769958 0.3228052526115799 0.5900672875996937]
 }
 
 func ExampleShape() {
@@ -267,6 +306,26 @@ func ExampleDiv() {
 	// Output:
 	// [0.2 0.3333333333333333]
 	// [0.42857142857142855 0.5]
+}
+
+func ExampleDot() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+	)
+
+	B := matrix.New(
+		[]float64{5, 6},
+		[]float64{7, 8},
+	)
+
+	for _, r := range matrix.Dot(A, B) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [19 22]
+	// [43 50]
 }
 
 func ExampleBroadcastTo() {

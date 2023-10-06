@@ -24,6 +24,10 @@ var (
 	_ Func = F.Sum
 	_ Func = F.SumTo(1, 1)
 	_ Func = F.BroadcastTo(1, 3)
+	_ Func = F.Reshape(2, 2)
+	_ Func = F.Transpose
+	_ Func = F.MatMul
+	_ Func = F.Linear
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
