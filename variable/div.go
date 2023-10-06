@@ -5,6 +5,10 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+func DivC(c float64, x ...*Variable) *Variable {
+	return (&Function{Forwarder: &DivT{}}).ApplyAndFirst(Const(c), x[0])
+}
+
 func Div(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &DivT{}}).ApplyAndFirst(x...)
 }
@@ -15,7 +19,7 @@ type DivT struct {
 }
 
 func (f *DivT) Forward(x ...*Variable) []*Variable {
-	f.x0Shape, f.x1Shape = matrix.Shape(x[0].Data), matrix.Shape(x[1].Data)
+	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
 	f.x0, f.x1 = x[0], x[1]
 
 	x0, x1 := matrix.Broadcast(x[0].Data, x[1].Data)
