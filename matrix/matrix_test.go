@@ -484,6 +484,41 @@ func ExampleSumAxis1() {
 	// [7]
 }
 
+func ExampleReshape() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+	)
+
+	fmt.Println(matrix.Reshape([]int{1, 4}, A))
+	fmt.Println(matrix.Reshape([]int{4, 1}, A))
+	fmt.Println(matrix.Reshape([]int{2, 2}, A))
+	fmt.Println()
+
+	fmt.Println(matrix.Reshape([]int{1, -1}, A))
+	fmt.Println(matrix.Reshape([]int{4, -1}, A))
+	fmt.Println(matrix.Reshape([]int{2, -1}, A))
+	fmt.Println()
+
+	fmt.Println(matrix.Reshape([]int{-1, 1}, A))
+	fmt.Println(matrix.Reshape([]int{-1, 4}, A))
+	fmt.Println(matrix.Reshape([]int{-1, 2}, A))
+	fmt.Println()
+
+	// Output:
+	// [[1 2 3 4]]
+	// [[1] [2] [3] [4]]
+	// [[1 2] [3 4]]
+	//
+	// [[1 2 3 4]]
+	// [[1] [2] [3] [4]]
+	// [[1 2] [3 4]]
+	//
+	// [[1] [2] [3] [4]]
+	// [[1 2 3 4]]
+	// [[1 2] [3 4]]
+}
+
 func ExampleEquals() {
 	A := matrix.New(
 		[]float64{1, 2},

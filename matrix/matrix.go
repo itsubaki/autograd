@@ -208,6 +208,38 @@ func Transpose(m Matrix) Matrix {
 	return out
 }
 
+// Reshape returns the matrix with the given shape.
+func Reshape(shape []int, x Matrix) Matrix {
+	xsh := Shape(x)
+	p, q, a, b := xsh[0], xsh[1], shape[0], shape[1]
+
+	v := Flatten(x)
+	if a < 1 {
+		a = p * q / b
+	}
+
+	if b < 1 {
+		b = p * q / a
+	}
+
+	out := New()
+	for i := 0; i < a; i++ {
+		begin, end := i*b, (i+1)*b
+		out = append(out, v[begin:end])
+	}
+
+	return out
+}
+
+func Flatten(m Matrix) []float64 {
+	out := make([]float64, 0)
+	for _, r := range m {
+		out = append(out, r...)
+	}
+
+	return out
+}
+
 func F(m Matrix, f func(a float64) float64) Matrix {
 	shape := Shape(m)
 	p, q := shape[0], shape[1]
