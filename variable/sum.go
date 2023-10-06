@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/matrix"
-)
+import "github.com/itsubaki/autograd/matrix"
 
 func Sum(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &SumT{}}).ApplyAndFirst(x...)
