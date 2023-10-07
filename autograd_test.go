@@ -2,6 +2,7 @@ package autograd_test
 
 import (
 	"fmt"
+	"math/rand"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/matrix"
@@ -364,4 +365,54 @@ func Example_double() {
 
 	// Output:
 	// variable([100])
+}
+
+func Example_linearRegression() {
+	// p318
+	s := rand.NewSource(1)
+	xrand := matrix.Rand(100, 1, s)
+	yrand := matrix.Rand(100, 1, s)
+
+	// variable
+	x := variable.NewOf(xrand...)                                                    // x = xrand
+	y := variable.NewOf(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))...) // y = 2x+5+yrand
+
+	// parameter
+	w := variable.New(0.0)
+	b := variable.New(0.0)
+
+	predict := func(x *variable.Variable) *variable.Variable {
+		return F.Add(F.MatMul(x, w), b) // y = x.w + b
+	}
+
+	update := func(lr float64, x ...*variable.Variable) {
+		for _, v := range x {
+			v.Data = matrix.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+				return a - lr*b
+			})
+		}
+	}
+
+	lr := 0.1
+	iters := 100
+	var loss *variable.Variable
+
+	for i := 0; i < iters; i++ {
+		yPred := predict(x)
+		loss = F.MeanSquaredError(y, yPred)
+
+		w.Cleargrad()
+		b.Cleargrad()
+		loss.Backward()
+
+		update(lr, w, b)
+	}
+
+	w.Name = "w"
+	b.Name = "b"
+	loss.Name = "loss"
+	fmt.Println(w, b, loss)
+
+	// Output:
+	// w([2.3111411392277623]) b([5.3020926197392475]) loss([0.07620708812903994])
 }
