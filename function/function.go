@@ -3,15 +3,14 @@ package function
 import "github.com/itsubaki/autograd/variable"
 
 var (
-	// primitive functions
 	AddC        = variable.AddC
 	Add         = variable.Add
 	SubC        = variable.SubC
 	Sub         = variable.Sub
 	MulC        = variable.MulC
 	Mul         = variable.Mul
-	Div         = variable.Div
 	DivC        = variable.DivC
+	Div         = variable.Div
 	Sin         = variable.Sin
 	Cos         = variable.Cos
 	Tanh        = variable.Tanh

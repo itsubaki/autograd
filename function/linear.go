@@ -17,11 +17,16 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.w = x[0], x[1]
 
 	y := matrix.Dot(x[0].Data, x[1].Data)
-	if len(x) > 2 {
-		f.b = x[2] // bias
-		y = matrix.Add(y, matrix.BroadcastTo(matrix.Shape(y), f.b.Data))
+	if len(x) < 3 {
+		// no bias
+		return []*variable.Variable{
+			variable.NewOf(y...),
+		}
 	}
 
+	// add bias
+	f.b = x[2]
+	y = matrix.Add(y, matrix.BroadcastTo(matrix.Shape(y), f.b.Data))
 	return []*variable.Variable{
 		variable.NewOf(y...),
 	}
@@ -32,10 +37,11 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 		MatMul(gy[0], Transpose(f.w)), // gy * w.T
 		MatMul(Transpose(f.x), gy[0]), // x.T * gy
 	}
-
-	if f.b != nil {
-		gxs = append(gxs, SumTo(f.b.Shape()...)(gy[0]))
+	if f.b == nil {
+		// no bias
+		return gxs
 	}
 
-	return gxs
+	// add bias
+	return append(gxs, SumTo(f.b.Shape()...)(gy[0]))
 }
