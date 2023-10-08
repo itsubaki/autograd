@@ -32,6 +32,8 @@ var (
 	_ Func = F.Sigmoid
 	_ Func = F.ReLU
 	_ Func = F.MeanSquaredError
+	_ Func = F.GetItem([]int{0, 0, 1})
+	_ Func = F.GetItemGrad([]int{0, 0, 1}, []int{2, 3})
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {

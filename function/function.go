@@ -26,4 +26,6 @@ var (
 	Transpose   = variable.Transpose
 	MatMul      = variable.MatMul
 	Clip        = variable.Clip
+	GetItem     = variable.GetItem
+	GetItemGrad = variable.GetItemGrad
 )
