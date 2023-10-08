@@ -24,12 +24,18 @@ func ExampleSigmoidSimple() {
 }
 
 func ExampleSigmoidSimple_backward() {
-	x := variable.New(-4, 2, 0, 2, 4)
-	y := F.SigmoidSimple(x)
-	y.Backward()
+	for _, v := range []float64{-4, 2, 0, 2, 4} {
+		x := variable.New(v)
+		y := F.SigmoidSimple(x)
+		y.Backward()
 
-	fmt.Println(x.Grad)
+		fmt.Println(x.Grad)
+	}
 
 	// Output:
-	// variable([0.017662706213291118 0.1049935854035065 0.25 0.1049935854035065 0.017662706213291114])
+	// variable([0.017662706213291118])
+	// variable([0.1049935854035065])
+	// variable([0.25])
+	// variable([0.1049935854035065])
+	// variable([0.017662706213291114])
 }
