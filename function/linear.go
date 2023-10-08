@@ -26,7 +26,8 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 	// add bias
 	f.b = x[2]
-	y = matrix.Add(y, matrix.BroadcastTo(matrix.Shape(y), f.b.Data))
+	b := matrix.BroadcastTo(matrix.Shape(y), f.b.Data)
+	y = matrix.Add(y, b)
 	return []*variable.Variable{
 		variable.NewOf(y...),
 	}
@@ -43,5 +44,6 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	}
 
 	// add bias
-	return append(gxs, SumTo(f.b.Shape()...)(gy[0]))
+	gb := SumTo(f.b.Shape()...)(gy[0])
+	return append(gxs, gb)
 }
