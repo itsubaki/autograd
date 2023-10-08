@@ -45,14 +45,7 @@ func Rand(m, n int, s ...rand.Source) Matrix {
 	}
 	rng := rand.New(s[0])
 
-	out := Zero(m, n)
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			out[i][j] = rng.Float64()
-		}
-	}
-
-	return out
+	return F(Zero(m, n), func(_ float64) float64 { return rng.Float64() })
 }
 
 // Randn returns a matrix with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
@@ -64,14 +57,7 @@ func Randn(m, n int, s ...rand.Source) Matrix {
 	}
 	rng := rand.New(s[0])
 
-	out := Zero(m, n)
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			out[i][j] = rng.NormFloat64()
-		}
-	}
-
-	return out
+	return F(Zero(m, n), func(_ float64) float64 { return rng.NormFloat64() })
 }
 
 func Shape(m Matrix) []int {
@@ -129,6 +115,21 @@ func Mul(m, n Matrix) Matrix {
 
 func Div(m, n Matrix) Matrix {
 	return F2(m, n, func(a, b float64) float64 { return a / b })
+}
+
+func Max(m Matrix, max float64) Matrix {
+	return F(m, func(v float64) float64 { return math.Max(v, max) })
+}
+
+// Mask returns a matrix with elements that 1 if f() is true and 0 otherwise.
+func Mask(m Matrix, f func(x float64) bool) Matrix {
+	return F(m, func(v float64) float64 {
+		if f(v) {
+			return 1
+		}
+
+		return 0
+	})
 }
 
 // Dot returns the dot product of m and n.
