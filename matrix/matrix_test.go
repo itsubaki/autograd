@@ -328,6 +328,36 @@ func ExampleDot() {
 	// [43 50]
 }
 
+func ExampleMax() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+	)
+
+	for _, r := range matrix.Max(A, 3) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [3 3]
+	// [3 4]
+}
+
+func ExampleMask() {
+	A := matrix.New(
+		[]float64{-1, 2},
+		[]float64{3, -4},
+	)
+
+	for _, r := range matrix.Mask(A, func(v float64) bool { return v > 0 }) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [0 1]
+	// [1 0]
+}
+
 func ExampleBroadcastTo() {
 	A := matrix.New([]float64{1})
 
