@@ -84,7 +84,7 @@ func (v *Variable) Backward(opts ...Opts) {
 			}
 
 			gxs := f.Backward(gys...)
-			for i, x := range f.Input {
+			for i, x := range zip(f.Input, gxs) {
 				x.Grad = add(x.Grad, gxs[i])
 
 				if x.Creator != nil {
@@ -121,6 +121,15 @@ func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
 	fs = append(fs, f)
 	sort.Slice(fs, func(i, j int) bool { return fs[i].Generation < fs[j].Generation })
 	return fs
+}
+
+func zip(input, gxs []*Variable) []*Variable {
+	out := make([]*Variable, len(gxs))
+	for i := range gxs {
+		out[i] = input[i]
+	}
+
+	return out
 }
 
 func gys(y []*Variable) []*Variable {

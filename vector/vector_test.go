@@ -36,6 +36,13 @@ func ExampleShape() {
 	// [1 5]
 }
 
+func ExampleInt() {
+	fmt.Println(vector.Int([]float64{1.0, 2.0, 3.0, 4.0, 5.0}))
+
+	// Output:
+	// [1 2 3 4 5]
+}
+
 func ExampleSumTo() {
 	v := []float64{1, 2, 3, 4, 5}
 	fmt.Println(vector.SumTo(nil, v))
