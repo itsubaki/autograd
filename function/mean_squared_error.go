@@ -18,6 +18,7 @@ func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variabl
 
 	diff := matrix.Sub(x[0].Data, x[1].Data)
 	N := float64(len(diff))
+
 	y := matrix.Sum(matrix.Mul(diff, diff)) / N
 	return []*variable.Variable{
 		variable.New(y),
