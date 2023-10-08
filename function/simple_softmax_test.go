@@ -31,7 +31,7 @@ func Example_softmax1d() {
 		return F.Div(y, sumy)
 	}
 
-	x := variable.New(0.2, -0.4)
+	x := variable.New(1, 2, 3)
 	y := softmax1d(x)
 	y.Backward()
 
@@ -39,6 +39,6 @@ func Example_softmax1d() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([0.6456563062257954 0.3543436937742045])
-	// variable([0 0])
+	// variable([0.09003057317038046 0.24472847105479767 0.6652409557748219])
+	// variable([0 0 0])
 }
