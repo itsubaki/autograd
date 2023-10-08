@@ -140,6 +140,20 @@ func Max(m Matrix, max float64) Matrix {
 	return F(m, func(v float64) float64 { return math.Max(v, max) })
 }
 
+func Clip(m Matrix, min, max float64) Matrix {
+	return F(m, func(v float64) float64 {
+		if v < min {
+			return min
+		}
+
+		if v > max {
+			return max
+		}
+
+		return v
+	})
+}
+
 // Mask returns a matrix with elements that 1 if f() is true and 0 otherwise.
 func Mask(m Matrix, f func(x float64) bool) Matrix {
 	return F(m, func(v float64) float64 {

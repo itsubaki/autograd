@@ -360,6 +360,21 @@ func ExampleMax() {
 	// [3 4]
 }
 
+func ExampleClip() {
+	A := matrix.New(
+		[]float64{-3, -2, -1, 0, 1, 2, 3, 4, 5, 6},
+		[]float64{7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
+	)
+
+	for _, r := range matrix.Clip(A, 0, 10) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [0 0 0 0 1 2 3 4 5 6]
+	// [7 8 9 10 10 10 10 10 10 10]
+}
+
 func ExampleMask() {
 	A := matrix.New(
 		[]float64{-1, 2},
