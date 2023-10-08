@@ -1,8 +1,6 @@
 package function
 
-import (
-	"github.com/itsubaki/autograd/variable"
-)
+import "github.com/itsubaki/autograd/variable"
 
 func SoftmaxSimple(x *variable.Variable) *variable.Variable {
 	y := Exp(x)
