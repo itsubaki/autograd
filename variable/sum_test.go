@@ -8,7 +8,7 @@ import (
 
 func ExampleSum() {
 	// p292
-	x := variable.New(1, 2, 3, 4, 5, 6, 7)
+	x := variable.New(1, 2, 3, 4, 5, 6)
 	y := variable.Sum(x)
 	y.Backward()
 
@@ -16,6 +16,6 @@ func ExampleSum() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([28])
-	// variable([1 1 1 1 1 1 1])
+	// variable([21])
+	// variable([1 1 1 1 1 1])
 }
