@@ -19,3 +19,20 @@ func ExampleSum() {
 	// variable([21])
 	// variable([1 1 1 1 1 1])
 }
+
+func ExampleSum_matrix() {
+	// p293
+	x := variable.NewOf(
+		[]float64{1, 2, 3},
+		[]float64{4, 5, 6},
+	)
+	y := variable.Sum(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable([21])
+	// variable([[1 1 1] [1 1 1]])
+}
