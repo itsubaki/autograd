@@ -25,4 +25,5 @@ var (
 	Reshape     = variable.Reshape
 	Transpose   = variable.Transpose
 	MatMul      = variable.MatMul
+	Clip        = variable.Clip
 )

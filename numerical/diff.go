@@ -27,7 +27,11 @@ var (
 	_ Func = F.Reshape(2, 2)
 	_ Func = F.Transpose
 	_ Func = F.MatMul
+	_ Func = F.Clip(0.0, 1.0)
 	_ Func = F.Linear
+	_ Func = F.Sigmoid
+	_ Func = F.ReLU
+	_ Func = F.MeanSquaredError
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
