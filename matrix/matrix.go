@@ -117,6 +117,25 @@ func Div(m, n Matrix) Matrix {
 	return F2(m, n, func(a, b float64) float64 { return a / b })
 }
 
+func MaxAxis1(m Matrix) Matrix {
+	s := Shape(m)
+	p, q := s[0], s[1]
+
+	v := make([]float64, 0, p)
+	for i := 0; i < p; i++ {
+		var max float64
+		for j := 0; j < q; j++ {
+			if m[i][j] > max {
+				max = m[i][j]
+			}
+		}
+
+		v = append(v, max)
+	}
+
+	return Transpose(New(v))
+}
+
 func Max(m Matrix, max float64) Matrix {
 	return F(m, func(v float64) float64 { return math.Max(v, max) })
 }

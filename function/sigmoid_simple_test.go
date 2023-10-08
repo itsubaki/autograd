@@ -22,3 +22,14 @@ func ExampleSigmoidSimple() {
 	// variable([0.8807970779778823])
 	// variable([0.9820137900379085])
 }
+
+func ExampleSigmoidSimple_backward() {
+	x := variable.New(-4, 2, 0, 2, 4)
+	y := F.SigmoidSimple(x)
+	y.Backward()
+
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable([0.017662706213291118 0.1049935854035065 0.25 0.1049935854035065 0.017662706213291114])
+}

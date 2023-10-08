@@ -328,6 +328,23 @@ func ExampleDot() {
 	// [43 50]
 }
 
+func ExampleMaxAxis1() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+		[]float64{5, 2},
+	)
+
+	for _, r := range matrix.MaxAxis1(A) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [2]
+	// [4]
+	// [5]
+}
+
 func ExampleMax() {
 	A := matrix.New(
 		[]float64{1, 2},
