@@ -18,6 +18,15 @@ func Shape(v []float64) []int {
 	return []int{1, len(v)}
 }
 
+func Int(v []float64) []int {
+	out := make([]int, len(v))
+	for i := range v {
+		out[i] = int(v[i])
+	}
+
+	return out
+}
+
 func AddC(c float64, v []float64) []float64 {
 	return F(v, func(a float64) float64 { return c + a })
 }

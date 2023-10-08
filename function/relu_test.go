@@ -23,3 +23,14 @@ func ExampleReLU() {
 	// variable([[1 0 3] [0 5 0]])
 	// variable([[1 0 1] [0 1 0]])
 }
+
+func ExampleRelu() {
+	fmt.Println(F.Relu(1.0))
+	fmt.Println(F.Relu(0.0))
+	fmt.Println(F.Relu(-1.0))
+
+	// Output:
+	// true
+	// false
+	// false
+}
