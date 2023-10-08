@@ -33,10 +33,9 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	xs := f.x.Shape()
 	N, C := xs[0], xs[1]
 
-	gyn := MulC(1.0/float64(N), gy[0])                         // gy = gy / N
-	y := Softmax(f.x)                                          // y = softmax(x)
 	t := variable.NewOf(onehot(vector.Int(f.t.Data[0]), C)...) // t = onehot(t, C)
-	gx := Mul(Sub(y, t), gyn)                                  // y = (y - t) * gy / N
+	y := Softmax(f.x)                                          // y = softmax(x)
+	gx := Mul(Sub(y, t), MulC(1.0/float64(N), gy[0]))          // (y - t) * gy / N
 
 	return []*variable.Variable{
 		gx,
