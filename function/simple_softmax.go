@@ -5,7 +5,7 @@ import (
 )
 
 func SoftmaxSimple(x *variable.Variable) *variable.Variable {
-	y := Exp(x)                       // (N, M)
-	sumy := SumTo(y.Shape()[0], 1)(y) // (N, 1)
+	y := Exp(x)
+	sumy := SumTo(len(y.Data), 1)(y)
 	return Div(y, sumy)
 }
