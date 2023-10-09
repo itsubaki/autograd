@@ -28,7 +28,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	cond := NewOf(matrix.F2(f.x.Data, ybr, cond)...)
 	gybr := BroadcastTo(cond.Shape()...)(gy[0])
 
-	gx := Mul(gybr, cond) // argmax(gy)
+	gx := Mul(gybr, cond)
 	return []*Variable{
 		gx,
 	}
