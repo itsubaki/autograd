@@ -136,8 +136,36 @@ func MaxAxis1(m Matrix) Matrix {
 	return Transpose(New(v))
 }
 
-func Max(m Matrix, max float64) Matrix {
-	return F(m, func(v float64) float64 { return math.Max(v, max) })
+func Max(m Matrix) Matrix {
+	s := Shape(m)
+	p, q := s[0], s[1]
+
+	max := m[0][0]
+	for i := 0; i < p; i++ {
+		for j := 0; j < q; j++ {
+			if m[i][j] > max {
+				max = m[i][j]
+			}
+		}
+	}
+
+	return New([]float64{max})
+}
+
+func Min(m Matrix) Matrix {
+	s := Shape(m)
+	p, q := s[0], s[1]
+
+	min := m[0][0]
+	for i := 0; i < p; i++ {
+		for j := 0; j < q; j++ {
+			if m[i][j] < min {
+				min = m[i][j]
+			}
+		}
+	}
+
+	return New([]float64{min})
 }
 
 func Clip(m Matrix, min, max float64) Matrix {

@@ -1,6 +1,8 @@
 package function
 
 import (
+	"math"
+
 	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"
 )
@@ -16,7 +18,7 @@ type ReLUT struct {
 func (f *ReLUT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
 
-	y := matrix.Max(x[0].Data, 0.0)
+	y := matrix.F(x[0].Data, max)
 	return []*variable.Variable{
 		variable.NewOf(y...),
 	}
@@ -28,5 +30,7 @@ func (f *ReLUT) Backward(gy ...*variable.Variable) []*variable.Variable {
 		Mul(gy[0], variable.NewOf(mask...)), // gy * mask
 	}
 }
+
+func max(v float64) float64 { return math.Max(v, 0.0) }
 
 func relu(v float64) bool { return v > 0 }
