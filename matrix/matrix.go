@@ -386,22 +386,3 @@ func F2(m, n Matrix, f func(a, b float64) float64) Matrix {
 
 	return out
 }
-
-func Equals(m, n Matrix) bool {
-	s0, s1 := Shape(m), Shape(n)
-	p, q, a, b := s0[0], s0[1], s1[0], s1[1]
-
-	if p != a || q != b {
-		return false
-	}
-
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
-			if m[i][j] != n[i][j] {
-				return false
-			}
-		}
-	}
-
-	return true
-}

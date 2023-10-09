@@ -1,6 +1,10 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import (
+	"math"
+
+	"github.com/itsubaki/autograd/matrix"
+)
 
 func Max(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MaxT{}}).ApplyAndFirst(x...)
@@ -31,7 +35,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 }
 
 func cond(a, b float64) float64 {
-	if a == b {
+	if math.Abs(a-b) < 1e-13 {
 		return 1.0
 	}
 
