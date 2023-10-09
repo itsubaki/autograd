@@ -15,9 +15,9 @@ type SoftmaxT struct {
 
 func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 	max := matrix.BroadcastTo(matrix.Shape(x[0].Data), matrix.MaxAxis1(x[0].Data)) // max(x, axis=1)
-	y := matrix.Exp(matrix.Sub(x[0].Data, max))                                    // exp(x - max)
-	sum := matrix.BroadcastTo(matrix.Shape(y), matrix.SumAxis1(y))                 // sum(y, axis=1)
-	y = matrix.Div(y, sum)                                                         // y / sum
+	exp := matrix.Exp(matrix.Sub(x[0].Data, max))                                  // exp(x - max)
+	sum := matrix.BroadcastTo(matrix.Shape(exp), matrix.SumAxis1(exp))             // sum(y, axis=1)
+	y := matrix.Div(exp, sum)                                                      // exp(x - max) / sum
 
 	f.y = variable.NewOf(y...)
 	return []*variable.Variable{
@@ -26,9 +26,9 @@ func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gx := Mul(gy[0], f.y)               // gx = gy * y
-	sumgx := SumTo(len(gx.Data), 1)(gx) // sumgx = sum(gx, axis=1)
-	gx = Sub(gx, Mul(f.y, sumgx))       // gx = gx - y * sumgx
+	gyy := Mul(gy[0], f.y)              // gyy = gy * y
+	sum := SumTo(len(gyy.Data), 1)(gyy) // sum = sum(gx, axis=1)
+	gx := Sub(gyy, Mul(f.y, sum))       // gx = gx - y * sum
 
 	return []*variable.Variable{
 		gx,
