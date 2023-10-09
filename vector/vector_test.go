@@ -126,9 +126,9 @@ func ExampleF2() {
 }
 
 func ExampleEquals() {
-	fmt.Println(vector.Equals([]float64{1, 2}, []float64{1, 2}))
-	fmt.Println(vector.Equals([]float64{1, 2}, []float64{2, 1}))
-	fmt.Println(vector.Equals([]float64{1, 2}, []float64{1}))
+	fmt.Println(vector.Equals([]int{1, 2}, []int{1, 2}))
+	fmt.Println(vector.Equals([]int{1, 2}, []int{2, 1}))
+	fmt.Println(vector.Equals([]int{1, 2}, []int{1}))
 
 	// Output:
 	// true
