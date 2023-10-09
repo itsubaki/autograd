@@ -6,6 +6,8 @@
 [![codecov](https://codecov.io/gh/itsubaki/autograd/graph/badge.svg?token=loXkcn2w9W)](https://codecov.io/gh/itsubaki/autograd)
 
 - Automatic differentiation library for Go
+- pure Go implementation
+- using only the standard library
 
 # Example
 
