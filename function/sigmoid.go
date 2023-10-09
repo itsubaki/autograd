@@ -14,8 +14,10 @@ type SigmoidT struct {
 }
 
 func (f *SigmoidT) Forward(x ...*variable.Variable) []*variable.Variable {
-	v := matrix.AddC(0.5, matrix.MulC(0.5, matrix.Tanh(matrix.MulC(0.5, x[0].Data)))) // 0.5 + 0.5 * tanh(0.5 * x)
-	f.y = variable.NewOf(v...)
+	tanh := matrix.Tanh(matrix.MulC(0.5, x[0].Data)) // tanh(0.5 * x)
+	y := matrix.AddC(0.5, matrix.MulC(0.5, tanh))    // 0.5 + 0.5 * tanh(0.5 * x)
+
+	f.y = variable.NewOf(y...)
 	return []*variable.Variable{
 		f.y,
 	}

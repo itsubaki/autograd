@@ -19,11 +19,10 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 
 	N := len(x[0].Data)
 	label := vector.Int(matrix.Flatten(x[1].Data))
-
 	logz := logsumexp(x[0].Data)
 	logp := get(matrix.Sub(x[0].Data, logz), label)
-	y := -1.0 / float64(N) * matrix.Sum(logp)
 
+	y := -1.0 / float64(N) * matrix.Sum(logp)
 	return []*variable.Variable{
 		variable.New(y),
 	}
@@ -33,10 +32,9 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	xs := f.x.Shape()
 	N, C := xs[0], xs[1]
 
-	t := variable.NewOf(onehot(vector.Int(f.t.Data[0]), C)...) // t = onehot(t, C)
 	y := Softmax(f.x)                                          // y = softmax(x)
+	t := variable.NewOf(onehot(vector.Int(f.t.Data[0]), C)...) // t = onehot(t, C)
 	gx := Mul(Sub(y, t), MulC(1.0/float64(N), gy[0]))          // (y - t) * gy / N
-
 	return []*variable.Variable{
 		gx,
 	}

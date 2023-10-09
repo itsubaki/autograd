@@ -79,7 +79,7 @@ func (v *Variable) Backward(opts ...Opts) {
 
 		// backward
 		func() {
-			if !HasCreateGraph(opts...) {
+			if NoCreateGraph(opts...) {
 				defer Nograd().End()
 			}
 
@@ -93,7 +93,7 @@ func (v *Variable) Backward(opts ...Opts) {
 			}
 		}()
 
-		if !HasRetainGrad(opts...) {
+		if NoRetainGrad(opts...) {
 			cleargrad(f.Output)
 		}
 	}

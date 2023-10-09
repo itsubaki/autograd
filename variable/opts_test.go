@@ -49,6 +49,17 @@ func ExampleHasRetainGrad() {
 	// true
 }
 
+func ExampleNoRetainGrad() {
+	fmt.Println(variable.NoRetainGrad())
+	fmt.Println(variable.NoRetainGrad(variable.Opts{RetainGrad: false}))
+	fmt.Println(variable.NoRetainGrad(variable.Opts{RetainGrad: true}))
+
+	// Output:
+	// true
+	// true
+	// false
+}
+
 func ExampleHasCreateGraph() {
 	fmt.Println(variable.HasCreateGraph())
 	fmt.Println(variable.HasCreateGraph(variable.Opts{CreateGraph: false}))
@@ -58,4 +69,15 @@ func ExampleHasCreateGraph() {
 	// false
 	// false
 	// true
+}
+
+func ExampleNoCreateGraph() {
+	fmt.Println(variable.NoCreateGraph())
+	fmt.Println(variable.NoCreateGraph(variable.Opts{CreateGraph: false}))
+	fmt.Println(variable.NoCreateGraph(variable.Opts{CreateGraph: true}))
+
+	// Output:
+	// true
+	// true
+	// false
 }
