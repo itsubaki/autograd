@@ -347,17 +347,26 @@ func ExampleMaxAxis1() {
 
 func ExampleMax() {
 	A := matrix.New(
-		[]float64{1, 2},
+		[]float64{1, 5},
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Max(A, 3) {
-		fmt.Println(r)
-	}
+	fmt.Println(matrix.Max(A))
 
 	// Output:
-	// [3 3]
-	// [3 4]
+	// [[5]]
+}
+
+func ExampleMin() {
+	A := matrix.New(
+		[]float64{1, -5},
+		[]float64{3, 4},
+	)
+
+	fmt.Println(matrix.Min(A))
+
+	// Output:
+	// [[-5]]
 }
 
 func ExampleClip() {
