@@ -53,6 +53,38 @@ func (v *Variable) SetCreator(f *Function) {
 	v.Generation = f.Generation + 1
 }
 
+func (v *Variable) Unchain() {
+	v.Creator = nil
+}
+
+func (v *Variable) UnchainBackward() {
+	if v.Creator == nil {
+		return
+	}
+
+	fs := append(make([]*Function, 0), v.Creator)
+
+	for {
+		if len(fs) == 0 {
+			break
+		}
+
+		// pop
+		f := fs[len(fs)-1]
+		fs = fs[:len(fs)-1]
+
+		// unchain
+		for _, x := range f.Input {
+			if x.Creator == nil {
+				continue
+			}
+
+			fs = append(fs, x.Creator)
+			x.Unchain()
+		}
+	}
+}
+
 func (v *Variable) Backward(opts ...Opts) {
 	if v.Grad == nil {
 		v.Grad = OneLike(v)

@@ -72,6 +72,46 @@ func ExampleRandn() {
 	// [2.28571911769958 0.3228052526115799 0.5900672875996937]
 }
 
+func ExampleVariable_Unchain() {
+	x := variable.New(1.0)
+
+	y := variable.Pow(2.0)(x)
+	fmt.Println(y.Creator) // Pow
+
+	y.Unchain()
+	fmt.Println(y.Creator) // nil
+
+	// Output:
+	// *variable.PowT[variable([1])]
+	// <nil>
+}
+
+func ExampleVariable_UnchainBackward() {
+	x := variable.New(1.0)
+
+	y := variable.Pow(2.0)(x)
+	z := variable.Sin(y)
+	fmt.Println(y.Creator) // Pow
+	fmt.Println(z.Creator) // Sin
+
+	z.UnchainBackward()
+	fmt.Println(y.Creator) // nil
+	fmt.Println(z.Creator) // Sin
+
+	z.Unchain()
+	z.UnchainBackward()
+	fmt.Println(y.Creator) // nil
+	fmt.Println(z.Creator) // nil
+
+	// Output:
+	// *variable.PowT[variable([1])]
+	// *variable.SinT[variable([1])]
+	// <nil>
+	// *variable.SinT[variable([1])]
+	// <nil>
+	// <nil>
+}
+
 func ExampleVariable_Backward() {
 	x := variable.New(1.0)
 	x.Backward()
