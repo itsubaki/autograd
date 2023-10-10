@@ -18,9 +18,9 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 	f.x, f.t = x[0], x[1]
 
 	N := len(x[0].Data)
-	label := vector.Int(matrix.Flatten(x[1].Data))
+	label := label(x[1])
 	logz := logsumexp(x[0].Data)
-	logp := get(matrix.Sub(x[0].Data, logz), label)
+	logp := logp(matrix.Sub(x[0].Data, logz), label)
 
 	y := -1.0 / float64(N) * matrix.Sum(logp)
 	return []*variable.Variable{
@@ -32,9 +32,9 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	xs := variable.Shape(f.x)
 	N, C := xs[0], xs[1]
 
-	y := Softmax(f.x)                                          // y = softmax(x)
-	t := variable.NewOf(onehot(vector.Int(f.t.Data[0]), C)...) // t = onehot(t, C)
-	gx := Mul(Sub(y, t), MulC(1.0/float64(N), gy[0]))          // (y - t) * gy / N
+	y := Softmax(f.x)                                 // y = softmax(x)
+	t := onehot(f.t.Data[0], C)                       // t = onehot(t, C)
+	gx := Mul(Sub(y, t), MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
 		gx,
 	}
@@ -48,20 +48,26 @@ func logsumexp(x [][]float64) [][]float64 {
 	return matrix.Add(max, logsumy)                                       // logsumexp = max + logsumy
 }
 
-func get(logp [][]float64, label []int) [][]float64 {
-	logpt := make([][]float64, len(label))
-	for i, v := range label {
-		logpt[i] = []float64{logp[i][v]}
-	}
-
-	return logpt
+func label(t *variable.Variable) []int {
+	return vector.Int(matrix.Flatten(t.Data))
 }
 
-func onehot(x []int, size int) [][]float64 {
-	out := matrix.Zero(len(x), size)
-	for i, v := range x {
-		out[i][v] = 1
+func logp(m [][]float64, label []int) [][]float64 {
+	out := make([][]float64, len(label))
+	for i, v := range label {
+		out[i] = []float64{m[i][v]}
 	}
 
 	return out
+}
+
+func onehot(t []float64, size int) *variable.Variable {
+	x := vector.Int(t)
+
+	oh := matrix.Zero(len(x), size)
+	for i, v := range x {
+		oh[i][v] = 1
+	}
+
+	return variable.NewOf(oh...)
 }
