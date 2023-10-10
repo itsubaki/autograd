@@ -27,6 +27,8 @@ var (
 	_ Func = F.Reshape(2, 2)
 	_ Func = F.Transpose
 	_ Func = F.MatMul
+	_ Func = F.Max
+	_ Func = F.Min
 	_ Func = F.Clip(0.0, 1.0)
 	_ Func = F.Linear
 	_ Func = F.Sigmoid

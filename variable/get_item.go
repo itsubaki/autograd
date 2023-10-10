@@ -10,7 +10,7 @@ type GetItemT struct {
 }
 
 func (f *GetItemT) Forward(x ...*Variable) []*Variable {
-	f.xShape = x[0].Shape()
+	f.xShape = Shape(x[0])
 
 	y := make([][]float64, len(f.Slices))
 	for i, idx := range f.Slices {

@@ -29,7 +29,7 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 }
 
 func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	xs := f.x.Shape()
+	xs := variable.Shape(f.x)
 	N, C := xs[0], xs[1]
 
 	y := Softmax(f.x)                                          // y = softmax(x)
