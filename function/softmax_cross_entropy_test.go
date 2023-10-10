@@ -15,7 +15,7 @@ func ExampleSoftmaxCrossEntropy() {
 	t := variable.New(2, 2)
 
 	y := F.SoftmaxCrossEntropy(x, t)
-	y.Backward(variable.Opts{CreateGraph: true})
+	y.Backward()
 
 	fmt.Println(y)
 	for _, v := range x.Grad.Data {
