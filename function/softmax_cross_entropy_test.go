@@ -29,7 +29,7 @@ func ExampleSoftmaxCrossEntropy() {
 }
 
 func ExampleOneHot() {
-	for _, v := range F.OneHot([]int{0, 2, 2, 1}, 3) {
+	for _, v := range F.OneHot([]float64{0, 2, 2, 1}, 3).Data {
 		fmt.Println(v)
 	}
 
@@ -40,14 +40,14 @@ func ExampleOneHot() {
 	// [0 1 0]
 }
 
-func ExampleGet() {
+func ExampleLogp() {
 	A := [][]float64{
 		{1, 2, 3, 4, 5},
 		{6, 7, 8, 9, 10},
 		{11, 12, 13, 14, 15},
 	}
 
-	for _, v := range F.Get(A, []int{0, 1, 3}) {
+	for _, v := range F.Logp(A, []int{0, 1, 3}) {
 		fmt.Println(v)
 	}
 

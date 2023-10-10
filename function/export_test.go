@@ -2,6 +2,6 @@ package function
 
 var (
 	OneHot = onehot
-	Get    = get
+	Logp   = logp
 	Relu   = relu
 )
