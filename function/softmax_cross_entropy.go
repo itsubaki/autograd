@@ -32,8 +32,8 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	xs := variable.Shape(f.x)
 	N, C := xs[0], xs[1]
 
+	t := variable.NewOf(onehot(f.t.Data[0], C)...)    // t = onehot(t, C)
 	y := Softmax(f.x)                                 // y = softmax(x)
-	t := onehot(f.t.Data[0], C)                       // t = onehot(t, C)
 	gx := Mul(Sub(y, t), MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
 		gx,
@@ -61,13 +61,13 @@ func logp(m [][]float64, label []int) [][]float64 {
 	return out
 }
 
-func onehot(t []float64, size int) *variable.Variable {
+func onehot(t []float64, size int) [][]float64 {
 	x := vector.Int(t)
 
-	oh := matrix.Zero(len(x), size)
+	out := matrix.Zero(len(x), size)
 	for i, v := range x {
-		oh[i][v] = 1
+		out[i][v] = 1
 	}
 
-	return variable.NewOf(oh...)
+	return out
 }
