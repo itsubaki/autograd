@@ -28,7 +28,7 @@ func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variabl
 func (f *MeanSquaredErrorT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	diff := Sub(f.x0, f.x1)
 	N := float64(len(diff.Data))
-	gyb := BroadcastTo(diff.Shape()...)(gy[0])
+	gyb := BroadcastTo(variable.Shape(diff)...)(gy[0])
 
 	gx0 := MulC(2.0/N, Mul(gyb, diff)) // gy * (x0 - x1) * 2/N
 	gx1 := Neg(gx0)                    // -gx0

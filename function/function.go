@@ -25,6 +25,8 @@ var (
 	Reshape     = variable.Reshape
 	Transpose   = variable.Transpose
 	MatMul      = variable.MatMul
+	Max         = variable.Max
+	Min         = variable.Min
 	Clip        = variable.Clip
 	GetItem     = variable.GetItem
 	GetItemGrad = variable.GetItemGrad

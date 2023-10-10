@@ -40,7 +40,7 @@ func Randn(m, n int, s ...rand.Source) *Variable {
 	return &Variable{Data: matrix.Randn(m, n, s...)}
 }
 
-func (v *Variable) Shape() []int {
+func Shape(v *Variable) []int {
 	return matrix.Shape(v.Data)
 }
 

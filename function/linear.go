@@ -44,6 +44,6 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	}
 
 	// add bias
-	gb := SumTo(f.b.Shape()...)(gy[0])
+	gb := SumTo(variable.Shape(f.b)...)(gy[0])
 	return append(gxs, gb)
 }

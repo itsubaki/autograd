@@ -11,7 +11,7 @@ type SumT struct {
 }
 
 func (f *SumT) Forward(x ...*Variable) []*Variable {
-	f.xShape = x[0].Shape()
+	f.xShape = Shape(x[0])
 
 	y := matrix.Sum(x[0].Data)
 	return []*Variable{
