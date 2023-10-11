@@ -22,8 +22,7 @@ type SubT struct {
 func (f *SubT) Forward(x ...*Variable) []*Variable {
 	f.x0Shape, f.x1Shape = Shape(x[0]), Shape(x[1])
 
-	x0, x1 := matrix.Broadcast(x[0].Data, x[1].Data)
-	y := matrix.Sub(x0, x1)
+	y := matrix.Sub(x[0].Data, x[1].Data)
 	return []*Variable{
 		NewOf(y...),
 	}

@@ -14,10 +14,10 @@ type SoftmaxT struct {
 }
 
 func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
-	max := matrix.BroadcastTo(matrix.Shape(x[0].Data), matrix.MaxAxis1(x[0].Data)) // max(x, axis=1)
-	exp := matrix.Exp(matrix.Sub(x[0].Data, max))                                  // exp(x - max)
-	sum := matrix.BroadcastTo(matrix.Shape(exp), matrix.SumAxis1(exp))             // sum(y, axis=1)
-	y := matrix.Div(exp, sum)                                                      // exp(x - max) / sum
+	max := matrix.MaxAxis1(x[0].Data)              // max(x, axis=1)
+	expy := matrix.Exp(matrix.Sub(x[0].Data, max)) // expy = exp(x - max)
+	sumy := matrix.SumAxis1(expy)                  // sumy = sum(expy, axis=1)
+	y := matrix.Div(expy, sumy)                    // y = expy / sumy
 
 	f.y = variable.NewOf(y...)
 	return []*variable.Variable{
