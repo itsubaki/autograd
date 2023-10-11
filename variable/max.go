@@ -25,11 +25,8 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	mask := NewOf(matrix.F2(f.x.Data, f.y.Data, cond)...)
-	gybr := BroadcastTo(Shape(mask)...)(gy[0])
-
-	gx := Mul(gybr, mask)
 	return []*Variable{
-		gx,
+		Mul(gy[0], mask),
 	}
 }
 
