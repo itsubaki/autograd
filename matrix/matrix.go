@@ -36,8 +36,8 @@ func Const(c float64) Matrix {
 	return [][]float64{{c}}
 }
 
-// randg returns a pseudo-random number generator.
-func randg(s ...rand.Source) *rand.Rand {
+// rnd returns a pseudo-random number generator.
+func rnd(s ...rand.Source) *rand.Rand {
 	if len(s) == 0 {
 		s = append(s, rand.NewSource(time.Now().UnixNano()))
 	}
@@ -49,16 +49,14 @@ func randg(s ...rand.Source) *rand.Rand {
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
 func Rand(m, n int, s ...rand.Source) Matrix {
-	rng := randg(s...)
-	return F(Zero(m, n), func(_ float64) float64 { return rng.Float64() })
+	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).Float64() })
 }
 
 // Randn returns a matrix with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
 func Randn(m, n int, s ...rand.Source) Matrix {
-	rng := randg(s...)
-	return F(Zero(m, n), func(_ float64) float64 { return rng.NormFloat64() })
+	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
 func Shape(m Matrix) []int {
