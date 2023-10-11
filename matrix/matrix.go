@@ -373,12 +373,13 @@ func F(m Matrix, f func(a float64) float64) Matrix {
 }
 
 func F2(m, n Matrix, f func(a, b float64) float64) Matrix {
-	p, q := Dim(m)
+	x, y := Broadcast(m, n)
+	p, q := Dim(x)
 
 	out := Zero(p, q)
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
-			out[i][j] = f(m[i][j], n[i][j])
+			out[i][j] = f(x[i][j], y[i][j])
 		}
 	}
 
