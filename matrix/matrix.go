@@ -63,6 +63,10 @@ func Shape(m Matrix) []int {
 	return []int{len(m), len(m[0])}
 }
 
+func Dim(m Matrix) (int, int) {
+	return len(m), len(m[0])
+}
+
 func AddC(c float64, m Matrix) Matrix {
 	return F(m, func(v float64) float64 { return c + v })
 }
@@ -117,8 +121,7 @@ func Div(m, n Matrix) Matrix {
 }
 
 func MaxAxis1(m Matrix) Matrix {
-	s := Shape(m)
-	p, q := s[0], s[1]
+	p, q := Dim(m)
 
 	v := make([]float64, 0, p)
 	for i := 0; i < p; i++ {
@@ -136,8 +139,7 @@ func MaxAxis1(m Matrix) Matrix {
 }
 
 func Max(m Matrix) Matrix {
-	s := Shape(m)
-	p, q := s[0], s[1]
+	p, q := Dim(m)
 
 	max := m[0][0]
 	for i := 0; i < p; i++ {
@@ -152,8 +154,7 @@ func Max(m Matrix) Matrix {
 }
 
 func Min(m Matrix) Matrix {
-	s := Shape(m)
-	p, q := s[0], s[1]
+	p, q := Dim(m)
 
 	min := m[0][0]
 	for i := 0; i < p; i++ {
@@ -194,8 +195,8 @@ func Mask(m Matrix, f func(x float64) bool) Matrix {
 
 // Dot returns the dot product of m and n.
 func Dot(m, n Matrix) Matrix {
-	msh, nsh := Shape(m), Shape(n)
-	a, b, p := msh[0], msh[1], nsh[1]
+	a, b := Dim(m)
+	_, p := Dim(n)
 
 	out := Zero(a, p)
 	for i := 0; i < a; i++ {
@@ -215,6 +216,7 @@ func Broadcast(m, n Matrix) (Matrix, Matrix) {
 
 func BroadcastTo(shape []int, m Matrix) Matrix {
 	a, b := shape[0], shape[1]
+
 	if len(m) == 1 && len(m[0]) == 1 {
 		out := Zero(a, b)
 		for i := 0; i < a; i++ {
@@ -280,8 +282,7 @@ func SumTo(shape []int, m Matrix) Matrix {
 
 // SumAxis0 returns the sum of each column.
 func SumAxis0(m Matrix) Matrix {
-	s := Shape(m)
-	p, q := s[0], s[1]
+	p, q := Dim(m)
 
 	v := make([]float64, 0, q)
 	for j := 0; j < q; j++ {
@@ -298,8 +299,7 @@ func SumAxis0(m Matrix) Matrix {
 
 // SumAxis1 returns the sum of each row.
 func SumAxis1(m Matrix) Matrix {
-	s := Shape(m)
-	p, q := s[0], s[1]
+	p, q := Dim(m)
 
 	v := make([]float64, 0, p)
 	for i := 0; i < p; i++ {
@@ -315,8 +315,7 @@ func SumAxis1(m Matrix) Matrix {
 }
 
 func Transpose(m Matrix) Matrix {
-	shape := Shape(m)
-	p, q := shape[0], shape[1]
+	p, q := Dim(m)
 
 	out := Zero(q, p)
 	for i := 0; i < q; i++ {
@@ -329,11 +328,11 @@ func Transpose(m Matrix) Matrix {
 }
 
 // Reshape returns the matrix with the given shape.
-func Reshape(shape []int, x Matrix) Matrix {
-	xsh := Shape(x)
-	p, q, a, b := xsh[0], xsh[1], shape[0], shape[1]
+func Reshape(shape []int, m Matrix) Matrix {
+	p, q := Dim(m)
+	a, b := shape[0], shape[1]
 
-	v := Flatten(x)
+	v := Flatten(m)
 	if a < 1 {
 		a = p * q / b
 	}
@@ -361,8 +360,7 @@ func Flatten(m Matrix) []float64 {
 }
 
 func F(m Matrix, f func(a float64) float64) Matrix {
-	shape := Shape(m)
-	p, q := shape[0], shape[1]
+	p, q := Dim(m)
 
 	out := Zero(p, q)
 	for i := 0; i < p; i++ {
@@ -375,8 +373,7 @@ func F(m Matrix, f func(a float64) float64) Matrix {
 }
 
 func F2(m, n Matrix, f func(a, b float64) float64) Matrix {
-	shape := Shape(m)
-	p, q := shape[0], shape[1]
+	p, q := Dim(m)
 
 	out := Zero(p, q)
 	for i := 0; i < p; i++ {
