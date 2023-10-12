@@ -58,6 +58,15 @@ func Randn(m, n int, s ...rand.Source) Matrix {
 	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
+func Size(m Matrix) int {
+	s := 1
+	for _, v := range Shape(m) {
+		s = s * v
+	}
+
+	return s
+}
+
 func Shape(m Matrix) []int {
 	return []int{len(m), len(m[0])}
 }
@@ -340,7 +349,7 @@ func Reshape(shape []int, m Matrix) Matrix {
 }
 
 func Flatten(m Matrix) []float64 {
-	out := make([]float64, 0)
+	out := make([]float64, 0, Size(m))
 	for _, r := range m {
 		out = append(out, r...)
 	}
