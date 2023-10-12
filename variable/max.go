@@ -17,7 +17,7 @@ type MaxT struct {
 func (f *MaxT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	f.y = NewOf(matrix.Max(x[0].Data)...)
+	f.y = New(matrix.Max(x[0].Data))
 	return []*Variable{
 		f.y,
 	}

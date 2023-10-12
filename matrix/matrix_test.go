@@ -354,7 +354,7 @@ func ExampleMax() {
 	fmt.Println(matrix.Max(A))
 
 	// Output:
-	// [[5]]
+	// 5
 }
 
 func ExampleMin() {
@@ -366,7 +366,7 @@ func ExampleMin() {
 	fmt.Println(matrix.Min(A))
 
 	// Output:
-	// [[-5]]
+	// -5
 }
 
 func ExampleClip() {

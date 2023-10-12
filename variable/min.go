@@ -13,7 +13,7 @@ type MinT struct {
 func (f *MinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	f.y = NewOf(matrix.Min(x[0].Data)...)
+	f.y = New(matrix.Min(x[0].Data))
 	return []*Variable{
 		f.y,
 	}

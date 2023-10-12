@@ -24,8 +24,7 @@ func Zero(m, n int) Matrix {
 }
 
 func ZeroLike(m Matrix) Matrix {
-	s := Shape(m)
-	return Zero(s[0], s[1])
+	return Zero(Dim(m))
 }
 
 func OneLike(m Matrix) Matrix {
@@ -120,52 +119,52 @@ func Div(m, n Matrix) Matrix {
 	return F2(m, n, func(a, b float64) float64 { return a / b })
 }
 
-func MaxAxis1(m Matrix) Matrix {
-	p, q := Dim(m)
-
-	v := make([]float64, 0, p)
-	for i := 0; i < p; i++ {
-		var max float64
-		for j := 0; j < q; j++ {
-			if m[i][j] > max {
-				max = m[i][j]
-			}
-		}
-
-		v = append(v, max)
+func Sum(m Matrix) float64 {
+	var sum float64
+	for _, v := range Flatten(m) {
+		sum = sum + v
 	}
 
-	return Transpose(New(v))
+	return sum
 }
 
-func Max(m Matrix) Matrix {
-	p, q := Dim(m)
-
+func Max(m Matrix) float64 {
 	max := m[0][0]
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
-			if m[i][j] > max {
-				max = m[i][j]
-			}
+	for _, v := range Flatten(m) {
+		if v > max {
+			max = v
 		}
 	}
 
-	return New([]float64{max})
+	return max
 }
 
-func Min(m Matrix) Matrix {
-	p, q := Dim(m)
-
+func Min(m Matrix) float64 {
 	min := m[0][0]
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
-			if m[i][j] < min {
-				min = m[i][j]
+	for _, v := range Flatten(m) {
+		if v < min {
+			min = v
+		}
+	}
+
+	return min
+}
+
+// Dot returns the dot product of m and n.
+func Dot(m, n Matrix) Matrix {
+	a, b := Dim(m)
+	_, p := Dim(n)
+
+	out := Zero(a, p)
+	for i := 0; i < a; i++ {
+		for j := 0; j < p; j++ {
+			for k := 0; k < b; k++ {
+				out[i][j] = out[i][j] + m[i][k]*n[k][j]
 			}
 		}
 	}
 
-	return New([]float64{min})
+	return out
 }
 
 func Clip(m Matrix, min, max float64) Matrix {
@@ -191,23 +190,6 @@ func Mask(m Matrix, f func(x float64) bool) Matrix {
 
 		return 0
 	})
-}
-
-// Dot returns the dot product of m and n.
-func Dot(m, n Matrix) Matrix {
-	a, b := Dim(m)
-	_, p := Dim(n)
-
-	out := Zero(a, p)
-	for i := 0; i < a; i++ {
-		for j := 0; j < p; j++ {
-			for k := 0; k < b; k++ {
-				out[i][j] = out[i][j] + m[i][k]*n[k][j]
-			}
-		}
-	}
-
-	return out
 }
 
 func Broadcast(m, n Matrix) (Matrix, Matrix) {
@@ -251,17 +233,6 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 	}
 
 	return m
-}
-
-func Sum(m Matrix) float64 {
-	var sum float64
-	for i := range m {
-		for j := range m[i] {
-			sum = sum + m[i][j]
-		}
-	}
-
-	return sum
 }
 
 func SumTo(shape []int, m Matrix) Matrix {
@@ -309,6 +280,24 @@ func SumAxis1(m Matrix) Matrix {
 		}
 
 		v = append(v, sum)
+	}
+
+	return Transpose(New(v))
+}
+
+func MaxAxis1(m Matrix) Matrix {
+	p, q := Dim(m)
+
+	v := make([]float64, 0, p)
+	for i := 0; i < p; i++ {
+		var max float64
+		for j := 0; j < q; j++ {
+			if m[i][j] > max {
+				max = m[i][j]
+			}
+		}
+
+		v = append(v, max)
 	}
 
 	return Transpose(New(v))
