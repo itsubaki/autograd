@@ -87,12 +87,28 @@ func ExampleRandn_seed() {
 	// [2.28571911769958 0.3228052526115799 0.5900672875996937]
 }
 
+func ExampleSize() {
+	A := matrix.Zero(2, 3)
+	fmt.Println(matrix.Size(A))
+
+	// Output:
+	// 6
+}
+
 func ExampleShape() {
 	A := matrix.Zero(2, 3)
 	fmt.Println(matrix.Shape(A))
 
 	// Output:
 	// [2 3]
+}
+
+func ExampleDim() {
+	A := matrix.Zero(2, 3)
+	fmt.Println(matrix.Dim(A))
+
+	// Output:
+	// 2 3
 }
 
 func ExampleAddC() {
