@@ -17,8 +17,7 @@ type SoftmaxCrossEntropyT struct {
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.t = x[0], x[1]
 
-	N := len(x[0].Data)
-	label := label(x[1])
+	N, label := len(x[0].Data), label(x[1])
 	logz := logsumexp(x[0].Data)
 	logp := logp(matrix.Sub(x[0].Data, logz), label)
 
