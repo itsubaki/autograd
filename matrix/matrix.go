@@ -68,7 +68,8 @@ func Size(m Matrix) int {
 }
 
 func Shape(m Matrix) []int {
-	return []int{len(m), len(m[0])}
+	a, b := Dim(m)
+	return []int{a, b}
 }
 
 func Dim(m Matrix) (int, int) {
