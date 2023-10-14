@@ -13,8 +13,8 @@ type Function struct {
 	Forwarder
 }
 
-// ApplyAndFirst applies the function and returns the first output
-func (f *Function) ApplyAndFirst(x ...*Variable) *Variable {
+// First applies the function and returns the first output
+func (f *Function) First(x ...*Variable) *Variable {
 	return f.Apply(x...)[0]
 }
 

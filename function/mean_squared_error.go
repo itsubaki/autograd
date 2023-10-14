@@ -6,7 +6,7 @@ import (
 )
 
 func MeanSquaredError(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &MeanSquaredErrorT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &MeanSquaredErrorT{}}).First(x...)
 }
 
 type MeanSquaredErrorT struct {

@@ -7,7 +7,7 @@ import (
 )
 
 func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &SoftmaxCrossEntropyT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &SoftmaxCrossEntropyT{}}).First(x...)
 }
 
 type SoftmaxCrossEntropyT struct {

@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Cos(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &CosT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &CosT{}}).First(x...)
 }
 
 type CosT struct {

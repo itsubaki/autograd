@@ -6,7 +6,7 @@ import (
 )
 
 func Sigmoid(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &SigmoidT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &SigmoidT{}}).First(x...)
 }
 
 type SigmoidT struct {

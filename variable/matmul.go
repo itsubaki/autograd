@@ -5,7 +5,7 @@ import (
 )
 
 func MatMul(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MatMulT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &MatMulT{}}).First(x...)
 }
 
 type MatMulT struct {

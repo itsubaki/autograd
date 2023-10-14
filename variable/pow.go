@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Pow(c float64) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &PowT{C: c}}).ApplyAndFirst
+	return (&Function{Forwarder: &PowT{C: c}}).First
 }
 
 type PowT struct {

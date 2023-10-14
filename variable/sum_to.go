@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func SumTo(shape ...int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SumToT{Shape: shape}}).ApplyAndFirst
+	return (&Function{Forwarder: &SumToT{Shape: shape}}).First
 }
 
 type SumToT struct {

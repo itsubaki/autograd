@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Neg(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &NegT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &NegT{}}).First(x...)
 }
 
 type NegT struct{}

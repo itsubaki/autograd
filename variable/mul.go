@@ -6,11 +6,11 @@ import (
 )
 
 func MulC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MulT{}}).ApplyAndFirst(Const(c), x[0])
+	return (&Function{Forwarder: &MulT{}}).First(Const(c), x[0])
 }
 
 func Mul(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MulT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &MulT{}}).First(x...)
 }
 
 type MulT struct {

@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Sin(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SinT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &SinT{}}).First(x...)
 }
 
 type SinT struct {
