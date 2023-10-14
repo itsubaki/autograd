@@ -9,7 +9,7 @@ type Forwarder interface {
 
 type Layer struct {
 	Input, Output []*variable.Variable
-	Layers        []Layer
+	Layers        []*Layer
 	Forwarder
 }
 
@@ -19,8 +19,16 @@ func (l *Layer) Apply(x ...*variable.Variable) []*variable.Variable {
 	return y
 }
 
+func (l *Layer) Add(layer *Layer) {
+	l.Layers = append(l.Layers, layer)
+}
+
 func (l *Layer) Params() []Parameter {
-	params := l.Forwarder.Params()
+	params := make([]Parameter, 0)
+	if l.Forwarder != nil {
+		params = l.Forwarder.Params()
+	}
+
 	for _, ll := range l.Layers {
 		params = append(params, ll.Params()...)
 	}

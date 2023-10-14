@@ -9,15 +9,11 @@ import (
 func ExampleLayer() {
 	l := &L.Layer{
 		Forwarder: L.Linear(1),
-		Layers: []L.Layer{
-			{
-				Forwarder: L.Linear(2),
-			},
-			{
-				Forwarder: L.Linear(3),
-			},
-		},
+		Layers:    make([]*L.Layer, 0),
 	}
+
+	l.Add(L.Linear(2))
+	l.Add(L.Linear(3))
 
 	for _, v := range l.Params() {
 		fmt.Println(v)
