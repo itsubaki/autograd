@@ -50,6 +50,13 @@ func ExampleOneLike() {
 	// variable([1 1 1 1])
 }
 
+func ExampleZero() {
+	fmt.Println(variable.Zero(2, 3))
+
+	// Output:
+	// variable([[0 0 0] [0 0 0]])
+}
+
 func ExampleRand() {
 	s := rand.NewSource(1)
 	for _, r := range variable.Rand(2, 3, s).Data {

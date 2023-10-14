@@ -32,6 +32,10 @@ func Const(c float64) *Variable {
 	return &Variable{Name: "const", Data: matrix.Const(c)}
 }
 
+func Zero(m, n int) *Variable {
+	return &Variable{Data: matrix.Zero(m, n)}
+}
+
 func Rand(m, n int, s ...rand.Source) *Variable {
 	return &Variable{Data: matrix.Rand(m, n, s...)}
 }
