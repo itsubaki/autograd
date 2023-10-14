@@ -10,9 +10,10 @@ import (
 
 func ExampleLinear() {
 	s := rand.NewSource(1)
-
 	l := L.Linear(5, s)
-	y := l.Apply(variable.New(1, 2, 3))
+
+	x := variable.New(1, 2, 3)
+	y := l.Apply(x)
 	fmt.Printf("%.4f\n", y[0].Data)
 
 	for _, v := range l.Params() {
@@ -27,7 +28,9 @@ func ExampleLinear() {
 
 func ExampleLinear_backward() {
 	l := L.Linear(5)
-	y := l.First(variable.New(1, 2, 3))
+
+	x := variable.New(1, 2, 3)
+	y := l.First(x)
 	y.Backward()
 
 	for _, v := range l.Params() {
@@ -50,7 +53,9 @@ func ExampleLinear_backward() {
 
 func ExampleLinear_cleargrads() {
 	l := L.Linear(5)
-	y := l.First(variable.New(1, 2, 3))
+
+	x := variable.New(1, 2, 3)
+	y := l.First(x)
 	y.Backward()
 
 	l.Cleargrads()
