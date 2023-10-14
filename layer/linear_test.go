@@ -13,7 +13,7 @@ func ExampleLinear() {
 	l := L.Linear(5, s)
 
 	x := variable.New(1, 2, 3)
-	y := l.Apply(x)
+	y := l.Forward(x)
 	fmt.Printf("%.4f\n", y[0].Data)
 
 	for _, v := range l.Params() {
@@ -30,14 +30,14 @@ func ExampleLinear_backward() {
 	l := L.Linear(5)
 
 	x := variable.New(1, 2, 3)
-	y := l.Apply(x)
+	y := l.Forward(x)
 	y[0].Backward()
 
 	for _, v := range l.Params() {
 		fmt.Println(v.Name, v.Grad)
 	}
 
-	y = l.Apply(variable.New(1, 2, 3))
+	y = l.Forward(variable.New(1, 2, 3))
 	y[0].Backward()
 
 	for _, v := range l.Params() {
@@ -55,8 +55,8 @@ func ExampleLinear_cleargrads() {
 	l := L.Linear(5)
 
 	x := variable.New(1, 2, 3)
-	y := l.Apply(x)
-	y[0].Backward()
+	y := l.First(x)
+	y.Backward()
 
 	l.Cleargrads()
 	for _, v := range l.Params() {

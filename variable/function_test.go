@@ -11,7 +11,7 @@ func ExampleFunction() {
 		Forwarder: &variable.SinT{},
 	}
 
-	y := f.Apply(variable.New(1.0))
+	y := f.Forward(variable.New(1.0))
 	fmt.Println(f)
 	fmt.Println(y)
 
