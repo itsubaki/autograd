@@ -1,0 +1,64 @@
+package layer_test
+
+import (
+	"fmt"
+	"math/rand"
+
+	L "github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/variable"
+)
+
+func ExampleLinear() {
+	s := rand.NewSource(1)
+
+	l := L.Linear(5, s)
+	y := l.Apply(variable.New(1, 2, 3))
+	fmt.Printf("%.4f\n", y[0].Data)
+
+	for _, v := range l.Params() {
+		fmt.Println(v)
+	}
+
+	// Unordered output:
+	// [[2.7150 1.5622 3.0911 1.3887 2.2476]]
+	// b([0 0 0 0 0])
+	// w([[-0.7123106159510769 -0.07294676931545414 -0.300796355901605 1.3196605478957266 0.1863716994911208] [0.34067550733567553 0.09168769154026127 0.571116089650993 -0.42220644624386905 0.3962821310071055] [0.9153334043970172 0.48393840455368875 0.7498861129486725 0.30447051019251964 0.42287554302900365]])
+}
+
+func ExampleLinear_backward() {
+	l := L.Linear(5)
+	y := l.ApplyAndFirst(variable.New(1, 2, 3))
+	y.Backward()
+
+	for _, v := range l.Params() {
+		fmt.Println(v.Grad)
+	}
+
+	y = l.ApplyAndFirst(variable.New(1, 2, 3))
+	y.Backward()
+
+	for _, v := range l.Params() {
+		fmt.Println(v.Grad)
+	}
+
+	// Unordered output:
+	// variable([1 1 1 1 1])
+	// variable([[1 1 1 1 1] [2 2 2 2 2] [3 3 3 3 3]])
+	// variable([2 2 2 2 2])
+	// variable([[2 2 2 2 2] [4 4 4 4 4] [6 6 6 6 6]])
+}
+
+func ExampleLinear_cleargrads() {
+	l := L.Linear(5)
+	y := l.ApplyAndFirst(variable.New(1, 2, 3))
+	y.Backward()
+
+	l.Cleargrads()
+	for _, v := range l.Params() {
+		fmt.Println(v.Grad)
+	}
+
+	// Unordered output:
+	// <nil>
+	// <nil>
+}
