@@ -210,14 +210,12 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 	a, b := shape[0], shape[1]
 
 	if len(m) == 1 && len(m[0]) == 1 {
-		out := Zero(a, b)
-		for i := 0; i < a; i++ {
-			for j := 0; j < b; j++ {
-				out[i][j] = m[0][0]
-			}
+		out := make([]float64, a*b)
+		for i := 0; i < a*b; i++ {
+			out[i] = m[0][0]
 		}
 
-		return out
+		return Reshape(shape, New(out))
 	}
 
 	if len(m) == 1 {
@@ -340,10 +338,9 @@ func Reshape(shape []int, m Matrix) Matrix {
 		b = p * q / a
 	}
 
-	out := New()
+	out := make(Matrix, a)
 	for i := 0; i < a; i++ {
-		begin, end := i*b, (i+1)*b
-		out = append(out, v[begin:end])
+		out[i] = v[i*b : (i+1)*b]
 	}
 
 	return out
