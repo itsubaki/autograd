@@ -31,21 +31,21 @@ func ExampleLinear_backward() {
 	y.Backward()
 
 	for _, v := range l.Params() {
-		fmt.Println(v.Grad)
+		fmt.Println(v.Name, v.Grad)
 	}
 
 	y = l.First(variable.New(1, 2, 3))
 	y.Backward()
 
 	for _, v := range l.Params() {
-		fmt.Println(v.Grad)
+		fmt.Println(v.Name, v.Grad)
 	}
 
 	// Unordered output:
-	// variable([1 1 1 1 1])
-	// variable([[1 1 1 1 1] [2 2 2 2 2] [3 3 3 3 3]])
-	// variable([2 2 2 2 2])
-	// variable([[2 2 2 2 2] [4 4 4 4 4] [6 6 6 6 6]])
+	// b variable([1 1 1 1 1])
+	// w variable([[1 1 1 1 1] [2 2 2 2 2] [3 3 3 3 3]])
+	// b variable([2 2 2 2 2])
+	// w variable([[2 2 2 2 2] [4 4 4 4 4] [6 6 6 6 6]])
 }
 
 func ExampleLinear_cleargrads() {
@@ -55,10 +55,10 @@ func ExampleLinear_cleargrads() {
 
 	l.Cleargrads()
 	for _, v := range l.Params() {
-		fmt.Println(v.Grad)
+		fmt.Println(v.Name, v.Grad)
 	}
 
 	// Unordered output:
-	// <nil>
-	// <nil>
+	// b <nil>
+	// w <nil>
 }
