@@ -15,16 +15,14 @@ func Linear(outSize int, s ...rand.Source) *Layer {
 		s = append(s, rand.NewSource(time.Now().UnixNano()))
 	}
 
-	params := make(Parameters)
-	b := variable.Zero(1, outSize)
-	b.Name = "b"
-	params[b.Name] = b
+	p := make(Parameters)
+	p.Add("b", variable.Zero(1, outSize))
 
 	return &Layer{
 		Forwarder: &LinearT{
 			outSize:    outSize,
 			rnd:        rand.New(s[0]),
-			Parameters: params,
+			Parameters: p,
 		},
 	}
 }
@@ -39,10 +37,8 @@ func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
 		l.inSize = variable.Shape(x[0])[1]
 
-		m := matrix.Randn(l.inSize, l.outSize, l.rnd)
-		w := variable.NewOf(xavier(l.inSize, m)...)
-		w.Name = "w"
-		l.Parameters[w.Name] = w
+		w := matrix.Randn(l.inSize, l.outSize, l.rnd)
+		l.Parameters.Add("w", variable.NewOf(xavier(l.inSize, w)...))
 	}
 
 	return []*variable.Variable{

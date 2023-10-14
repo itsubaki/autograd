@@ -14,3 +14,8 @@ func (p Parameters) Params() []Parameter {
 
 	return params
 }
+
+func (p Parameters) Add(name string, param Parameter) {
+	param.Name = name
+	p[name] = param
+}

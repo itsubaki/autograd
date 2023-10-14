@@ -13,10 +13,6 @@ type Layer struct {
 	Forwarder
 }
 
-func (l *Layer) First(x ...*variable.Variable) *variable.Variable {
-	return l.Apply(x...)[0]
-}
-
 func (l *Layer) Apply(x ...*variable.Variable) []*variable.Variable {
 	y := l.Forward(x...)
 	l.Input, l.Output = x, y
