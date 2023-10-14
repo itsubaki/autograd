@@ -9,9 +9,9 @@ import (
 type Matrix [][]float64
 
 func New(v ...[]float64) Matrix {
-	m := make(Matrix, len(v))
-	copy(m, v)
-	return m
+	out := make(Matrix, len(v))
+	copy(out, v)
+	return out
 }
 
 func Zero(m, n int) Matrix {
@@ -210,12 +210,14 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 	a, b := shape[0], shape[1]
 
 	if len(m) == 1 && len(m[0]) == 1 {
-		v := make([]float64, a*b)
-		for i := 0; i < a*b; i++ {
-			v[i] = m[0][0]
+		out := Zero(a, b)
+		for i := 0; i < a; i++ {
+			for j := 0; j < b; j++ {
+				out[i][j] = m[0][0]
+			}
 		}
 
-		return Reshape(shape, New(v))
+		return out
 	}
 
 	if len(m) == 1 {
