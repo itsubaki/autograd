@@ -6,11 +6,11 @@ import (
 )
 
 func AddC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(Const(c), x[0])
+	return (&Function{Forwarder: &AddT{}}).First(Const(c), x[0])
 }
 
 func Add(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &AddT{}}).First(x...)
 }
 
 type AddT struct {

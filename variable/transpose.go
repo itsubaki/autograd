@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Transpose(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &TransposeT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &TransposeT{}}).First(x...)
 }
 
 type TransposeT struct{}

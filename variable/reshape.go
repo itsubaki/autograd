@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Reshape(shape ...int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &ReshapeT{Shape: shape}}).ApplyAndFirst
+	return (&Function{Forwarder: &ReshapeT{Shape: shape}}).First
 }
 
 type ReshapeT struct {

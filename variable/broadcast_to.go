@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &BroadcastToT{Shape: shape}}).ApplyAndFirst
+	return (&Function{Forwarder: &BroadcastToT{Shape: shape}}).First
 }
 
 type BroadcastToT struct {

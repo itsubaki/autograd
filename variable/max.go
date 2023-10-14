@@ -7,7 +7,7 @@ import (
 )
 
 func Max(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MaxT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &MaxT{}}).First(x...)
 }
 
 type MaxT struct {

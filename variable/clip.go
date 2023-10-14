@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Clip(min, max float64) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &ClipT{Min: min, Max: max}}).ApplyAndFirst
+	return (&Function{Forwarder: &ClipT{Min: min, Max: max}}).First
 }
 
 type ClipT struct {

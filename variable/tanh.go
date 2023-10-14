@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Tanh(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &TanhT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &TanhT{}}).First(x...)
 }
 
 type TanhT struct {

@@ -8,7 +8,7 @@ import (
 )
 
 func ReLU(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &ReLUT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &ReLUT{}}).First(x...)
 }
 
 type ReLUT struct {

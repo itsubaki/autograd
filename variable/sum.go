@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Sum(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SumT{}}).ApplyAndFirst(x...)
+	return (&Function{Forwarder: &SumT{}}).First(x...)
 }
 
 type SumT struct {

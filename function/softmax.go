@@ -6,7 +6,7 @@ import (
 )
 
 func Softmax(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &SoftmaxT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &SoftmaxT{}}).First(x...)
 }
 
 type SoftmaxT struct {

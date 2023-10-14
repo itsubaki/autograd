@@ -1,7 +1,7 @@
 package variable
 
 func GetItem(slices []int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &GetItemT{Slices: slices}}).ApplyAndFirst
+	return (&Function{Forwarder: &GetItemT{Slices: slices}}).First
 }
 
 type GetItemT struct {

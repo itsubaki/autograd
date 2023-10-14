@@ -6,7 +6,7 @@ import (
 )
 
 func Linear(x ...*variable.Variable) *variable.Variable {
-	return (&variable.Function{Forwarder: &LinearT{}}).ApplyAndFirst(x...)
+	return (&variable.Function{Forwarder: &LinearT{}}).First(x...)
 }
 
 type LinearT struct {
