@@ -10,6 +10,18 @@ import (
 )
 
 func ExampleMLP() {
+	mlp := model.NewMLP([]int{5, 1})
+
+	for _, l := range mlp.Layers {
+		fmt.Printf("%T\n", l.Forwarder)
+	}
+
+	// Output:
+	// *layer.LinearT
+	// *layer.LinearT
+}
+
+func ExampleMLP_opts() {
 	mlp := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
 		Source:     rand.NewSource(1),
