@@ -10,8 +10,10 @@ import (
 )
 
 func ExampleMLP() {
-	s := rand.NewSource(1)
-	mlp := model.NewMLP([]int{5, 1}, F.ReLU, s)
+	mlp := model.NewMLP([]int{5, 1}, model.MLPOpts{
+		Activation: F.ReLU,
+		Source:     rand.NewSource(1),
+	})
 
 	x := variable.New(1, 2)
 	y := mlp.Forward(x)
@@ -22,8 +24,10 @@ func ExampleMLP() {
 }
 
 func ExampleMLP_backward() {
-	s := rand.NewSource(1)
-	mlp := model.NewMLP([]int{5, 1}, F.ReLU, s)
+	mlp := model.NewMLP([]int{5, 1}, model.MLPOpts{
+		Activation: F.ReLU,
+		Source:     rand.NewSource(1),
+	})
 
 	x := variable.New(1, 2)
 	y := mlp.Forward(x)
