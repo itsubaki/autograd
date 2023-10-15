@@ -23,7 +23,7 @@ func ExampleLayer() {
 	// b([0 0 0])
 }
 
-func ExampleLayer_linear() {
+func ExampleLayer_forwarder() {
 	l := &L.Layer{
 		Forwarder: L.Linear(1),
 	}

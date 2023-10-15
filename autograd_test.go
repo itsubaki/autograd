@@ -6,7 +6,9 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/numerical"
+	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -415,4 +417,43 @@ func Example_linearRegression() {
 
 	// Output:
 	// w([2.3111411392277623]) b([5.3020926197392475]) loss([0.07620708812903994])
+}
+
+func Example_mlp() {
+	s := rand.NewSource(1)
+	m := model.NewMLP([]int{10, 1}, model.MLPOpts{
+		Activation: F.ReLU,
+		Source:     s,
+	})
+	o := optimizer.SGD{
+		LearningRate: 0.2,
+	}
+
+	x := variable.Rand(100, 1, s)
+	y := variable.Rand(100, 1, s)
+
+	for i := 0; i < 100; i++ {
+		yPred := m.Forward(x)
+		loss := F.MeanSquaredError(y, yPred)
+
+		m.Cleargrads()
+		loss.Backward()
+		o.Update(m)
+
+		if i%10 == 0 {
+			fmt.Println(loss)
+		}
+	}
+
+	// Output:
+	// variable([0.11313880966253058])
+	// variable([0.0884293931172164])
+	// variable([0.08005268564745079])
+	// variable([0.07673930484904389])
+	// variable([0.07532171792006351])
+	// variable([0.07468289620442368])
+	// variable([0.07439809453669555])
+	// variable([0.07426549308918082])
+	// variable([0.07420101909350187])
+	// variable([0.07416433327309165])
 }

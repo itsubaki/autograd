@@ -3,6 +3,7 @@ package model
 import (
 	"math/rand"
 
+	"github.com/itsubaki/autograd/dot"
 	F "github.com/itsubaki/autograd/function"
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
@@ -51,4 +52,8 @@ func (m *MLP) Forward(x *variable.Variable) *variable.Variable {
 	}
 
 	return m.Layers[last].First(x)
+}
+
+func (m *MLP) Graph(x *variable.Variable, opt ...dot.Opt) []string {
+	return m.graph(m.Forward(x), opt...)
 }

@@ -55,8 +55,7 @@ func Example_func() {
 		Forwarder: &variable.SinT{},
 	}
 
-	dotf := dot.Func(f)
-	for _, txt := range dotf {
+	for _, txt := range dot.Func(f) {
 		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
