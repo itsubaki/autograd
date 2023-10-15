@@ -9,8 +9,8 @@ import (
 )
 
 type MLP struct {
-	Model
 	Activation Activation
+	Model
 }
 
 type MLPOpts struct {
@@ -35,12 +35,12 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 	}
 
 	return &MLP{
+		Activation: activation,
 		Model: Model{
 			Layer: L.Layer{
 				Layers: layers,
 			},
 		},
-		Activation: activation,
 	}
 }
 
