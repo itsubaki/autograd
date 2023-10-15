@@ -8,8 +8,8 @@ type Forwarder interface {
 }
 
 type Layer struct {
-	Input, Output []*variable.Variable
 	Layers        []*Layer
+	Input, Output []*variable.Variable
 	Forwarder
 }
 
