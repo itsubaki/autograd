@@ -14,10 +14,10 @@ func ExampleSGD() {
 	}
 
 	x := variable.Rand(10, 1)
-	y := variable.Rand(10, 1)
+	t := variable.Rand(10, 1)
 
-	yPred := m.Forward(x)
-	loss := F.MeanSquaredError(y, yPred)
+	y := m.Forward(x)
+	loss := F.MeanSquaredError(y, t)
 
 	m.Cleargrads()
 	loss.Backward()
