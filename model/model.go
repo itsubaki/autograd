@@ -10,6 +10,14 @@ type Model struct {
 	L.Layer
 }
 
+func NewModel(layers []*L.Layer) *Model {
+	return &Model{
+		Layer: L.Layer{
+			Layers: layers,
+		},
+	}
+}
+
 func (m Model) graph(y *variable.Variable, opt ...dot.Opt) []string {
 	out := make([]string, 0)
 	for _, txt := range dot.Graph(y, opt...) {
