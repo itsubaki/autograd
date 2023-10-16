@@ -9,14 +9,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type MLP struct {
-	Activation Activation
-	Model
-}
-
 type MLPOpts struct {
 	Activation Activation
 	Source     rand.Source
+}
+
+type MLP struct {
+	Activation Activation
+	*Model
 }
 
 func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
@@ -37,11 +37,7 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 
 	return &MLP{
 		Activation: activation,
-		Model: Model{
-			Layer: L.Layer{
-				Layers: layers,
-			},
-		},
+		Model:      NewModel(layers),
 	}
 }
 

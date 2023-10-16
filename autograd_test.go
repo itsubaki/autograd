@@ -430,11 +430,11 @@ func Example_mlp() {
 	}
 
 	x := variable.Rand(100, 1, s)
-	y := variable.Rand(100, 1, s)
+	t := variable.Rand(100, 1, s)
 
 	for i := 0; i < 100; i++ {
-		yPred := m.Forward(x)
-		loss := F.MeanSquaredError(y, yPred)
+		y := m.Forward(x)
+		loss := F.MeanSquaredError(y, t)
 
 		m.Cleargrads()
 		loss.Backward()
