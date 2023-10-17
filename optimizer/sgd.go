@@ -5,10 +5,15 @@ import "github.com/itsubaki/autograd/matrix"
 // SGD is an optimizer that the Stochastic Gradient Descent algorithm.
 type SGD struct {
 	LearningRate float64
+	Hooks        []Hook
 }
 
 // Update updates the parameters of the model.
 func (o *SGD) Update(model Model) {
+	for _, h := range o.Hooks {
+		h(model.Params())
+	}
+
 	for _, p := range model.Params() {
 		p.Data = matrix.F2(p.Data, p.Grad.Data, sgd(o.LearningRate))
 	}
