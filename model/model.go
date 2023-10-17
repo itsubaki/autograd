@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	_ Layer = (L.Linear(1))
-	_ Layer = (L.RNN(1))
+	_ Layer = (*L.LinearT)(nil)
+	_ Layer = (*L.RNNT)(nil)
 )
 
 type Layer interface {
