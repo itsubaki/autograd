@@ -16,7 +16,7 @@ type MLPOpts struct {
 
 type MLP struct {
 	Activation Activation
-	*Model
+	Model
 }
 
 func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
@@ -37,7 +37,11 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 
 	return &MLP{
 		Activation: activation,
-		Model:      NewModel(layers),
+		Model: Model{
+			Layer: L.Layer{
+				Layers: layers,
+			},
+		},
 	}
 }
 
