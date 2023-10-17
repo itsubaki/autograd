@@ -16,7 +16,7 @@ func ExampleVar() {
 	x.Name = "x"
 
 	fmt.Println(re.ReplaceAllString(dot.Var(x), "**********"))
-	fmt.Println(re.ReplaceAllString(dot.Var(x, dot.Opt{Verbose: true}), "**********"))
+	fmt.Println(re.ReplaceAllString(dot.Var(x, dot.Opts{Verbose: true}), "**********"))
 	fmt.Println(dot.Var(x) == dot.Var(x))
 
 	y := variable.New(1)

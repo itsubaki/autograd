@@ -60,7 +60,7 @@ func main() {
 	}
 
 	x.Grad.Name = fmt.Sprintf("gx%d", order)
-	for _, txt := range dot.Graph(x.Grad, dot.Opt{Verbose: verbose}) {
+	for _, txt := range dot.Graph(x.Grad, dot.Opts{Verbose: verbose}) {
 		fmt.Println(txt)
 	}
 }

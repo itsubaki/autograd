@@ -13,12 +13,12 @@ const (
 	arrow  = "\"%p\" -> \"%p\""
 )
 
-type Opt struct {
+type Opts struct {
 	Verbose bool
 }
 
-func Var(v *variable.Variable, opt ...Opt) string {
-	if len(opt) > 0 && opt[0].Verbose {
+func Var(v *variable.Variable, opts ...Opts) string {
+	if len(opts) > 0 && opts[0].Verbose {
 		return fmt.Sprintf(varfmt, v, v)
 	}
 
@@ -41,11 +41,11 @@ func Func(f *variable.Function) []string {
 	return out
 }
 
-func Graph(v *variable.Variable, opt ...Opt) []string {
+func Graph(v *variable.Variable, opts ...Opts) []string {
 	seen := make(map[*variable.Function]bool)
 	fs := addFunc(make([]*variable.Function, 0), v.Creator, seen)
 
-	out := append([]string{"digraph g {"}, Var(v, opt...))
+	out := append([]string{"digraph g {"}, Var(v, opts...))
 	for {
 		if len(fs) == 0 {
 			break
@@ -58,7 +58,7 @@ func Graph(v *variable.Variable, opt ...Opt) []string {
 
 		x := f.Input
 		for i := range x {
-			out = append(out, Var(x[i], opt...))
+			out = append(out, Var(x[i], opts...))
 
 			if x[i].Creator != nil {
 				fs = addFunc(fs, x[i].Creator, seen)
