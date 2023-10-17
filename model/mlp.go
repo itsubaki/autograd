@@ -3,7 +3,6 @@ package model
 import (
 	"math/rand"
 
-	"github.com/itsubaki/autograd/dot"
 	F "github.com/itsubaki/autograd/function"
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
@@ -30,7 +29,7 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 		s = opts[0].Source
 	}
 
-	layers := make([]*L.Layer, len(outSize))
+	layers := make([]Layer, len(outSize))
 	for i := 0; i < len(outSize); i++ {
 		layers[i] = L.Linear(outSize[i], L.LinearOpts{
 			Source: s,
@@ -40,9 +39,7 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 	return &MLP{
 		Activation: activation,
 		Model: Model{
-			Layer: L.Layer{
-				Layers: layers,
-			},
+			Layers: layers,
 		},
 	}
 }
@@ -54,8 +51,4 @@ func (m *MLP) Forward(x *variable.Variable) *variable.Variable {
 	}
 
 	return m.Layers[last].First(x)
-}
-
-func (m *MLP) Graph(x *variable.Variable, opts ...dot.Opts) []string {
-	return m.graph(m.Forward(x), opts...)
 }

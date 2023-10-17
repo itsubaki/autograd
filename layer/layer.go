@@ -2,46 +2,30 @@ package layer
 
 import "github.com/itsubaki/autograd/variable"
 
-type Forwarder interface {
+type Layer interface {
+	First(x ...*variable.Variable) *variable.Variable
 	Forward(x ...*variable.Variable) []*variable.Variable
 	Params() []Parameter
+	Cleargrads()
 }
 
-type Layer struct {
-	Layers        []*Layer
-	Input, Output []*variable.Variable
-	Forwarder
-}
+type Layers map[string]Layer
 
-func (l *Layer) First(x ...*variable.Variable) *variable.Variable {
-	return l.Forward(x...)[0]
-}
-
-func (l *Layer) Forward(x ...*variable.Variable) []*variable.Variable {
-	y := l.Forwarder.Forward(x...)
-	l.Input, l.Output = x, y
-	return y
-}
-
-func (l *Layer) Add(layer *Layer) {
-	l.Layers = append(l.Layers, layer)
-}
-
-func (l *Layer) Params() []Parameter {
+func (l Layers) Params() []Parameter {
 	params := make([]Parameter, 0)
-	if l.Forwarder != nil {
-		params = l.Forwarder.Params()
-	}
-
-	for _, ll := range l.Layers {
-		params = append(params, ll.Params()...)
+	for k := range l {
+		params = append(params, l[k].Params()...)
 	}
 
 	return params
 }
 
-func (l *Layer) Cleargrads() {
-	for _, p := range l.Params() {
-		p.Cleargrad()
+func (l Layers) Cleargrads() {
+	for k := range l {
+		l[k].Cleargrads()
 	}
+}
+
+func (l Layers) Add(name string, layer Layer) {
+	l[name] = layer
 }
