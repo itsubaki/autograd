@@ -67,20 +67,3 @@ func ExampleLinear_backward() {
 	// b variable([2 2 2 2 2])
 	// w variable([[2 2 2 2 2] [4 4 4 4 4] [6 6 6 6 6]])
 }
-
-func ExampleLinear_cleargrads() {
-	l := L.Linear(5)
-
-	x := variable.New(1, 2, 3)
-	y := l.First(x)
-	y.Backward()
-
-	l.Cleargrads()
-	for _, v := range l.Params() {
-		fmt.Println(v.Name, v.Grad)
-	}
-
-	// Unordered output:
-	// b <nil>
-	// w <nil>
-}

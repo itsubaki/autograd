@@ -1,20 +1,38 @@
 package model
 
 import (
-	"github.com/itsubaki/autograd/dot"
+	"github.com/itsubaki/autograd/layer"
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
 )
 
-type Model struct {
-	L.Layer
+var (
+	_ Layer = (L.Linear(1))
+	_ Layer = (L.RNN(1))
+)
+
+type Layer interface {
+	First(x ...*variable.Variable) *variable.Variable
+	Forward(x ...*variable.Variable) []*variable.Variable
+	Params() []layer.Parameter
+	Cleargrads()
 }
 
-func (m Model) graph(y *variable.Variable, opts ...dot.Opts) []string {
-	out := make([]string, 0)
-	for _, txt := range dot.Graph(y, opts...) {
-		out = append(out, txt)
+type Model struct {
+	Layers []Layer
+}
+
+func (m Model) Params() []L.Parameter {
+	params := make([]L.Parameter, 0)
+	for _, l := range m.Layers {
+		params = append(params, l.Params()...)
 	}
 
-	return out
+	return params
+}
+
+func (m *Model) Cleargrads() {
+	for _, l := range m.Layers {
+		l.Cleargrads()
+	}
 }

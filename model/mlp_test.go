@@ -3,7 +3,6 @@ package model_test
 import (
 	"fmt"
 	"math/rand"
-	"regexp"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/model"
@@ -14,7 +13,7 @@ func ExampleMLP() {
 	m := model.NewMLP([]int{1, 2, 3})
 
 	for _, l := range m.Layers {
-		fmt.Printf("%T\n", l.Forwarder)
+		fmt.Printf("%T\n", l)
 	}
 
 	// Output:
@@ -58,38 +57,25 @@ func ExampleMLP_backward() {
 	// w variable([[0] [0.1352468783636501] [1.0305442093147756] [0.582057128601811] [1.198946798274449]])
 }
 
-func ExampleMLP_Graph() {
-	var re = regexp.MustCompile("[0-9a-f]{10}")
+func ExampleMLP_cleargrads() {
+	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
+		Activation: F.ReLU,
+		Source:     rand.NewSource(1),
+	})
 
-	m := model.NewMLP([]int{5, 1})
 	x := variable.New(1, 2)
+	y := m.Forward(x)
 
-	for _, txt := range m.Graph(x) {
-		fmt.Println(re.ReplaceAllString(txt, "**********"))
+	y.Backward()
+	m.Cleargrads()
+
+	for _, p := range m.Params() {
+		fmt.Println(p.Name, p.Grad)
 	}
 
-	// Output:
-	// digraph g {
-	// "0x**********" [label="", color=orange, style=filled]
-	// "0x**********" [label="Linear", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="", color=orange, style=filled]
-	// "0x**********" [label="w", color=orange, style=filled]
-	// "0x**********" [label="b", color=orange, style=filled]
-	// "0x**********" [label="Sigmoid", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="", color=orange, style=filled]
-	// "0x**********" [label="Linear", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="", color=orange, style=filled]
-	// "0x**********" [label="w", color=orange, style=filled]
-	// "0x**********" [label="b", color=orange, style=filled]
-	// }
+	// Unordered output:
+	// b <nil>
+	// w <nil>
+	// b <nil>
+	// w <nil>
 }

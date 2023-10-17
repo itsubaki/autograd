@@ -15,7 +15,7 @@ type LinearOpts struct {
 	Source rand.Source
 }
 
-func Linear(outSize int, opts ...LinearOpts) *Layer {
+func Linear(outSize int, opts ...LinearOpts) *LinearT {
 	s := rand.NewSource(time.Now().UnixNano())
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
@@ -26,12 +26,10 @@ func Linear(outSize int, opts ...LinearOpts) *Layer {
 		p.Add("b", variable.Zero(1, outSize))
 	}
 
-	return &Layer{
-		Forwarder: &LinearT{
-			outSize:    outSize,
-			rand:       rand.New(s),
-			Parameters: p,
-		},
+	return &LinearT{
+		outSize:    outSize,
+		rand:       rand.New(s),
+		Parameters: p,
 	}
 }
 
@@ -39,6 +37,10 @@ type LinearT struct {
 	inSize, outSize int
 	rand            *rand.Rand
 	Parameters
+}
+
+func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
+	return l.Forward(x...)[0]
 }
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
