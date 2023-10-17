@@ -9,8 +9,9 @@ import (
 )
 
 func ExampleLinear() {
-	s := rand.NewSource(1)
-	l := L.Linear(5, s)
+	l := L.Linear(5, L.LinearOpts{
+		Source: rand.NewSource(1),
+	})
 
 	x := variable.New(1, 2, 3)
 	y := l.Forward(x)
@@ -24,6 +25,22 @@ func ExampleLinear() {
 	// [[2.7150 1.5622 3.0911 1.3887 2.2476]]
 	// b([0 0 0 0 0])
 	// w([[-0.7123106159510769 -0.07294676931545414 -0.300796355901605 1.3196605478957266 0.1863716994911208] [0.34067550733567553 0.09168769154026127 0.571116089650993 -0.42220644624386905 0.3962821310071055] [0.9153334043970172 0.48393840455368875 0.7498861129486725 0.30447051019251964 0.42287554302900365]])
+}
+
+func ExampleLinear_nobias() {
+	l := L.Linear(5, L.LinearOpts{
+		NoBias: true,
+	})
+
+	x := variable.New(1, 2, 3)
+	l.Forward(x)
+
+	for _, v := range l.Params() {
+		fmt.Println(v.Name)
+	}
+
+	// Output:
+	// w
 }
 
 func ExampleLinear_backward() {

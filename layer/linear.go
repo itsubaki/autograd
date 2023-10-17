@@ -11,20 +11,25 @@ import (
 )
 
 type LinearOpts struct {
+	NoBias bool
+	Source rand.Source
 }
 
-func Linear(outSize int, s ...rand.Source) *Layer {
-	if len(s) == 0 {
-		s = append(s, rand.NewSource(time.Now().UnixNano()))
+func Linear(outSize int, opts ...LinearOpts) *Layer {
+	s := rand.NewSource(time.Now().UnixNano())
+	if len(opts) != 0 && opts[0].Source != nil {
+		s = opts[0].Source
 	}
 
 	p := make(Parameters)
-	p.Add("b", variable.Zero(1, outSize))
+	if len(opts) == 0 || !opts[0].NoBias {
+		p.Add("b", variable.Zero(1, outSize))
+	}
 
 	return &Layer{
 		Forwarder: &LinearT{
 			outSize:    outSize,
-			rnd:        rand.New(s[0]),
+			rand:       rand.New(s),
 			Parameters: p,
 		},
 	}
@@ -32,7 +37,7 @@ func Linear(outSize int, s ...rand.Source) *Layer {
 
 type LinearT struct {
 	inSize, outSize int
-	rnd             *rand.Rand
+	rand            *rand.Rand
 	Parameters
 }
 
@@ -40,12 +45,17 @@ func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
 		l.inSize = variable.Shape(x[0])[1]
 
-		w := matrix.Randn(l.inSize, l.outSize, l.rnd)
+		w := matrix.Randn(l.inSize, l.outSize, l.rand)
 		l.Parameters.Add("w", variable.NewOf(xavier(l.inSize, w)...))
 	}
 
+	xp := []*variable.Variable{x[0], l.Parameters["w"]}
+	if b, ok := l.Parameters["b"]; ok {
+		xp = append(xp, b)
+	}
+
 	return []*variable.Variable{
-		F.Linear(x[0], l.Parameters["w"], l.Parameters["b"]),
+		F.Linear(xp...),
 	}
 }
 
