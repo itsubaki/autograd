@@ -25,14 +25,16 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 		activation = opts[0].Activation
 	}
 
-	s := make([]rand.Source, 0)
+	var s rand.Source
 	if len(opts) > 0 && opts[0].Source != nil {
-		s = append(s, opts[0].Source)
+		s = opts[0].Source
 	}
 
 	layers := make([]*L.Layer, len(outSize))
 	for i := 0; i < len(outSize); i++ {
-		layers[i] = L.Linear(outSize[i], s...)
+		layers[i] = L.Linear(outSize[i], L.LinearOpts{
+			Source: s,
+		})
 	}
 
 	return &MLP{
