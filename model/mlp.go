@@ -54,6 +54,6 @@ func (m *MLP) Forward(x *variable.Variable) *variable.Variable {
 	return m.Layers[last].First(x)
 }
 
-func (m *MLP) Graph(x *variable.Variable, opt ...dot.Opt) []string {
-	return m.graph(m.Forward(x), opt...)
+func (m *MLP) Graph(x *variable.Variable, opts ...dot.Opts) []string {
+	return m.graph(m.Forward(x), opts...)
 }

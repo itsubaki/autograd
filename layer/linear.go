@@ -10,6 +10,9 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+type LinearOpts struct {
+}
+
 func Linear(outSize int, s ...rand.Source) *Layer {
 	if len(s) == 0 {
 		s = append(s, rand.NewSource(time.Now().UnixNano()))
