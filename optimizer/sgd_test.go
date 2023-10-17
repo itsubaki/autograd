@@ -1,27 +1,33 @@
 package optimizer_test
 
 import (
-	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/model"
+	"fmt"
+
+	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
 )
 
+type TestModel struct {
+	P *variable.Variable
+}
+
+func (m *TestModel) Params() []layer.Parameter {
+	return []layer.Parameter{m.P}
+}
+
 func ExampleSGD() {
-	m := model.NewMLP([]int{10, 1})
+	p := variable.New(1.0)
+	p.Grad = variable.New(1.0)
+	m := &TestModel{P: p}
+
 	o := optimizer.SGD{
-		LearningRate: 0.2,
+		LearningRate: 0.1,
 	}
-
-	x := variable.Rand(10, 1)
-	t := variable.Rand(10, 1)
-
-	y := m.Forward(x)
-	loss := F.MeanSquaredError(y, t)
-
-	m.Cleargrads()
-	loss.Backward()
 	o.Update(m)
 
+	fmt.Println(p)
+
 	// Output:
+	// variable([0.9])
 }
