@@ -1,25 +1,9 @@
 package model
 
-import (
-	"github.com/itsubaki/autograd/layer"
-	L "github.com/itsubaki/autograd/layer"
-	"github.com/itsubaki/autograd/variable"
-)
-
-var (
-	_ Layer = (*L.LinearT)(nil)
-	_ Layer = (*L.RNNT)(nil)
-)
-
-type Layer interface {
-	First(x ...*variable.Variable) *variable.Variable
-	Forward(x ...*variable.Variable) []*variable.Variable
-	Params() []layer.Parameter
-	Cleargrads()
-}
+import L "github.com/itsubaki/autograd/layer"
 
 type Model struct {
-	Layers []Layer
+	Layers []L.Layer
 }
 
 func (m Model) Params() []L.Parameter {
