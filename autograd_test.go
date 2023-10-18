@@ -377,7 +377,7 @@ func Example_linearRegression() {
 
 	// variable
 	x := variable.NewOf(xrand...)                                                    // x = xrand
-	y := variable.NewOf(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))...) // y = 2x+5+yrand
+	t := variable.NewOf(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))...) // t = 2x+5+yrand
 
 	// parameter
 	w := variable.New(0.0)
@@ -400,8 +400,8 @@ func Example_linearRegression() {
 	var loss *variable.Variable
 
 	for i := 0; i < iters; i++ {
-		yPred := predict(x)
-		loss = F.MeanSquaredError(y, yPred)
+		y := predict(x)
+		loss = F.MeanSquaredError(y, t)
 
 		w.Cleargrad()
 		b.Cleargrad()
