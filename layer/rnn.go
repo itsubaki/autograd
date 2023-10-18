@@ -23,14 +23,12 @@ func RNN(hiddenSize int, opts ...RNNOpts) *RNNT {
 	l.Add("h2h", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
 
 	return &RNNT{
-		hiddenSize: hiddenSize,
-		Layers:     l,
+		Layers: l,
 	}
 }
 
 type RNNT struct {
-	hiddenSize int
-	h          *variable.Variable
+	h *variable.Variable
 	Layers
 }
 
