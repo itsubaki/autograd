@@ -34,8 +34,8 @@ func Linear(outSize int, opts ...LinearOpts) *LinearT {
 }
 
 type LinearT struct {
-	inSize, outSize int
-	rand            *rand.Rand
+	outSize int
+	rand    *rand.Rand
 	Parameters
 }
 
@@ -44,21 +44,30 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 }
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
-	if _, ok := l.Parameters["w"]; !ok {
-		l.inSize = variable.Shape(x[0])[1]
+	l.initw(x[0])
 
-		w := matrix.Randn(l.inSize, l.outSize, l.rand)
-		l.Parameters.Add("w", variable.NewOf(xavier(l.inSize, w)...))
+	return []*variable.Variable{
+		F.Linear(l.xparams(x[0])...),
 	}
+}
 
-	xp := []*variable.Variable{x[0], l.Parameters["w"]}
+func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
+	xp := []*variable.Variable{x, l.Parameters["w"]}
 	if b, ok := l.Parameters["b"]; ok {
 		xp = append(xp, b)
 	}
 
-	return []*variable.Variable{
-		F.Linear(xp...),
+	return xp
+}
+
+func (l *LinearT) initw(x *variable.Variable) {
+	if _, ok := l.Parameters["w"]; ok {
+		return
 	}
+
+	inSize := variable.Shape(x)[1]
+	w := matrix.Randn(inSize, l.outSize, l.rand)
+	l.Parameters.Add("w", variable.NewOf(xavier(inSize, w)...))
 }
 
 func xavier(inSize int, m matrix.Matrix) matrix.Matrix {
