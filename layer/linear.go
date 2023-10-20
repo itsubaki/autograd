@@ -11,6 +11,7 @@ import (
 )
 
 type LinearOpts struct {
+	InSize int
 	NoBias bool
 	Source rand.Source
 }
@@ -20,15 +21,19 @@ func Linear(outSize int, opts ...LinearOpts) *LinearT {
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
+	rnd := rand.New(s)
 
 	p := make(Parameters)
 	if len(opts) == 0 || !opts[0].NoBias {
 		p.Add("b", variable.Zero(1, outSize))
 	}
+	if len(opts) != 0 && opts[0].InSize > 0 {
+		p.Add("w", initw(opts[0].InSize, outSize, rnd))
+	}
 
 	return &LinearT{
 		outSize:    outSize,
-		rand:       rand.New(s),
+		rand:       rnd,
 		Parameters: p,
 	}
 }
@@ -44,7 +49,10 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 }
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
-	l.initw(x[0])
+	if _, ok := l.Parameters["w"]; !ok {
+		inSize := variable.Shape(x[0])[1]
+		l.Parameters.Add("w", initw(inSize, l.outSize, l.rand))
+	}
 
 	return []*variable.Variable{
 		F.Linear(l.xparams(x[0])...),
@@ -60,16 +68,8 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 	return xp
 }
 
-func (l *LinearT) initw(x *variable.Variable) {
-	if _, ok := l.Parameters["w"]; ok {
-		return
-	}
-
-	inSize := variable.Shape(x)[1]
-	w := matrix.Randn(inSize, l.outSize, l.rand)
-	l.Parameters.Add("w", variable.NewOf(xavier(inSize, w)...))
-}
-
-func xavier(inSize int, m matrix.Matrix) matrix.Matrix {
-	return matrix.MulC(1.0/math.Sqrt(float64(inSize)), m)
+func initw(inSize, outSize int, rand *rand.Rand) *variable.Variable {
+	w := matrix.Randn(inSize, outSize, rand)
+	xavier := 1.0 / math.Sqrt(float64(inSize))
+	return variable.NewOf(matrix.MulC(xavier, w)...)
 }
