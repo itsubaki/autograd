@@ -63,12 +63,12 @@ func (l *LSTMT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 	var cnew *variable.Variable
 	if l.c == nil {
-		cnew = F.Mul(i, u)
+		cnew = F.Mul(i, u) // i * u
 	} else {
-		cnew = F.Add(F.Mul(f, l.c), F.Mul(i, u))
+		cnew = F.Add(F.Mul(f, l.c), F.Mul(i, u)) // f * c + i * u
 	}
 
-	hnew := F.Mul(o, F.Tanh(cnew))
+	hnew := F.Mul(o, F.Tanh(cnew)) // o * tanh(cnew)
 
 	l.h, l.c = hnew, cnew
 	return []*variable.Variable{

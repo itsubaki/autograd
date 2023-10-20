@@ -6,6 +6,11 @@ type Parameter = *variable.Variable
 
 type Parameters map[string]Parameter
 
+func (p Parameters) Add(name string, param Parameter) {
+	param.Name = name
+	p[name] = param
+}
+
 func (p Parameters) Params() []Parameter {
 	params := make([]Parameter, 0)
 	for k := range p {
@@ -19,9 +24,4 @@ func (p Parameters) Cleargrads() {
 	for k := range p {
 		p[k].Cleargrad()
 	}
-}
-
-func (p Parameters) Add(name string, param Parameter) {
-	param.Name = name
-	p[name] = param
 }
