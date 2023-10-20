@@ -56,9 +56,7 @@ func ExampleRNN_backward() {
 }
 
 func ExampleRNN_cleargrads() {
-	l := L.RNN(3, L.RNNOpts{
-		Source: rand.NewSource(1),
-	})
+	l := L.RNN(3)
 
 	x := variable.New(1)
 	y := l.First(x)
@@ -86,7 +84,7 @@ func ExampleRNNT_ResetState() {
 		fmt.Println(v.Name)
 	}
 
-	// Output:
+	// Unordered output:
 	// b
 	// w
 }
