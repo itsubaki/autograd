@@ -23,10 +23,10 @@ func LSTM(hiddenSize int, opts ...LSTMOpts) *LSTMT {
 	l.Add("x2i", Linear(hiddenSize, LinearOpts{Source: s}))
 	l.Add("x2o", Linear(hiddenSize, LinearOpts{Source: s}))
 	l.Add("x2u", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("h2f", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
-	l.Add("h2i", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
-	l.Add("h2o", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
-	l.Add("h2u", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
+	l.Add("h2f", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
+	l.Add("h2i", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
+	l.Add("h2o", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
+	l.Add("h2u", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
 
 	return &LSTMT{
 		Layers: l,

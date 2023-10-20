@@ -82,11 +82,11 @@ func ExampleRNNT_ResetState() {
 	l.ResetState() // reset hidden state
 	l.Forward(x)   // h2h is not used
 
-	for k := range l.FlattenParams() {
-		fmt.Println(k)
+	for _, v := range l.Params() {
+		fmt.Println(v.Name)
 	}
 
 	// Unordered output:
-	// x2h.w
-	// x2h.b
+	// w
+	// b
 }
