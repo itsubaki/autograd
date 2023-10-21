@@ -124,6 +124,15 @@ func Sum(v []float64) float64 {
 	return sum
 }
 
+func Transpose(v []float64) [][]float64 {
+	out := make([][]float64, len(v))
+	for i := range v {
+		out[i] = []float64{v[i]}
+	}
+
+	return out
+}
+
 func F(v []float64, f func(a float64) float64) []float64 {
 	out := ZeroLike(v)
 	for i := range v {

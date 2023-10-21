@@ -80,6 +80,13 @@ func ExampleBroadcast() {
 	// [5 6 7 8 9] [5 6 7 8 9]
 }
 
+func ExampleTranspose() {
+	fmt.Println(vector.Transpose([]float64{1, 2, 3, 4, 5}))
+
+	// Output:
+	// [[1] [2] [3] [4] [5]]
+}
+
 func ExampleF() {
 	v := []float64{1, 2, 3, 4, 5}
 	fmt.Println(vector.F(v, func(a float64) float64 { return a * a }))
