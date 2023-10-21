@@ -8,6 +8,7 @@ import (
 
 var (
 	_ Model = (*model.MLP)(nil)
+	_ Model = (*model.LSTM)(nil)
 )
 
 var (

@@ -22,20 +22,6 @@ func ExampleMLP() {
 	// *layer.LinearT
 }
 
-func ExampleMLPOpts() {
-	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
-		Activation: F.ReLU,
-		Source:     rand.NewSource(1),
-	})
-
-	x := variable.New(1, 2)
-	y := m.Forward(x)
-	fmt.Println(y)
-
-	// Output:
-	// variable([1.179297448305554])
-}
-
 func ExampleMLP_backward() {
 	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
@@ -44,8 +30,8 @@ func ExampleMLP_backward() {
 
 	x := variable.New(1, 2)
 	y := m.Forward(x)
-
 	y.Backward()
+
 	for _, p := range m.Params() {
 		fmt.Println(p.Name, p.Grad)
 	}
@@ -65,7 +51,6 @@ func ExampleMLP_cleargrads() {
 
 	x := variable.New(1, 2)
 	y := m.Forward(x)
-
 	y.Backward()
 	m.Cleargrads()
 
