@@ -83,34 +83,6 @@ for i := 0; i < iters+1; i++ {
 // variable([0.9944984367782456]) variable([0.9890050527419593])
 ```
 
-## Double backpropagation
-
-```go
-x := variable.New(1.0)
-y := F.Sin(x)
-y.Backward(variable.Opts{CreateGraph: true})
-
-fmt.Println(y)
-fmt.Println(x.Grad)
-
-for i := 0; i < 5; i++ {
-	gx := x.Grad
-	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
-
-	fmt.Println(x.Grad)
-}
-
-// Output:
-// variable([0.8414709848078965])
-// variable([0.5403023058681398])
-// variable([-0.8414709848078965])
-// variable([-0.5403023058681398])
-// variable([0.8414709848078965])
-// variable([0.5403023058681398])
-// variable([-0.8414709848078965])
-```
-
 ## Deep Learning
 
 ```go
@@ -149,6 +121,34 @@ for i := 0; i < 100; i++ {
 // variable([0.07426549308918082])
 // variable([0.07420101909350187])
 // variable([0.07416433327309165])
+```
+
+## Double backpropagation
+
+```go
+x := variable.New(1.0)
+y := F.Sin(x)
+y.Backward(variable.Opts{CreateGraph: true})
+
+fmt.Println(y)
+fmt.Println(x.Grad)
+
+for i := 0; i < 5; i++ {
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward(variable.Opts{CreateGraph: true})
+
+	fmt.Println(x.Grad)
+}
+
+// Output:
+// variable([0.8414709848078965])
+// variable([0.5403023058681398])
+// variable([-0.8414709848078965])
+// variable([-0.5403023058681398])
+// variable([0.8414709848078965])
+// variable([0.5403023058681398])
+// variable([-0.8414709848078965])
 ```
 
 ## Dot graph
