@@ -10,3 +10,6 @@ install:
 .PHONY: dot
 dot:
 	go run cmd/dot/main.go -func tanh -order 4 -verbose > sample.dot; dot sample.dot -T png -o sample.png
+
+lstm:
+	go run cmd/lstm/main.go > cos.csv
