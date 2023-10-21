@@ -1,8 +1,6 @@
 package optimizer
 
-import (
-	"github.com/itsubaki/autograd/matrix"
-)
+import "github.com/itsubaki/autograd/matrix"
 
 // SGD is an optimizer that the Stochastic Gradient Descent algorithm.
 type SGD struct {
