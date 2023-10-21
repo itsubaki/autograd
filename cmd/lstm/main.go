@@ -13,6 +13,32 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
+type SinCurve struct {
+	N     int
+	Data  []float64
+	Label []float64
+}
+
+func NewSinCurve() *SinCurve {
+	N, noise := 1000, 0.05
+
+	x := make([]float64, N)
+	for i := 0; i < N; i++ {
+		x[i] = 2 * math.Pi * float64(i) / float64(N-1)
+	}
+
+	y := make([]float64, N)
+	for i := 0; i < N; i++ {
+		y[i] = math.Sin(x[i]) + rand.Float64()*(2*noise) - noise
+	}
+
+	return &SinCurve{
+		N:     N,
+		Data:  y[:len(x)-1],
+		Label: y[1:],
+	}
+}
+
 type DataLoader struct {
 	BatchSize int
 	N         int
@@ -35,32 +61,6 @@ func (d *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	x, y := vector.Transpose(d.Data[begin:end]), vector.Transpose(d.Label[begin:end])
 	d.iter++
 	return variable.NewOf(x...), variable.NewOf(y...)
-}
-
-type SinCurve struct {
-	N     int
-	Data  []float64
-	Label []float64
-}
-
-func NewSinCurve() *SinCurve {
-	N, noise := 1000, 0.05
-
-	x := make([]float64, N)
-	for i := 0; i < N; i++ {
-		x[i] = 2 * math.Pi * float64(i) / float64(N-1)
-	}
-
-	y := make([]float64, N)
-	for i := 0; i < N; i++ {
-		y[i] = math.Sin(x[i]) + rand.Float64()*(2*noise) - noise // noise
-	}
-
-	return &SinCurve{
-		N:     N,
-		Data:  y[:len(x)-1],
-		Label: y[1:],
-	}
 }
 
 func main() {
