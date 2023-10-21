@@ -26,7 +26,7 @@ func NewSinCurve(batchSize int) *SinCurve {
 
 	x := make([]float64, N)
 	for i := 0; i < N; i++ {
-		x[i] = float64(i) * 2 * math.Pi / float64(N-1)
+		x[i] = 2 * math.Pi * float64(i) / float64(N-1)
 	}
 
 	y := make([]float64, N)
