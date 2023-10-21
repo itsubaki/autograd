@@ -111,6 +111,46 @@ for i := 0; i < 5; i++ {
 // variable([-0.8414709848078965])
 ```
 
+## Deep Learning
+
+```go
+m := model.NewMLP([]int{10, 1}, model.MLPOpts{
+	Activation: F.ReLU,
+})
+
+o := optimizer.SGD{
+	LearningRate: 0.2,
+}
+
+x := variable.Rand(100, 1)
+t := variable.Rand(100, 1)
+
+for i := 0; i < 100; i++ {
+	y := m.Forward(x)
+	loss := F.MeanSquaredError(y, t)
+
+	m.Cleargrads()
+	loss.Backward()
+	o.Update(m)
+
+	if i%10 == 0 {
+		fmt.Println(loss)
+	}
+}
+
+// Output:
+// variable([0.11313880966253058])
+// variable([0.0884293931172164])
+// variable([0.08005268564745079])
+// variable([0.07673930484904389])
+// variable([0.07532171792006351])
+// variable([0.07468289620442368])
+// variable([0.07439809453669555])
+// variable([0.07426549308918082])
+// variable([0.07420101909350187])
+// variable([0.07416433327309165])
+```
+
 ## Dot graph
 
 ```shell
@@ -118,7 +158,7 @@ $ brew install graphviz
 ```
 
 ```shell
-$ go run cmd/main.go -func tanh -order 2 -verbose > sample.dot
+$ go run cmd/dot/main.go -func tanh -order 2 -verbose > sample.dot
 $ dot sample.dot -T png -o sample.png
 ```
 
