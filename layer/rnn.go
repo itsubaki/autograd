@@ -20,7 +20,7 @@ func RNN(hiddenSize int, opts ...RNNOpts) *RNNT {
 
 	l := make(Layers)
 	l.Add("x2h", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("h2h", Linear(hiddenSize, LinearOpts{Source: s, NoBias: true}))
+	l.Add("h2h", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
 
 	return &RNNT{
 		Layers: l,
