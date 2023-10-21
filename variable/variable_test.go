@@ -42,6 +42,14 @@ func ExampleConst() {
 	// const([1])
 }
 
+func ExampleZeroLike() {
+	v := variable.New(1, 2, 3, 4)
+	fmt.Println(variable.ZeroLike(v))
+
+	// Output:
+	// variable([0 0 0 0])
+}
+
 func ExampleOneLike() {
 	v := variable.New(1, 2, 3, 4)
 	fmt.Println(variable.OneLike(v))

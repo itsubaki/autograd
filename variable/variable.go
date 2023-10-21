@@ -24,6 +24,10 @@ func NewOf(v ...[]float64) *Variable {
 	return &Variable{Data: v}
 }
 
+func ZeroLike(v *Variable) *Variable {
+	return &Variable{Data: matrix.ZeroLike(v.Data)}
+}
+
 func OneLike(v *Variable) *Variable {
 	return &Variable{Data: matrix.OneLike(v.Data)}
 }
