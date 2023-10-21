@@ -103,7 +103,7 @@ func main() {
 	// cos curve
 	xs := make([]float64, dataset.N)
 	for i := 0; i < len(xs); i++ {
-		xs[i] = math.Cos(float64(i) * 4 * math.Pi / float64(len(xs)-1))
+		xs[i] = math.Cos(4 * math.Pi * float64(i) / float64(len(xs)-1))
 	}
 
 	// predict
