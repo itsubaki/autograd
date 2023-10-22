@@ -115,12 +115,7 @@ func main() {
 	}()
 
 	// csv
-	x := make([]float64, len(ys))
-	for i := 0; i < len(x); i++ {
-		x[i] = float64(i)
-	}
-
-	for i := 0; i < len(x); i++ {
-		fmt.Printf("%f,%f\n", x[i], ys[i])
+	for i := 0; i < len(ys); i++ {
+		fmt.Printf("%d,%f\n", i, ys[i])
 	}
 }
