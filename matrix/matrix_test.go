@@ -49,6 +49,16 @@ func ExampleConst() {
 	// [[1]]
 }
 
+func ExampleFrom() {
+	for _, r := range matrix.From([][]int{{1, 2}, {3, 4}}) {
+		fmt.Printf("%.2f\n", r)
+	}
+
+	// Output:
+	// [1.00 2.00]
+	// [3.00 4.00]
+}
+
 func ExampleRand() {
 	shape := matrix.Shape(matrix.Rand(2, 3))
 	fmt.Println(shape)
@@ -361,6 +371,18 @@ func ExampleMaxAxis1() {
 	// [5]
 }
 
+func ExampleMean() {
+	A := matrix.New(
+		[]float64{1, 2, 3, 4, 5},
+		[]float64{6, 7, 8, 9, 10},
+	)
+
+	fmt.Println(matrix.Mean(A))
+
+	// Output:
+	// 5.5
+}
+
 func ExampleMax() {
 	A := matrix.New(
 		[]float64{1, 5},
@@ -383,6 +405,19 @@ func ExampleMin() {
 
 	// Output:
 	// -5
+}
+
+func ExampleArgmax() {
+	A := matrix.New(
+		[]float64{1, 2, 3},
+		[]float64{4, 6, 5},
+		[]float64{9, 8, 7},
+	)
+
+	fmt.Println(matrix.Argmax(A))
+
+	// Output:
+	// [2 1 0]
 }
 
 func ExampleClip() {

@@ -35,6 +35,17 @@ func Const(c float64) Matrix {
 	return [][]float64{{c}}
 }
 
+func From(x [][]int) Matrix {
+	out := Zero(len(x), len(x[0]))
+	for i := range x {
+		for j := range x[i] {
+			out[i][j] = float64(x[i][j])
+		}
+	}
+
+	return out
+}
+
 // rnd returns a pseudo-random number generator.
 func rnd(s ...rand.Source) *rand.Rand {
 	if len(s) == 0 {
@@ -129,6 +140,10 @@ func Div(m, n Matrix) Matrix {
 	return F2(m, n, func(a, b float64) float64 { return a / b })
 }
 
+func Mean(m Matrix) float64 {
+	return Sum(m) / float64(Size(m))
+}
+
 func Sum(m Matrix) float64 {
 	var sum float64
 	for _, v := range Flatten(m) {
@@ -158,6 +173,22 @@ func Min(m Matrix) float64 {
 	}
 
 	return min
+}
+
+func Argmax(m Matrix) []int {
+	p, q := Dim(m)
+
+	out := make([]int, p)
+	for i := 0; i < p; i++ {
+		max := m[i][0]
+		for j := 0; j < q; j++ {
+			if m[i][j] > max {
+				max, out[i] = m[i][j], j
+			}
+		}
+	}
+
+	return out
 }
 
 // Dot returns the dot product of m and n.
