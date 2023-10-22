@@ -13,22 +13,22 @@ import (
 	"github.com/itsubaki/autograd/vector"
 )
 
-type SinCurve struct {
+type Sequence struct {
 	N     int
 	Data  []float64
 	Label []float64
 }
 
-func NewSinCurve() *SinCurve {
+func NewCurve(f func(x float64) float64) *Sequence {
 	N, noise := 1000, 0.05
 
 	y := make([]float64, N)
 	for i := 0; i < N; i++ {
 		x := 2 * math.Pi * float64(i) / float64(N-1)
-		y[i] = math.Sin(x) + rand.Float64()*(2*noise) - noise
+		y[i] = f(x) + rand.Float64()*(2*noise) - noise
 	}
 
-	return &SinCurve{
+	return &Sequence{
 		N:     N,
 		Data:  y[:len(y)-1],
 		Label: y[1:],
@@ -67,7 +67,7 @@ func main() {
 	flag.IntVar(&bpttLength, "bptt-length", 30, "")
 	flag.Parse()
 
-	dataset := NewSinCurve()
+	dataset := NewCurve(math.Sin)
 	dataloader := &DataLoader{
 		BatchSize: batchSize,
 		N:         dataset.N,

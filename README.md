@@ -86,41 +86,34 @@ for i := 0; i < iters+1; i++ {
 ## Deep Learning
 
 ```go
-m := model.NewMLP([]int{10, 1}, model.MLPOpts{
-	Activation: F.ReLU,
-})
-
-o := optimizer.SGD{
-	LearningRate: 0.2,
+dataset := NewCurve(math.Sin)
+dataloader := &DataLoader{
+	BatchSize: batchSize,
+	N:         dataset.N,
+	Data:      dataset.Data,
+	Label:     dataset.Label,
 }
 
-x := variable.Rand(100, 1)
-t := variable.Rand(100, 1)
+m := model.NewLSTM(hiddenSize, 1)
+o := optimizer.SGD{LearningRate: 0.01}
 
-for i := 0; i < 100; i++ {
-	y := m.Forward(x)
-	loss := F.MeanSquaredError(y, t)
+for i := 0; i < epoch; i++ {
+	m.ResetState()
 
-	m.Cleargrads()
-	loss.Backward()
-	o.Update(m)
+	loss, count := variable.Const(0), 0
+	for dataloader.Next() {
+		x, t := dataloader.Batch()
+		y := m.Forward(x)
+		loss = F.Add(loss, F.MeanSquaredError(y, t))
 
-	if i%10 == 0 {
-		fmt.Println(loss)
+		if count++; count%bpttLength == 0 || count == dataset.N {
+			m.Cleargrads()
+			loss.Backward()
+			loss.UnchainBackward()
+			o.Update(m)
+		}
 	}
 }
-
-// Output:
-// variable([0.11313880966253058])
-// variable([0.0884293931172164])
-// variable([0.08005268564745079])
-// variable([0.07673930484904389])
-// variable([0.07532171792006351])
-// variable([0.07468289620442368])
-// variable([0.07439809453669555])
-// variable([0.07426549308918082])
-// variable([0.07420101909350187])
-// variable([0.07416433327309165])
 ```
 
 ## Double backpropagation
