@@ -24,15 +24,15 @@ func (o *Adam) LearningRate() float64 {
 }
 
 func (o *Adam) Update(model Model) {
+	params := Params(model)
+	for _, h := range o.Hooks {
+		h(params)
+	}
+
 	o.iter++
 	if len(o.ms) == 0 {
 		o.ms = make(map[string]matrix.Matrix)
 		o.vs = make(map[string]matrix.Matrix)
-	}
-
-	params := Params(model)
-	for _, h := range o.Hooks {
-		h(params)
 	}
 
 	for _, p := range params {
