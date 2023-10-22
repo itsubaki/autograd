@@ -114,13 +114,13 @@ func main() {
 		}
 	}()
 
+	// csv
 	x := make([]float64, len(ys))
 	for i := 0; i < len(x); i++ {
 		x[i] = float64(i)
 	}
 
-	// to csv
 	for i := 0; i < len(x); i++ {
-		fmt.Printf("%f,%f\n", x[i], xs[i])
+		fmt.Printf("%f,%f\n", x[i], ys[i])
 	}
 }
