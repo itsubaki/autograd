@@ -13,8 +13,10 @@ type TestModel struct {
 	P layer.Parameter
 }
 
-func (m *TestModel) Params() []layer.Parameter {
-	return []layer.Parameter{m.P}
+func (m *TestModel) Params() layer.Parameters {
+	return map[string]layer.Parameter{
+		"p": m.P,
+	}
 }
 
 func ExampleSGD() {

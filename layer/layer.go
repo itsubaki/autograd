@@ -11,8 +11,7 @@ var (
 type Layer interface {
 	First(x ...*variable.Variable) *variable.Variable
 	Forward(x ...*variable.Variable) []*variable.Variable
-	Params() []Parameter
-	FlattenParams() Parameters
+	Params() Parameters
 	Cleargrads()
 }
 
@@ -22,16 +21,7 @@ func (l Layers) Add(name string, layer Layer) {
 	l[name] = layer
 }
 
-func (l Layers) Params() []Parameter {
-	params := make([]Parameter, 0)
-	for k := range l {
-		params = append(params, l[k].Params()...)
-	}
-
-	return params
-}
-
-func (l Layers) FlattenParams() Parameters {
+func (l Layers) Params() Parameters {
 	params := make(Parameters)
 	for k := range l {
 		for _, p := range l[k].Params() {

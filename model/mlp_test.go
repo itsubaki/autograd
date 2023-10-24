@@ -65,13 +65,13 @@ func ExampleMLP_cleargrads() {
 	// w <nil>
 }
 
-func ExampleMLP_flattenparams() {
+func ExampleMLP_Params() {
 	m := model.NewMLP([]int{5, 1})
 
 	x := variable.New(1, 2)
 	m.Forward(x) // gen w
 
-	for k, p := range m.FlattenParams() {
+	for k, p := range m.Params() {
 		fmt.Println(k, variable.Shape(p))
 	}
 

@@ -86,13 +86,13 @@ func ExampleLSTM_ResetState() {
 	// w <nil>
 }
 
-func ExampleLSTM_flattenparams() {
+func ExampleLSTM_Params() {
 	m := model.NewLSTM(100, 1)
 
 	x := variable.New(1, 2, 3)
 	m.Forward(x)
 
-	for k, p := range m.FlattenParams() {
+	for k, p := range m.Params() {
 		fmt.Println(k, variable.Shape(p))
 	}
 
