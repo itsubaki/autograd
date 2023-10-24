@@ -21,20 +21,6 @@ func ExampleParameters_Params() {
 	// b([3 4])
 }
 
-func ExampleParameters_FlattenParams() {
-	p := make(layer.Parameters)
-	p.Add("w", variable.New(1, 2))
-	p.Add("b", variable.New(3, 4))
-
-	for _, v := range p.FlattenParams() {
-		fmt.Println(v)
-	}
-
-	// Unordered output:
-	// w([1 2])
-	// b([3 4])
-}
-
 func ExampleParameters_Cleargrads() {
 	v := variable.New(1, 2)
 	v.Grad = variable.New(3, 4)

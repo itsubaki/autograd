@@ -11,16 +11,7 @@ func (p Parameters) Add(name string, param Parameter) {
 	p[name] = param
 }
 
-func (p Parameters) Params() []Parameter {
-	params := make([]Parameter, 0)
-	for k := range p {
-		params = append(params, p[k])
-	}
-
-	return params
-}
-
-func (p Parameters) FlattenParams() Parameters {
+func (p Parameters) Params() Parameters {
 	return p
 }
 

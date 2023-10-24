@@ -17,7 +17,7 @@ func ExampleLSTM() {
 	y := l.Forward(x)
 	fmt.Printf("%.4f\n", y[0].Data)
 
-	for k, v := range l.FlattenParams() {
+	for k, v := range l.Params() {
 		fmt.Println(k, v.Data)
 	}
 
@@ -49,7 +49,7 @@ func ExampleLSTM_backward() {
 	y = l.First(x)
 	y.Backward()
 
-	for k, v := range l.FlattenParams() {
+	for k, v := range l.Params() {
 		fmt.Println(k, v.Grad)
 	}
 
@@ -76,7 +76,7 @@ func ExampleLSTM_cleargrads() {
 	y.Backward()
 
 	l.Cleargrads()
-	for k, v := range l.FlattenParams() {
+	for k, v := range l.Params() {
 		fmt.Println(k, v.Grad)
 	}
 
@@ -103,7 +103,7 @@ func ExampleLSTMT_ResetState() {
 	l.ResetState() // reset hidden state
 	l.Forward(x)   // h2h is not used
 
-	for k := range l.FlattenParams() {
+	for k := range l.Params() {
 		fmt.Println(k)
 	}
 

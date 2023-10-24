@@ -16,7 +16,7 @@ var (
 )
 
 type Model interface {
-	Params() []layer.Parameter
+	Params() layer.Parameters
 }
 
 type Hook func(params []layer.Parameter)
