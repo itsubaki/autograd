@@ -85,3 +85,30 @@ func ExampleLSTM_ResetState() {
 	// w <nil>
 	// w <nil>
 }
+
+func ExampleLSTM_flattenparams() {
+	m := model.NewLSTM(100, 1)
+
+	x := variable.New(1, 2, 3)
+	m.Forward(x)
+
+	for k, p := range m.FlattenParams() {
+		fmt.Println(k, variable.Shape(p))
+	}
+
+	// Unordered output:
+	// 0.x2f.w [3 100]
+	// 0.x2i.w [3 100]
+	// 0.x2o.w [3 100]
+	// 0.x2u.w [3 100]
+	// 0.x2f.b [1 100]
+	// 0.x2i.b [1 100]
+	// 0.x2o.b [1 100]
+	// 0.x2u.b [1 100]
+	// 0.h2f.w [100 100]
+	// 0.h2i.w [100 100]
+	// 0.h2o.w [100 100]
+	// 0.h2u.w [100 100]
+	// 1.w [100 1]
+	// 1.b [1 1]
+}
