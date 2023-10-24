@@ -32,14 +32,14 @@ func (l Layers) Params() []Parameter {
 }
 
 func (l Layers) FlattenParams() Parameters {
-	out := make(Parameters)
+	params := make(Parameters)
 	for k := range l {
 		for _, p := range l[k].Params() {
-			out[k+"."+p.Name] = p
+			params[k+"."+p.Name] = p
 		}
 	}
 
-	return out
+	return params
 }
 
 func (l Layers) Cleargrads() {
