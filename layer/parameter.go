@@ -20,6 +20,10 @@ func (p Parameters) Params() []Parameter {
 	return params
 }
 
+func (p Parameters) FlattenParams() Parameters {
+	return p
+}
+
 func (p Parameters) Cleargrads() {
 	for k := range p {
 		p[k].Cleargrad()

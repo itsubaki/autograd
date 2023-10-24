@@ -7,12 +7,26 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleParameter() {
+func ExampleParameters_Params() {
 	p := make(layer.Parameters)
 	p.Add("w", variable.New(1, 2))
 	p.Add("b", variable.New(3, 4))
 
-	for _, v := range p {
+	for _, v := range p.Params() {
+		fmt.Println(v)
+	}
+
+	// Unordered output:
+	// w([1 2])
+	// b([3 4])
+}
+
+func ExampleParameters_FlattenParams() {
+	p := make(layer.Parameters)
+	p.Add("w", variable.New(1, 2))
+	p.Add("b", variable.New(3, 4))
+
+	for _, v := range p.FlattenParams() {
 		fmt.Println(v)
 	}
 

@@ -12,6 +12,7 @@ type Layer interface {
 	First(x ...*variable.Variable) *variable.Variable
 	Forward(x ...*variable.Variable) []*variable.Variable
 	Params() []Parameter
+	FlattenParams() Parameters
 	Cleargrads()
 }
 
