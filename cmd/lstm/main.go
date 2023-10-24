@@ -29,7 +29,7 @@ func NewCurve(f func(x float64) float64) *Sequence {
 	}
 
 	return &Sequence{
-		N:     N,
+		N:     N - 1,
 		Data:  y[:len(y)-1],
 		Label: y[1:],
 	}
