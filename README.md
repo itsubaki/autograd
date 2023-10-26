@@ -95,7 +95,9 @@ dataloader := &DataLoader{
 }
 
 m := model.NewLSTM(hiddenSize, 1)
-o := optimizer.SGD{LearningRate: 0.01}
+o := optimizer.SGD{
+	LearningRate: 0.01,
+}
 
 for i := 0; i < epoch; i++ {
 	m.ResetState()
