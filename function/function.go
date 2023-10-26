@@ -29,5 +29,4 @@ var (
 	Min         = variable.Min
 	Clip        = variable.Clip
 	GetItem     = variable.GetItem
-	GetItemGrad = variable.GetItemGrad
 )
