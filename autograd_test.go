@@ -355,6 +355,9 @@ func Example_newton_double() {
 
 func Example_double() {
 	// p258
+	// y = x^2
+	// z = (dy/dx)^3 + y
+	// dz/dx = d/dx(8x^3 + x^2) = 24x^2 + 2x
 	x := variable.New(2.0)
 	y := F.Pow(2.0)(x)
 	y.Backward(variable.Opts{CreateGraph: true})
