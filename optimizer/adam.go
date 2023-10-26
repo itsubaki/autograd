@@ -17,23 +17,21 @@ type Adam struct {
 	Hooks  []Hook
 }
 
-func (o *Adam) LearningRate() float64 {
-	fix1 := 1.0 - math.Pow(o.Beta1, float64(o.iter))
-	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.iter))
-	return o.Alpha * math.Sqrt(fix2) / fix1
-}
-
 func (o *Adam) Update(model Model) {
 	params := Params(model)
 	for _, h := range o.Hooks {
 		h(params)
 	}
 
-	o.iter++
 	if len(o.ms) == 0 {
 		o.ms = make(map[string]matrix.Matrix)
 		o.vs = make(map[string]matrix.Matrix)
 	}
+
+	o.iter++
+	fix1 := 1.0 - math.Pow(o.Beta1, float64(o.iter))
+	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.iter))
+	lr := o.Alpha * math.Sqrt(fix2) / fix1
 
 	for _, p := range params {
 		if _, ok := o.ms[id(p)]; !ok {
@@ -46,7 +44,7 @@ func (o *Adam) Update(model Model) {
 		v = matrix.Add(v, matrix.MulC(1-o.Beta2, matrix.Sub(matrix.Pow(2, p.Grad.Data), v))) // v = v + (1-beta2 * (grad^2 - v))
 
 		p.Data = matrix.Sub(p.Data, matrix.F2(m, v, func(a, b float64) float64 {
-			return o.LearningRate() * a / (math.Sqrt(b) + 1e-8)
+			return lr * a / (math.Sqrt(b) + 1e-8)
 		}))
 	}
 }

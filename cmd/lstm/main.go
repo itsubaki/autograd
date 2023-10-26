@@ -76,7 +76,9 @@ func main() {
 	}
 
 	m := model.NewLSTM(hiddenSize, 1)
-	o := optimizer.SGD{LearningRate: 0.01}
+	o := optimizer.SGD{
+		LearningRate: 0.01,
+	}
 
 	for i := 0; i < epoch; i++ {
 		m.ResetState()
@@ -106,8 +108,8 @@ func main() {
 	ys := make([]float64, len(xs))
 	func() {
 		defer variable.Nograd().End()
-
 		m.ResetState()
+
 		for i, x := range xs {
 			y := m.Forward(variable.New(x))
 			ys[i] = y.Data[0][0]
