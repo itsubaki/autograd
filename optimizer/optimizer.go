@@ -1,9 +1,12 @@
 package optimizer
 
 import (
+	"fmt"
+
 	"github.com/itsubaki/autograd/hook"
 	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/model"
+	"github.com/itsubaki/autograd/variable"
 )
 
 var (
@@ -32,4 +35,8 @@ func Params(m Model) []layer.Parameter {
 	}
 
 	return params
+}
+
+func id(p *variable.Variable) string {
+	return fmt.Sprintf("%p", p)
 }
