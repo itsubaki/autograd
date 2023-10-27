@@ -99,7 +99,7 @@ o := optimizer.SGD{
 	LearningRate: 0.01,
 }
 
-for i := 0; i < epoch; i++ {
+for i := 0; i < epochs; i++ {
 	m.ResetState()
 
 	loss, count := variable.Const(0), 0
