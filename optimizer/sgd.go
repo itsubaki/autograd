@@ -20,6 +20,6 @@ func (o *SGD) Update(model Model) {
 	}
 }
 
-func sgd(learningRate float64) func(a, b float64) float64 {
-	return func(a, b float64) float64 { return a - learningRate*b }
+func sgd(lr float64) func(a, b float64) float64 {
+	return func(a, b float64) float64 { return a - lr*b }
 }
