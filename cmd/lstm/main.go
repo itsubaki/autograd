@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 
@@ -19,9 +20,7 @@ type Sequence struct {
 	Label []float64
 }
 
-func NewCurve(f func(x float64) float64) *Sequence {
-	N, noise := 1000, 0.05
-
+func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
 	y := make([]float64, N)
 	for i := 0; i < N; i++ {
 		x := 2 * math.Pi * float64(i) / float64(N-1)
@@ -60,14 +59,18 @@ func (d *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 }
 
 func main() {
-	var epoch, batchSize, hiddenSize, bpttLength int
-	flag.IntVar(&epoch, "epoch", 100, "")
+	var N, epochs, batchSize, hiddenSize, bpttLength int
+	var noise, lr float64
+	flag.IntVar(&N, "N", 1000, "")
+	flag.IntVar(&epochs, "epochs", 100, "")
 	flag.IntVar(&batchSize, "batch-size", 30, "")
 	flag.IntVar(&hiddenSize, "hidden-size", 100, "")
 	flag.IntVar(&bpttLength, "bptt-length", 30, "")
+	flag.Float64Var(&lr, "learning-rate", 0.01, "")
+	flag.Float64Var(&noise, "noise", 0.05, "")
 	flag.Parse()
 
-	dataset := NewCurve(math.Sin)
+	dataset := NewCurve(N, noise, math.Sin)
 	dataloader := &DataLoader{
 		BatchSize: batchSize,
 		N:         dataset.N,
@@ -77,10 +80,10 @@ func main() {
 
 	m := model.NewLSTM(hiddenSize, 1)
 	o := optimizer.SGD{
-		LearningRate: 0.01,
+		LearningRate: lr,
 	}
 
-	for i := 0; i < epoch; i++ {
+	for i := 0; i < epochs; i++ {
 		m.ResetState()
 
 		loss, count := variable.Const(0), 0
@@ -96,12 +99,15 @@ func main() {
 				o.Update(m)
 			}
 		}
+
+		log.Printf("%3d: %f\n", i, loss.Data[0][0]/float64(count))
 	}
 
 	// cos curve
 	xs := make([]float64, dataset.N)
 	for i := 0; i < len(xs); i++ {
-		xs[i] = math.Cos(4 * math.Pi * float64(i) / float64(len(xs)-1))
+		x := 4 * math.Pi * float64(i) / float64(len(xs)-1)
+		xs[i] = math.Cos(x)
 	}
 
 	// predict

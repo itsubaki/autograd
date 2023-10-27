@@ -26,9 +26,13 @@ func (o *Momentum) Update(model Model) {
 		}
 
 		v := o.vs[id(p)]
-		v = matrix.F2(v, p.Grad.Data, func(v, grad float64) float64 { return o.Momentum*v - o.LearningRate*grad }) // v = momentum * v - learning_rate * grad
+		v = matrix.F2(v, p.Grad.Data, momentum(o.LearningRate, o.Momentum))
 		o.vs[id(p)] = v
 
 		p.Data = matrix.Add(p.Data, v)
 	}
+}
+
+func momentum(lr, m float64) func(v, grad float64) float64 {
+	return func(v, grad float64) float64 { return m*v - lr*grad }
 }
