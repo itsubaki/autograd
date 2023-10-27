@@ -1,11 +1,9 @@
 package optimizer
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/itsubaki/autograd/matrix"
-	"github.com/itsubaki/autograd/variable"
 )
 
 type Adam struct {
@@ -40,15 +38,12 @@ func (o *Adam) Update(model Model) {
 		}
 
 		m, v := o.ms[id(p)], o.vs[id(p)]
-		m = matrix.Add(m, matrix.MulC(1-o.Beta1, matrix.Sub(p.Grad.Data, m)))                // m = m + (1-beta1 * (grad - m))
-		v = matrix.Add(v, matrix.MulC(1-o.Beta2, matrix.Sub(matrix.Pow(2, p.Grad.Data), v))) // v = v + (1-beta2 * (grad^2 - v))
+		m = matrix.F2(m, p.Grad.Data, func(m, grad float64) float64 { return m + ((1 - o.Beta1) * (grad - m)) })      // m = m + (1-beta1 * (grad - m))
+		v = matrix.F2(v, p.Grad.Data, func(v, grad float64) float64 { return v + ((1 - o.Beta2) * (grad*grad - v)) }) // v = v + (1-beta2 * (grad^2 - v))
+		o.ms[id(p)], o.vs[id(p)] = m, v
 
 		p.Data = matrix.Sub(p.Data, matrix.F2(m, v, func(a, b float64) float64 {
 			return lr * a / (math.Sqrt(b) + 1e-8)
 		}))
 	}
-}
-
-func id(p *variable.Variable) string {
-	return fmt.Sprintf("%p", p)
 }

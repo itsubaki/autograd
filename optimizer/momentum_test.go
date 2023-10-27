@@ -8,15 +8,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleAdam() {
+func ExampleMomentum() {
 	p := variable.New(1.0)
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Adam{
-		Alpha: 0.001,
-		Beta1: 0.9,
-		Beta2: 0.999,
+	o := optimizer.Momentum{
+		LearningRate: 0.001,
+		Momentum:     0.9,
 	}
 
 	o.Update(m)
@@ -26,19 +25,18 @@ func ExampleAdam() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([0.9990000003162277])
-	// variable([0.9980000005398904])
+	// variable([0.999])
+	// variable([0.9971])
 }
 
-func ExampleAdam_hook() {
+func ExampleMomentum_hook() {
 	p := variable.New(1.0)
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Adam{
-		Alpha: 0.001,
-		Beta1: 0.9,
-		Beta2: 0.999,
+	o := optimizer.Momentum{
+		LearningRate: 0.001,
+		Momentum:     0.9,
 		Hooks: []optimizer.Hook{
 			hook.WeightDecay(0.1),
 		},
@@ -51,6 +49,6 @@ func ExampleAdam_hook() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([1.0990000003162277])
-	// variable([1.1980000005398905])
+	// variable([1.0990000000000002])
+	// variable([1.1971000000000003])
 }
