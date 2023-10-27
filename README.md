@@ -86,7 +86,7 @@ for i := 0; i < iters+1; i++ {
 ## Deep Learning
 
 ```go
-dataset := NewCurve(math.Sin)
+dataset := NewCurve(N, noise, math.Sin)
 dataloader := &DataLoader{
 	BatchSize: batchSize,
 	N:         dataset.N,
