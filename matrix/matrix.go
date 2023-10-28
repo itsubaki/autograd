@@ -31,10 +31,6 @@ func OneLike(m Matrix) Matrix {
 	return AddC(1.0, ZeroLike(m))
 }
 
-func Const(c float64) Matrix {
-	return [][]float64{{c}}
-}
-
 func From(x [][]int) Matrix {
 	out := Zero(len(x), len(x[0]))
 	for i := range x {
@@ -276,7 +272,7 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 
 func SumTo(shape []int, m Matrix) Matrix {
 	if shape[0] == 1 && shape[1] == 1 {
-		return Const(Sum(m))
+		return New([]float64{Sum(m)})
 	}
 
 	if shape[0] == 1 {

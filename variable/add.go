@@ -6,7 +6,7 @@ import (
 )
 
 func AddC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).First(Const(c), x[0])
+	return (&Function{Forwarder: &AddT{}}).First(New(c), x[0])
 }
 
 func Add(x ...*Variable) *Variable {

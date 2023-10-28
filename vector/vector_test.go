@@ -22,13 +22,6 @@ func ExampleOneLike() {
 	// [1 1 1 1 1]
 }
 
-func ExampleConst() {
-	fmt.Println(vector.Const(1))
-
-	// Output:
-	// [1]
-}
-
 func ExampleShape() {
 	fmt.Println(vector.Shape([]float64{1, 2, 3, 4, 5}))
 

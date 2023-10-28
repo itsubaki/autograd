@@ -10,10 +10,6 @@ func OneLike(v []float64) []float64 {
 	return AddC(1.0, ZeroLike(v))
 }
 
-func Const(c float64) []float64 {
-	return []float64{c}
-}
-
 func Shape(v []float64) []int {
 	return []int{1, len(v)}
 }

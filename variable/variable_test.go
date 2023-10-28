@@ -35,13 +35,6 @@ func ExampleVariable_Name_matrix() {
 	// variable([[1 2 3] [4 5 6]])
 }
 
-func ExampleConst() {
-	fmt.Println(variable.Const(1))
-
-	// Output:
-	// const([1])
-}
-
 func ExampleZeroLike() {
 	v := variable.New(1, 2, 3, 4)
 	fmt.Println(variable.ZeroLike(v))

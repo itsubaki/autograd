@@ -32,10 +32,6 @@ func OneLike(v *Variable) *Variable {
 	return &Variable{Data: matrix.OneLike(v.Data)}
 }
 
-func Const(c float64) *Variable {
-	return &Variable{Name: "const", Data: matrix.Const(c)}
-}
-
 func Zero(m, n int) *Variable {
 	return &Variable{Data: matrix.Zero(m, n)}
 }

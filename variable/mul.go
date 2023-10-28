@@ -6,7 +6,7 @@ import (
 )
 
 func MulC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MulT{}}).First(Const(c), x[0])
+	return (&Function{Forwarder: &MulT{}}).First(New(c), x[0])
 }
 
 func Mul(x ...*Variable) *Variable {

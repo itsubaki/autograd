@@ -42,13 +42,6 @@ func ExampleOneLike() {
 	// [1 1 1]
 }
 
-func ExampleConst() {
-	fmt.Println(matrix.Const(1))
-
-	// Output:
-	// [[1]]
-}
-
 func ExampleFrom() {
 	for _, r := range matrix.From([][]int{{1, 2}, {3, 4}}) {
 		fmt.Printf("%.2f\n", r)
@@ -530,50 +523,6 @@ func ExampleBroadcast() {
 	// [3 4]
 	// [1 2]
 	// [1 2]
-}
-
-func ExampleBroadcast_constA() {
-	A := matrix.Const(1)
-	B := matrix.New(
-		[]float64{1, 2},
-		[]float64{3, 4},
-	)
-
-	AA, BB := matrix.Broadcast(A, B)
-	for _, r := range AA {
-		fmt.Println(r)
-	}
-	for _, r := range BB {
-		fmt.Println(r)
-	}
-
-	// Output:
-	// [1 1]
-	// [1 1]
-	// [1 2]
-	// [3 4]
-}
-
-func ExampleBroadcast_constB() {
-	A := matrix.New(
-		[]float64{1, 2},
-		[]float64{3, 4},
-	)
-	B := matrix.Const(1)
-
-	AA, BB := matrix.Broadcast(A, B)
-	for _, r := range AA {
-		fmt.Println(r)
-	}
-	for _, r := range BB {
-		fmt.Println(r)
-	}
-
-	// Output:
-	// [1 2]
-	// [3 4]
-	// [1 1]
-	// [1 1]
 }
 
 func ExampleSum() {
