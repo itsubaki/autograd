@@ -7,7 +7,7 @@ import (
 
 // SubC returns a variable that c - x[0].
 func SubC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SubT{}}).First(Const(c), x[0])
+	return (&Function{Forwarder: &SubT{}}).First(New(c), x[0])
 }
 
 // Sub returns a variable that x[0] - x[1].

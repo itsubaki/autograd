@@ -6,7 +6,7 @@ import (
 )
 
 func DivC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &DivT{}}).First(Const(c), x[0])
+	return (&Function{Forwarder: &DivT{}}).First(New(c), x[0])
 }
 
 func Div(x ...*Variable) *Variable {
