@@ -86,7 +86,7 @@ func main() {
 	for i := 0; i < epochs; i++ {
 		m.ResetState()
 
-		loss, count := variable.Const(0), 0
+		loss, count := variable.New(0), 0
 		for dataloader.Next() {
 			x, t := dataloader.Batch()
 			y := m.Forward(x)
