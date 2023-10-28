@@ -86,7 +86,7 @@ for i := 0; i < iters+1; i++ {
 ## Deep Learning
 
 ```go
-dataset := NewCurve(math.Sin)
+dataset := NewCurve(N, noise, math.Sin)
 dataloader := &DataLoader{
 	BatchSize: batchSize,
 	N:         dataset.N,
@@ -99,7 +99,7 @@ o := optimizer.SGD{
 	LearningRate: 0.01,
 }
 
-for i := 0; i < epoch; i++ {
+for i := 0; i < epochs; i++ {
 	m.ResetState()
 
 	loss, count := variable.New(0), 0
