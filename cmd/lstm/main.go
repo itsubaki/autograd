@@ -6,6 +6,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"time"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/model"
@@ -13,6 +14,16 @@ import (
 	"github.com/itsubaki/autograd/variable"
 	"github.com/itsubaki/autograd/vector"
 )
+
+// pi returns a slice of float64 in [0, c*PI].
+func pi(c float64, N int) []float64 {
+	xs := make([]float64, N)
+	for i := 0; i < N; i++ {
+		xs[i] = c * math.Pi * (float64(i) / float64(N-1))
+	}
+
+	return xs
+}
 
 type Sequence struct {
 	N     int
@@ -22,8 +33,7 @@ type Sequence struct {
 
 func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
 	y := make([]float64, N)
-	for i := 0; i < N; i++ {
-		x := 2 * math.Pi * float64(i) / float64(N-1)
+	for i, x := range pi(2, N) {
 		y[i] = f(x) + rand.Float64()*(2*noise) - noise
 	}
 
@@ -83,6 +93,7 @@ func main() {
 		LearningRate: lr,
 	}
 
+	now := time.Now()
 	for i := 0; i < epochs; i++ {
 		m.ResetState()
 
@@ -102,11 +113,11 @@ func main() {
 
 		log.Printf("%3d: %f\n", i, loss.Data[0][0]/float64(count))
 	}
+	log.Printf("elapsed=%v\n", time.Since(now))
 
 	// cos curve
 	xs := make([]float64, dataset.N)
-	for i := 0; i < len(xs); i++ {
-		x := 4 * math.Pi * float64(i) / float64(len(xs)-1)
+	for i, x := range pi(4, len(xs)) {
 		xs[i] = math.Cos(x)
 	}
 
@@ -123,7 +134,7 @@ func main() {
 	}()
 
 	// csv
-	for i := 0; i < len(ys); i++ {
-		fmt.Printf("%d,%f\n", i, ys[i])
+	for i, x := range pi(4, len(xs)) {
+		fmt.Printf("%f,%f\n", x, ys[i])
 	}
 }
