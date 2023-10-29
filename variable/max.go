@@ -24,16 +24,17 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
-	mask := NewOf(matrix.F2(f.x.Data, f.y.Data, cond)...)
+	mask := NewOf(matrix.F2(f.x.Data, f.y.Data, IsClose)...)
 	return []*Variable{
 		Mul(gy[0], mask),
 	}
 }
 
-func cond(a, b float64) float64 {
-	if math.Abs(a-b) < 1e-13 {
-		return 1.0
+func IsClose(a, b float64) float64 {
+	atol, rtol := 1e-08, 1e-05
+	if math.Abs(a-b) < atol+rtol*math.Abs(b) {
+		return 1
 	}
 
-	return 0.0
+	return 0
 }
