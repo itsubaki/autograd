@@ -13,6 +13,7 @@ var (
 
 var (
 	_ Hook = hook.WeightDecay(0.0)
+	_ Hook = hook.ClipGrad(0.0)
 )
 
 type Model interface {
