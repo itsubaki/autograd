@@ -22,7 +22,7 @@ type Model interface {
 
 type Hook func(params []layer.Parameter)
 
-func Params(m Model) []layer.Parameter {
+func Params(m Model, hook []Hook) []layer.Parameter {
 	params := make([]layer.Parameter, 0)
 	for _, p := range m.Params() {
 		if p.Grad == nil {
@@ -30,6 +30,10 @@ func Params(m Model) []layer.Parameter {
 		}
 
 		params = append(params, p)
+	}
+
+	for _, h := range hook {
+		h(params)
 	}
 
 	return params

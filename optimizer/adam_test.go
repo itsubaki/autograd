@@ -39,7 +39,7 @@ func ExampleAdam_hook() {
 		Alpha: 0.001,
 		Beta1: 0.9,
 		Beta2: 0.999,
-		Hooks: []optimizer.Hook{
+		Hook: []optimizer.Hook{
 			hook.WeightDecay(0.1),
 		},
 	}

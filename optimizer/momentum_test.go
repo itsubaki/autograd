@@ -37,7 +37,7 @@ func ExampleMomentum_hook() {
 	o := optimizer.Momentum{
 		LearningRate: 0.001,
 		Momentum:     0.9,
-		Hooks: []optimizer.Hook{
+		Hook: []optimizer.Hook{
 			hook.WeightDecay(0.1),
 		},
 	}
