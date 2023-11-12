@@ -8,16 +8,13 @@ import (
 type Momentum struct {
 	LearningRate float64
 	Momentum     float64
-	Hooks        []Hook
+	Hook         []Hook
 	vs           map[*variable.Variable]matrix.Matrix
 }
 
 // Update updates the parameters of the model.
 func (o *Momentum) Update(model Model) {
-	params := Params(model)
-	for _, h := range o.Hooks {
-		h(params)
-	}
+	params := Params(model, o.Hook)
 
 	if len(o.vs) == 0 {
 		o.vs = make(map[*variable.Variable]matrix.Matrix)

@@ -11,7 +11,7 @@ func ExampleParams() {
 	p := variable.New(1.0)
 	m := &TestModel{P: p}
 
-	params := optimizer.Params(m)
+	params := optimizer.Params(m, nil)
 	for _, p := range params {
 		fmt.Println(p)
 	}

@@ -42,7 +42,7 @@ func ExampleSGD_hook() {
 
 	o := optimizer.SGD{
 		LearningRate: 0.1,
-		Hooks: []optimizer.Hook{
+		Hook: []optimizer.Hook{
 			hook.WeightDecay(0.1),
 		},
 	}
