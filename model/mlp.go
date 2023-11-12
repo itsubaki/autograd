@@ -31,9 +31,7 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 
 	layers := make([]L.Layer, len(outSize))
 	for i := 0; i < len(outSize); i++ {
-		layers[i] = L.Linear(outSize[i], L.LinearOpts{
-			Source: s,
-		})
+		layers[i] = L.Linear(outSize[i], L.LinearOpts{Source: s})
 	}
 
 	return &MLP{
