@@ -37,7 +37,6 @@ var (
 	_ Func = F.GetItem([]int{0, 0, 1})
 	_ Func = F.Softmax
 	_ Func = F.SoftmaxCrossEntropy
-	_ Func = F.Dropout(0.5)
 )
 
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {

@@ -21,12 +21,14 @@ func NewLSTM(hiddenSize, outSize int, opts ...LSTMOpts) *LSTM {
 		s = opts[0].Source
 	}
 
+	layers := []L.Layer{
+		L.LSTM(hiddenSize, L.LSTMOpts{Source: s}),
+		L.Linear(outSize, L.LinearOpts{Source: s}),
+	}
+
 	return &LSTM{
 		Model: Model{
-			Layers: []L.Layer{
-				L.LSTM(hiddenSize, L.LSTMOpts{Source: s}),
-				L.Linear(outSize, L.LinearOpts{Source: s}),
-			},
+			Layers: layers,
 		},
 	}
 }

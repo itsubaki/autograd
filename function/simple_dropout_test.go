@@ -8,18 +8,18 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleDropout() {
+func ExampleDropoutSimple() {
 	// p436
 	s := rand.NewSource(1)
 
 	x := variable.New(1, 1, 1, 1, 1)
-	y := F.Dropout(0.5, s)(x)
+	y := F.DropoutSimple(0.5, s)(x)
 	fmt.Println(y)
 
 	func() {
 		defer variable.TestMode().End()
 
-		y := F.Dropout(0.5)(x)
+		y := F.DropoutSimple(0.5)(x)
 		fmt.Println(y)
 	}()
 
@@ -28,10 +28,10 @@ func ExampleDropout() {
 	// variable([1 1 1 1 1])
 }
 
-func ExampleDropout_backward() {
+func ExampleDropoutSimple_backward() {
 	s := rand.NewSource(1)
 	x := variable.New(0.1, 0.2, 0.3, 0.4, 0.5)
-	y := F.Dropout(0.5, s)(x)
+	y := F.DropoutSimple(0.5, s)(x)
 	y.Backward()
 
 	fmt.Println(y)
