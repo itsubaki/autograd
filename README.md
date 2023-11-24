@@ -11,7 +11,7 @@
 
 # Example
 
-## Composite functions
+## Composite function
 
 ```go
 matyas := func(x, y *variable.Variable) *variable.Variable {
