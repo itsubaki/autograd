@@ -18,7 +18,7 @@ func (f *Function) First(x ...*Variable) *Variable {
 	return f.Forward(x...)[0]
 }
 
-// Apply applies the function
+// Forward applies the function
 func (f *Function) Forward(x ...*Variable) []*Variable {
 	y := f.Forwarder.Forward(x...)
 	if !Config.EnableBackprop {
