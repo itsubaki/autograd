@@ -9,9 +9,9 @@
 - pure Go implementation
 - using only the standard library
 
-# Example
+## Example
 
-## Composite function
+### Composite function
 
 ```go
 matyas := func(x, y *variable.Variable) *variable.Variable {
@@ -32,7 +32,7 @@ fmt.Println(x.Grad, y.Grad)
 // variable([0.040000000000000036]) variable([0.040000000000000036])
 ```
 
-## Gradient descent
+### Gradient descent
 
 ```go
 rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
@@ -83,7 +83,7 @@ for i := 0; i < iters+1; i++ {
 // variable([0.9944984367782456]) variable([0.9890050527419593])
 ```
 
-## Deep Learning
+### Deep Learning
 
 ```go
 dataset := NewCurve(N, noise, math.Sin)
@@ -118,7 +118,7 @@ for i := 0; i < epochs; i++ {
 }
 ```
 
-## Double backpropagation
+### Double backpropagation
 
 ```go
 x := variable.New(1.0)
@@ -146,7 +146,7 @@ for i := 0; i < 5; i++ {
 // variable([-0.8414709848078965])
 ```
 
-## Dot graph
+### Dot graph
 
 ```shell
 $ brew install graphviz
@@ -159,7 +159,7 @@ $ dot sample.dot -T png -o sample.png
 
 <img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh3.png" height="240px">
 
-# Links
+## Links
 
 - [oreilly-japan/deep-learning-from-scratch-3](https://github.com/oreilly-japan/deep-learning-from-scratch-3)
 - [oreilly-japan/deep-learning-from-scratch-3/tree/tanh](https://github.com/oreilly-japan/deep-learning-from-scratch-3/tree/tanh)
