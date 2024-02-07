@@ -2,7 +2,7 @@ package layer_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
@@ -10,7 +10,7 @@ import (
 
 func ExampleRNN() {
 	l := L.RNN(2, L.RNNOpts{
-		Source: rand.NewSource(1),
+		Source: rand.NewPCG(0, 0),
 	})
 
 	x := variable.New(1)
@@ -22,15 +22,15 @@ func ExampleRNN() {
 	}
 
 	// Unordered output:
-	// [[0.3120 0.5299]]
-	// x2h.w [[0.3228052526115799 0.5900672875996937]]
+	// [[0.7976 -0.4168]]
 	// x2h.b [[0 0]]
-	// h2h.w [[-0.872398773723865 -0.08934118160368779] [-0.36839879422376975 1.6162474880131052]]
+	// x2h.w [[1.0919575041640825 -0.4438344619606553]]
+	// h2h.w [[0.4006014980172961 -0.4330302800303532] [0.4171185512277987 -0.260091010167568]]
 }
 
 func ExampleRNN_backward() {
 	l := L.RNN(2, L.RNNOpts{
-		Source: rand.NewSource(1),
+		Source: rand.NewPCG(0, 0),
 	})
 
 	x := variable.New(1)
@@ -50,13 +50,13 @@ func ExampleRNN_backward() {
 	}
 
 	// Unordered output:
-	// x2h.w variable([0.902630265225777 0.719159357118377])
-	// x2h.b variable([0.902630265225777 0.719159357118377])
 	// h2h.w <nil>
+	// x2h.w variable([0.3638478140516499 0.8262629446866991])
+	// x2h.b variable([0.3638478140516499 0.8262629446866991])
 	// .
-	// x2h.w variable([1.0939291043139359 0.9118192171630227])
-	// x2h.b variable([1.0939291043139359 0.9118192171630227])
-	// h2h.w variable([[0.3056022228722387 0.0652456710508777] [0.5190085287937879 0.11080763557284856]])
+	// x2h.w variable([0.5896143925532906 1.4348651282031906])
+	// h2h.w variable([[0.22839718521198515 0.5180241623919872] [-0.11935935508160048 -0.2707171276318745]])
+	// x2h.b variable([0.5896143925532906 1.4348651282031906])
 }
 
 func ExampleRNN_cleargrads() {

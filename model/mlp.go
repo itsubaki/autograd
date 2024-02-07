@@ -1,7 +1,7 @@
 package model
 
 import (
-	"math/rand"
+	"math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	L "github.com/itsubaki/autograd/layer"

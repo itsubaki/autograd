@@ -2,7 +2,7 @@ package model_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/variable"
@@ -22,7 +22,7 @@ func ExampleLSTM() {
 
 func ExampleLSTM_backward() {
 	m := model.NewLSTM(1, 1, model.LSTMOpts{
-		Source: rand.NewSource(1),
+		Source: rand.NewPCG(0, 0),
 	})
 
 	x := variable.New(1, 2)
@@ -40,21 +40,21 @@ func ExampleLSTM_backward() {
 
 	// Unordered output:
 	// *layer.LSTMT
-	// w variable([0.011226806999443534])
-	// w variable([0.11294101620706003])
-	// w variable([0.00036758770803267443])
-	// w variable([0.013679446277302425])
-	// b variable([0.03359993499751152])
-	// b variable([0.016635625479843978])
-	// b variable([0.09921510586976715])
-	// b variable([0.4532075079866421])
-	// w variable([[0.03359993499751152] [0.06719986999502305]])
-	// w variable([[0.09921510586976715] [0.1984302117395343]])
-	// w variable([[0.4532075079866421] [0.9064150159732842]])
-	// w variable([[0.016635625479843978] [0.033271250959687956]])
+	// w variable([-0.007097596643213066])
+	// w variable([[0.013515028138341746] [0.027030056276683492]])
+	// w variable([[0.04252623292012907] [0.08505246584025813]])
+	// b variable([0.05279536845172966])
+	// b variable([0.013515028138341746])
+	// b variable([0.04252623292012907])
+	// w variable([[0.05279536845172966] [0.10559073690345933]])
+	// b variable([-0.00757230286787535])
+	// w variable([[-0.00757230286787535] [-0.0151446057357507]])
+	// w variable([-0.0062508612982463485])
+	// w variable([-0.017558407475346018])
+	// w variable([0.0016808382857761302])
 	// *layer.LinearT
 	// b variable([2])
-	// w variable([0.8926291447755661])
+	// w variable([-1.1705639065492832])
 }
 
 func ExampleLSTM_ResetState() {

@@ -2,7 +2,7 @@ package autograd_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/matrix"
@@ -374,7 +374,7 @@ func Example_double() {
 
 func Example_linearRegression() {
 	// p318
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 	xrand := matrix.Rand(100, 1, s)
 	yrand := matrix.Rand(100, 1, s)
 
@@ -419,11 +419,11 @@ func Example_linearRegression() {
 	fmt.Println(w, b, loss)
 
 	// Output:
-	// w([2.3111411392277623]) b([5.3020926197392475]) loss([0.07620708812903994])
+	// w([2.185928791917266]) b([5.354857189898866]) loss([0.07384886041118585])
 }
 
 func Example_mlp() {
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 	m := model.NewMLP([]int{10, 1}, model.MLPOpts{
 		Activation: F.ReLU,
 		Source:     s,
@@ -449,14 +449,14 @@ func Example_mlp() {
 	}
 
 	// Output:
-	// variable([0.11313880966253058])
-	// variable([0.0884293931172164])
-	// variable([0.08005268564745079])
-	// variable([0.07673930484904389])
-	// variable([0.07532171792006351])
-	// variable([0.07468289620442368])
-	// variable([0.07439809453669555])
-	// variable([0.07426549308918082])
-	// variable([0.07420101909350187])
-	// variable([0.07416433327309165])
+	// variable([0.17547970232825427])
+	// variable([0.07741568533618796])
+	// variable([0.07284687750898228])
+	// variable([0.07090371188279042])
+	// variable([0.07005857571105853])
+	// variable([0.0696888491889667])
+	// variable([0.06952674502939128])
+	// variable([0.06945530711238598])
+	// variable([0.0694233691535581])
+	// variable([0.06940859258464768])
 }

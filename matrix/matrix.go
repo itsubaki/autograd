@@ -2,8 +2,7 @@ package matrix
 
 import (
 	"math"
-	"math/rand"
-	"time"
+	"math/rand/v2"
 )
 
 type Matrix [][]float64
@@ -45,7 +44,9 @@ func From(x [][]int) Matrix {
 // rnd returns a pseudo-random number generator.
 func rnd(s ...rand.Source) *rand.Rand {
 	if len(s) == 0 {
-		s = append(s, rand.NewSource(time.Now().UnixNano()))
+		s1 := rand.Uint64N(math.MaxUint64)
+		s2 := rand.Uint64N(math.MaxUint64)
+		s = append(s, rand.NewPCG(s1, s2))
 	}
 
 	return rand.New(s[0])
