@@ -2,7 +2,7 @@ package model_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/model"
@@ -25,7 +25,7 @@ func ExampleMLP() {
 func ExampleMLP_backward() {
 	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
-		Source:     rand.NewSource(1),
+		Source:     rand.NewPCG(0, 0),
 	})
 
 	x := variable.New(1, 2)
@@ -37,16 +37,16 @@ func ExampleMLP_backward() {
 	}
 
 	// Unordered output:
-	// b variable([0 0.3748570762853248 0.5808592854004844 0.2358418430773808 0.32755798713394974])
-	// w variable([[0 0.3748570762853248 0.5808592854004844 0.2358418430773808 0.32755798713394974] [0 0.7497141525706496 1.1617185708009687 0.4716836861547616 0.6551159742678995]])
+	// w variable([[0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009] [0 0 -0.23571254300015912 -0.34550753645974064 -0.2905673555708018]])
 	// b variable([1])
-	// w variable([[0] [0.1352468783636501] [1.0305442093147756] [0.582057128601811] [1.198946798274449]])
+	// w variable([[0] [0] [1.62887541989766] [0.7662326556923662] [1.9766127473463149]])
+	// b variable([0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009])
 }
 
 func ExampleMLP_cleargrads() {
 	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
-		Source:     rand.NewSource(1),
+		Source:     rand.NewPCG(0, 0),
 	})
 
 	x := variable.New(1, 2)

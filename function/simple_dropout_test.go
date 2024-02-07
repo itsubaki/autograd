@@ -2,7 +2,7 @@ package function_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
@@ -10,7 +10,7 @@ import (
 
 func ExampleDropoutSimple() {
 	// p436
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 
 	x := variable.New(1, 1, 1, 1, 1)
 	y := F.DropoutSimple(0.5, s)(x)
@@ -24,12 +24,12 @@ func ExampleDropoutSimple() {
 	}()
 
 	// Output:
-	// variable([2 2 2 0 0])
+	// variable([2 2 0 0 0])
 	// variable([1 1 1 1 1])
 }
 
 func ExampleDropoutSimple_backward() {
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 	x := variable.New(0.1, 0.2, 0.3, 0.4, 0.5)
 	y := F.DropoutSimple(0.5, s)(x)
 	y.Backward()
@@ -38,6 +38,6 @@ func ExampleDropoutSimple_backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([0.2 0.4 0.6 0 0])
-	// variable([2 2 2 0 0])
+	// variable([0.2 0.4 0 0 0])
+	// variable([2 2 0 0 0])
 }

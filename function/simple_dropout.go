@@ -1,7 +1,7 @@
 package function
 
 import (
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"

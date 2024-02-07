@@ -2,7 +2,7 @@ package variable
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"sort"
 
 	"github.com/itsubaki/autograd/matrix"

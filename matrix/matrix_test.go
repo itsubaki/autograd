@@ -2,7 +2,7 @@ package matrix_test
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/itsubaki/autograd/matrix"
 )
@@ -61,14 +61,14 @@ func ExampleRand() {
 }
 
 func ExampleRand_seed() {
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 	for _, r := range matrix.Rand(2, 3, s) {
 		fmt.Println(r)
 	}
 
 	// Output:
-	// [0.6046602879796196 0.9405090880450124 0.6645600532184904]
-	// [0.4377141871869802 0.4246374970712657 0.6868230728671094]
+	// [0.9999275824802834 0.8856419373528862 0.38147752771154886]
+	// [0.4812673234167829 0.44417259544314847 0.5210016660132573]
 }
 
 func ExampleRandn() {
@@ -80,14 +80,14 @@ func ExampleRandn() {
 }
 
 func ExampleRandn_seed() {
-	s := rand.NewSource(1)
+	s := rand.NewPCG(0, 0)
 	for _, r := range matrix.Randn(2, 3, s) {
 		fmt.Println(r)
 	}
 
 	// Output:
-	// [-1.233758177597947 -0.12634751070237293 -0.5209945711531503]
-	// [2.28571911769958 0.3228052526115799 0.5900672875996937]
+	// [0.5665360716030388 -0.6123972949371448 0.5898947122637695]
+	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
 }
 
 func ExampleSize() {
