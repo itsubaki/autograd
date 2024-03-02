@@ -11,6 +11,21 @@
 
 ## Example
 
+### function
+
+```go
+x := variable.New(1.0)
+y := F.Sin(x)
+y.Backward()
+
+fmt.Println(y)
+fmt.Println(x.Grad)
+
+// Output:
+// variable([0.8414709848078965])
+// variable([0.5403023058681398])
+```
+
 ### Composite function
 
 ```go
