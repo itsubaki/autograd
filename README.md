@@ -11,7 +11,7 @@
 
 ## Example
 
-### function
+### Function
 
 ```go
 x := variable.New(1.0)
