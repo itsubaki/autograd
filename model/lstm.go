@@ -1,14 +1,14 @@
 package model
 
 import (
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
 )
 
 type LSTMOpts struct {
-	Source rand.Source
+	Source randv2.Source
 }
 
 type LSTM struct {
@@ -16,7 +16,7 @@ type LSTM struct {
 }
 
 func NewLSTM(hiddenSize, outSize int, opts ...LSTMOpts) *LSTM {
-	var s rand.Source
+	var s randv2.Source
 	if len(opts) > 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}

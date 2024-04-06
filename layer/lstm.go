@@ -1,23 +1,18 @@
 package layer
 
 import (
-	"math"
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/variable"
 )
 
 type LSTMOpts struct {
-	Source rand.Source
+	Source randv2.Source
 }
 
 func LSTM(hiddenSize int, opts ...LSTMOpts) *LSTMT {
-	var s rand.Source
-	s1 := rand.Uint64N(math.MaxUint64)
-	s2 := rand.Uint64N(math.MaxUint64)
-	s = rand.NewPCG(s1, s2)
-
+	var s randv2.Source
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
