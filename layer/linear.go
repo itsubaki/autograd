@@ -17,7 +17,7 @@ type LinearOpts struct {
 }
 
 func Linear(outSize int, opts ...LinearOpts) *LinearT {
-	s := rand.NewSource()
+	s := rand.MustNewSource()
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
