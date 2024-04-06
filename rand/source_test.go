@@ -35,8 +35,8 @@ func ExampleConst() {
 	// 0.6764556596678
 }
 
-func TestNewSource(t *testing.T) {
-	v := randv2.New(rand.NewSource()).Float64()
+func TestMustNewSource(t *testing.T) {
+	v := randv2.New(rand.MustNewSource()).Float64()
 	if v >= 0 && v < 1 {
 		return
 	}
