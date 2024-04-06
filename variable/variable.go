@@ -2,7 +2,7 @@ package variable
 
 import (
 	"fmt"
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 	"sort"
 
 	"github.com/itsubaki/autograd/matrix"
@@ -36,11 +36,11 @@ func Zero(m, n int) *Variable {
 	return &Variable{Data: matrix.Zero(m, n)}
 }
 
-func Rand(m, n int, s ...rand.Source) *Variable {
+func Rand(m, n int, s ...randv2.Source) *Variable {
 	return &Variable{Data: matrix.Rand(m, n, s...)}
 }
 
-func Randn(m, n int, s ...rand.Source) *Variable {
+func Randn(m, n int, s ...randv2.Source) *Variable {
 	return &Variable{Data: matrix.Randn(m, n, s...)}
 }
 

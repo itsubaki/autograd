@@ -1,13 +1,13 @@
 package function
 
 import (
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 
 	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"
 )
 
-func DropoutSimple(ratio float64, s ...rand.Source) func(x ...*variable.Variable) *variable.Variable {
+func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variable) *variable.Variable {
 	return func(x ...*variable.Variable) *variable.Variable {
 		if !variable.Config.Train {
 			return x[0]

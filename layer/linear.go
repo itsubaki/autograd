@@ -2,25 +2,22 @@ package layer
 
 import (
 	"math"
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
 type LinearOpts struct {
 	InSize int
 	NoBias bool
-	Source rand.Source
+	Source randv2.Source
 }
 
 func Linear(outSize int, opts ...LinearOpts) *LinearT {
-	var s rand.Source
-	s1 := rand.Uint64N(math.MaxUint64)
-	s2 := rand.Uint64N(math.MaxUint64)
-	s = rand.NewPCG(s1, s2)
-
+	s := rand.NewSource()
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
@@ -42,7 +39,7 @@ func Linear(outSize int, opts ...LinearOpts) *LinearT {
 
 type LinearT struct {
 	outSize int
-	source  rand.Source
+	source  randv2.Source
 	Parameters
 }
 
@@ -70,7 +67,7 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 	return xp
 }
 
-func initw(inSize, outSize int, s rand.Source) *variable.Variable {
+func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	w := matrix.Randn(inSize, outSize, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
 	return variable.NewOf(matrix.MulC(xavier, w)...)

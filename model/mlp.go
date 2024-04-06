@@ -1,7 +1,7 @@
 package model
 
 import (
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	L "github.com/itsubaki/autograd/layer"
@@ -10,7 +10,7 @@ import (
 
 type MLPOpts struct {
 	Activation Activation
-	Source     rand.Source
+	Source     randv2.Source
 }
 
 type MLP struct {
@@ -24,7 +24,7 @@ func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
 		activation = opts[0].Activation
 	}
 
-	var s rand.Source
+	var s randv2.Source
 	if len(opts) > 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
