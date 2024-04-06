@@ -2,10 +2,10 @@ package model_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/model"
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -25,7 +25,7 @@ func ExampleMLP() {
 func ExampleMLP_backward() {
 	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
-		Source:     rand.NewPCG(0, 0),
+		Source:     rand.Const(),
 	})
 
 	x := variable.New(1, 2)
@@ -46,7 +46,7 @@ func ExampleMLP_backward() {
 func ExampleMLP_cleargrads() {
 	m := model.NewMLP([]int{5, 1}, model.MLPOpts{
 		Activation: F.ReLU,
-		Source:     rand.NewPCG(0, 0),
+		Source:     rand.Const(),
 	})
 
 	x := variable.New(1, 2)

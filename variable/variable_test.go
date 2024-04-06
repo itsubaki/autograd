@@ -2,8 +2,8 @@ package variable_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -59,7 +59,7 @@ func ExampleZero() {
 }
 
 func ExampleRand() {
-	s := rand.NewPCG(0, 0)
+	s := rand.Const()
 	for _, r := range variable.Rand(2, 3, s).Data {
 		fmt.Println(r)
 	}
@@ -70,7 +70,7 @@ func ExampleRand() {
 }
 
 func ExampleRandn() {
-	s := rand.NewPCG(0, 0)
+	s := rand.Const()
 	for _, r := range variable.Randn(2, 3, s).Data {
 		fmt.Println(r)
 	}

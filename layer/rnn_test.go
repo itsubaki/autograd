@@ -2,15 +2,15 @@ package layer_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
 	L "github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleRNN() {
 	l := L.RNN(2, L.RNNOpts{
-		Source: rand.NewPCG(0, 0),
+		Source: rand.Const(),
 	})
 
 	x := variable.New(1)
@@ -30,7 +30,7 @@ func ExampleRNN() {
 
 func ExampleRNN_backward() {
 	l := L.RNN(2, L.RNNOpts{
-		Source: rand.NewPCG(0, 0),
+		Source: rand.Const(),
 	})
 
 	x := variable.New(1)
