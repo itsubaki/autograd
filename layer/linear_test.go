@@ -2,15 +2,15 @@ package layer_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
 	L "github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleLinear() {
 	l := L.Linear(5, L.LinearOpts{
-		Source: rand.NewPCG(0, 0),
+		Source: rand.Const(),
 	})
 
 	x := variable.New(1, 2, 3)
@@ -30,7 +30,7 @@ func ExampleLinear() {
 func ExampleLinear_inSize() {
 	l := L.Linear(5, L.LinearOpts{
 		InSize: 3,
-		Source: rand.NewPCG(0, 0),
+		Source: rand.Const(),
 	})
 
 	x := variable.New(1, 2, 3)

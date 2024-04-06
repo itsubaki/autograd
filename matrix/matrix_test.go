@@ -2,9 +2,9 @@ package matrix_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
 	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/rand"
 )
 
 func ExampleZero() {
@@ -61,7 +61,7 @@ func ExampleRand() {
 }
 
 func ExampleRand_seed() {
-	s := rand.NewPCG(0, 0)
+	s := rand.Const()
 	for _, r := range matrix.Rand(2, 3, s) {
 		fmt.Println(r)
 	}
@@ -80,7 +80,7 @@ func ExampleRandn() {
 }
 
 func ExampleRandn_seed() {
-	s := rand.NewPCG(0, 0)
+	s := rand.Const()
 	for _, r := range matrix.Randn(2, 3, s) {
 		fmt.Println(r)
 	}

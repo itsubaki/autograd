@@ -2,9 +2,9 @@ package model_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 
 	"github.com/itsubaki/autograd/model"
+	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -22,7 +22,7 @@ func ExampleLSTM() {
 
 func ExampleLSTM_backward() {
 	m := model.NewLSTM(1, 1, model.LSTMOpts{
-		Source: rand.NewPCG(0, 0),
+		Source: rand.Const(),
 	})
 
 	x := variable.New(1, 2)
