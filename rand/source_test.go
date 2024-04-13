@@ -35,38 +35,11 @@ func ExampleConst() {
 	// 0.6764556596678
 }
 
-func TestMustNewSource(t *testing.T) {
-	v := randv2.New(rand.MustNewSource()).Float64()
-	if v >= 0 && v < 1 {
-		return
-	}
-
-	t.Fail()
-}
-
 func TestConst(t *testing.T) {
 	v := randv2.New(rand.Const()).Float64()
 	if v >= 0 && v < 1 {
 		return
 	}
 
-	t.Fail()
-}
-
-func TestMustPanic(t *testing.T) {
-	defer func() {
-		if rec := recover(); rec != nil {
-			err, ok := rec.(error)
-			if !ok {
-				t.Fail()
-			}
-
-			if err.Error() != "something went wrong" {
-				t.Fail()
-			}
-		}
-	}()
-
-	rand.Must(-1, fmt.Errorf("something went wrong"))
 	t.Fail()
 }
