@@ -45,8 +45,8 @@ func From(x [][]int) Matrix {
 
 // rnd returns a pseudo-random number generator.
 func rnd(s ...randv2.Source) *randv2.Rand {
-	if len(s) == 0 {
-		s = append(s, rand.NewSource(rand.MustRead()))
+	if len(s) == 0 || s[0] == nil {
+		return randv2.New(rand.NewSource(rand.MustRead()))
 	}
 
 	return randv2.New(s[0])
