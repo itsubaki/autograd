@@ -71,6 +71,14 @@ func ExampleRand_seed() {
 	// [0.4812673234167829 0.44417259544314847 0.5210016660132573]
 }
 
+func ExampleRand_nil() {
+	shape := matrix.Shape(matrix.Rand(2, 3, nil))
+	fmt.Println(shape)
+
+	// Output:
+	// [2 3]
+}
+
 func ExampleRandn() {
 	shape := matrix.Shape(matrix.Randn(2, 3))
 	fmt.Println(shape)

@@ -6,7 +6,6 @@ import (
 
 	F "github.com/itsubaki/autograd/function"
 	"github.com/itsubaki/autograd/matrix"
-	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -17,7 +16,7 @@ type LinearOpts struct {
 }
 
 func Linear(outSize int, opts ...LinearOpts) *LinearT {
-	s := rand.NewSource(rand.MustRead())
+	var s randv2.Source
 	if len(opts) != 0 && opts[0].Source != nil {
 		s = opts[0].Source
 	}
