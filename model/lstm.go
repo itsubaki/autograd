@@ -7,30 +7,36 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type LSTMOpts struct {
-	Source randv2.Source
+type LSTMOptionFunc func(*LSTM)
+
+func LSTMWithSource(s randv2.Source) LSTMOptionFunc {
+	return func(l *LSTM) {
+		l.s = s
+	}
 }
 
 type LSTM struct {
+	s randv2.Source
 	Model
 }
 
-func NewLSTM(hiddenSize, outSize int, opts ...LSTMOpts) *LSTM {
-	var s randv2.Source
-	if len(opts) > 0 && opts[0].Source != nil {
-		s = opts[0].Source
-	}
-
-	layers := []L.Layer{
-		L.LSTM(hiddenSize, L.LSTMOpts{Source: s}),
-		L.Linear(outSize, L.LinearOpts{Source: s}),
-	}
-
-	return &LSTM{
+func NewLSTM(hiddenSize, outSize int, opts ...LSTMOptionFunc) *LSTM {
+	lstm := &LSTM{
 		Model: Model{
-			Layers: layers,
+			Layers: make([]L.Layer, 0),
 		},
 	}
+
+	for _, opt := range opts {
+		opt(lstm)
+	}
+
+	lstm.Layers = append(lstm.Layers, []L.Layer{
+		L.LSTM(hiddenSize, L.LSTMWithSource(lstm.s)),
+		L.Linear(outSize, L.WithSource(lstm.s)),
+	}...)
+
+	return lstm
 }
 
 func (m *LSTM) ResetState() {

@@ -7,27 +7,31 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type RNNOpts struct {
-	Source randv2.Source
+type RNNOptionFunc func(*RNNT)
+
+func RNNWithSource(s randv2.Source) RNNOptionFunc {
+	return func(l *RNNT) {
+		l.s = s
+	}
 }
-
-func RNN(hiddenSize int, opts ...RNNOpts) *RNNT {
-	var s randv2.Source
-	if len(opts) != 0 && opts[0].Source != nil {
-		s = opts[0].Source
+func RNN(hiddenSize int, opts ...RNNOptionFunc) *RNNT {
+	rnn := &RNNT{
+		Layers: make(Layers),
 	}
 
-	l := make(Layers)
-	l.Add("x2h", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("h2h", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
-
-	return &RNNT{
-		Layers: l,
+	for _, opt := range opts {
+		opt(rnn)
 	}
+
+	rnn.Layers.Add("x2h", Linear(hiddenSize, WithSource(rnn.s)))
+	rnn.Layers.Add("h2h", Linear(hiddenSize, WithSource(rnn.s), WithInSize(hiddenSize), WithNoBias()))
+
+	return rnn
 }
 
 type RNNT struct {
 	h *variable.Variable
+	s randv2.Source
 	Layers
 }
 

@@ -11,6 +11,10 @@ func (p Parameters) Add(name string, param Parameter) {
 	p[name] = param
 }
 
+func (p Parameters) Delete(name string) {
+	delete(p, name)
+}
+
 func (p Parameters) Params() Parameters {
 	return p
 }

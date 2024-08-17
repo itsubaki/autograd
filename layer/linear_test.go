@@ -9,9 +9,7 @@ import (
 )
 
 func ExampleLinear() {
-	l := L.Linear(5, L.LinearOpts{
-		Source: rand.Const(),
-	})
+	l := L.Linear(5, L.WithSource(rand.Const()))
 
 	x := variable.New(1, 2, 3)
 	y := l.Forward(x)
@@ -28,10 +26,10 @@ func ExampleLinear() {
 }
 
 func ExampleLinear_inSize() {
-	l := L.Linear(5, L.LinearOpts{
-		InSize: 3,
-		Source: rand.Const(),
-	})
+	l := L.Linear(5,
+		L.WithSource(rand.Const()),
+		L.WithInSize(3),
+	)
 
 	x := variable.New(1, 2, 3)
 	y := l.Forward(x)
@@ -48,9 +46,7 @@ func ExampleLinear_inSize() {
 }
 
 func ExampleLinear_nobias() {
-	l := L.Linear(5, L.LinearOpts{
-		NoBias: true,
-	})
+	l := L.Linear(5, L.WithNoBias())
 
 	x := variable.New(1, 2, 3)
 	l.Forward(x)
