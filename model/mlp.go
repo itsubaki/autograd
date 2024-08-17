@@ -13,33 +13,43 @@ type MLPOpts struct {
 	Source     randv2.Source
 }
 
+type MLPOptionFunc func(*MLP)
+
+func MLPWithSource(s randv2.Source) MLPOptionFunc {
+	return func(l *MLP) {
+		l.s = s
+	}
+}
+
+func MLPWithActivation(activation Activation) MLPOptionFunc {
+	return func(l *MLP) {
+		l.Activation = activation
+	}
+}
+
 type MLP struct {
 	Activation Activation
+	s          randv2.Source
 	Model
 }
 
-func NewMLP(outSize []int, opts ...MLPOpts) *MLP {
-	activation := F.Sigmoid
-	if len(opts) > 0 && opts[0].Activation != nil {
-		activation = opts[0].Activation
-	}
-
-	var s randv2.Source
-	if len(opts) > 0 && opts[0].Source != nil {
-		s = opts[0].Source
-	}
-
-	layers := make([]L.Layer, len(outSize))
-	for i := 0; i < len(outSize); i++ {
-		layers[i] = L.Linear(outSize[i], L.LinearOpts{Source: s})
-	}
-
-	return &MLP{
-		Activation: activation,
+func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
+	mlp := &MLP{
+		Activation: F.Sigmoid,
 		Model: Model{
-			Layers: layers,
+			Layers: make([]L.Layer, len(outSize)),
 		},
 	}
+
+	for _, opt := range opts {
+		opt(mlp)
+	}
+
+	for i := 0; i < len(outSize); i++ {
+		mlp.Layers[i] = L.Linear(outSize[i], L.WithSource(mlp.s))
+	}
+
+	return mlp
 }
 
 func (m *MLP) Forward(x *variable.Variable) *variable.Variable {

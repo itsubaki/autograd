@@ -21,9 +21,7 @@ func ExampleLSTM() {
 }
 
 func ExampleLSTM_backward() {
-	m := model.NewLSTM(1, 1, model.LSTMOpts{
-		Source: rand.Const(),
-	})
+	m := model.NewLSTM(1, 1, model.LSTMWithSource(rand.Const()))
 
 	x := variable.New(1, 2)
 	y := m.Forward(x)

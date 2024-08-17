@@ -374,7 +374,7 @@ func Example_double() {
 
 func Example_linearRegression() {
 	// p318
-	s :=rand.Const()
+	s := rand.Const()
 	xrand := matrix.Rand(100, 1, s)
 	yrand := matrix.Rand(100, 1, s)
 
@@ -424,10 +424,11 @@ func Example_linearRegression() {
 
 func Example_mlp() {
 	s := rand.Const()
-	m := model.NewMLP([]int{10, 1}, model.MLPOpts{
-		Activation: F.ReLU,
-		Source:     s,
-	})
+	m := model.NewMLP([]int{10, 1},
+		model.MLPWithSource(s),
+		model.MLPWithActivation(F.ReLU),
+	)
+
 	o := optimizer.SGD{
 		LearningRate: 0.2,
 	}

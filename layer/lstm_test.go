@@ -9,9 +9,7 @@ import (
 )
 
 func ExampleLSTM() {
-	l := L.LSTM(2, L.LSTMOpts{
-		Source: rand.Const(),
-	})
+	l := L.LSTM(2, L.LSTMWithSource(rand.Const()))
 
 	x := variable.New(1)
 	y := l.Forward(x)
@@ -39,9 +37,7 @@ func ExampleLSTM() {
 }
 
 func ExampleLSTM_backward() {
-	l := L.LSTM(2, L.LSTMOpts{
-		Source: rand.Const(),
-	})
+	l := L.LSTM(2, L.LSTMWithSource(rand.Const()))
 
 	x := variable.New(1)
 	y := l.First(x)

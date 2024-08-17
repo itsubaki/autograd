@@ -7,33 +7,38 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type LSTMOpts struct {
-	Source randv2.Source
+type LSTMOptionFunc func(*LSTMT)
+
+func LSTMWithSource(s randv2.Source) LSTMOptionFunc {
+	return func(l *LSTMT) {
+		l.s = s
+	}
 }
 
-func LSTM(hiddenSize int, opts ...LSTMOpts) *LSTMT {
-	var s randv2.Source
-	if len(opts) != 0 && opts[0].Source != nil {
-		s = opts[0].Source
+func LSTM(hiddenSize int, opts ...LSTMOptionFunc) *LSTMT {
+	lstm := &LSTMT{
+		Layers: make(Layers),
 	}
 
-	l := make(Layers)
-	l.Add("x2f", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("x2i", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("x2o", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("x2u", Linear(hiddenSize, LinearOpts{Source: s}))
-	l.Add("h2f", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
-	l.Add("h2i", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
-	l.Add("h2o", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
-	l.Add("h2u", Linear(hiddenSize, LinearOpts{Source: s, InSize: hiddenSize, NoBias: true}))
-
-	return &LSTMT{
-		Layers: l,
+	for _, opt := range opts {
+		opt(lstm)
 	}
+
+	lstm.Layers.Add("x2f", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Layers.Add("x2i", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Layers.Add("x2o", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Layers.Add("x2u", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Layers.Add("h2f", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Layers.Add("h2i", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Layers.Add("h2o", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Layers.Add("h2u", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+
+	return lstm
 }
 
 type LSTMT struct {
 	h, c *variable.Variable
+	s    randv2.Source
 	Layers
 }
 

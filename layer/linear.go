@@ -9,36 +9,45 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type LinearOpts struct {
-	InSize int
-	NoBias bool
-	Source randv2.Source
+type OptionFunc func(*LinearT)
+
+func WithSource(s randv2.Source) OptionFunc {
+	return func(l *LinearT) {
+		l.s = s
+	}
 }
 
-func Linear(outSize int, opts ...LinearOpts) *LinearT {
-	var s randv2.Source
-	if len(opts) != 0 && opts[0].Source != nil {
-		s = opts[0].Source
+func WithInSize(inSize int) OptionFunc {
+	return func(l *LinearT) {
+		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
 	}
+}
 
+func WithNoBias() OptionFunc {
+	return func(l *LinearT) {
+		l.Parameters.Delete("b")
+	}
+}
+
+func Linear(outSize int, opts ...OptionFunc) *LinearT {
 	p := make(Parameters)
-	if len(opts) == 0 || !opts[0].NoBias {
-		p.Add("b", variable.Zero(1, outSize))
-	}
-	if len(opts) != 0 && opts[0].InSize > 0 {
-		p.Add("w", initw(opts[0].InSize, outSize, s))
-	}
+	p.Add("b", variable.Zero(1, outSize))
 
-	return &LinearT{
+	l := &LinearT{
 		outSize:    outSize,
-		source:     s,
 		Parameters: p,
 	}
+
+	for _, opt := range opts {
+		opt(l)
+	}
+
+	return l
 }
 
 type LinearT struct {
 	outSize int
-	source  randv2.Source
+	s       randv2.Source
 	Parameters
 }
 
@@ -49,7 +58,7 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
 		inSize := variable.Shape(x[0])[1]
-		l.Parameters.Add("w", initw(inSize, l.outSize, l.source))
+		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
 	}
 
 	return []*variable.Variable{
