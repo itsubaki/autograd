@@ -9,7 +9,7 @@ import (
 
 type LSTMOptionFunc func(*LSTMT)
 
-func LSTMWithSource(s randv2.Source) LSTMOptionFunc {
+func WithLSTMSource(s randv2.Source) LSTMOptionFunc {
 	return func(l *LSTMT) {
 		l.s = s
 	}

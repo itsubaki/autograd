@@ -9,7 +9,7 @@ import (
 
 type RNNOptionFunc func(*RNNT)
 
-func RNNWithSource(s randv2.Source) RNNOptionFunc {
+func WithRNNSource(s randv2.Source) RNNOptionFunc {
 	return func(l *RNNT) {
 		l.s = s
 	}

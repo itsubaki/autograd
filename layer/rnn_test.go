@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleRNN() {
-	l := L.RNN(2, L.RNNWithSource(rand.Const()))
+	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
 	x := variable.New(1)
 	y := l.Forward(x)
@@ -27,7 +27,7 @@ func ExampleRNN() {
 }
 
 func ExampleRNN_backward() {
-	l := L.RNN(2, L.RNNWithSource(rand.Const()))
+	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
 	x := variable.New(1)
 	y := l.First(x)

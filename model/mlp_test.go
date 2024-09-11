@@ -24,8 +24,8 @@ func ExampleMLP() {
 
 func ExampleMLP_backward() {
 	m := model.NewMLP([]int{5, 1},
-		model.MLPWithSource(rand.Const()),
-		model.MLPWithActivation(F.ReLU),
+		model.WithMLPSource(rand.Const()),
+		model.WithMLPActivation(F.ReLU),
 	)
 
 	x := variable.New(1, 2)
@@ -45,8 +45,8 @@ func ExampleMLP_backward() {
 
 func ExampleMLP_cleargrads() {
 	m := model.NewMLP([]int{5, 1},
-		model.MLPWithSource(rand.Const()),
-		model.MLPWithActivation(F.ReLU),
+		model.WithMLPSource(rand.Const()),
+		model.WithMLPActivation(F.ReLU),
 	)
 
 	x := variable.New(1, 2)

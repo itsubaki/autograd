@@ -9,7 +9,7 @@ import (
 
 type LSTMOptionFunc func(*LSTM)
 
-func LSTMWithSource(s randv2.Source) LSTMOptionFunc {
+func WithLSTMSource(s randv2.Source) LSTMOptionFunc {
 	return func(l *LSTM) {
 		l.s = s
 	}
@@ -32,7 +32,7 @@ func NewLSTM(hiddenSize, outSize int, opts ...LSTMOptionFunc) *LSTM {
 	}
 
 	lstm.Layers = append(lstm.Layers, []L.Layer{
-		L.LSTM(hiddenSize, L.LSTMWithSource(lstm.s)),
+		L.LSTM(hiddenSize, L.WithLSTMSource(lstm.s)),
 		L.Linear(outSize, L.WithSource(lstm.s)),
 	}...)
 

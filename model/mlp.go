@@ -15,13 +15,13 @@ type MLPOpts struct {
 
 type MLPOptionFunc func(*MLP)
 
-func MLPWithSource(s randv2.Source) MLPOptionFunc {
+func WithMLPSource(s randv2.Source) MLPOptionFunc {
 	return func(l *MLP) {
 		l.s = s
 	}
 }
 
-func MLPWithActivation(activation Activation) MLPOptionFunc {
+func WithMLPActivation(activation Activation) MLPOptionFunc {
 	return func(l *MLP) {
 		l.Activation = activation
 	}
