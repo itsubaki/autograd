@@ -425,8 +425,8 @@ func Example_linearRegression() {
 func Example_mlp() {
 	s := rand.Const()
 	m := model.NewMLP([]int{10, 1},
-		model.MLPWithSource(s),
-		model.MLPWithActivation(F.ReLU),
+		model.WithMLPSource(s),
+		model.WithMLPActivation(F.ReLU),
 	)
 
 	o := optimizer.SGD{
