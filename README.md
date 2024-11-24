@@ -118,8 +118,7 @@ for i := 0; i < epochs; i++ {
 	m.ResetState()
 
 	loss, count := variable.New(0), 0
-	for dataloader.Next() {
-		x, t := dataloader.Batch()
+	for x, t := dataloader.Seq2() {
 		y := m.Forward(x)
 		loss = F.Add(loss, F.MeanSquaredError(y, t))
 
