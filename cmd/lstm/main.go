@@ -19,7 +19,7 @@ import (
 // pi returns a slice of float64 in [0, c*PI].
 func pi(c float64, N int) []float64 {
 	xs := make([]float64, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		xs[i] = c * math.Pi * (float64(i) / float64(N-1))
 	}
 
@@ -106,7 +106,7 @@ func main() {
 	}
 
 	now := time.Now()
-	for i := 0; i < epochs; i++ {
+	for i := range epochs {
 		m.ResetState()
 
 		loss, count := variable.New(0), 0

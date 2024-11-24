@@ -71,7 +71,7 @@ x1 := variable.New(2.0)
 lr := 0.001
 iters := 10000
 
-for i := 0; i < iters+1; i++ {
+for i := range iters + 1 {
 	if i%1000 == 0 {
 		fmt.Println(x0, x1)
 	}
@@ -114,7 +114,7 @@ o := optimizer.SGD{
 	LearningRate: 0.01,
 }
 
-for i := 0; i < epochs; i++ {
+for i := range epochs {
 	m.ResetState()
 
 	loss, count := variable.New(0), 0
