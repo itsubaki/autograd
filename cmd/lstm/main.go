@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"iter"
 	"log"
 	"math"
 	"math/rand/v2"
@@ -52,20 +53,31 @@ type DataLoader struct {
 	iter      int
 }
 
-func (d *DataLoader) Next() bool {
-	next := (d.iter+1)*d.BatchSize < d.N
+func (l *DataLoader) Next() bool {
+	next := (l.iter+1)*l.BatchSize < l.N
 	if !next {
-		d.iter = 0
+		l.iter = 0
 	}
 
 	return next
 }
 
-func (d *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
-	begin, end := d.iter*d.BatchSize, (d.iter+1)*d.BatchSize
-	x, y := vector.Transpose(d.Data[begin:end]), vector.Transpose(d.Label[begin:end])
-	d.iter++
+func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
+	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
+	x, y := vector.Transpose(l.Data[begin:end]), vector.Transpose(l.Label[begin:end])
+	l.iter++
 	return variable.NewOf(x...), variable.NewOf(y...)
+}
+
+func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {
+	return func(yield func(*variable.Variable, *variable.Variable) bool) {
+		for l.Next() {
+			x, t := l.Batch()
+			if !yield(x, t) {
+				break
+			}
+		}
+	}
 }
 
 func main() {
@@ -98,8 +110,7 @@ func main() {
 		m.ResetState()
 
 		loss, count := variable.New(0), 0
-		for dataloader.Next() {
-			x, t := dataloader.Batch()
+		for x, t := range dataloader.Seq2() {
 			y := m.Forward(x)
 			loss = F.Add(loss, F.MeanSquaredError(y, t))
 
