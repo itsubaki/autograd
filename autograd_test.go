@@ -244,7 +244,7 @@ func Example_gradientDescent() {
 	lr := 0.001
 	iters := 10000
 
-	for i := 0; i < iters+1; i++ {
+	for i := range iters + 1 {
 		if i%1000 == 0 {
 			fmt.Println(x0, x1)
 		}
@@ -436,7 +436,7 @@ func Example_mlp() {
 	x := variable.Rand(100, 1, s)
 	t := variable.Rand(100, 1, s)
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		y := m.Forward(x)
 		loss := F.MeanSquaredError(y, t)
 
