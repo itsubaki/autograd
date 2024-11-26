@@ -2,6 +2,7 @@ package rand_test
 
 import (
 	crand "crypto/rand"
+	"errors"
 	"fmt"
 	randv2 "math/rand/v2"
 	"strings"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/itsubaki/autograd/rand"
 )
+
+var ErrSomtingWentWrong = errors.New("something went wrong")
 
 func ExampleRead() {
 	reader := crand.Reader
@@ -42,12 +45,12 @@ func TestMustPanic(t *testing.T) {
 				t.Fail()
 			}
 
-			if err.Error() != "something went wrong" {
+			if !errors.Is(err, ErrSomtingWentWrong) {
 				t.Fail()
 			}
 		}
 	}()
 
-	rand.Must(-1, fmt.Errorf("something went wrong"))
+	rand.Must(-1, ErrSomtingWentWrong)
 	t.Fail()
 }
