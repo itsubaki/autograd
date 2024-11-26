@@ -45,7 +45,7 @@ func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
 		opt(mlp)
 	}
 
-	for i := 0; i < len(outSize); i++ {
+	for i := range outSize {
 		mlp.Layers[i] = L.Linear(outSize[i], L.WithSource(mlp.s))
 	}
 

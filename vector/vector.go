@@ -87,7 +87,7 @@ func BroadcastTo(shape []int, v []float64) []float64 {
 func Broadcast(v, w []float64) ([]float64, []float64) {
 	if len(v) == 1 {
 		out := ZeroLike(w)
-		for i := 0; i < len(w); i++ {
+		for i := range w {
 			out[i] = v[0]
 		}
 
@@ -96,7 +96,7 @@ func Broadcast(v, w []float64) ([]float64, []float64) {
 
 	if len(w) == 1 {
 		out := ZeroLike(v)
-		for i := 0; i < len(v); i++ {
+		for i := range v {
 			out[i] = w[0]
 		}
 
