@@ -17,7 +17,7 @@ func New(v ...[]float64) Matrix {
 
 func Zero(m, n int) Matrix {
 	out := make(Matrix, m)
-	for i := 0; i < m; i++ {
+	for i := range m {
 		out[i] = make([]float64, n)
 	}
 
@@ -176,9 +176,9 @@ func Argmax(m Matrix) []int {
 	p, q := Dim(m)
 
 	out := make([]int, p)
-	for i := 0; i < p; i++ {
+	for i := range p {
 		max := m[i][0]
-		for j := 0; j < q; j++ {
+		for j := range q {
 			if m[i][j] > max {
 				max, out[i] = m[i][j], j
 			}
@@ -194,8 +194,8 @@ func Dot(m, n Matrix) Matrix {
 	_, p := Dim(n)
 
 	out := Zero(a, p)
-	for i := 0; i < a; i++ {
-		for j := 0; j < p; j++ {
+	for i := range a {
+		for j := range p {
 			for k := 0; k < b; k++ {
 				out[i][j] = out[i][j] + m[i][k]*n[k][j]
 			}
@@ -239,7 +239,7 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 
 	if len(m) == 1 && len(m[0]) == 1 {
 		out := make([]float64, a*b)
-		for i := 0; i < a*b; i++ {
+		for i := range a * b {
 			out[i] = m[0][0]
 		}
 
@@ -249,7 +249,7 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 	if len(m) == 1 {
 		// b is ignored
 		out := make(Matrix, a)
-		for i := 0; i < a; i++ {
+		for i := range a {
 			out[i] = m[0]
 		}
 
@@ -259,8 +259,8 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 	if len(m[0]) == 1 {
 		// a is ignored
 		out := Zero(len(m), b)
-		for i := 0; i < len(m); i++ {
-			for j := 0; j < b; j++ {
+		for i := range m {
+			for j := range b {
 				out[i][j] = m[i][0]
 			}
 		}
@@ -292,9 +292,9 @@ func SumAxis0(m Matrix) Matrix {
 	p, q := Dim(m)
 
 	v := make([]float64, 0, q)
-	for j := 0; j < q; j++ {
+	for j := range q {
 		var sum float64
-		for i := 0; i < p; i++ {
+		for i := range p {
 			sum = sum + m[i][j]
 		}
 
@@ -309,9 +309,9 @@ func SumAxis1(m Matrix) Matrix {
 	p, q := Dim(m)
 
 	v := make([]float64, 0, p)
-	for i := 0; i < p; i++ {
+	for i := range p {
 		var sum float64
-		for j := 0; j < q; j++ {
+		for j := range q {
 			sum = sum + m[i][j]
 		}
 
@@ -325,9 +325,9 @@ func MaxAxis1(m Matrix) Matrix {
 	p, q := Dim(m)
 
 	v := make([]float64, 0, p)
-	for i := 0; i < p; i++ {
+	for i := range p {
 		var max float64
-		for j := 0; j < q; j++ {
+		for j := range q {
 			if m[i][j] > max {
 				max = m[i][j]
 			}
@@ -343,8 +343,8 @@ func Transpose(m Matrix) Matrix {
 	p, q := Dim(m)
 
 	out := Zero(q, p)
-	for i := 0; i < q; i++ {
-		for j := 0; j < p; j++ {
+	for i := range q {
+		for j := range p {
 			out[i][j] = m[j][i]
 		}
 	}
@@ -367,7 +367,7 @@ func Reshape(shape []int, m Matrix) Matrix {
 	}
 
 	out := make(Matrix, a)
-	for i := 0; i < a; i++ {
+	for i := range a {
 		out[i] = v[i*b : (i+1)*b]
 	}
 
@@ -387,8 +387,8 @@ func F(m Matrix, f func(a float64) float64) Matrix {
 	p, q := Dim(m)
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = f(m[i][j])
 		}
 	}
@@ -401,8 +401,8 @@ func F2(m, n Matrix, f func(a, b float64) float64) Matrix {
 	p, q := Dim(x)
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = f(x[i][j], y[i][j])
 		}
 	}
