@@ -23,11 +23,10 @@ func ExampleVar() {
 	y.Name = "x"
 	fmt.Println(dot.Var(x) == dot.Var(y))
 
-	// Output:
-	// "0x**********" [label="x", color=orange, style=filled]
-	// "0x**********" [label="x([1])", color=orange, style=filled]
-	// true
-	// false
+	//"0x**********0" [label="x", color=orange, style=filled]
+	//"0x**********0" [label="x([1])", color=orange, style=filled]
+	//true
+	//false
 }
 
 func ExampleFunc() {
@@ -42,8 +41,8 @@ func ExampleFunc() {
 	fmt.Println(dot.Func(f0)[0] == dot.Func(f1)[0])
 
 	// Output:
-	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
-	// false
+	//"0x**********0" [label="Sin", color=lightblue, style=filled, shape=box]
+	//false
 }
 
 func Example_func() {
@@ -60,9 +59,9 @@ func Example_func() {
 	}
 
 	// Output:
-	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
+	//"0x**********0" [label="Sin", color=lightblue, style=filled, shape=box]
+	//"0x**********0" -> "0x**********0"
+	//"0x**********0" -> "0x**********0"
 }
 
 func ExampleGraph() {
@@ -78,14 +77,14 @@ func ExampleGraph() {
 		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
-	// Output:
-	// digraph g {
-	// "0x**********" [label="y", color=orange, style=filled]
-	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="x", color=orange, style=filled]
-	// }
+	// Output
+	//digraph g {
+	//	"0x**********0" [label="y", color=orange, style=filled]
+	//	"0x**********0" [label="Sin", color=lightblue, style=filled, shape=box]
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" [label="x", color=orange, style=filled]
+	//}
 }
 
 func ExampleGraph_composite() {
@@ -102,18 +101,17 @@ func ExampleGraph_composite() {
 		fmt.Println(re.ReplaceAllString(txt, "**********"))
 	}
 
-	// Output:
-	// digraph g {
-	// "0x**********" [label="z", color=orange, style=filled]
-	// "0x**********" [label="Cos", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="y", color=orange, style=filled]
-	// "0x**********" [label="Sin", color=lightblue, style=filled, shape=box]
-	// "0x**********" -> "0x**********"
-	// "0x**********" -> "0x**********"
-	// "0x**********" [label="x", color=orange, style=filled]
-	// }
+	//digraph g {
+	//	"0x**********0" [label="z", color=orange, style=filled]
+	//	"0x**********0" [label="Cos", color=lightblue, style=filled, shape=box]
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" [label="y", color=orange, style=filled]
+	//	"0x**********0" [label="Sin", color=lightblue, style=filled, shape=box]
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" -> "0x**********0"
+	//	"0x**********0" [label="x", color=orange, style=filled]
+	//}
 }
 
 func ExampleAddFunc() {
