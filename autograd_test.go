@@ -36,7 +36,7 @@ func Example_numericalDiff() {
 	fmt.Println(numerical.Diff(f, v))
 
 	// Output:
-	// variable([3.2974426293330694])
+	// variable([3.2974426293297388])
 }
 
 func Example_creator() {
@@ -450,14 +450,14 @@ func Example_mlp() {
 	}
 
 	// Output:
-	// variable([0.17547970232825427])
-	// variable([0.07741568533618796])
-	// variable([0.07284687750898228])
-	// variable([0.07090371188279042])
-	// variable([0.07005857571105853])
-	// variable([0.0696888491889667])
-	// variable([0.06952674502939128])
-	// variable([0.06945530711238598])
-	// variable([0.0694233691535581])
-	// variable([0.06940859258464768])
+	//variable([0.17547970232825424])
+	//variable([0.07741568533618798])
+	//variable([0.07284687750898229])
+	//variable([0.0709037118827904])
+	//variable([0.07005857571105853])
+	//variable([0.0696888491889667])
+	//variable([0.06952674502939128])
+	//variable([0.06945530711238598])
+	//variable([0.06942336915355808])
+	//variable([0.06940859258464768])
 }
