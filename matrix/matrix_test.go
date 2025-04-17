@@ -358,7 +358,7 @@ func ExampleDot() {
 func ExampleMaxAxis1() {
 	A := matrix.New(
 		[]float64{1, 2},
-		[]float64{3, 4},
+		[]float64{-3, -4},
 		[]float64{5, 2},
 	)
 
@@ -368,7 +368,7 @@ func ExampleMaxAxis1() {
 
 	// Output:
 	// [2]
-	// [4]
+	// [-3]
 	// [5]
 }
 
