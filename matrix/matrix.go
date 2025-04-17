@@ -326,7 +326,7 @@ func MaxAxis1(m Matrix) Matrix {
 
 	v := make([]float64, 0, p)
 	for i := range p {
-		var max float64
+		max := m[i][0]
 		for j := range q {
 			if m[i][j] > max {
 				max = m[i][j]
