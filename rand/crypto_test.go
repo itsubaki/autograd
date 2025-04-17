@@ -24,8 +24,7 @@ func ExampleRead() {
 		fmt.Println(err)
 	}
 
-	// Output:
-	// read: unexpected EOF
+	// see https://go.dev/issue/66821
 }
 
 func TestMustRead(t *testing.T) {
