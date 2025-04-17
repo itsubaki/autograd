@@ -33,10 +33,10 @@ func Example_numericalDiff() {
 		return C(B(A(x...)))
 	}
 
-	fmt.Println(numerical.Diff(f, v))
+	fmt.Printf("%.4f\n", numerical.Diff(f, v).Data[0][0])
 
 	// Output:
-	// variable([3.2974426293297388])
+	// 3.2974
 }
 
 func Example_creator() {
@@ -445,19 +445,19 @@ func Example_mlp() {
 		o.Update(m)
 
 		if i%10 == 0 {
-			fmt.Println(loss)
+			fmt.Printf("%.8f\n", loss.Data[0][0])
 		}
 	}
 
 	// Output:
-	// variable([0.17547970232825424])
-	// variable([0.07741568533618798])
-	// variable([0.07284687750898229])
-	// variable([0.0709037118827904])
-	// variable([0.07005857571105853])
-	// variable([0.0696888491889667])
-	// variable([0.06952674502939128])
-	// variable([0.06945530711238598])
-	// variable([0.06942336915355808])
-	// variable([0.06940859258464768])
+	// 0.17547970
+	// 0.07741569
+	// 0.07284688
+	// 0.07090371
+	// 0.07005858
+	// 0.06968885
+	// 0.06952675
+	// 0.06945531
+	// 0.06942337
+	// 0.06940859
 }
