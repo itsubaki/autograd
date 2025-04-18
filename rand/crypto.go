@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+var RandRead = rand.Read
+
 func Must[T any](a T, err error) T {
 	if err != nil {
 		panic(err)
@@ -19,7 +21,7 @@ func MustRead() [32]byte {
 
 func Read() ([32]byte, error) {
 	var p [32]byte
-	if _, err := rand.Read(p[:]); err != nil {
+	if _, err := RandRead(p[:]); err != nil {
 		return [32]byte{}, fmt.Errorf("read: %w", err)
 	}
 
