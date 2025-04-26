@@ -160,6 +160,29 @@ for i := 0; i < 5; i++ {
 // variable([-0.8414709848078965])
 ```
 
+### NoGrad and Test mode
+
+```go
+func() {
+	defer variable.Nograd().End()
+
+	// No graphs are generated for gradient computation.
+	for _, x := range xs {
+		m.Forward(x)
+	}
+}()
+```
+
+```go
+func() {
+	defer variable.TestMode().End()
+
+	// DropoutSimple has no effect during test mode.
+	// Take a look at the implementation of DropoutSimple as well.
+	F.DropoutSimple(0.5)(x)
+}()
+```
+
 ### Dot graph
 
 ```shell
