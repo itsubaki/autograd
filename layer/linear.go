@@ -78,5 +78,5 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	w := matrix.Randn(inSize, outSize, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
-	return variable.NewOf(matrix.MulC(xavier, w)...)
+	return variable.NewFrom(matrix.MulC(xavier, w))
 }

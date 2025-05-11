@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleZero() {
-	for _, r := range matrix.Zero(2, 3) {
+	for _, r := range matrix.Zero(2, 3).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -22,7 +22,7 @@ func ExampleZeroLike() {
 		[]float64{1, 2, 3},
 		[]float64{4, 5, 6},
 	)
-	for _, r := range matrix.ZeroLike(A) {
+	for _, r := range matrix.ZeroLike(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -33,7 +33,7 @@ func ExampleZeroLike() {
 
 func ExampleOneLike() {
 	A := matrix.Zero(2, 3)
-	for _, r := range matrix.OneLike(A) {
+	for _, r := range matrix.OneLike(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -42,8 +42,8 @@ func ExampleOneLike() {
 	// [1 1 1]
 }
 
-func ExampleFrom() {
-	for _, r := range matrix.From([][]int{{1, 2}, {3, 4}}) {
+func ExampleNewFrom() {
+	for _, r := range matrix.NewFrom([][]int{{1, 2}, {3, 4}}).Seq2() {
 		fmt.Printf("%.2f\n", r)
 	}
 
@@ -62,7 +62,7 @@ func ExampleRand() {
 
 func ExampleRand_seed() {
 	s := rand.Const()
-	for _, r := range matrix.Rand(2, 3, s) {
+	for _, r := range matrix.Rand(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -89,7 +89,7 @@ func ExampleRandn() {
 
 func ExampleRandn_seed() {
 	s := rand.Const()
-	for _, r := range matrix.Randn(2, 3, s) {
+	for _, r := range matrix.Randn(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -128,7 +128,7 @@ func ExampleAddC() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.AddC(1, A) {
+	for _, r := range matrix.AddC(1, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -143,7 +143,7 @@ func ExampleSubC() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.SubC(1, A) {
+	for _, r := range matrix.SubC(1, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -158,7 +158,7 @@ func ExampleMulC() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.MulC(2, A) {
+	for _, r := range matrix.MulC(2, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -173,7 +173,7 @@ func ExampleExp() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Exp(A) {
+	for _, r := range matrix.Exp(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -188,7 +188,7 @@ func ExampleLog() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Log(A) {
+	for _, r := range matrix.Log(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -203,7 +203,7 @@ func ExampleSin() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Sin(A) {
+	for _, r := range matrix.Sin(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -218,7 +218,7 @@ func ExampleCos() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Cos(A) {
+	for _, r := range matrix.Cos(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -233,7 +233,7 @@ func ExampleTanh() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Tanh(A) {
+	for _, r := range matrix.Tanh(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -248,7 +248,7 @@ func ExamplePow() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.Pow(2, A) {
+	for _, r := range matrix.Pow(2, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -268,7 +268,7 @@ func ExampleAdd() {
 		[]float64{7, 8},
 	)
 
-	for _, r := range matrix.Add(A, B) {
+	for _, r := range matrix.Add(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -288,7 +288,7 @@ func ExampleSub() {
 		[]float64{30, 40},
 	)
 
-	for _, r := range matrix.Sub(A, B) {
+	for _, r := range matrix.Sub(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -307,7 +307,7 @@ func ExampleMul() {
 		[]float64{7, 8},
 	)
 
-	for _, r := range matrix.Mul(A, B) {
+	for _, r := range matrix.Mul(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -326,7 +326,7 @@ func ExampleDiv() {
 		[]float64{7, 8},
 	)
 
-	for _, r := range matrix.Div(A, B) {
+	for _, r := range matrix.Div(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -346,7 +346,7 @@ func ExampleDot() {
 		[]float64{7, 8},
 	)
 
-	for _, r := range matrix.Dot(A, B) {
+	for _, r := range matrix.Dot(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -362,7 +362,7 @@ func ExampleMaxAxis1() {
 		[]float64{5, 2},
 	)
 
-	for _, r := range matrix.MaxAxis1(A) {
+	for _, r := range matrix.MaxAxis1(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -427,7 +427,7 @@ func ExampleClip() {
 		[]float64{7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
 	)
 
-	for _, r := range matrix.Clip(A, 0, 10) {
+	for _, r := range matrix.Clip(A, 0, 10).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -442,7 +442,7 @@ func ExampleMask() {
 		[]float64{3, -4},
 	)
 
-	for _, r := range matrix.Mask(A, func(v float64) bool { return v > 0 }) {
+	for _, r := range matrix.Mask(A, func(v float64) bool { return v > 0 }).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -454,7 +454,7 @@ func ExampleMask() {
 func ExampleBroadcastTo() {
 	A := matrix.New([]float64{1})
 
-	for _, r := range matrix.BroadcastTo([]int{3, 5}, A) {
+	for _, r := range matrix.BroadcastTo([]int{3, 5}, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -467,7 +467,7 @@ func ExampleBroadcastTo() {
 func ExampleBroadcastTo_row() {
 	A := matrix.New([]float64{1, 2})
 
-	for _, r := range matrix.BroadcastTo([]int{5, -1}, A) {
+	for _, r := range matrix.BroadcastTo([]int{5, -1}, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -485,7 +485,7 @@ func ExampleBroadcastTo_column() {
 		[]float64{2},
 	)
 
-	for _, r := range matrix.BroadcastTo([]int{-1, 5}, A) {
+	for _, r := range matrix.BroadcastTo([]int{-1, 5}, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -500,7 +500,7 @@ func ExampleBroadcastTo_noEffect() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.BroadcastTo([]int{2, 2}, A) {
+	for _, r := range matrix.BroadcastTo([]int{2, 2}, A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -519,10 +519,10 @@ func ExampleBroadcast() {
 	)
 
 	AA, BB := matrix.Broadcast(A, B)
-	for _, r := range AA {
+	for _, r := range AA.Seq2() {
 		fmt.Println(r)
 	}
-	for _, r := range BB {
+	for _, r := range BB.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -599,7 +599,7 @@ func ExampleSumAxis0() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.SumAxis0(A) {
+	for _, r := range matrix.SumAxis0(A).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -613,7 +613,7 @@ func ExampleSumAxis1() {
 		[]float64{3, 4},
 	)
 
-	for _, r := range matrix.SumAxis1(A) {
+	for _, r := range matrix.SumAxis1(A).Seq2() {
 		fmt.Println(r)
 	}
 

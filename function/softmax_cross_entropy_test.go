@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -18,7 +19,7 @@ func ExampleSoftmaxCrossEntropy() {
 	y.Backward()
 
 	fmt.Println(y)
-	for _, v := range x.Grad.Data {
+	for _, v := range x.Grad.Seq2() {
 		fmt.Printf("%.8f\n", v)
 	}
 
@@ -29,7 +30,7 @@ func ExampleSoftmaxCrossEntropy() {
 }
 
 func ExampleOneHot() {
-	for _, v := range F.OneHot([]float64{0, 2, 2, 1}, 3) {
+	for _, v := range F.OneHot([]float64{0, 2, 2, 1}, 3).Seq2() {
 		fmt.Println(v)
 	}
 
@@ -41,13 +42,13 @@ func ExampleOneHot() {
 }
 
 func ExampleLogp() {
-	A := [][]float64{
+	A := matrix.New([][]float64{
 		{1, 2, 3, 4, 5},
 		{6, 7, 8, 9, 10},
 		{11, 12, 13, 14, 15},
-	}
+	}...)
 
-	for _, v := range F.Logp(A, []int{0, 1, 3}) {
+	for _, v := range F.Logp(A, []int{0, 1, 3}).Seq2() {
 		fmt.Println(v)
 	}
 

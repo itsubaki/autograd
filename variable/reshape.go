@@ -12,10 +12,10 @@ type ReshapeT struct {
 
 func (f *ReshapeT) Forward(x ...*Variable) []*Variable {
 	f.xShape = Shape(x[0])
-
 	y := matrix.Reshape(f.Shape, x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

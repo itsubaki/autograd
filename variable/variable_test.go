@@ -60,7 +60,7 @@ func ExampleZero() {
 
 func ExampleRand() {
 	s := rand.Const()
-	for _, r := range variable.Rand(2, 3, s).Data {
+	for _, r := range variable.Rand(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -71,7 +71,7 @@ func ExampleRand() {
 
 func ExampleRandn() {
 	s := rand.Const()
-	for _, r := range variable.Randn(2, 3, s).Data {
+	for _, r := range variable.Randn(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 

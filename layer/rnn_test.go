@@ -13,14 +13,14 @@ func ExampleRNN() {
 
 	x := variable.New(1)
 	y := l.Forward(x)
-	fmt.Printf("%.4f\n", y[0].Data)
+	fmt.Printf("%v\n", y[0].Data)
 
 	for k, v := range l.Params() {
 		fmt.Println(k, v.Data)
 	}
 
 	// Unordered output:
-	// [[0.7976 -0.4168]]
+	// [[0.7975914906443963 -0.41681777230979594]]
 	// x2h.b [[0 0]]
 	// x2h.w [[1.0919575041640825 -0.4438344619606553]]
 	// h2h.w [[0.4006014980172961 -0.4330302800303532] [0.4171185512277987 -0.260091010167568]]
