@@ -35,6 +35,20 @@ func ExampleVariable_Name_matrix() {
 	// variable([[1 2 3] [4 5 6]])
 }
 
+func ExampleVariable_At() {
+	v := variable.New(1, 2, 3, 4)
+	fmt.Println(v.At(0, 0))
+	fmt.Println(v.At(0, 1))
+	fmt.Println(v.At(0, 2))
+	fmt.Println(v.At(0, 3))
+
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+}
+
 func ExampleZeroLike() {
 	v := variable.New(1, 2, 3, 4)
 	fmt.Println(variable.ZeroLike(v))
