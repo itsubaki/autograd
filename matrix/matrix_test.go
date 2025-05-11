@@ -656,3 +656,23 @@ func ExampleReshape() {
 	// [[1 2 3 4]]
 	// [[1 2] [3 4]]
 }
+
+func ExampleMatrix_Seq2() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+		[]float64{5, 6},
+	)
+
+	for i, r := range A.Seq2() {
+		fmt.Println(r)
+
+		if i == 1 {
+			break
+		}
+	}
+
+	// Output:
+	// [1 2]
+	// [3 4]
+}
