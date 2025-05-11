@@ -12,10 +12,10 @@ type BroadcastToT struct {
 
 func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
 	f.xShape = Shape(x[0])
-
 	y := matrix.BroadcastTo(f.Shape, x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

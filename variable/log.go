@@ -12,10 +12,10 @@ type LogT struct {
 
 func (f *LogT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-
 	y := matrix.Log(x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

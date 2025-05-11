@@ -14,8 +14,8 @@ func ExampleAccuracy() {
 		[]float64{0.1, 0.9, 0.0},
 		[]float64{0.8, 0.1, 0.1},
 	)
-	t := variable.New(1, 2, 0)
 
+	t := variable.New(1, 2, 0)
 	fmt.Println(F.Accuracy(y, t))
 
 	// Output:

@@ -15,11 +15,9 @@ type MeanSquaredErrorT struct {
 
 func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x0, f.x1 = x[0], x[1]
-
 	diff := matrix.Sub(x[0].Data, x[1].Data)
-	N := len(diff)
+	y := (1.0 / float64(diff.Rows)) * matrix.Sum(matrix.Mul(diff, diff)) // (1/N) * sum((x0 - x1)^2)
 
-	y := (1.0 / float64(N)) * matrix.Sum(matrix.Mul(diff, diff)) // (1/N) * sum((x0 - x1)^2)
 	return []*variable.Variable{
 		variable.New(y),
 	}
@@ -27,10 +25,9 @@ func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variabl
 
 func (f *MeanSquaredErrorT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	diff := Sub(f.x0, f.x1)
-	N := len(diff.Data)
+	gx0 := MulC(2.0/float64(diff.N()), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
+	gx1 := Neg(gx0)                                      // -gx0
 
-	gx0 := MulC(2.0/float64(N), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
-	gx1 := Neg(gx0)                               // -gx0
 	return []*variable.Variable{
 		gx0,
 		gx1,

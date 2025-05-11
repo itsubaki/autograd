@@ -17,17 +17,18 @@ type ReLUT struct {
 
 func (f *ReLUT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
-
 	y := matrix.F(x[0].Data, maximum)
+
 	return []*variable.Variable{
-		variable.NewOf(y...),
+		variable.NewFrom(y),
 	}
 }
 
 func (f *ReLUT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	mask := matrix.Mask(f.x.Data, relu)
+
 	return []*variable.Variable{
-		Mul(gy[0], variable.NewOf(mask...)), // gy * mask
+		Mul(gy[0], variable.NewFrom(mask)), // gy * mask
 	}
 }
 

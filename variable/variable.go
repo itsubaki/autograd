@@ -2,6 +2,7 @@ package variable
 
 import (
 	"fmt"
+	"iter"
 	randv2 "math/rand/v2"
 	"sort"
 
@@ -10,7 +11,7 @@ import (
 
 type Variable struct {
 	Name       string
-	Data       [][]float64
+	Data       matrix.Matrix
 	Grad       *Variable
 	Creator    *Function
 	Generation int
@@ -21,6 +22,10 @@ func New(v ...float64) *Variable {
 }
 
 func NewOf(v ...[]float64) *Variable {
+	return &Variable{Data: matrix.New(v...)}
+}
+
+func NewFrom(v matrix.Matrix) *Variable {
 	return &Variable{Data: v}
 }
 
@@ -46,6 +51,18 @@ func Randn(m, n int, s ...randv2.Source) *Variable {
 
 func Shape(v *Variable) []int {
 	return matrix.Shape(v.Data)
+}
+
+func (v *Variable) At(i, j int) float64 {
+	return v.Data.At(i, j)
+}
+
+func (v *Variable) N() int {
+	return v.Data.Rows
+}
+
+func (v *Variable) Seq2() iter.Seq2[int, []float64] {
+	return v.Data.Seq2()
 }
 
 func (v *Variable) Cleargrad() {
@@ -141,8 +158,8 @@ func (v Variable) String() string {
 		name = v.Name
 	}
 
-	if len(v.Data) == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data[0])
+	if v.N() == 1 {
+		return fmt.Sprintf("%s(%v)", name, v.Data.Row(0))
 	}
 
 	return fmt.Sprintf("%s(%v)", name, v.Data)

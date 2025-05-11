@@ -17,11 +17,11 @@ type GetItemGradT struct {
 func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 	gx := matrix.Zero(f.InShape[0], f.InShape[1])
 	for i, idx := range f.Slices {
-		gx[idx] = vector.Add(gx[idx], gy[0].Data[i])
+		gx.SetRow(idx, vector.Add(gx.Row(idx), gy[0].Data.Row(i)))
 	}
 
 	return []*Variable{
-		NewOf(gx...),
+		NewFrom(gx),
 	}
 }
 
