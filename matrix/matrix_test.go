@@ -676,3 +676,15 @@ func ExampleMatrix_Seq2() {
 	// [1 2]
 	// [3 4]
 }
+
+func ExampleMatrix_N() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+	)
+
+	fmt.Println(A.N())
+
+	// Output:
+	// 2
+}
