@@ -12,8 +12,8 @@ type ExpT struct {
 
 func (f *ExpT) Forward(x ...*Variable) []*Variable {
 	y := matrix.Exp(x[0].Data)
+	f.y = NewFrom(y)
 
-	f.y = NewOf(y...)
 	return []*Variable{
 		f.y,
 	}

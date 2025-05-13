@@ -17,11 +17,11 @@ type SoftmaxCrossEntropyT struct {
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.t = x[0], x[1]
 
-	N, label := len(x[0].Data), label(x[1])
+	label := label(x[1])
 	logz := logsumexp(x[0].Data)
 	logp := logp(matrix.Sub(x[0].Data, logz), label)
 
-	y := -1.0 / float64(N) * matrix.Sum(logp)
+	y := -1.0 / float64(x[0].N()) * matrix.Sum(logp)
 	return []*variable.Variable{
 		variable.New(y),
 	}
@@ -31,15 +31,15 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	shape := variable.Shape(f.x)
 	N, C := shape[0], shape[1]
 
-	t := variable.NewOf(onehot(f.t.Data[0], C)...) // t = onehot(t, C)
-	y := Softmax(f.x)                              // y = softmax(x)
+	t := variable.NewFrom(onehot(f.t.Row(0), C)) // t = onehot(t, C)
+	y := Softmax(f.x)                            // y = softmax(x)
 
 	return []*variable.Variable{
 		Mul(Sub(y, t), MulC(1.0/float64(N), gy[0])), // (y - t) * gy / N
 	}
 }
 
-func logsumexp(x [][]float64) [][]float64 {
+func logsumexp(x matrix.Matrix) matrix.Matrix {
 	max := matrix.MaxAxis1(x)              // max = max(x)
 	expy := matrix.Exp(matrix.Sub(x, max)) // expy = exp(x - max)
 	sumy := matrix.SumAxis1(expy)          // sumy = sum(expy)
@@ -48,24 +48,24 @@ func logsumexp(x [][]float64) [][]float64 {
 }
 
 func label(t *variable.Variable) []int {
-	return vector.Int(matrix.Flatten(t.Data))
+	return vector.Int(t.Data.Data)
 }
 
-func logp(m [][]float64, label []int) [][]float64 {
-	out := make([][]float64, len(label))
+func logp(m matrix.Matrix, label []int) matrix.Matrix {
+	out := matrix.Zero(len(label), 1)
 	for i, v := range label {
-		out[i] = []float64{m[i][v]}
+		out.Set(i, 0, m.At(i, v))
 	}
 
 	return out
 }
 
-func onehot(t []float64, size int) [][]float64 {
+func onehot(t []float64, size int) matrix.Matrix {
 	x := vector.Int(t)
 
 	out := matrix.Zero(len(x), size)
 	for i, v := range x {
-		out[i][v] = 1
+		out.Set(i, v, 1)
 	}
 
 	return out

@@ -16,15 +16,15 @@ type MaxT struct {
 
 func (f *MaxT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-
 	f.y = New(matrix.Max(x[0].Data))
+
 	return []*Variable{
 		f.y,
 	}
 }
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
-	mask := NewOf(matrix.F2(f.x.Data, f.y.Data, IsClose)...)
+	mask := NewFrom(matrix.F2(f.x.Data, f.y.Data, IsClose))
 	return []*Variable{
 		Mul(gy[0], mask),
 	}
