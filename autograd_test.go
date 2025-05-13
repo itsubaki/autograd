@@ -33,7 +33,7 @@ func Example_numericalDiff() {
 		return C(B(A(x...)))
 	}
 
-	fmt.Printf("%.4f\n", numerical.Diff(f, v).Data[0][0])
+	fmt.Printf("%.4f\n", numerical.Diff(f, v).At(0, 0))
 
 	// Output:
 	// 3.2974
@@ -379,8 +379,8 @@ func Example_linearRegression() {
 	yrand := matrix.Rand(100, 1, s)
 
 	// variable
-	x := variable.NewOf(xrand...)                                                    // x = xrand
-	t := variable.NewOf(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))...) // t = 2x+5+yrand
+	x := variable.NewFrom(xrand)                                                    // x = xrand
+	t := variable.NewFrom(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))) // t = 2x+5+yrand
 
 	// parameter
 	w := variable.New(0.0)
@@ -445,7 +445,7 @@ func Example_mlp() {
 		o.Update(m)
 
 		if i%10 == 0 {
-			fmt.Printf("%.8f\n", loss.Data[0][0])
+			fmt.Printf("%.8f\n", loss.At(0, 0))
 		}
 	}
 

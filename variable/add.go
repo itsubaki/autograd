@@ -19,10 +19,10 @@ type AddT struct {
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {
 	f.x0Shape, f.x1Shape = Shape(x[0]), Shape(x[1])
-
 	y := matrix.Add(x[0].Data, x[1].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

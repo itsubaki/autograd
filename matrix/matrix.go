@@ -1,27 +1,60 @@
 package matrix
 
 import (
+	"fmt"
+	"iter"
 	"math"
 	randv2 "math/rand/v2"
 
 	"github.com/itsubaki/autograd/rand"
 )
 
-type Matrix [][]float64
-
-func New(v ...[]float64) Matrix {
-	out := make(Matrix, len(v))
-	copy(out, v)
-	return out
+// Matrix is a matrix of complex128.
+type Matrix struct {
+	Rows int
+	Cols int
+	Data []float64
 }
 
-func Zero(m, n int) Matrix {
-	out := make(Matrix, m)
-	for i := range m {
-		out[i] = make([]float64, n)
+func New(v ...[]float64) Matrix {
+	rows := len(v)
+	var cols int
+	if rows > 0 {
+		cols = len(v[0])
+	}
+
+	data := make([]float64, rows*cols)
+	for i := range rows {
+		copy(data[i*cols:(i+1)*cols], v[i])
+	}
+
+	return Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: data,
+	}
+}
+
+func NewFrom(x [][]int) Matrix {
+	rows, cols := len(x), len(x[0])
+	out := Zero(rows, cols)
+
+	for i := range rows {
+		for j := range cols {
+			out.Set(i, j, float64(x[i][j]))
+		}
 	}
 
 	return out
+}
+
+// Zero returns a zero matrix.
+func Zero(rows, cols int) Matrix {
+	return Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: make([]float64, rows*cols),
+	}
 }
 
 func ZeroLike(m Matrix) Matrix {
@@ -30,26 +63,6 @@ func ZeroLike(m Matrix) Matrix {
 
 func OneLike(m Matrix) Matrix {
 	return AddC(1.0, ZeroLike(m))
-}
-
-func From(x [][]int) Matrix {
-	out := Zero(len(x), len(x[0]))
-	for i := range x {
-		for j := range x[i] {
-			out[i][j] = float64(x[i][j])
-		}
-	}
-
-	return out
-}
-
-// rnd returns a pseudo-random number generator.
-func rnd(s ...randv2.Source) *randv2.Rand {
-	if len(s) == 0 || s[0] == nil {
-		return randv2.New(rand.NewSource(rand.MustRead()))
-	}
-
-	return randv2.New(s[0])
 }
 
 // Rand returns a matrix with elements that pseudo-random number in the half-open interval [0.0,1.0).
@@ -66,6 +79,64 @@ func Randn(m, n int, s ...randv2.Source) Matrix {
 	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
+// rnd returns a pseudo-random number generator.
+func rnd(s ...randv2.Source) *randv2.Rand {
+	if len(s) == 0 || s[0] == nil {
+		return randv2.New(rand.NewSource(rand.MustRead()))
+	}
+
+	return randv2.New(s[0])
+}
+
+// At returns a value of matrix at (i,j).
+func (m Matrix) At(i, j int) float64 {
+	return m.Data[i*m.Cols+j]
+}
+
+func (m Matrix) Row(i int) []float64 {
+	return m.Data[i*m.Cols : (i+1)*m.Cols]
+}
+
+// Set sets a value of matrix at (i,j).
+func (m Matrix) Set(i, j int, v float64) {
+	m.Data[i*m.Cols+j] = v
+}
+
+func (m Matrix) SetRow(i int, v []float64) {
+	copy(m.Data[i*m.Cols:(i+1)*m.Cols], v)
+}
+
+// AddAt adds a value of matrix at (i,j).
+func (m Matrix) AddAt(i, j int, v float64) {
+	m.Data[i*m.Cols+j] += v
+}
+
+// N returns the number of rows.
+func (m Matrix) N() int {
+	return m.Rows
+}
+
+// Seq2 returns a sequence of rows.
+func (m Matrix) Seq2() iter.Seq2[int, []float64] {
+	return func(yield func(int, []float64) bool) {
+		for i := range m.Rows {
+			if !yield(i, m.Row(i)) {
+				return
+			}
+		}
+	}
+}
+
+// String returns a string representation of the matrix.
+func (m Matrix) String() string {
+	out := make([][]float64, m.Rows)
+	for i := range m.Rows {
+		out[i] = m.Row(i)
+	}
+
+	return fmt.Sprintf("%v", out)
+}
+
 func Size(m Matrix) int {
 	s := 1
 	for _, v := range Shape(m) {
@@ -80,8 +151,8 @@ func Shape(m Matrix) []int {
 	return []int{a, b}
 }
 
-func Dim(m Matrix) (int, int) {
-	return len(m), len(m[0])
+func Dim(m Matrix) (rows int, cols int) {
+	return m.Rows, m.Cols
 }
 
 func AddC(c float64, m Matrix) Matrix {
@@ -143,7 +214,7 @@ func Mean(m Matrix) float64 {
 
 func Sum(m Matrix) float64 {
 	var sum float64
-	for _, v := range Flatten(m) {
+	for _, v := range m.Data {
 		sum = sum + v
 	}
 
@@ -151,8 +222,8 @@ func Sum(m Matrix) float64 {
 }
 
 func Max(m Matrix) float64 {
-	max := m[0][0]
-	for _, v := range Flatten(m) {
+	max := m.Data[0]
+	for _, v := range m.Data {
 		if v > max {
 			max = v
 		}
@@ -162,8 +233,8 @@ func Max(m Matrix) float64 {
 }
 
 func Min(m Matrix) float64 {
-	min := m[0][0]
-	for _, v := range Flatten(m) {
+	min := m.Data[0]
+	for _, v := range m.Data {
 		if v < min {
 			min = v
 		}
@@ -173,14 +244,15 @@ func Min(m Matrix) float64 {
 }
 
 func Argmax(m Matrix) []int {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 
-	out := make([]int, p)
-	for i := range p {
-		max := m[i][0]
-		for j := range q {
-			if m[i][j] > max {
-				max, out[i] = m[i][j], j
+	out := make([]int, rows)
+	for i := range rows {
+		max := m.At(i, 0)
+		for j := range cols {
+			mij := m.At(i, j)
+			if mij > max {
+				max, out[i] = mij, j
 			}
 		}
 	}
@@ -195,9 +267,10 @@ func Dot(m, n Matrix) Matrix {
 
 	out := Zero(a, p)
 	for i := range a {
-		for j := range p {
-			for k := 0; k < b; k++ {
-				out[i][j] = out[i][j] + m[i][k]*n[k][j]
+		for k := range b {
+			mik := m.At(i, k)
+			for j := range p {
+				out.AddAt(i, j, mik*n.At(k, j))
 			}
 		}
 	}
@@ -237,31 +310,31 @@ func Broadcast(m, n Matrix) (Matrix, Matrix) {
 func BroadcastTo(shape []int, m Matrix) Matrix {
 	a, b := shape[0], shape[1]
 
-	if len(m) == 1 && len(m[0]) == 1 {
-		out := make([]float64, a*b)
+	if m.Rows == 1 && m.Cols == 1 {
+		data := make([]float64, a*b)
 		for i := range a * b {
-			out[i] = m[0][0]
+			data[i] = m.At(0, 0)
 		}
 
-		return Reshape(shape, New(out))
+		return Reshape(shape, New(data))
 	}
 
-	if len(m) == 1 {
+	if m.Rows == 1 {
 		// b is ignored
-		out := make(Matrix, a)
+		out := Zero(a, m.Cols)
 		for i := range a {
-			out[i] = m[0]
+			out.SetRow(i, m.Row(0))
 		}
 
 		return out
 	}
 
-	if len(m[0]) == 1 {
+	if m.Cols == 1 {
 		// a is ignored
-		out := Zero(len(m), b)
-		for i := range m {
+		out := Zero(m.Rows, b)
+		for i := range m.Rows {
 			for j := range b {
-				out[i][j] = m[i][0]
+				out.Set(i, j, m.At(i, 0))
 			}
 		}
 
@@ -291,34 +364,28 @@ func SumTo(shape []int, m Matrix) Matrix {
 func SumAxis0(m Matrix) Matrix {
 	p, q := Dim(m)
 
-	v := make([]float64, 0, q)
+	data := make([]float64, q)
 	for j := range q {
-		var sum float64
 		for i := range p {
-			sum = sum + m[i][j]
+			data[j] += m.At(i, j)
 		}
-
-		v = append(v, sum)
 	}
 
-	return New(v)
+	return New(data)
 }
 
 // SumAxis1 returns the sum of each row.
 func SumAxis1(m Matrix) Matrix {
 	p, q := Dim(m)
 
-	v := make([]float64, 0, p)
+	data := make([]float64, p)
 	for i := range p {
-		var sum float64
 		for j := range q {
-			sum = sum + m[i][j]
+			data[i] += m.At(i, j)
 		}
-
-		v = append(v, sum)
 	}
 
-	return Transpose(New(v))
+	return Transpose(New(data))
 }
 
 func MaxAxis1(m Matrix) Matrix {
@@ -326,10 +393,11 @@ func MaxAxis1(m Matrix) Matrix {
 
 	v := make([]float64, 0, p)
 	for i := range p {
-		max := m[i][0]
+		max := m.At(i, 0)
 		for j := range q {
-			if m[i][j] > max {
-				max = m[i][j]
+			mij := m.At(i, j)
+			if mij > max {
+				max = mij
 			}
 		}
 
@@ -340,12 +408,12 @@ func MaxAxis1(m Matrix) Matrix {
 }
 
 func Transpose(m Matrix) Matrix {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 
-	out := Zero(q, p)
-	for i := range q {
-		for j := range p {
-			out[i][j] = m[j][i]
+	out := Zero(cols, rows)
+	for i := range rows {
+		for j := range cols {
+			out.Set(j, i, m.At(i, j))
 		}
 	}
 
@@ -357,7 +425,6 @@ func Reshape(shape []int, m Matrix) Matrix {
 	p, q := Dim(m)
 	a, b := shape[0], shape[1]
 
-	v := Flatten(m)
 	if a < 1 {
 		a = p * q / b
 	}
@@ -366,31 +433,15 @@ func Reshape(shape []int, m Matrix) Matrix {
 		b = p * q / a
 	}
 
-	out := make(Matrix, a)
-	for i := range a {
-		out[i] = v[i*b : (i+1)*b]
-	}
-
-	return out
-}
-
-func Flatten(m Matrix) []float64 {
-	out := make([]float64, 0, Size(m))
-	for _, r := range m {
-		out = append(out, r...)
-	}
-
+	out := Zero(a, b)
+	copy(out.Data, m.Data)
 	return out
 }
 
 func F(m Matrix, f func(a float64) float64) Matrix {
-	p, q := Dim(m)
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = f(m[i][j])
-		}
+	out := ZeroLike(m)
+	for i := range m.Data {
+		out.Data[i] = f(m.Data[i])
 	}
 
 	return out
@@ -398,13 +449,10 @@ func F(m Matrix, f func(a float64) float64) Matrix {
 
 func F2(m, n Matrix, f func(a, b float64) float64) Matrix {
 	x, y := Broadcast(m, n)
-	p, q := Dim(x)
 
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = f(x[i][j], y[i][j])
-		}
+	out := ZeroLike(x)
+	for i := range x.Data {
+		out.Data[i] = f(x.Data[i], y.Data[i])
 	}
 
 	return out

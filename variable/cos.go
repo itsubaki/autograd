@@ -12,10 +12,10 @@ type CosT struct {
 
 func (f *CosT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-
 	y := matrix.Cos(x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

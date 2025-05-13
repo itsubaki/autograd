@@ -1,6 +1,9 @@
 package function
 
-import "github.com/itsubaki/autograd/variable"
+import (
+	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/variable"
+)
 
 func LinearSimple(x, w *variable.Variable, b ...*variable.Variable) *variable.Variable {
 	t := MatMul(x, w)
@@ -9,6 +12,9 @@ func LinearSimple(x, w *variable.Variable, b ...*variable.Variable) *variable.Va
 	}
 
 	y := Add(t, b[0])
-	t.Data = nil // erase
+
+	// `t` is not used in backprop for `matmul` and `add`.
+	// Clear to save memory.
+	t.Data = matrix.Matrix{}
 	return y
 }

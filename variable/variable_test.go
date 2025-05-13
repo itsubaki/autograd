@@ -35,6 +35,20 @@ func ExampleVariable_Name_matrix() {
 	// variable([[1 2 3] [4 5 6]])
 }
 
+func ExampleVariable_At() {
+	v := variable.New(1, 2, 3, 4)
+	fmt.Println(v.At(0, 0))
+	fmt.Println(v.At(0, 1))
+	fmt.Println(v.At(0, 2))
+	fmt.Println(v.At(0, 3))
+
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+}
+
 func ExampleZeroLike() {
 	v := variable.New(1, 2, 3, 4)
 	fmt.Println(variable.ZeroLike(v))
@@ -60,7 +74,7 @@ func ExampleZero() {
 
 func ExampleRand() {
 	s := rand.Const()
-	for _, r := range variable.Rand(2, 3, s).Data {
+	for _, r := range variable.Rand(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -71,7 +85,7 @@ func ExampleRand() {
 
 func ExampleRandn() {
 	s := rand.Const()
-	for _, r := range variable.Randn(2, 3, s).Data {
+	for _, r := range variable.Randn(2, 3, s).Seq2() {
 		fmt.Println(r)
 	}
 

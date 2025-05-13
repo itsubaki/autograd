@@ -12,10 +12,10 @@ type SinT struct {
 
 func (f *SinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-
 	y := matrix.Sin(x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

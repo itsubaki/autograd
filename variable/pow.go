@@ -13,10 +13,10 @@ type PowT struct {
 
 func (f *PowT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-
 	y := matrix.Pow(f.C, x[0].Data)
+
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(y),
 	}
 }
 

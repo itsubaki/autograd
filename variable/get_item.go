@@ -11,10 +11,10 @@ type GetItemT struct {
 
 func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	f.xShape = Shape(x[0])
-
 	y := make([][]float64, len(f.Slices))
+
 	for i, idx := range f.Slices {
-		y[i] = x[0].Data[idx]
+		y[i] = x[0].Row(idx)
 	}
 
 	return []*Variable{
