@@ -61,6 +61,10 @@ func (v *Variable) N() int {
 	return v.Data.Rows
 }
 
+func (v *Variable) Row(i int) []float64 {
+	return v.Data.Row(i)
+}
+
 func (v *Variable) Seq2() iter.Seq2[int, []float64] {
 	return v.Data.Seq2()
 }
@@ -159,7 +163,7 @@ func (v Variable) String() string {
 	}
 
 	if v.N() == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data.Row(0))
+		return fmt.Sprintf("%s(%v)", name, v.Row(0))
 	}
 
 	return fmt.Sprintf("%s(%v)", name, v.Data)
