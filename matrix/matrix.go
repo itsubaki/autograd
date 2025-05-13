@@ -111,6 +111,11 @@ func (m Matrix) AddAt(i, j int, v float64) {
 	m.Data[i*m.Cols+j] += v
 }
 
+// N returns the number of rows.
+func (m Matrix) N() int {
+	return m.Rows
+}
+
 // Seq2 returns a sequence of rows.
 func (m Matrix) Seq2() iter.Seq2[int, []float64] {
 	return func(yield func(int, []float64) bool) {

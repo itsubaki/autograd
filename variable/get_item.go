@@ -14,7 +14,7 @@ func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	y := make([][]float64, len(f.Slices))
 
 	for i, idx := range f.Slices {
-		y[i] = x[0].Data.Row(idx)
+		y[i] = x[0].Row(idx)
 	}
 
 	return []*Variable{
