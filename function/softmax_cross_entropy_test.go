@@ -19,7 +19,7 @@ func ExampleSoftmaxCrossEntropy() {
 	y.Backward()
 
 	fmt.Println(y)
-	for _, v := range x.Grad.Seq2() {
+	for _, v := range x.Grad.Data.Seq2() {
 		fmt.Printf("%.8f\n", v)
 	}
 
