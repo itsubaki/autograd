@@ -13,15 +13,15 @@ type Adam struct {
 	Beta2  float64
 	Hook   []Hook
 	iter   int
-	ms, vs map[*variable.Variable]matrix.Matrix
+	ms, vs map[*variable.Variable]*matrix.Matrix
 }
 
 func (o *Adam) Update(model Model) {
 	params := Params(model, o.Hook)
 
 	if len(o.ms) == 0 {
-		o.ms = make(map[*variable.Variable]matrix.Matrix)
-		o.vs = make(map[*variable.Variable]matrix.Matrix)
+		o.ms = make(map[*variable.Variable]*matrix.Matrix)
+		o.vs = make(map[*variable.Variable]*matrix.Matrix)
 	}
 
 	o.iter++

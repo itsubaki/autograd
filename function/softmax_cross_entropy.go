@@ -39,7 +39,7 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	}
 }
 
-func logsumexp(x matrix.Matrix) matrix.Matrix {
+func logsumexp(x *matrix.Matrix) *matrix.Matrix {
 	max := matrix.MaxAxis1(x)              // max = max(x)
 	expy := matrix.Exp(matrix.Sub(x, max)) // expy = exp(x - max)
 	sumy := matrix.SumAxis1(expy)          // sumy = sum(expy)
@@ -51,7 +51,7 @@ func label(t *variable.Variable) []int {
 	return vector.Int(t.Data.Data)
 }
 
-func logp(m matrix.Matrix, label []int) matrix.Matrix {
+func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
 	out := matrix.Zero(len(label), 1)
 	for i, v := range label {
 		out.Set(i, 0, m.At(i, v))
@@ -60,7 +60,7 @@ func logp(m matrix.Matrix, label []int) matrix.Matrix {
 	return out
 }
 
-func onehot(t []float64, size int) matrix.Matrix {
+func onehot(t []float64, size int) *matrix.Matrix {
 	x := vector.Int(t)
 
 	out := matrix.Zero(len(x), size)
