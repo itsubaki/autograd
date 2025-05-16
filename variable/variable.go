@@ -52,7 +52,7 @@ func Shape(v *Variable) []int {
 	return matrix.Shape(v.Data)
 }
 
-// N returns number of rows.
+// N returns the number of rows.
 func (v *Variable) N() int {
 	return v.Data.Rows
 }
