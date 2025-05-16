@@ -2,7 +2,6 @@ package variable
 
 import (
 	"fmt"
-	"iter"
 	randv2 "math/rand/v2"
 	"sort"
 
@@ -37,36 +36,25 @@ func OneLike(v *Variable) *Variable {
 	return &Variable{Data: matrix.OneLike(v.Data)}
 }
 
-func Zero(m, n int) *Variable {
-	return &Variable{Data: matrix.Zero(m, n)}
+func Zero(rows, cols int) *Variable {
+	return &Variable{Data: matrix.Zero(rows, cols)}
 }
 
-func Rand(m, n int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Rand(m, n, s...)}
+func Rand(rows, cols int, s ...randv2.Source) *Variable {
+	return &Variable{Data: matrix.Rand(rows, cols, s...)}
 }
 
-func Randn(m, n int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Randn(m, n, s...)}
+func Randn(rows, cols int, s ...randv2.Source) *Variable {
+	return &Variable{Data: matrix.Randn(rows, cols, s...)}
 }
 
 func Shape(v *Variable) []int {
 	return matrix.Shape(v.Data)
 }
 
-func (v *Variable) At(i, j int) float64 {
-	return v.Data.At(i, j)
-}
-
+// N returns number of rows.
 func (v *Variable) N() int {
 	return v.Data.Rows
-}
-
-func (v *Variable) Row(i int) []float64 {
-	return v.Data.Row(i)
-}
-
-func (v *Variable) Seq2() iter.Seq2[int, []float64] {
-	return v.Data.Seq2()
 }
 
 func (v *Variable) Cleargrad() {
@@ -163,7 +151,7 @@ func (v Variable) String() string {
 	}
 
 	if v.N() == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Row(0))
+		return fmt.Sprintf("%s(%v)", name, v.Data.Row(0))
 	}
 
 	return fmt.Sprintf("%s(%v)", name, v.Data)

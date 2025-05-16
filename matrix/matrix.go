@@ -68,15 +68,15 @@ func OneLike(m Matrix) Matrix {
 // Rand returns a matrix with elements that pseudo-random number in the half-open interval [0.0,1.0).
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
-func Rand(m, n int, s ...randv2.Source) Matrix {
-	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).Float64() })
+func Rand(rows, cols int, s ...randv2.Source) Matrix {
+	return F(Zero(rows, cols), func(_ float64) float64 { return rnd(s...).Float64() })
 }
 
 // Randn returns a matrix with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
-func Randn(m, n int, s ...randv2.Source) Matrix {
-	return F(Zero(m, n), func(_ float64) float64 { return rnd(s...).NormFloat64() })
+func Randn(rows, cols int, s ...randv2.Source) Matrix {
+	return F(Zero(rows, cols), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
 // rnd returns a pseudo-random number generator.
@@ -308,11 +308,11 @@ func Broadcast(m, n Matrix) (Matrix, Matrix) {
 }
 
 func BroadcastTo(shape []int, m Matrix) Matrix {
-	a, b := shape[0], shape[1]
+	rows, cols := shape[0], shape[1]
 
 	if m.Rows == 1 && m.Cols == 1 {
-		data := make([]float64, a*b)
-		for i := range a * b {
+		data := make([]float64, rows*cols)
+		for i := range data {
 			data[i] = m.At(0, 0)
 		}
 
@@ -321,8 +321,8 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 
 	if m.Rows == 1 {
 		// b is ignored
-		out := Zero(a, m.Cols)
-		for i := range a {
+		out := Zero(rows, m.Cols)
+		for i := range rows {
 			out.SetRow(i, m.Row(0))
 		}
 
@@ -331,9 +331,9 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 
 	if m.Cols == 1 {
 		// a is ignored
-		out := Zero(m.Rows, b)
+		out := Zero(m.Rows, cols)
 		for i := range m.Rows {
-			for j := range b {
+			for j := range cols {
 				out.Set(i, j, m.At(i, 0))
 			}
 		}
@@ -345,15 +345,17 @@ func BroadcastTo(shape []int, m Matrix) Matrix {
 }
 
 func SumTo(shape []int, m Matrix) Matrix {
-	if shape[0] == 1 && shape[1] == 1 {
+	rows, cols := shape[0], shape[1]
+
+	if rows == 1 && cols == 1 {
 		return New([]float64{Sum(m)})
 	}
 
-	if shape[0] == 1 {
+	if rows == 1 {
 		return SumAxis0(m)
 	}
 
-	if shape[1] == 1 {
+	if cols == 1 {
 		return SumAxis1(m)
 	}
 
@@ -362,11 +364,11 @@ func SumTo(shape []int, m Matrix) Matrix {
 
 // SumAxis0 returns the sum of each column.
 func SumAxis0(m Matrix) Matrix {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 
-	data := make([]float64, q)
-	for j := range q {
-		for i := range p {
+	data := make([]float64, cols)
+	for i := range rows {
+		for j := range cols {
 			data[j] += m.At(i, j)
 		}
 	}
@@ -376,11 +378,11 @@ func SumAxis0(m Matrix) Matrix {
 
 // SumAxis1 returns the sum of each row.
 func SumAxis1(m Matrix) Matrix {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 
-	data := make([]float64, p)
-	for i := range p {
-		for j := range q {
+	data := make([]float64, rows)
+	for i := range rows {
+		for j := range cols {
 			data[i] += m.At(i, j)
 		}
 	}
@@ -389,19 +391,19 @@ func SumAxis1(m Matrix) Matrix {
 }
 
 func MaxAxis1(m Matrix) Matrix {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 
-	v := make([]float64, 0, p)
-	for i := range p {
+	v := make([]float64, rows)
+	for i := range rows {
 		max := m.At(i, 0)
-		for j := range q {
+		for j := range cols {
 			mij := m.At(i, j)
 			if mij > max {
 				max = mij
 			}
 		}
 
-		v = append(v, max)
+		v[i] = max
 	}
 
 	return Transpose(New(v))
@@ -422,15 +424,15 @@ func Transpose(m Matrix) Matrix {
 
 // Reshape returns the matrix with the given shape.
 func Reshape(shape []int, m Matrix) Matrix {
-	p, q := Dim(m)
+	rows, cols := Dim(m)
 	a, b := shape[0], shape[1]
 
 	if a < 1 {
-		a = p * q / b
+		a = rows * cols / b
 	}
 
 	if b < 1 {
-		b = p * q / a
+		b = rows * cols / a
 	}
 
 	out := Zero(a, b)
