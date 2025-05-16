@@ -10,7 +10,7 @@ import (
 
 type Variable struct {
 	Name       string
-	Data       matrix.Matrix
+	Data       *matrix.Matrix
 	Grad       *Variable
 	Creator    *Function
 	Generation int
@@ -24,7 +24,7 @@ func NewOf(v ...[]float64) *Variable {
 	return &Variable{Data: matrix.New(v...)}
 }
 
-func NewFrom(v matrix.Matrix) *Variable {
+func NewFrom(v *matrix.Matrix) *Variable {
 	return &Variable{Data: v}
 }
 
