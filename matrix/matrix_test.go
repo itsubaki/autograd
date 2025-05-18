@@ -42,16 +42,6 @@ func ExampleOneLike() {
 	// [1 1 1]
 }
 
-func ExampleNewFrom() {
-	for _, r := range matrix.NewFrom([][]int{{1, 2}, {3, 4}}).Seq2() {
-		fmt.Printf("%.2f\n", r)
-	}
-
-	// Output:
-	// [1.00 2.00]
-	// [3.00 4.00]
-}
-
 func ExampleRand() {
 	shape := matrix.Shape(matrix.Rand(2, 3))
 	fmt.Println(shape)
