@@ -325,7 +325,7 @@ func ExampleDiv() {
 	// [0.42857142857142855 0.5]
 }
 
-func ExampleDot() {
+func ExampleMatMul() {
 	A := matrix.New(
 		[]float64{1, 2},
 		[]float64{3, 4},
@@ -336,7 +336,7 @@ func ExampleDot() {
 		[]float64{7, 8},
 	)
 
-	for _, r := range matrix.Dot(A, B).Seq2() {
+	for _, r := range matrix.MatMul(A, B).Seq2() {
 		fmt.Println(r)
 	}
 
