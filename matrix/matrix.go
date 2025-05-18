@@ -247,8 +247,8 @@ func Argmax(m *Matrix) []int {
 	return out
 }
 
-// Dot returns the dot product of m and n.
-func Dot(m, n *Matrix) *Matrix {
+// MatMul returns the matrix product of m and n.
+func MatMul(m, n *Matrix) *Matrix {
 	a, b := Dim(m)
 	_, p := Dim(n)
 
