@@ -35,19 +35,6 @@ func New(v ...[]float64) *Matrix {
 	}
 }
 
-func NewFrom(x [][]int) *Matrix {
-	rows, cols := len(x), len(x[0])
-	out := Zero(rows, cols)
-
-	for i := range rows {
-		for j := range cols {
-			out.Set(i, j, float64(x[i][j]))
-		}
-	}
-
-	return out
-}
-
 // Zero returns a zero matrix.
 func Zero(rows, cols int) *Matrix {
 	return &Matrix{
