@@ -36,3 +36,6 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   
+      - name: Benchmark
+        run: |
+          make bench
