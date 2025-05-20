@@ -4,6 +4,9 @@ test:
 	go test -cover $(shell go list ./... | grep -v /cmd/ ) -v -coverprofile=coverage.txt -covermode=atomic
 	go tool cover -html=coverage.txt -o coverage.html
 
+bench:
+	go test -bench . ./... --benchmem
+
 install:
 	brew install graphviz
 	go install github.com/itsubaki/plot@latest

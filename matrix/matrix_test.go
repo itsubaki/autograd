@@ -2,10 +2,71 @@ package matrix_test
 
 import (
 	"fmt"
+	randv2 "math/rand/v2"
+	"testing"
 
 	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/rand"
 )
+
+const size = 1 << 8 // 256
+
+type matrix2D [][]float64
+
+func matmul2D(a, b [][]float64) [][]float64 {
+	n, m, p := len(a), len(b), len(b[0])
+
+	out := make([][]float64, n)
+	for i := range out {
+		out[i] = make([]float64, p)
+	}
+
+	for i := range n {
+		for k := range m {
+			aik := a[i][k]
+			for j := range p {
+				out[i][j] += aik * b[k][j]
+			}
+		}
+	}
+
+	return out
+}
+
+func genMatrix2D(rows, cols int) matrix2D {
+	out := make(matrix2D, rows)
+	for i := range out {
+		out[i] = make([]float64, cols)
+	}
+
+	for i := range rows {
+		for j := range cols {
+			out[i][j] = randv2.Float64()
+		}
+	}
+
+	return out
+}
+
+func BenchmarkMatMul2D(b *testing.B) {
+	m := genMatrix2D(size, size)
+	n := genMatrix2D(size, size)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = matmul2D(m, n)
+	}
+}
+
+func BenchmarkMatMul1D(b *testing.B) {
+	m := matrix.Rand(size, size)
+	n := matrix.Rand(size, size)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = matrix.MatMul(m, n)
+	}
+}
 
 func ExampleZero() {
 	for _, r := range matrix.Zero(2, 3).Seq2() {

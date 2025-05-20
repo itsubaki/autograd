@@ -249,15 +249,15 @@ func Argmax(m *Matrix) []int {
 
 // MatMul returns the matrix product of m and n.
 func MatMul(m, n *Matrix) *Matrix {
-	a, b := Dim(m)
-	_, p := Dim(n)
+	a, b := m.Rows, m.Cols
+	_, p := n.Rows, n.Cols
 
 	out := Zero(a, p)
 	for i := range a {
 		for k := range b {
-			mik := m.At(i, k)
+			mik := m.Data[i*b+k]
 			for j := range p {
-				out.AddAt(i, j, mik*n.At(k, j))
+				out.Data[i*p+j] += mik * n.Data[k*p+j]
 			}
 		}
 	}
