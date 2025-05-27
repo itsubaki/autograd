@@ -739,3 +739,21 @@ func ExampleMatrix_N() {
 	// Output:
 	// 2
 }
+
+func ExampleMatrix_AddAt() {
+	A := matrix.New(
+		[]float64{1, 2},
+		[]float64{3, 4},
+	)
+
+	A.AddAt(0, 1, 10)
+	A.AddAt(1, 0, -5)
+
+	for _, r := range A.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [1 12]
+	// [-2 4]
+}
