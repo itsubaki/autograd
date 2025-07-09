@@ -23,7 +23,7 @@ type LSTM struct {
 func NewLSTM(hiddenSize, outSize int, opts ...LSTMOptionFunc) *LSTM {
 	lstm := &LSTM{
 		Model: Model{
-			Layers: make([]L.Layer, 0),
+			Layers: make([]Layer, 0),
 		},
 	}
 
@@ -31,7 +31,7 @@ func NewLSTM(hiddenSize, outSize int, opts ...LSTMOptionFunc) *LSTM {
 		opt(lstm)
 	}
 
-	lstm.Layers = append(lstm.Layers, []L.Layer{
+	lstm.Layers = append(lstm.Layers, []Layer{
 		L.LSTM(hiddenSize, L.WithLSTMSource(lstm.s)),
 		L.Linear(outSize, L.WithSource(lstm.s)),
 	}...)

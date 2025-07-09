@@ -4,10 +4,24 @@ import (
 	"fmt"
 
 	L "github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/variable"
 )
 
+var (
+	_ Layer = (*L.LinearT)(nil)
+	_ Layer = (*L.RNNT)(nil)
+	_ Layer = (*L.LSTMT)(nil)
+)
+
+type Layer interface {
+	First(x ...*variable.Variable) *variable.Variable
+	Forward(x ...*variable.Variable) []*variable.Variable
+	Params() L.Parameters
+	Cleargrads()
+}
+
 type Model struct {
-	Layers []L.Layer
+	Layers []Layer
 }
 
 func (m Model) Params() L.Parameters {

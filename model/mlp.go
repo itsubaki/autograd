@@ -37,7 +37,7 @@ func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
 	mlp := &MLP{
 		Activation: F.Sigmoid,
 		Model: Model{
-			Layers: make([]L.Layer, len(outSize)),
+			Layers: make([]Layer, len(outSize)),
 		},
 	}
 

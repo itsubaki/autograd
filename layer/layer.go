@@ -2,12 +2,6 @@ package layer
 
 import "github.com/itsubaki/autograd/variable"
 
-var (
-	_ Layer = (*LinearT)(nil)
-	_ Layer = (*RNNT)(nil)
-	_ Layer = (*LSTMT)(nil)
-)
-
 type Layer interface {
 	First(x ...*variable.Variable) *variable.Variable
 	Forward(x ...*variable.Variable) []*variable.Variable
