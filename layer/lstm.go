@@ -24,14 +24,14 @@ func LSTM(hiddenSize int, opts ...LSTMOptionFunc) *LSTMT {
 		opt(lstm)
 	}
 
-	lstm.Layers.Add("x2f", Linear(hiddenSize, WithSource(lstm.s)))
-	lstm.Layers.Add("x2i", Linear(hiddenSize, WithSource(lstm.s)))
-	lstm.Layers.Add("x2o", Linear(hiddenSize, WithSource(lstm.s)))
-	lstm.Layers.Add("x2u", Linear(hiddenSize, WithSource(lstm.s)))
-	lstm.Layers.Add("h2f", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
-	lstm.Layers.Add("h2i", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
-	lstm.Layers.Add("h2o", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
-	lstm.Layers.Add("h2u", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Add("x2f", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Add("x2i", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Add("x2o", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Add("x2u", Linear(hiddenSize, WithSource(lstm.s)))
+	lstm.Add("h2f", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Add("h2i", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Add("h2o", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
+	lstm.Add("h2u", Linear(hiddenSize, WithSource(lstm.s), WithInSize(hiddenSize), WithNoBias()))
 
 	return lstm
 }

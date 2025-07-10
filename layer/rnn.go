@@ -23,8 +23,8 @@ func RNN(hiddenSize int, opts ...RNNOptionFunc) *RNNT {
 		opt(rnn)
 	}
 
-	rnn.Layers.Add("x2h", Linear(hiddenSize, WithSource(rnn.s)))
-	rnn.Layers.Add("h2h", Linear(hiddenSize, WithSource(rnn.s), WithInSize(hiddenSize), WithNoBias()))
+	rnn.Add("x2h", Linear(hiddenSize, WithSource(rnn.s)))
+	rnn.Add("h2h", Linear(hiddenSize, WithSource(rnn.s), WithInSize(hiddenSize), WithNoBias()))
 
 	return rnn
 }
