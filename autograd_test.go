@@ -163,16 +163,16 @@ func Example_generation() {
 	// variable([64])
 }
 
-func Example_shpere() {
+func Example_sphere() {
 	// p167
-	shpere := func(x, y *variable.Variable) *variable.Variable {
+	sphere := func(x, y *variable.Variable) *variable.Variable {
 		// x^2 + y^2
 		return F.Add(F.Pow(2.0)(x), F.Pow(2.0)(y))
 	}
 
 	x := variable.New(1.0)
 	y := variable.New(1.0)
-	z := shpere(x, y)
+	z := sphere(x, y)
 	z.Backward()
 
 	fmt.Println(x.Grad, y.Grad)
