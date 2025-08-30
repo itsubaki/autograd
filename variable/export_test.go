@@ -1,3 +1,6 @@
 package variable
 
-var AddGrad = add
+var (
+	AddGrad = add
+	Zip     = zip
+)

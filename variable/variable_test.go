@@ -142,3 +142,18 @@ func Example_add() {
 	// variable([1])
 	// variable([3])
 }
+
+func Example_zip() {
+	xs := []*variable.Variable{
+		variable.New(1),
+		variable.New(2),
+	}
+	gxs := []*variable.Variable{
+		variable.New(1),
+	}
+	xs, gxs = variable.Zip(xs, gxs)
+	fmt.Println(len(xs), len(gxs))
+
+	// Output:
+	// 1 1
+}
