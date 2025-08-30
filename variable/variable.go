@@ -128,8 +128,12 @@ func (v *Variable) Backward(opts ...Opts) {
 				defer Nograd().End()
 			}
 
+			// backward
 			gxs := f.Backward(gys...)
-			for i, x := range zip(f.Input, gxs) {
+
+			// chain
+			xs, gxs := zip(f.Input, gxs)
+			for i, x := range xs {
 				x.Grad = add(x.Grad, gxs[i])
 
 				if x.Creator != nil {
@@ -168,13 +172,13 @@ func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
 	return fs
 }
 
-func zip(input, gxs []*Variable) []*Variable {
-	out := make([]*Variable, len(gxs))
-	for i := range gxs {
-		out[i] = input[i]
+func zip(xs, gxs []*Variable) ([]*Variable, []*Variable) {
+	n := len(xs)
+	if len(gxs) < n {
+		n = len(gxs)
 	}
 
-	return out
+	return xs[:n], gxs[:n]
 }
 
 func gys(y []*Variable) []*Variable {
