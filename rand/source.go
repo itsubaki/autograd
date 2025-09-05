@@ -1,8 +1,6 @@
 package rand
 
-import (
-	randv2 "math/rand/v2"
-)
+import randv2 "math/rand/v2"
 
 // NewSource returns a source of pseudo-random number generator
 func NewSource(seed [32]byte) randv2.Source {
