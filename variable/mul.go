@@ -32,7 +32,7 @@ func (f *MulT) Backward(gy ...*Variable) []*Variable {
 	gx0 := Mul(gy[0], f.x1) // gy * x1
 	gx1 := Mul(gy[0], f.x0) // gy * x0
 
-	if vector.Equals(f.x0Shape, f.x1Shape) {
+	if vector.Equal(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,
