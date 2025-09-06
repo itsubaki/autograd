@@ -50,9 +50,10 @@ func ExampleZeroLike() {
 }
 
 func ExampleOneLike() {
-	v := tensor.OneLike(tensor.Zero(2, 3, 4))
-	fmt.Println(v.Shape)
-	fmt.Println(v.Data)
+	v := tensor.Zero(2, 3, 4)
+	w := tensor.OneLike(v)
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
 
 	// Output:
 	// [2 3 4]
@@ -110,10 +111,8 @@ func ExampleExp() {
 }
 
 func ExampleLog() {
-	v := tensor.New(
-		[]int{2, 2},
-		[]float64{1, math.Exp(1), math.Exp(2), math.Exp(3)},
-	)
+	data := []float64{math.Exp(0), math.Exp(1), math.Exp(2), math.Exp(3)}
+	v := tensor.New([]int{2, 2}, data)
 	w := tensor.Log(v)
 
 	fmt.Printf("%.4f\n", w.Data)
@@ -325,36 +324,36 @@ func ExampleTensor_Reshape() {
 
 func TestIndex(t *testing.T) {
 	cases := []struct {
-		v       *tensor.Tensor
-		indices []int
-		want    int
+		v     *tensor.Tensor
+		index []int
+		want  int
 	}{
-		{v: tensor.Zero(2, 3), indices: []int{0, 0}, want: 0},
-		{v: tensor.Zero(2, 3), indices: []int{0, 1}, want: 1},
-		{v: tensor.Zero(2, 3), indices: []int{0, 2}, want: 2},
-		{v: tensor.Zero(2, 3), indices: []int{1, 0}, want: 3},
-		{v: tensor.Zero(2, 3), indices: []int{1, 1}, want: 4},
-		{v: tensor.Zero(2, 3), indices: []int{1, 2}, want: 5},
+		{v: tensor.Zero(2, 3), index: []int{0, 0}, want: 0},
+		{v: tensor.Zero(2, 3), index: []int{0, 1}, want: 1},
+		{v: tensor.Zero(2, 3), index: []int{0, 2}, want: 2},
+		{v: tensor.Zero(2, 3), index: []int{1, 0}, want: 3},
+		{v: tensor.Zero(2, 3), index: []int{1, 1}, want: 4},
+		{v: tensor.Zero(2, 3), index: []int{1, 2}, want: 5},
 	}
 
 	for _, c := range cases {
-		got := tensor.Index(c.v, c.indices...)
+		got := tensor.Index(c.v, c.index...)
 		if got == c.want {
 			continue
 		}
 
-		t.Errorf("Index(%v) = %d, want %d", c.indices, got, c.want)
+		t.Errorf("Index(%v) = %d, want %d", c.index, got, c.want)
 	}
 }
 
 func TestIndex_outOfBounds(t *testing.T) {
 	cases := []struct {
-		v       *tensor.Tensor
-		indices []int
+		v     *tensor.Tensor
+		index []int
 	}{
-		{v: tensor.Zero(2, 3), indices: []int{-1, 0}},
-		{v: tensor.Zero(2, 3), indices: []int{2, 0}},
-		{v: tensor.Zero(2, 3), indices: []int{0, 3}},
+		{v: tensor.Zero(2, 3), index: []int{-1, 0}},
+		{v: tensor.Zero(2, 3), index: []int{2, 0}},
+		{v: tensor.Zero(2, 3), index: []int{0, 3}},
 	}
 
 	for _, c := range cases {
@@ -364,10 +363,10 @@ func TestIndex_outOfBounds(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for indices %v", c.indices)
+				t.Errorf("unexpected panic for index %v", c.index)
 			}()
 
-			_ = tensor.Index(c.v, c.indices...)
+			_ = tensor.Index(c.v, c.index...)
 			t.Fail()
 		}()
 	}

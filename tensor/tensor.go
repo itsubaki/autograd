@@ -23,11 +23,6 @@ func New(shape []int, data []float64) *Tensor {
 	}
 }
 
-// Zero returns a tensor with elements that are all zero.
-func Zero(shape ...int) *Tensor {
-	return New(shape, make([]float64, size(shape)))
-}
-
 // Full returns a tensor with elements that are all the given value.
 func Full(shape []int, value float64) *Tensor {
 	return F(Zero(shape...), func(_ float64) float64 { return value })
@@ -52,6 +47,11 @@ func rnd(s ...randv2.Source) *randv2.Rand {
 	return randv2.New(s[0])
 }
 
+// Zero returns a tensor with elements that are all zero.
+func Zero(shape ...int) *Tensor {
+	return New(shape, make([]float64, size(shape)))
+}
+
 // ZeroLike returns a tensor with the same shape as v and elements that are all zero.
 func ZeroLike(v *Tensor) *Tensor {
 	return Zero(v.Shape...)
@@ -60,16 +60,6 @@ func ZeroLike(v *Tensor) *Tensor {
 // OneLike returns a tensor with the same shape as v and elements that are all one.
 func OneLike(v *Tensor) *Tensor {
 	return F(ZeroLike(v), func(_ float64) float64 { return 1.0 })
-}
-
-// NumDims returns the number of dimensions of the tensor.
-func (v *Tensor) NumDims() int {
-	return len(v.Shape)
-}
-
-// Size returns the number of elements in the tensor.
-func (v *Tensor) Size() int {
-	return size(v.Shape)
 }
 
 // Reshape returns a new tensor with the same data as v with the given shape.
@@ -86,6 +76,16 @@ func (v *Tensor) Clone() *Tensor {
 	data := make([]float64, len(v.Data))
 	copy(data, v.Data)
 	return New(v.Shape, data)
+}
+
+// NumDims returns the number of dimensions of the tensor.
+func (v *Tensor) NumDims() int {
+	return len(v.Shape)
+}
+
+// Size returns the number of elements in the tensor.
+func (v *Tensor) Size() int {
+	return size(v.Shape)
 }
 
 // At returns the element at the given indices.
