@@ -60,6 +60,31 @@ func ExampleOneLike() {
 	// [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
 }
 
+func ExampleTensor_Reshape() {
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	w := v.Reshape(1, 4)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
+
+	// Output:
+	// [1 4]
+	// 1 2 3 4
+}
+
+func ExampleTensor_Clone() {
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	w := v.Clone()
+	w.Set([]int{0, 0}, 10)
+
+	fmt.Println(v.Data)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [1 2 3 4]
+	// [10 2 3 4]
+}
+
 func ExampleAddC() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.AddC(10, v)
@@ -121,6 +146,82 @@ func ExampleLog() {
 	// [0.0000 1.0000 2.0000 3.0000]
 }
 
+func ExampleSin() {
+	data := []float64{0, math.Pi / 2, math.Pi, 3 * math.Pi / 2}
+	v := tensor.New([]int{2, 2}, data)
+	w := tensor.Sin(v)
+
+	fmt.Printf("%.4f\n", w.Data)
+
+	// Output:
+	// [0.0000 1.0000 0.0000 -1.0000]
+}
+
+func ExampleCos() {
+	data := []float64{0, math.Pi / 2, math.Pi, 3 * math.Pi / 2}
+	v := tensor.New([]int{2, 2}, data)
+	w := tensor.Cos(v)
+
+	fmt.Printf("%.4f\n", w.Data)
+
+	// Output:
+	// [1.0000 0.0000 -1.0000 -0.0000]
+}
+
+func ExampleTanh() {
+	v := tensor.New([]int{2, 2}, []float64{-1, 0, 1, 2})
+	w := tensor.Tanh(v)
+
+	fmt.Printf("%.4f\n", w.Data)
+
+	// Output:
+	// [-0.7616 0.0000 0.7616 0.9640]
+}
+
+func ExampleAdd() {
+	x := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	y := tensor.New([]int{2, 2}, []float64{10, 20, 30, 40})
+	z := tensor.Add(x, y)
+
+	fmt.Println(z.Data)
+
+	// Output:
+	// [11 22 33 44]
+}
+
+func ExampleSub() {
+	x := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	y := tensor.New([]int{2, 2}, []float64{10, 20, 30, 40})
+	z := tensor.Sub(x, y)
+
+	fmt.Println(z.Data)
+
+	// Output:
+	// [-9 -18 -27 -36]
+}
+
+func ExampleMul() {
+	x := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	y := tensor.New([]int{2, 2}, []float64{10, 20, 30, 40})
+	z := tensor.Mul(x, y)
+
+	fmt.Println(z.Data)
+
+	// Output:
+	// [10 40 90 160]
+}
+
+func ExampleDiv() {
+	x := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	y := tensor.New([]int{2, 2}, []float64{10, 20, 30, 40})
+	z := tensor.Div(x, y)
+
+	fmt.Printf("%.4f\n", z.Data)
+
+	// Output:
+	// [0.1000 0.1000 0.1000 0.1000]
+}
+
 func ExampleSum() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Sum(v)
@@ -129,6 +230,16 @@ func ExampleSum() {
 
 	// Output:
 	// 10
+}
+
+func ExampleSum_axisAll() {
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	w := tensor.Sum(v, 0, 1)
+
+	fmt.Println(w.Data)
+
+	// Output:
+	// [10]
 }
 
 func ExampleSum_axis0() {
@@ -155,19 +266,19 @@ func ExampleSum_axis1() {
 	// [3 7]
 }
 
-func ExampleSum_axisAll() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Sum(v, 0, 1)
-
-	fmt.Println(w.Data)
-
-	// Output:
-	// [10]
-}
-
 func ExampleMax() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Max(v)
+
+	fmt.Println(w.At())
+
+	// Output:
+	// 4
+}
+
+func ExampleMax_axisAll() {
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	w := tensor.Max(v, 0, 1)
 
 	fmt.Println(w.At())
 
@@ -199,19 +310,19 @@ func ExampleMax_axis1() {
 	// [2 4]
 }
 
-func ExampleMax_axisAll() {
+func ExampleMin() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Max(v, 0, 1)
+	w := tensor.Min(v)
 
 	fmt.Println(w.At())
 
 	// Output:
-	// 4
+	// 1
 }
 
-func ExampleMin() {
+func ExampleMin_axisAll() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Min(v)
+	w := tensor.Min(v, 0, 1)
 
 	fmt.Println(w.At())
 
@@ -241,16 +352,6 @@ func ExampleMin_axis1() {
 	// Output:
 	// [2]
 	// [1 3]
-}
-
-func ExampleMin_axisAll() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Min(v, 0, 1)
-
-	fmt.Println(w.At())
-
-	// Output:
-	// 1
 }
 
 func ExampleMean() {
@@ -297,29 +398,28 @@ func ExampleMean_axis1() {
 	// [1.5 3.5]
 }
 
-func ExampleTensor_Clone() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := v.Clone()
-	w.Set([]int{0, 0}, 10)
+func ExampleMask() {
+	v := tensor.New([]int{2, 2}, []float64{-1, 2, -3, 4})
+	w := tensor.Mask(v, func(v float64) bool { return v > 0 })
 
-	fmt.Println(v.Data)
+	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
 	// Output:
-	// [1 2 3 4]
-	// [10 2 3 4]
+	// [2 2]
+	// [0 1 0 1]
 }
 
-func ExampleTensor_Reshape() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := v.Reshape(1, 4)
+func ExampleClip() {
+	v := tensor.New([]int{2, 10}, []float64{-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16})
+	w := tensor.Clip(v, 0, 10)
 
 	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
+	fmt.Println(w.Data)
 
 	// Output:
-	// [1 4]
-	// 1 2 3 4
+	// [2 10]
+	// [0 0 0 0 1 2 3 4 5 6 7 8 9 10 10 10 10 10 10 10]
 }
 
 func TestIndex(t *testing.T) {

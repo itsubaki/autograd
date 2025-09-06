@@ -88,19 +88,19 @@ func (v *Tensor) Size() int {
 	return size(v.Shape)
 }
 
-// At returns the element at the given indices.
-func (v *Tensor) At(indices ...int) float64 {
-	return v.Data[index(v, indices...)]
+// At returns the element at the given index.
+func (v *Tensor) At(index ...int) float64 {
+	return v.Data[Index(v, index...)]
 }
 
-// Set sets the element at the given indices to the given value.
-func (v *Tensor) Set(indices []int, value float64) {
-	v.Data[index(v, indices...)] = value
+// Set sets the element at the given index to the given value.
+func (v *Tensor) Set(index []int, value float64) {
+	v.Data[Index(v, index...)] = value
 }
 
-// AddAt adds the given value to the element at the given indices.
-func (v *Tensor) AddAt(indices []int, value float64) {
-	v.Data[index(v, indices...)] += value
+// AddAt adds the given value to the element at the given index.
+func (v *Tensor) AddAt(index []int, value float64) {
+	v.Data[Index(v, index...)] += value
 }
 
 // EqualShape returns true if the shapes of the two tensors are equal.
@@ -346,13 +346,14 @@ func Reduce(v *Tensor, acc float64, f func(a, b float64) float64, axis ...int) *
 	return out
 }
 
-func index(v *Tensor, indices ...int) int {
-	if len(indices) != len(v.Shape) {
-		panic("invalid number of indices")
+// Index returns the index in the flat data slice for the given multi-dimensional index.
+func Index(v *Tensor, index ...int) int {
+	if len(index) != len(v.Shape) {
+		panic("invalid number of index")
 	}
 
 	var idx int
-	for i, index := range indices {
+	for i, index := range index {
 		if index < 0 || index >= v.Shape[i] {
 			panic(fmt.Sprintf("index %q out of bounds for axis %q (shape=%q)", index, i, v.Shape))
 		}
