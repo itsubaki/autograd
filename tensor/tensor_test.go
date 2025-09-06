@@ -346,7 +346,7 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-func TestIndex_outOfBounds(t *testing.T) {
+func TestIndex_outOfRange(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor
 		index []int
@@ -377,11 +377,11 @@ func TestStride(t *testing.T) {
 		shape []int
 		want  []int
 	}{
-		{shape: []int{}, want: nil},                    // scalar
-		{shape: []int{5}, want: []int{1}},              // vector
-		{shape: []int{2, 3}, want: []int{3, 1}},        // matrix
-		{shape: []int{2, 3, 4}, want: []int{12, 4, 1}}, // 3D tensor
-		{shape: []int{4, 1, 2}, want: []int{2, 2, 1}},  // with singleton dimension
+		{shape: []int{}, want: nil},
+		{shape: []int{5}, want: []int{1}},
+		{shape: []int{2, 3}, want: []int{3, 1}},
+		{shape: []int{2, 3, 4}, want: []int{12, 4, 1}},
+		{shape: []int{4, 1, 2}, want: []int{2, 2, 1}},
 	}
 
 	for _, c := range cases {
