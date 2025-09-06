@@ -347,7 +347,7 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-func TestIndex_outOfBounds(t *testing.T) {
+func TestIndex_outOfRange(t *testing.T) {
 	cases := []struct {
 		v       *tensor.Tensor
 		indices []int
