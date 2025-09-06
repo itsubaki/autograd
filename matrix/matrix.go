@@ -146,7 +146,7 @@ func AddC(c float64, m *Matrix) *Matrix {
 	return F(m, func(v float64) float64 { return c + v })
 }
 
-// SubC returns c - m
+// SubC returns c - m.
 func SubC(c float64, m *Matrix) *Matrix {
 	return F(m, func(v float64) float64 { return c - v })
 }
