@@ -72,6 +72,25 @@ func ExampleTensor_Reshape() {
 	// 1 2 3 4
 }
 
+func ExampleTensor_Reshape_invalid() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			return
+		}
+
+		panic("unexpected panic for index")
+	}()
+
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v.Reshape(10, 10)
+
+	panic("unreachable")
+
+	// Output:
+	// invalid shape
+}
+
 func ExampleTensor_Clone() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := v.Clone()
