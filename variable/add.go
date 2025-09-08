@@ -27,7 +27,7 @@ func (f *AddT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *AddT) Backward(gy ...*Variable) []*Variable {
-	if vector.Equals(f.x0Shape, f.x1Shape) {
+	if vector.Equal(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gy[0],
 			gy[0],
