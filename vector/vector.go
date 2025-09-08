@@ -149,7 +149,7 @@ func F2(v, w []float64, f func(a, b float64) float64) []float64 {
 	return out
 }
 
-func Equals(v, w []int) bool {
+func Equal(v, w []int) bool {
 	if len(v) != len(w) {
 		return false
 	}
