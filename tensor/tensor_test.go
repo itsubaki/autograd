@@ -597,8 +597,8 @@ func ExampleTranspose_axes01() {
 	w := tensor.Transpose(v, 0, 1)
 
 	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), v.At(0, 2))
-	fmt.Println(w.At(1, 0), w.At(1, 1), v.At(1, 2))
+	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2))
+	fmt.Println(w.At(1, 0), w.At(1, 1), w.At(1, 2))
 
 	// Output:
 	// [2 3]
