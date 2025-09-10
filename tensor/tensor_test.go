@@ -1066,37 +1066,37 @@ func TestEqual(t *testing.T) {
 	for _, c := range cases {
 		got := c.v.Equal(c.w)
 		if got != c.want {
-			t.Errorf("Equal(%v, %v)=%v; want=%v", c.v, c.w, got, c.want)
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestEqualShape(t *testing.T) {
 	cases := []struct {
-		v, w *tensor.Tensor[int]
+		a, b []int
 		want bool
 	}{
 		{
-			v:    tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3}, []int{6, 5, 4, 3, 2, 1}),
+			a:    []int{2, 3},
+			b:    []int{2, 3},
 			want: true,
 		},
 		{
-			v:    tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{3, 2}, []int{1, 2, 3, 4, 5, 6}),
+			a:    []int{2, 3},
+			b:    []int{3, 2},
 			want: false,
 		},
 		{
-			v:    tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3, 1}, []int{1, 2, 3, 4, 5, 6}),
+			a:    []int{2, 3},
+			b:    []int{2, 3, 1},
 			want: false,
 		},
 	}
 
 	for _, c := range cases {
-		got := c.v.EqualShape(c.w)
+		got := tensor.EqualShape(c.a, c.b)
 		if got != c.want {
-			t.Errorf("EqualShape(%v, %v)=%v; want=%v", c.v, c.w, got, c.want)
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
