@@ -1254,6 +1254,27 @@ func TestMatMul(t *testing.T) {
 				30,
 			}),
 		},
+		{
+			// broadcast
+			a: tensor.New([]int{1, 2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			b: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				1, 2,
+				3, 4,
+			}),
+			out: tensor.New([]int{2, 2, 2}, []int{
+				7, 10,
+				15, 22,
+
+				7, 10,
+				15, 22,
+			}),
+		},
 	}
 
 	for _, c := range cases {
