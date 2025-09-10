@@ -101,12 +101,12 @@ func ExampleRandn_seed() {
 	s := rand.Const()
 	v := tensor.Randn([]int{2, 3}, s)
 
-	fmt.Printf("%.4f, %.4f, .%4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, .%4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
 
 	// Output:
-	// 0.5665, -0.6124, .0.589895
-	// -0.3678, 1.0920, .-0.443834
+	// 0.5665, -0.6124, 0.589895
+	// -0.3678, 1.0920, -0.443834
 }
 
 func ExampleTensor_Reshape() {
