@@ -73,8 +73,8 @@ func ExampleRand_seed() {
 	s := rand.Const()
 	v := tensor.Rand([]int{2, 3}, s)
 
-	fmt.Printf("%.4f, %.4f, .%4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, .%4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
 
 	// Output:
 	// 0.9999, 0.8856, .0.381478
