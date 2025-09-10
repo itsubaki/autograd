@@ -120,27 +120,12 @@ func (v *Tensor[T]) AddAt(coord []int, value T) {
 
 // Equal returns true if the two tensors are equal.
 func (v *Tensor[int]) Equal(w *Tensor[int]) bool {
-	if !v.EqualShape(w) {
+	if !equal(v.Shape, w.Shape) {
 		return false
 	}
 
 	for i := range v.Data {
 		if v.Data[i] != w.Data[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
-// EqualShape returns true if the shapes of the two tensors are equal.
-func (v *Tensor[T]) EqualShape(w *Tensor[T]) bool {
-	if len(v.Shape) != len(w.Shape) {
-		return false
-	}
-
-	for i := range v.Shape {
-		if v.Shape[i] != w.Shape[i] {
 			return false
 		}
 	}
@@ -805,6 +790,21 @@ func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 
 	// append the tail back
 	return append(shape, tail0...), append(shape, tail1...), nil
+}
+
+// equal returns true if the two shapes are equal.
+func equal(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 // size returns the number of elements in the given shape.
