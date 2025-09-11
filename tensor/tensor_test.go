@@ -1064,7 +1064,42 @@ func TestEqual(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := c.v.Equal(c.w)
+		got := tensor.Equal(c.v, c.w)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
+func TestIsClose(t *testing.T) {
+	cases := []struct {
+		v, w *tensor.Tensor[float64]
+		want bool
+	}{
+		{
+			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			want: true,
+		},
+		{
+			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6.0000001}),
+			want: true,
+		},
+		{
+			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6.1}),
+			want: false,
+		},
+		{
+			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{3, 2}, []float64{1, 2, 3, 4, 5, 6}),
+			want: false,
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.IsClose(c.v, c.w, 1e-8, 1e-5)
 		if got != c.want {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
@@ -1167,7 +1202,7 @@ func TestArgmax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Argmax(c.in, c.axis)
-		if got.Equal(c.out) {
+		if tensor.Equal(got, c.out) {
 			continue
 		}
 
@@ -1279,7 +1314,7 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.MatMul(c.a, c.b)
-		if got.Equal(c.out) {
+		if tensor.Equal(got, c.out) {
 			continue
 		}
 
