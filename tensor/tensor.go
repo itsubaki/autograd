@@ -119,13 +119,29 @@ func (v *Tensor[T]) AddAt(coord []int, value T) {
 }
 
 // Equal returns true if the two tensors are equal.
-func (v *Tensor[int]) Equal(w *Tensor[int]) bool {
+func Equal(v, w *Tensor[int]) bool {
 	if !equal(v.Shape, w.Shape) {
 		return false
 	}
 
 	for i := range v.Data {
 		if v.Data[i] != w.Data[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsClose returns true if the two tensors are close enough.
+func IsClose(v, w *Tensor[float64], atol, rtol float64) bool {
+	if !equal(v.Shape, w.Shape) {
+		return false
+	}
+
+	for i := range v.Data {
+		a, b := v.Data[i], w.Data[i]
+		if math.Abs(a-b) > atol+rtol*math.Abs(b) {
 			return false
 		}
 	}
