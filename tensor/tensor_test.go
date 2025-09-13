@@ -1041,6 +1041,41 @@ func ExampleMatMul_invalid() {
 	// incompatible matrix shapes
 }
 
+func ExampleBroadcastTo_backward() {
+	x := tensor.New([]int{1, 2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.BroadcastTo(x, 2, 2, 2)
+	z := tensor.Sum(y, 0)
+
+	fmt.Println(z.Shape)
+	fmt.Println(z.Data)
+
+	// Output:
+	// [2 2]
+	// [2 4 6 8]
+}
+
+func ExampleSum_backward() {
+	x := tensor.New([]int{2, 2, 2}, []float64{
+		1, 2,
+		3, 4,
+
+		1, 2,
+		3, 4,
+	})
+	y := tensor.Sum(x, 0)
+	z := tensor.BroadcastTo(y, 2, 2, 2)
+
+	fmt.Println(z.Shape)
+	fmt.Println(z.Data)
+
+	// Output:
+	// [2 2 2]
+	// [2 4 6 8 2 4 6 8]
+}
+
 func TestEqual(t *testing.T) {
 	cases := []struct {
 		v, w *tensor.Tensor[int]
