@@ -55,7 +55,7 @@ func ZeroLike[T Number](v *Tensor[T]) *Tensor[T] {
 
 // OneLike returns a new tensor with the same shape as v and elements that are all one.
 func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
-	return F(ZeroLike(v), func(_ T) T { return 1.0 })
+	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
 // Reshape returns a new tensor with the same data as v with the given shape.
