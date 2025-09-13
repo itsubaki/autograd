@@ -8,7 +8,7 @@ import (
 
 func ExamplePowT() {
 	x := variable.New(3.0)
-	f := variable.PowT{C: 4.0}
+	f := variable.PowT{P: 4.0}
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))

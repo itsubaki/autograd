@@ -6,11 +6,15 @@ import (
 )
 
 func AddC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).First(New(c), x[0])
+	return (&Function{
+		Forwarder: &AddT{},
+	}).First(New(c), x[0])
 }
 
 func Add(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).First(x...)
+	return (&Function{
+		Forwarder: &AddT{},
+	}).First(x...)
 }
 
 type AddT struct {
@@ -18,9 +22,9 @@ type AddT struct {
 }
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {
-	f.x0Shape, f.x1Shape = Shape(x[0]), Shape(x[1])
-	y := matrix.Add(x[0].Data, x[1].Data)
+	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
 
+	y := matrix.Add(x[0].Data, x[1].Data)
 	return []*Variable{
 		NewFrom(y),
 	}

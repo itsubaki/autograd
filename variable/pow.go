@@ -2,19 +2,23 @@ package variable
 
 import "github.com/itsubaki/autograd/matrix"
 
-func Pow(c float64) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &PowT{C: c}}).First
+func Pow(p float64) func(x ...*Variable) *Variable {
+	return (&Function{
+		Forwarder: &PowT{
+			P: p,
+		},
+	}).First
 }
 
 type PowT struct {
-	C float64
+	P float64
 	x *Variable
 }
 
 func (f *PowT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-	y := matrix.Pow(f.C, x[0].Data)
 
+	y := matrix.Pow(f.P, x[0].Data)
 	return []*Variable{
 		NewFrom(y),
 	}
@@ -22,6 +26,6 @@ func (f *PowT) Forward(x ...*Variable) []*Variable {
 
 func (f *PowT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
-		Mul(gy[0], MulC(f.C, Pow(f.C-1)(f.x))), // gy * c * x^(c-1)
+		Mul(gy[0], MulC(f.P, Pow(f.P-1)(f.x))), // gy * c * x^(c-1)
 	}
 }

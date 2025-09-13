@@ -3,7 +3,9 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Exp(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &ExpT{}}).First(x...)
+	return (&Function{
+		Forwarder: &ExpT{},
+	}).First(x...)
 }
 
 type ExpT struct {
