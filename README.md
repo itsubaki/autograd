@@ -21,8 +21,8 @@ fmt.Println(y)
 fmt.Println(x.Grad)
 
 // Output:
-// variable([0.8414709848078965])
-// variable([0.5403023058681398])
+// variable(0.8414709848078965)
+// variable(0.5403023058681398)
 ```
 
 ### Composite function
@@ -43,7 +43,7 @@ z.Backward()
 fmt.Println(x.Grad, y.Grad)
 
 // Output:
-// variable([0.040000000000000036]) variable([0.040000000000000036])
+// variable(0.040000000000000036) variable(0.040000000000000036)
 ```
 
 ### Gradient descent
@@ -84,17 +84,17 @@ for i := range iters + 1 {
 }
 
 // Output:
-// variable([0]) variable([2])
-// variable([0.6837118569138317]) variable([0.4659526837427042])
-// variable([0.8263177857050957]) variable([0.6820311873361097])
-// variable([0.8947837494333546]) variable([0.8001896451930564])
-// variable([0.9334871723401226]) variable([0.8711213202579401])
-// variable([0.9569899983530249]) variable([0.9156532462021957])
-// variable([0.9718168065095137]) variable([0.9443132014542008])
-// variable([0.9813809710644894]) variable([0.9630332658658076])
-// variable([0.9876355102559093]) variable([0.9753740541653942])
-// variable([0.9917613994572028]) variable([0.9835575421346807])
-// variable([0.9944984367782456]) variable([0.9890050527419593])
+// variable(0) variable(2)
+// variable(0.6837118569138317) variable(0.4659526837427042)
+// variable(0.8263177857050957) variable(0.6820311873361097)
+// variable(0.8947837494333546) variable(0.8001896451930564)
+// variable(0.9334871723401226) variable(0.8711213202579401)
+// variable(0.9569899983530249) variable(0.9156532462021957)
+// variable(0.9718168065095137) variable(0.9443132014542008)
+// variable(0.9813809710644894) variable(0.9630332658658076)
+// variable(0.9876355102559093) variable(0.9753740541653942)
+// variable(0.9917613994572028) variable(0.9835575421346807)
+// variable(0.9944984367782456) variable(0.9890050527419593)
 ```
 
 ### Deep Learning
@@ -141,7 +141,7 @@ y.Backward(variable.Opts{CreateGraph: true})
 fmt.Println(y)
 fmt.Println(x.Grad)
 
-for i := 0; i < 5; i++ {
+for range 5 {
 	gx := x.Grad
 	x.Cleargrad()
 	gx.Backward(variable.Opts{CreateGraph: true})
@@ -150,13 +150,13 @@ for i := 0; i < 5; i++ {
 }
 
 // Output:
-// variable([0.8414709848078965])
-// variable([0.5403023058681398])
-// variable([-0.8414709848078965])
-// variable([-0.5403023058681398])
-// variable([0.8414709848078965])
-// variable([0.5403023058681398])
-// variable([-0.8414709848078965])
+// variable(0.8414709848078965)
+// variable(0.5403023058681398)
+// variable(-0.8414709848078965)
+// variable(-0.5403023058681398)
+// variable(0.8414709848078965)
+// variable(0.5403023058681398)
+// variable(-0.8414709848078965)
 ```
 
 ### NoGrad and Test mode
