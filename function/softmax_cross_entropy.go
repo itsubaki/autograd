@@ -28,7 +28,7 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 }
 
 func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	shape := variable.Shape(f.x)
+	shape := f.x.Shape()
 	N, C := shape[0], shape[1]
 
 	t := variable.NewFrom(onehot(f.t.Data.Row(0), C)) // t = onehot(t, C)

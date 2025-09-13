@@ -48,7 +48,7 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: matrix.Randn(shape[0], shape[1], s...)}
 }
 
-func Shape(v *Variable) []int {
+func (v *Variable) Shape() []int {
 	return matrix.Shape(v.Data)
 }
 
@@ -173,11 +173,7 @@ func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
 }
 
 func zip(xs, gxs []*Variable) ([]*Variable, []*Variable) {
-	n := len(xs)
-	if len(gxs) < n {
-		n = len(gxs)
-	}
-
+	n := min(len(xs), len(gxs))
 	return xs[:n], gxs[:n]
 }
 

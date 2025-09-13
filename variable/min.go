@@ -3,7 +3,9 @@ package variable
 import "github.com/itsubaki/autograd/matrix"
 
 func Min(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MinT{}}).First(x...)
+	return (&Function{
+		Forwarder: &MinT{},
+	}).First(x...)
 }
 
 type MinT struct {

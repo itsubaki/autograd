@@ -6,7 +6,12 @@ import (
 )
 
 func GetItemGrad(slices, inShape []int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &GetItemGradT{Slices: slices, InShape: inShape}}).First
+	return (&Function{
+		Forwarder: &GetItemGradT{
+			Slices:  slices,
+			InShape: inShape,
+		},
+	}).First
 }
 
 type GetItemGradT struct {

@@ -91,7 +91,7 @@ func ExampleLSTM_Params() {
 	m.Forward(x)
 
 	for k, p := range m.Params() {
-		fmt.Println(k, variable.Shape(p))
+		fmt.Println(k, p.Shape())
 	}
 
 	// Unordered output:

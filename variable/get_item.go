@@ -1,7 +1,11 @@
 package variable
 
 func GetItem(slices []int) func(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &GetItemT{Slices: slices}}).First
+	return (&Function{
+		Forwarder: &GetItemT{
+			Slices: slices,
+		},
+	}).First
 }
 
 type GetItemT struct {
@@ -10,9 +14,9 @@ type GetItemT struct {
 }
 
 func (f *GetItemT) Forward(x ...*Variable) []*Variable {
-	f.xShape = Shape(x[0])
-	y := make([][]float64, len(f.Slices))
+	f.xShape = x[0].Shape()
 
+	y := make([][]float64, len(f.Slices))
 	for i, idx := range f.Slices {
 		y[i] = x[0].Data.Row(idx)
 	}
