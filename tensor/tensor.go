@@ -68,7 +68,7 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 }
 
 // Reshape returns a new tensor with the same data as v with the given shape.
-func (v *Tensor[T]) Reshape(shape ...int) *Tensor[T] {
+func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	if size(shape) != v.Size() {
 		panic("invalid shape")
 	}
