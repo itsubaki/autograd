@@ -173,6 +173,23 @@ func ExampleTensor_AddAt() {
 	// [11 2 3 4]
 }
 
+func ExampleTake() {
+	v := tensor.New([]int{3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+	})
+
+	w := tensor.Take(v, []int{0, 2}, 0)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [2 2]
+	// [10 11 30 31]
+}
+
 func ExampleAddC() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
 	w := tensor.AddC(10, v)
@@ -205,7 +222,7 @@ func ExampleMulC() {
 
 func ExamplePow() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Pow(v, 3)
+	w := tensor.Pow(3, v)
 
 	fmt.Println(w.Data)
 
@@ -1074,6 +1091,100 @@ func ExampleSum_backward() {
 	// Output:
 	// [2 2 2]
 	// [2 4 6 8 2 4 6 8]
+}
+
+func TestTake(t *testing.T) {
+	cases := []struct {
+		v       *tensor.Tensor[int]
+		indices []int
+		axis    int
+		want    *tensor.Tensor[int]
+	}{
+		{
+			v: tensor.New([]int{3, 2}, []int{
+				10, 11,
+				20, 21,
+				30, 31,
+			}),
+			axis:    0,
+			indices: []int{0, 2},
+			want: tensor.New([]int{2, 2}, []int{
+				10, 11,
+				30, 31,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    1,
+			indices: []int{2, 0},
+			want: tensor.New([]int{2, 2}, []int{
+				3, 1,
+				6, 4,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 3},
+				[]int{
+					1, 2, 3,
+					4, 5, 6,
+
+					10, 11, 12,
+					13, 14, 15,
+				}),
+			axis:    2,
+			indices: []int{0, 2},
+			want: tensor.New([]int{2, 2, 2}, []int{
+				1, 3,
+				4, 6,
+
+				10, 12,
+				13, 15,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    1,
+			indices: []int{1, 1, 2},
+			want: tensor.New([]int{2, 3}, []int{
+				2, 2, 3,
+				5, 5, 6,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    -1,
+			indices: []int{1},
+			want:    tensor.New([]int{2, 1}, []int{2, 5}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    1,
+			indices: []int{-1, 0},
+			want: tensor.New([]int{2, 2}, []int{
+				3, 1,
+				6, 4,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Take(c.v, c.indices, c.axis)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
 }
 
 func TestEqual(t *testing.T) {
