@@ -43,15 +43,6 @@ func Randn(shape []int, s ...randv2.Source) *Tensor[float64] {
 	return F(Zero[float64](shape...), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
-// rnd returns a pseudo-random number generator.
-func rnd(s ...randv2.Source) *randv2.Rand {
-	if len(s) == 0 || s[0] == nil {
-		return randv2.New(rand.NewSource(rand.MustRead()))
-	}
-
-	return randv2.New(s[0])
-}
-
 // Zero returns a new tensor with elements that are all zero.
 func Zero[T Number](shape ...int) *Tensor[T] {
 	return New(shape, make([]T, size(shape)))
@@ -719,6 +710,15 @@ func Unravel[T Number](v *Tensor[T], index int) []int {
 	}
 
 	return coord
+}
+
+// rnd returns a pseudo-random number generator.
+func rnd(s ...randv2.Source) *randv2.Rand {
+	if len(s) == 0 || s[0] == nil {
+		return randv2.New(rand.NewSource(rand.MustRead()))
+	}
+
+	return randv2.New(s[0])
 }
 
 // stride returns the stride for the given shape.
