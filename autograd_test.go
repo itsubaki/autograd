@@ -433,8 +433,8 @@ func Example_mlp() {
 		LearningRate: 0.2,
 	}
 
-	x := variable.Rand(100, 1, s)
-	t := variable.Rand(100, 1, s)
+	x := variable.Rand([]int{100, 1}, s)
+	t := variable.Rand([]int{100, 1}, s)
 
 	for i := range 100 {
 		y := m.Forward(x)

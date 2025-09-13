@@ -31,7 +31,7 @@ func WithNoBias() OptionFunc {
 
 func Linear(outSize int, opts ...OptionFunc) *LinearT {
 	p := make(Parameters)
-	p.Add("b", variable.Zero(1, outSize))
+	p.Add("b", variable.Zero([]int{1, outSize}))
 
 	l := &LinearT{
 		outSize:    outSize,

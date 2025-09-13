@@ -36,16 +36,16 @@ func OneLike(v *Variable) *Variable {
 	return &Variable{Data: matrix.OneLike(v.Data)}
 }
 
-func Zero(rows, cols int) *Variable {
-	return &Variable{Data: matrix.Zero(rows, cols)}
+func Zero(shape []int) *Variable {
+	return &Variable{Data: matrix.Zero(shape[0], shape[1])}
 }
 
-func Rand(rows, cols int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Rand(rows, cols, s...)}
+func Rand(shape []int, s ...randv2.Source) *Variable {
+	return &Variable{Data: matrix.Rand(shape[0], shape[1], s...)}
 }
 
-func Randn(rows, cols int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Randn(rows, cols, s...)}
+func Randn(shape []int, s ...randv2.Source) *Variable {
+	return &Variable{Data: matrix.Randn(shape[0], shape[1], s...)}
 }
 
 func Shape(v *Variable) []int {
