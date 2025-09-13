@@ -1,26 +1,39 @@
 package variable
 
 import (
+	"log"
+
 	"github.com/itsubaki/autograd/tensor"
 )
 
-func SumTo(axes ...int) func(x ...*Variable) *Variable {
+func SumTo(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SumToT{
-			Axes: axes,
+			Shape: shape,
 		},
 	}).First
 }
 
 type SumToT struct {
-	Axes   []int
+	Shape  []int
 	xShape []int
 }
 
 func (f *SumToT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
-	y := tensor.Sum(x[0].Data, f.Axes...)
+	ax := axes(f.Shape, f.xShape)
 
+	y := x[0].Data
+	if len(ax) > 0 {
+		y = tensor.Sum(x[0].Data, ax...)
+	}
+
+	log.Println("x shape:", x[0].Shape())
+	log.Println("f shape:", f.Shape)
+	log.Println("axes:", axes(f.Shape, f.xShape))
+	log.Println("y shape:", y.Shape)
+
+	y = tensor.Reshape(y, f.Shape...)
 	return []*Variable{
 		NewFrom(y),
 	}
@@ -30,4 +43,26 @@ func (f *SumToT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
 		BroadcastTo(f.xShape...)(gy[0]),
 	}
+}
+
+func axes(a, b []int) []int {
+	if len(a) < len(b) {
+		diff := len(b) - len(a)
+		newA := make([]int, len(b))
+		for i := range diff {
+			newA[i] = 1
+		}
+
+		copy(newA[diff:], a)
+		a = newA
+	}
+
+	var axes []int
+	for i := range a {
+		if a[i] == 1 && b[i] > 1 {
+			axes = append(axes, i)
+		}
+	}
+
+	return axes
 }
