@@ -67,6 +67,61 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return New(shape, v.Data)
 }
 
+// Take returns a new tensor with elements selected from the given indices along the specified axis.
+func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	if axis < 0 {
+		axis += ndim
+	}
+
+	if axis < 0 || axis >= ndim {
+		panic(fmt.Sprintf("invalid axis %d for shape %v", axis, v.Shape))
+	}
+
+	indicesAdj := make([]int, len(indices))
+	for i, idx := range indices {
+		if idx < 0 {
+			idx += v.Shape[axis]
+		}
+
+		if idx < 0 || idx >= v.Shape[axis] {
+			panic(fmt.Sprintf("index %d out of range for axis=%d (shape=%v)", idx, axis, v.Shape))
+		}
+
+		indicesAdj[i] = idx
+	}
+
+	newShape := make([]int, ndim)
+	copy(newShape, v.Shape)
+	newShape[axis] = len(indices)
+
+	out := &Tensor[T]{
+		Shape:  newShape,
+		Stride: stride(newShape...),
+		Data:   make([]T, size(newShape)),
+	}
+
+	ondim := out.NumDims()
+	coords := make([]int, ondim)
+	for i := range len(out.Data) {
+		remain := i
+		for j := range ondim {
+			coords[j] = remain / out.Stride[j]
+			remain = remain % out.Stride[j]
+		}
+
+		coord := make([]int, len(coords))
+		copy(coord, coords)
+		coord[axis] = indicesAdj[coords[axis]]
+
+		src := Ravel(v, coord...)
+		dst := Ravel(out, coords...)
+		out.Data[dst] = v.Data[src]
+	}
+
+	return out
+}
+
 // Clone returns a copy of the tensor.
 func (v *Tensor[T]) Clone() *Tensor[T] {
 	data := make([]T, len(v.Data))
@@ -91,7 +146,7 @@ func (v *Tensor[T]) NumDims() int {
 
 // Size returns the number of elements in the tensor.
 func (v *Tensor[T]) Size() int {
-	return size(v.Shape)
+	return len(v.Data)
 }
 
 // At returns the element at the given index.
@@ -156,7 +211,7 @@ func MulC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 }
 
 // Pow applies v**p for each element in v and returns a new tensor.
-func Pow(v *Tensor[float64], p float64) *Tensor[float64] {
+func Pow(p float64, v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Pow(a, p) })
 }
 
