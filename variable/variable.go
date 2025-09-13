@@ -148,7 +148,7 @@ func (v *Variable) Backward(opts ...Opts) {
 	}
 }
 
-func (v Variable) String() string {
+func (v *Variable) String() string {
 	name := "variable"
 	if v.Name != "" {
 		name = v.Name
