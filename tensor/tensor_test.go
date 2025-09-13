@@ -1562,6 +1562,69 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+func TestBroadcastShape(t *testing.T) {
+	cases := []struct {
+		s0       []int
+		s1       []int
+		keepLast int
+		want0    []int
+		want1    []int
+		hasErr   bool
+	}{
+		{s0: []int{2, 3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 3}, s1: []int{1, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 3}, s1: []int{2, 1}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 3}, s1: []int{1, 1}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{1, 3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 1}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{1, 1}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{1, 3, 5}, s1: []int{1, 3, 1}, want0: []int{1, 3, 5}, want1: []int{1, 3, 5}},
+		{s0: []int{2, 1, 3}, s1: []int{1, 4, 1}, want0: []int{2, 4, 3}, want1: []int{2, 4, 3}},
+		{s0: []int{8, 1, 6, 1}, s1: []int{7, 1, 5}, want0: []int{8, 7, 6, 5}, want1: []int{8, 7, 6, 5}},
+		{s0: nil, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 3}, s1: nil, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{2, 3}, s1: []int{}, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: nil, s1: nil, want0: []int{}, want1: []int{}},
+		{s0: []int{}, s1: []int{}, want0: []int{}, want1: []int{}},
+		{s0: []int{3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
+		// keepLast=2
+		{s0: []int{1, 1, 3}, s1: []int{2, 3, 1}, keepLast: 2, want0: []int{2, 1, 3}, want1: []int{2, 3, 1}},
+		{s0: []int{4, 1, 3}, s1: []int{1, 3, 1}, keepLast: 2, want0: []int{4, 1, 3}, want1: []int{4, 3, 1}},
+		{s0: []int{2, 3}, s1: []int{2, 3}, keepLast: 2, want0: []int{2, 3}, want1: []int{2, 3}},
+		{s0: []int{1, 2, 1, 3}, s1: []int{2, 1, 3, 1}, keepLast: 2, want0: []int{2, 2, 1, 3}, want1: []int{2, 2, 3, 1}},
+		// error
+		{s0: []int{4, 5}, s1: []int{2, 3}, hasErr: true},
+		{s0: []int{3}, s1: []int{2, 3, 4}, hasErr: true},
+		{s0: []int{2, 3, 4}, s1: []int{2, 4, 4}, hasErr: true},
+		{s0: []int{3, 4}, s1: []int{4, 3}, hasErr: true},
+		{s0: []int{2, 3, 4}, s1: []int{3, 2, 4}, keepLast: 2, hasErr: true},
+		{s0: []int{4, 1, 3, 4}, s1: []int{2, 3, 2, 4}, keepLast: 2, hasErr: true},
+		{s0: []int{3, 3}, s1: []int{1, 1, 4, 1}, keepLast: 3, hasErr: true},
+		{s0: []int{1, 1, 4, 1}, s1: []int{3, 3}, keepLast: 3, hasErr: true},
+	}
+
+	for _, c := range cases {
+		got0, got1, err := tensor.BroadcastShape(c.s0, c.s1, c.keepLast)
+		if err != nil {
+			if c.hasErr {
+				continue
+			}
+
+			t.Errorf("unexpected error for shapes %v and %v: %v", c.s0, c.s1, err)
+			continue
+		}
+
+		if !reflect.DeepEqual(got0, c.want0) {
+			t.Errorf("s0=%v, got0=%v, want0=%v", c.s0, got0, c.want0)
+		}
+
+		if !reflect.DeepEqual(got1, c.want1) {
+			t.Errorf("s1=%v, got1=%v, want1=%v", c.s1, got1, c.want1)
+		}
+	}
+}
+
 func TestMean_invalid(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[float64]
@@ -1581,6 +1644,62 @@ func TestMean_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Mean(c.v, c.axes...)
+			t.Fail()
+		}()
+	}
+}
+
+func TestTake_invalid(t *testing.T) {
+	cases := []struct {
+		v       *tensor.Tensor[int]
+		indices []int
+		axis    int
+	}{
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    2,
+			indices: []int{0},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    -3,
+			indices: []int{0},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    1,
+			indices: []int{3},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    1,
+			indices: []int{-4},
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axis %d and indices %v", c.axis, c.indices)
+			}()
+
+			_ = tensor.Take(c.v, c.indices, c.axis)
 			t.Fail()
 		}()
 	}
@@ -1791,68 +1910,5 @@ func TestReduce_invalid(t *testing.T) {
 			_ = tensor.Reduce(c.v, 0, func(a, b int) int { return a + b }, c.coord...)
 			t.Fail()
 		}()
-	}
-}
-
-func TestBroadcastShape(t *testing.T) {
-	cases := []struct {
-		s0       []int
-		s1       []int
-		keepLast int
-		want0    []int
-		want1    []int
-		hasErr   bool
-	}{
-		{s0: []int{2, 3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 3}, s1: []int{1, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 3}, s1: []int{2, 1}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 3}, s1: []int{1, 1}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{1, 3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 1}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{1, 1}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{1, 3, 5}, s1: []int{1, 3, 1}, want0: []int{1, 3, 5}, want1: []int{1, 3, 5}},
-		{s0: []int{2, 1, 3}, s1: []int{1, 4, 1}, want0: []int{2, 4, 3}, want1: []int{2, 4, 3}},
-		{s0: []int{8, 1, 6, 1}, s1: []int{7, 1, 5}, want0: []int{8, 7, 6, 5}, want1: []int{8, 7, 6, 5}},
-		{s0: nil, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 3}, s1: nil, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{2, 3}, s1: []int{}, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: nil, s1: nil, want0: []int{}, want1: []int{}},
-		{s0: []int{}, s1: []int{}, want0: []int{}, want1: []int{}},
-		{s0: []int{3}, s1: []int{2, 3}, want0: []int{2, 3}, want1: []int{2, 3}},
-		// keepLast=2
-		{s0: []int{1, 1, 3}, s1: []int{2, 3, 1}, keepLast: 2, want0: []int{2, 1, 3}, want1: []int{2, 3, 1}},
-		{s0: []int{4, 1, 3}, s1: []int{1, 3, 1}, keepLast: 2, want0: []int{4, 1, 3}, want1: []int{4, 3, 1}},
-		{s0: []int{2, 3}, s1: []int{2, 3}, keepLast: 2, want0: []int{2, 3}, want1: []int{2, 3}},
-		{s0: []int{1, 2, 1, 3}, s1: []int{2, 1, 3, 1}, keepLast: 2, want0: []int{2, 2, 1, 3}, want1: []int{2, 2, 3, 1}},
-		// error
-		{s0: []int{4, 5}, s1: []int{2, 3}, hasErr: true},
-		{s0: []int{3}, s1: []int{2, 3, 4}, hasErr: true},
-		{s0: []int{2, 3, 4}, s1: []int{2, 4, 4}, hasErr: true},
-		{s0: []int{3, 4}, s1: []int{4, 3}, hasErr: true},
-		{s0: []int{2, 3, 4}, s1: []int{3, 2, 4}, keepLast: 2, hasErr: true},
-		{s0: []int{4, 1, 3, 4}, s1: []int{2, 3, 2, 4}, keepLast: 2, hasErr: true},
-		{s0: []int{3, 3}, s1: []int{1, 1, 4, 1}, keepLast: 3, hasErr: true},
-		{s0: []int{1, 1, 4, 1}, s1: []int{3, 3}, keepLast: 3, hasErr: true},
-	}
-
-	for _, c := range cases {
-		got0, got1, err := tensor.BroadcastShape(c.s0, c.s1, c.keepLast)
-		if err != nil {
-			if c.hasErr {
-				continue
-			}
-
-			t.Errorf("unexpected error for shapes %v and %v: %v", c.s0, c.s1, err)
-			continue
-		}
-
-		if !reflect.DeepEqual(got0, c.want0) {
-			t.Errorf("s0=%v, got0=%v, want0=%v", c.s0, got0, c.want0)
-		}
-
-		if !reflect.DeepEqual(got1, c.want1) {
-			t.Errorf("s1=%v, got1=%v, want1=%v", c.s1, got1, c.want1)
-		}
 	}
 }
