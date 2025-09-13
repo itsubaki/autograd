@@ -1,6 +1,7 @@
 package variable
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/itsubaki/autograd/tensor"
@@ -28,10 +29,15 @@ func (f *SumToT) Forward(x ...*Variable) []*Variable {
 		y = tensor.Sum(x[0].Data, ax...)
 	}
 
-	log.Println("x shape:", x[0].Shape())
+	log.Println("x shape:", x[0].Shape(), "data:", x[0].Data)
 	log.Println("f shape:", f.Shape)
-	log.Println("axes:", axes(f.Shape, f.xShape))
-	log.Println("y shape:", y.Shape)
+	log.Println("axes:", ax)
+	log.Println("y shape:", y.Shape, "data:", y)
+
+	fmt.Println("x shape:", x[0].Shape(), "data:", x[0].Data)
+	fmt.Println("f shape:", f.Shape)
+	fmt.Println("axes:", ax)
+	fmt.Println("y shape:", y.Shape, "data:", y)
 
 	y = tensor.Reshape(y, f.Shape...)
 	return []*Variable{

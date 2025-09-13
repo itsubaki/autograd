@@ -57,7 +57,7 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
-		inSize := x[0].Shape()[len(x[0].Shape())-1] // last dimension
+		inSize := last(x[0].Shape())
 		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
 	}
 
@@ -79,4 +79,8 @@ func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	w := tensor.Randn([]int{inSize, outSize}, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
 	return variable.NewFrom(tensor.MulC(xavier, w))
+}
+
+func last(shape []int) int {
+	return shape[len(shape)-1]
 }
