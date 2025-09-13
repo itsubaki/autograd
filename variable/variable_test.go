@@ -52,7 +52,7 @@ func ExampleOneLike() {
 }
 
 func ExampleZero() {
-	fmt.Println(variable.Zero(2, 3))
+	fmt.Println(variable.Zero([]int{2, 3}))
 
 	// Output:
 	// variable([[0 0 0] [0 0 0]])
@@ -60,7 +60,7 @@ func ExampleZero() {
 
 func ExampleRand() {
 	s := rand.Const()
-	for _, r := range variable.Rand(2, 3, s).Data.Seq2() {
+	for _, r := range variable.Rand([]int{2, 3}, s).Data.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -71,7 +71,7 @@ func ExampleRand() {
 
 func ExampleRandn() {
 	s := rand.Const()
-	for _, r := range variable.Randn(2, 3, s).Data.Seq2() {
+	for _, r := range variable.Randn([]int{2, 3}, s).Data.Seq2() {
 		fmt.Println(r)
 	}
 
