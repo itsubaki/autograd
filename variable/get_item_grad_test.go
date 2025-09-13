@@ -20,6 +20,6 @@ func ExampleGetItemGrad() {
 	fmt.Println(gy.Grad)
 
 	// Output:
-	// variable([[2 2 2] [1 1 1]])
-	// variable([[1 1 1] [1 1 1] [1 1 1]])
+	// variable[2 3]([[2 2 2] [1 1 1]])
+	// variable[3 3]([[1 1 1] [1 1 1] [1 1 1]])
 }

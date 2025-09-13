@@ -17,8 +17,8 @@ func ExampleParameters_Params() {
 	}
 
 	// Unordered output:
-	// w([1 2])
-	// b([3 4])
+	// w[1 2]([1 2])
+	// b[1 2]([3 4])
 }
 
 func ExampleParameters_Cleargrads() {
@@ -34,5 +34,5 @@ func ExampleParameters_Cleargrads() {
 	}
 
 	// Output:
-	// w([1 2]) <nil>
+	// w[1 2]([1 2]) <nil>
 }

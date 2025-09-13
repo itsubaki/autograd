@@ -16,8 +16,8 @@ func ExampleSub() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([1])
-	// variable([1]) variable([-1])
+	// variable(1)
+	// variable(1) variable(-1)
 }
 
 func ExampleSubC() {
@@ -29,8 +29,8 @@ func ExampleSubC() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([7])
-	// variable([-1])
+	// variable(7)
+	// variable(-1)
 }
 
 func ExampleSub_broadcast() {
@@ -44,6 +44,6 @@ func ExampleSub_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([0 1 2 3 4])
-	// variable([1 1 1 1 1]) variable([-5])
+	// variable[1 5]([0 1 2 3 4])
+	// variable[1 5]([1 1 1 1 1]) variable(-5)
 }

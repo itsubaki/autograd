@@ -19,6 +19,6 @@ func ExampleMax() {
 	fmt.Println(A.Grad)
 
 	// Output:
-	// variable([10])
-	// variable([[0 0 0] [0 1 0]])
+	// variable(10)
+	// variable[2 3]([[0 0 0] [0 1 0]])
 }

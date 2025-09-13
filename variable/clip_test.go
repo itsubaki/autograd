@@ -15,6 +15,6 @@ func ExampleClip() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([0 0 0 1 2 4 5 5])
-	// variable([0 0 1 1 1 1 0 0])
+	// variable[1 8]([0 0 0 1 2 4 5 5])
+	// variable[1 8]([0 0 1 1 1 1 0 0])
 }

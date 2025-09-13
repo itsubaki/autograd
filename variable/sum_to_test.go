@@ -25,8 +25,8 @@ func ExampleSumTo() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([5 7 9])
-	// variable([[1 1 1] [1 1 1]])
-	// variable([[6] [15]])
-	// variable([[1 1 1] [1 1 1]])
+	// variable[1 3]([5 7 9])
+	// variable[2 3]([[1 1 1] [1 1 1]])
+	// variable[2 1]([[6] [15]])
+	// variable[2 3]([[1 1 1] [1 1 1]])
 }

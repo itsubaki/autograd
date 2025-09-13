@@ -17,5 +17,5 @@ func ExampleWeightDecay() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([1.1])
+	// variable(1.1)
 }

@@ -31,13 +31,13 @@ func ExampleNograd() {
 
 	// Output:
 	// backprop: true
-	// gx:  variable([6])
+	// gx:  variable(6)
 	//
 	// backprop: false
 	// gx:  <nil>
 	//
 	// backprop: true
-	// gx:  variable([6])
+	// gx:  variable(6)
 }
 
 func ExampleTestMode() {

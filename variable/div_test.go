@@ -16,8 +16,8 @@ func ExampleDiv() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([5])
-	// variable([0.5]) variable([-2.5])
+	// variable(5)
+	// variable(0.5) variable(-2.5)
 }
 
 func ExampleDivC() {
@@ -30,8 +30,8 @@ func ExampleDivC() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable([5])
-	// variable([-2.5])
+	// variable(5)
+	// variable(-2.5)
 }
 
 func ExampleDiv_broadcast() {
@@ -45,6 +45,6 @@ func ExampleDiv_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([0.5 1 1.5 2 2.5])
-	// variable([0.5 0.5 0.5 0.5 0.5]) variable([-3.75])
+	// variable[1 5]([0.5 1 1.5 2 2.5])
+	// variable[1 5]([0.5 0.5 0.5 0.5 0.5]) variable(-3.75)
 }

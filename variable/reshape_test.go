@@ -18,8 +18,8 @@ func ExampleReshape() {
 	fmt.Println(y.Grad)
 
 	// Output:
-	// variable([[1 2 3] [4 5 6]])
-	// variable([1 2 3 4 5 6])
-	// variable([[1 1 1] [1 1 1]])
-	// variable([1 1 1 1 1 1])
+	// variable[2 3]([[1 2 3] [4 5 6]])
+	// variable[1 6]([1 2 3 4 5 6])
+	// variable[2 3]([[1 1 1] [1 1 1]])
+	// variable[1 6]([1 1 1 1 1 1])
 }

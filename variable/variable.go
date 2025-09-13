@@ -48,13 +48,12 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: matrix.Randn(shape[0], shape[1], s...)}
 }
 
-func (v *Variable) Shape() []int {
-	return matrix.Shape(v.Data)
+func (v *Variable) At(coord ...int) float64 {
+	return v.Data.At(coord[0], coord[1])
 }
 
-// N returns the number of rows.
-func (v *Variable) N() int {
-	return v.Data.Rows
+func (v *Variable) Shape() []int {
+	return matrix.Shape(v.Data)
 }
 
 func (v *Variable) Cleargrad() {
@@ -154,11 +153,15 @@ func (v *Variable) String() string {
 		name = v.Name
 	}
 
-	if v.N() == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data.Row(0))
+	if v.Data.Rows == 1 && v.Data.Cols == 1 {
+		return fmt.Sprintf("%s(%v)", name, v.Data.Data[0])
 	}
 
-	return fmt.Sprintf("%s(%v)", name, v.Data)
+	if v.Data.Rows == 1 {
+		return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Row(0))
+	}
+
+	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {

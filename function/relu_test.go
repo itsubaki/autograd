@@ -20,8 +20,8 @@ func ExampleReLU() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([[1 0 3] [0 5 0]])
-	// variable([[1 0 1] [0 1 0]])
+	// variable[2 3]([[1 0 3] [0 5 0]])
+	// variable[2 3]([[1 0 1] [0 1 0]])
 }
 
 func ExampleRelu() {

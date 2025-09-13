@@ -26,8 +26,9 @@ func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gyy := Mul(gy[0], f.y)        // gyy = gy * y
-	sum := SumTo(gyy.N(), 1)(gyy) // sum = sum(gx, axis=1)
+	gyy := Mul(gy[0], f.y) // gyy = gy * y
+	N := gyy.Shape()[0]
+	sum := SumTo(N, 1)(gyy) // sum = sum(gx, axis=1)
 
 	return []*variable.Variable{
 		Sub(gyy, Mul(f.y, sum)), // gyy - y * sum
