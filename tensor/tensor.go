@@ -91,21 +91,21 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 		indicesAdj[i] = idx
 	}
 
-	newShape := make([]int, ndim)
-	copy(newShape, v.Shape)
-	newShape[axis] = len(indices)
+	outShape := make([]int, ndim)
+	copy(outShape, v.Shape)
+	outShape[axis] = len(indices)
 
 	out := &Tensor[T]{
-		Shape:  newShape,
-		Stride: stride(newShape...),
-		Data:   make([]T, size(newShape)),
+		Shape:  outShape,
+		Stride: stride(outShape...),
+		Data:   make([]T, size(outShape)),
 	}
 
-	ondim := out.NumDims()
-	coords := make([]int, ondim)
+	outNDim := out.NumDims()
+	coords := make([]int, outNDim)
 	for i := range len(out.Data) {
 		remain := i
-		for j := range ondim {
+		for j := range outNDim {
 			coords[j] = remain / out.Stride[j]
 			remain = remain % out.Stride[j]
 		}
@@ -697,17 +697,17 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 
 	// reduced layout
 	outShape := make([]int, 0, ndim-len(validated))
-	outNdim := make([]int, ndim)
+	outNDim := make([]int, ndim)
 
 	var pos int
 	for i := range ndim {
 		if validated[i] {
-			outNdim[i] = -1
+			outNDim[i] = -1
 			continue
 		}
 
 		outShape = append(outShape, v.Shape[i])
-		outNdim[i] = pos
+		outNDim[i] = pos
 		pos++
 	}
 	outStride := stride(outShape...)
@@ -720,7 +720,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 			coord := remain / v.Stride[j]
 			remain = remain % v.Stride[j]
 
-			idx := outNdim[j]
+			idx := outNDim[j]
 			if idx < 0 {
 				// reduced axis
 				continue
@@ -819,13 +819,13 @@ func validate[T Number](v *Tensor[T], axis ...int) (map[int]bool, int, error) {
 func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 	pad := func(shape []int, length int) []int {
 		diff := length - len(shape)
-		newShape := make([]int, length)
+		out := make([]int, length)
 		for i := range diff {
-			newShape[i] = 1
+			out[i] = 1
 		}
 
-		copy(newShape[diff:], shape)
-		return newShape
+		copy(out[diff:], shape)
+		return out
 	}
 
 	// keep last n dimensions
