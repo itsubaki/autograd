@@ -17,10 +17,10 @@ func ExampleMulT() {
 	fmt.Println(f.Backward(variable.OneLike(a), variable.OneLike(b)))
 
 	// Output:
-	// variable([3])
-	// variable([2])
-	// [variable([6])]
-	// [variable([2]) variable([3])]
+	// variable(3)
+	// variable(2)
+	// [variable(6)]
+	// [variable(2) variable(3)]
 }
 
 func ExampleMul() {
@@ -35,8 +35,8 @@ func ExampleMul() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([7])
-	// variable([2]) variable([3])
+	// variable(7)
+	// variable(2) variable(3)
 }
 
 func ExampleMul_broadcast() {
@@ -50,6 +50,6 @@ func ExampleMul_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable([6 6 6 6 6])
-	// variable([3 3 3 3 3]) variable([10])
+	// variable[1 5]([6 6 6 6 6])
+	// variable[1 5]([3 3 3 3 3]) variable(10)
 }

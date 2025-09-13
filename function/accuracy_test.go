@@ -19,5 +19,5 @@ func ExampleAccuracy() {
 	fmt.Println(F.Accuracy(y, t))
 
 	// Output:
-	// variable([0.6666666666666666])
+	// variable(0.6666666666666666)
 }

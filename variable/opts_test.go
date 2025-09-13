@@ -18,8 +18,8 @@ func Example_retaingrad() {
 	fmt.Println(x0.Grad, x1.Grad)
 
 	// Output:
-	// variable([1]) variable([1])
-	// variable([2]) variable([1])
+	// variable(1) variable(1)
+	// variable(2) variable(1)
 }
 
 func Example_retaingrad_false() {
@@ -35,7 +35,7 @@ func Example_retaingrad_false() {
 
 	// Output:
 	// <nil> <nil>
-	// variable([2]) variable([1])
+	// variable(2) variable(1)
 }
 
 func ExampleHasRetainGrad() {

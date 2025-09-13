@@ -20,8 +20,9 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 	label := label(x[1])
 	logz := logsumexp(x[0].Data)
 	logp := logp(matrix.Sub(x[0].Data, logz), label)
+	N := x[0].Shape()[0]
 
-	y := -1.0 / float64(x[0].N()) * matrix.Sum(logp)
+	y := -1.0 / float64(N) * matrix.Sum(logp)
 	return []*variable.Variable{
 		variable.New(y),
 	}

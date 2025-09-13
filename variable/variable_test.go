@@ -12,7 +12,7 @@ func ExampleVariable() {
 	fmt.Println(v)
 
 	// Output:
-	// variable([1 2 3 4])
+	// variable[1 4]([1 2 3 4])
 }
 
 func ExampleVariable_Name() {
@@ -21,7 +21,7 @@ func ExampleVariable_Name() {
 	fmt.Println(v)
 
 	// Output:
-	// v([1 2 3 4])
+	// v[1 4]([1 2 3 4])
 }
 
 func ExampleVariable_Name_matrix() {
@@ -32,7 +32,7 @@ func ExampleVariable_Name_matrix() {
 	fmt.Println(v)
 
 	// Output:
-	// variable([[1 2 3] [4 5 6]])
+	// variable[2 3]([[1 2 3] [4 5 6]])
 }
 
 func ExampleZeroLike() {
@@ -40,7 +40,7 @@ func ExampleZeroLike() {
 	fmt.Println(variable.ZeroLike(v))
 
 	// Output:
-	// variable([0 0 0 0])
+	// variable[1 4]([0 0 0 0])
 }
 
 func ExampleOneLike() {
@@ -48,20 +48,28 @@ func ExampleOneLike() {
 	fmt.Println(variable.OneLike(v))
 
 	// Output:
-	// variable([1 1 1 1])
+	// variable[1 4]([1 1 1 1])
 }
 
 func ExampleZero() {
 	fmt.Println(variable.Zero([]int{2, 3}))
 
 	// Output:
-	// variable([[0 0 0] [0 0 0]])
+	// variable[2 3]([[0 0 0] [0 0 0]])
 }
 
 func ExampleRand() {
 	s := rand.Const()
-	for _, r := range variable.Rand([]int{2, 3}, s).Data.Seq2() {
-		fmt.Println(r)
+	v := variable.Rand([]int{2, 3}, s)
+
+	shape := v.Shape()
+	for i := range shape[0] {
+		row := make([]float64, shape[1])
+		for j := range shape[1] {
+			row[j] = v.At(i, j)
+		}
+
+		fmt.Println(row)
 	}
 
 	// Output:
@@ -71,8 +79,16 @@ func ExampleRand() {
 
 func ExampleRandn() {
 	s := rand.Const()
-	for _, r := range variable.Randn([]int{2, 3}, s).Data.Seq2() {
-		fmt.Println(r)
+	v := variable.Randn([]int{2, 3}, s)
+
+	shape := v.Shape()
+	for i := range shape[0] {
+		row := make([]float64, shape[1])
+		for j := range shape[1] {
+			row[j] = v.At(i, j)
+		}
+
+		fmt.Println(row)
 	}
 
 	// Output:
@@ -90,7 +106,7 @@ func ExampleVariable_Unchain() {
 	fmt.Println(y.Creator) // nil
 
 	// Output:
-	// *variable.PowT[variable([1])]
+	// *variable.PowT[variable(1)]
 	// <nil>
 }
 
@@ -112,10 +128,10 @@ func ExampleVariable_UnchainBackward() {
 	fmt.Println(z.Creator) // nil
 
 	// Output:
-	// *variable.PowT[variable([1])]
-	// *variable.SinT[variable([1])]
+	// *variable.PowT[variable(1)]
+	// *variable.SinT[variable(1)]
 	// <nil>
-	// *variable.SinT[variable([1])]
+	// *variable.SinT[variable(1)]
 	// <nil>
 	// <nil>
 }
@@ -130,8 +146,8 @@ func ExampleVariable_Backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([1])
-	// variable([1])
+	// variable(1)
+	// variable(1)
 }
 
 func Example_add() {
@@ -139,8 +155,8 @@ func Example_add() {
 	fmt.Println(variable.AddGrad(variable.New(1), variable.New(2)))
 
 	// Output:
-	// variable([1])
-	// variable([3])
+	// variable(1)
+	// variable(3)
 }
 
 func Example_zip() {

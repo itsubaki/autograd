@@ -16,8 +16,8 @@ func ExampleSum() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([21])
-	// variable([1 1 1 1 1 1])
+	// variable(21)
+	// variable[1 6]([1 1 1 1 1 1])
 }
 
 func ExampleSum_matrix() {
@@ -33,6 +33,6 @@ func ExampleSum_matrix() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([21])
-	// variable([[1 1 1] [1 1 1]])
+	// variable(21)
+	// variable[2 3]([[1 1 1] [1 1 1]])
 }

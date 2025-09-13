@@ -26,9 +26,9 @@ func ExampleLinear() {
 	fmt.Println(w.Grad)
 
 	// Output:
-	// variable([[38 44 50 56] [83 98 113 128]])
-	// variable([[10 26 42] [10 26 42]])
-	// variable([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
+	// variable[2 4]([[38 44 50 56] [83 98 113 128]])
+	// variable[2 3]([[10 26 42] [10 26 42]])
+	// variable[3 4]([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
 }
 
 func ExampleLinear_bias() {
@@ -52,8 +52,8 @@ func ExampleLinear_bias() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable([[39 45 51 57] [84 99 114 129]])
-	// variable([[10 26 42] [10 26 42]])
-	// variable([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
-	// variable([8])
+	// variable[2 4]([[39 45 51 57] [84 99 114 129]])
+	// variable[2 3]([[10 26 42] [10 26 42]])
+	// variable[3 4]([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
+	// variable(8)
 }

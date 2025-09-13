@@ -20,8 +20,8 @@ func ExampleGetItem() {
 	fmt.Println(A.Grad)
 
 	// Output:
-	// variable([4 5 6])
-	// variable([[0 0 0] [1 1 1]])
+	// variable[1 3]([4 5 6])
+	// variable[2 3]([[0 0 0] [1 1 1]])
 }
 
 func ExampleGetItem_indices() {
@@ -38,6 +38,6 @@ func ExampleGetItem_indices() {
 	fmt.Println(A.Grad)
 
 	// Output:
-	// variable([[1 2 3] [1 2 3] [4 5 6]])
-	// variable([[2 2 2] [1 1 1]])
+	// variable[3 3]([[1 2 3] [1 2 3] [4 5 6]])
+	// variable[2 3]([[2 2 2] [1 1 1]])
 }

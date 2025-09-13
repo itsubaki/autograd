@@ -25,7 +25,7 @@ func ExampleMeanSquaredError() {
 	fmt.Println(x1.Grad)
 
 	// Output:
-	// variable([12])
-	// variable([[-2 -2 -2] [-2 -2 -2]])
-	// variable([[2 2 2] [2 2 2]])
+	// variable(12)
+	// variable[2 3]([[-2 -2 -2] [-2 -2 -2]])
+	// variable[2 3]([[2 2 2] [2 2 2]])
 }

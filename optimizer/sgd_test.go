@@ -32,7 +32,7 @@ func ExampleSGD() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([0.9])
+	// variable(0.9)
 }
 
 func ExampleSGD_hook() {
@@ -51,5 +51,5 @@ func ExampleSGD_hook() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([1])
+	// variable(1)
 }

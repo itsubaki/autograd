@@ -25,8 +25,8 @@ func ExampleMomentum() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([0.999])
-	// variable([0.9971])
+	// variable(0.999)
+	// variable(0.9971)
 }
 
 func ExampleMomentum_hook() {
@@ -49,6 +49,6 @@ func ExampleMomentum_hook() {
 	fmt.Println(p)
 
 	// Output:
-	// variable([1.0990000000000002])
-	// variable([1.1971000000000003])
+	// variable(1.0990000000000002)
+	// variable(1.1971000000000003)
 }

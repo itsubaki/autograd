@@ -17,7 +17,7 @@ func ExampleClipGrad() {
 	fmt.Println(p.Grad)
 
 	// Output:
-	// variable([0.18257415250172812 0.36514830500345624 0.5477224575051843 0.7302966100069125])
+	// variable[1 4]([0.18257415250172812 0.36514830500345624 0.5477224575051843 0.7302966100069125])
 }
 
 func ExampleClipGrad_noclip() {
@@ -30,5 +30,5 @@ func ExampleClipGrad_noclip() {
 	fmt.Println(p.Grad)
 
 	// Output:
-	// variable([0.1 0.2 0.3 0.4])
+	// variable[1 4]([0.1 0.2 0.3 0.4])
 }
