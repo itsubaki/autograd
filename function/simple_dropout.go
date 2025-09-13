@@ -3,7 +3,7 @@ package function
 import (
 	randv2 "math/rand/v2"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -13,8 +13,8 @@ func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variab
 			return x[0]
 		}
 
-		xs := variable.Shape(x[0])
-		mask := matrix.Mask(matrix.Rand(xs[0], xs[1], s...), mask(ratio))
+		shape := x[0].Shape()
+		mask := tensor.Mask(tensor.Rand(shape, s...), mask(ratio))
 		return MulC(1.0/(1.0-ratio), Mul(x[0], variable.NewFrom(mask))) // y = x * mask / (1 - ratio)
 	}
 }

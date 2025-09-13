@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/numerical"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/rand"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -232,7 +232,7 @@ func Example_gradientDescent() {
 
 	update := func(lr float64, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = matrix.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
 				return a - lr*b
 			})
 		}
@@ -296,7 +296,7 @@ func Example_newton() {
 		x.Cleargrad()
 		y.Backward()
 
-		x.Data = matrix.Sub(x.Data, matrix.Div(x.Grad.Data, gx2(x).Data))
+		x.Data = tensor.Sub(x.Data, tensor.Div(x.Grad.Data, gx2(x).Data))
 	}
 
 	// Output:
@@ -337,7 +337,7 @@ func Example_newton_double() {
 		gx.Backward()
 		gx2 := x.Grad
 
-		x.Data = matrix.Sub(x.Data, matrix.Div(gx.Data, gx2.Data))
+		x.Data = tensor.Sub(x.Data, tensor.Div(gx.Data, gx2.Data))
 	}
 
 	// Output:
@@ -375,12 +375,12 @@ func Example_double() {
 func Example_linearRegression() {
 	// p318
 	s := rand.Const()
-	xrand := matrix.Rand(100, 1, s)
-	yrand := matrix.Rand(100, 1, s)
+	xrand := tensor.Rand([]int{100, 1}, s)
+	yrand := tensor.Rand([]int{100, 1}, s)
 
 	// variable
 	x := variable.NewFrom(xrand)                                                    // x = xrand
-	t := variable.NewFrom(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))) // t = 2x+5+yrand
+	t := variable.NewFrom(tensor.Add(tensor.MulC(2, xrand), tensor.AddC(5, yrand))) // t = 2x+5+yrand
 
 	// parameter
 	w := variable.New(0.0)
@@ -392,7 +392,7 @@ func Example_linearRegression() {
 
 	update := func(lr float64, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = matrix.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
 				return a - lr*b
 			})
 		}
@@ -433,8 +433,8 @@ func Example_mlp() {
 		LearningRate: 0.2,
 	}
 
-	x := variable.Rand(100, 1, s)
-	t := variable.Rand(100, 1, s)
+	x := variable.Rand([]int{100, 1}, s)
+	t := variable.Rand([]int{100, 1}, s)
 
 	for i := range 100 {
 		y := m.Forward(x)

@@ -12,7 +12,7 @@ func ExampleVariable() {
 	fmt.Println(v)
 
 	// Output:
-	// variable([1 2 3 4])
+	// variable[1 4]([1 2 3 4])
 }
 
 func ExampleVariable_Name() {
@@ -21,7 +21,7 @@ func ExampleVariable_Name() {
 	fmt.Println(v)
 
 	// Output:
-	// v([1 2 3 4])
+	// v[1 4]([1 2 3 4])
 }
 
 func ExampleVariable_Name_matrix() {
@@ -32,7 +32,7 @@ func ExampleVariable_Name_matrix() {
 	fmt.Println(v)
 
 	// Output:
-	// variable([[1 2 3] [4 5 6]])
+	// variable[2 3]([1 2 3 4 5 6])
 }
 
 func ExampleZeroLike() {
@@ -40,7 +40,7 @@ func ExampleZeroLike() {
 	fmt.Println(variable.ZeroLike(v))
 
 	// Output:
-	// variable([0 0 0 0])
+	// variable[1 4]([0 0 0 0])
 }
 
 func ExampleOneLike() {
@@ -48,36 +48,38 @@ func ExampleOneLike() {
 	fmt.Println(variable.OneLike(v))
 
 	// Output:
-	// variable([1 1 1 1])
+	// variable[1 4]([1 1 1 1])
 }
 
 func ExampleZero() {
 	fmt.Println(variable.Zero(2, 3))
 
 	// Output:
-	// variable([[0 0 0] [0 0 0]])
+	// variable[2 3]([0 0 0 0 0 0])
 }
 
 func ExampleRand() {
 	s := rand.Const()
-	for _, r := range variable.Rand(2, 3, s).Data.Seq2() {
-		fmt.Println(r)
-	}
+	v := variable.Rand([]int{2, 3}, s)
+
+	fmt.Println(v.Data.At(0, 0), v.Data.At(0, 1), v.Data.At(0, 2))
+	fmt.Println(v.Data.At(1, 0), v.Data.At(1, 1), v.Data.At(1, 2))
 
 	// Output:
-	// [0.9999275824802834 0.8856419373528862 0.38147752771154886]
-	// [0.4812673234167829 0.44417259544314847 0.5210016660132573]
+	// 0.9999275824802834 0.8856419373528862 0.38147752771154886
+	// 0.4812673234167829 0.44417259544314847 0.5210016660132573
 }
 
 func ExampleRandn() {
 	s := rand.Const()
-	for _, r := range variable.Randn(2, 3, s).Data.Seq2() {
-		fmt.Println(r)
-	}
+	v := variable.Randn([]int{2, 3}, s)
+
+	fmt.Println(v.Data.At(0, 0), v.Data.At(0, 1), v.Data.At(0, 2))
+	fmt.Println(v.Data.At(1, 0), v.Data.At(1, 1), v.Data.At(1, 2))
 
 	// Output:
-	// [0.5665360716030388 -0.6123972949371448 0.5898947122637695]
-	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
+	// 0.5665360716030388 -0.6123972949371448 0.5898947122637695
+	// -0.3678242340302933 1.0919575041640825 -0.4438344619606553
 }
 
 func ExampleVariable_Unchain() {
@@ -90,7 +92,7 @@ func ExampleVariable_Unchain() {
 	fmt.Println(y.Creator) // nil
 
 	// Output:
-	// *variable.PowT[variable([1])]
+	// *variable.PowT[variable(1)]
 	// <nil>
 }
 
@@ -112,10 +114,10 @@ func ExampleVariable_UnchainBackward() {
 	fmt.Println(z.Creator) // nil
 
 	// Output:
-	// *variable.PowT[variable([1])]
-	// *variable.SinT[variable([1])]
+	// *variable.PowT[variable(1)]
+	// *variable.SinT[variable(1)]
 	// <nil>
-	// *variable.SinT[variable([1])]
+	// *variable.SinT[variable(1)]
 	// <nil>
 	// <nil>
 }
@@ -130,8 +132,8 @@ func ExampleVariable_Backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([1])
-	// variable([1])
+	// variable(1)
+	// variable(1)
 }
 
 func Example_add() {
@@ -139,8 +141,8 @@ func Example_add() {
 	fmt.Println(variable.AddGrad(variable.New(1), variable.New(2)))
 
 	// Output:
-	// variable([1])
-	// variable([3])
+	// variable(1)
+	// variable(3)
 }
 
 func Example_zip() {

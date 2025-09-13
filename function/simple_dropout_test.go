@@ -22,8 +22,8 @@ func ExampleDropoutSimple() {
 	}()
 
 	// Output:
-	// variable([2 2 0 0 0])
-	// variable([1 1 1 1 1])
+	// variable[1 5]([2 2 0 0 0])
+	// variable[1 5]([1 1 1 1 1])
 }
 
 func ExampleDropoutSimple_backward() {

@@ -1,15 +1,17 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Transpose(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &TransposeT{}}).First(x...)
+	return (&Function{
+		Forwarder: &TransposeT{},
+	}).First(x...)
 }
 
 type TransposeT struct{}
 
 func (f *TransposeT) Forward(x ...*Variable) []*Variable {
-	y := matrix.Transpose(x[0].Data)
+	y := tensor.Transpose(x[0].Data)
 	return []*Variable{
 		NewFrom(y),
 	}

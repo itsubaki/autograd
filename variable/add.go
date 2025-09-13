@@ -1,12 +1,14 @@
 package variable
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/vector"
 )
 
 func AddC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &AddT{}}).First(New(c), x[0])
+	return (&Function{
+		Forwarder: &AddT{},
+	}).First(New(c), x[0])
 }
 
 func Add(x ...*Variable) *Variable {
@@ -18,8 +20,8 @@ type AddT struct {
 }
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {
-	f.x0Shape, f.x1Shape = Shape(x[0]), Shape(x[1])
-	y := matrix.Add(x[0].Data, x[1].Data)
+	f.x0Shape, f.x1Shape = x[0].Data.Shape, x[1].Data.Shape
+	y := tensor.Add(x[0].Data, x[1].Data)
 
 	return []*Variable{
 		NewFrom(y),

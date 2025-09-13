@@ -1,9 +1,11 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Exp(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &ExpT{}}).First(x...)
+	return (&Function{
+		Forwarder: &ExpT{},
+	}).First(x...)
 }
 
 type ExpT struct {
@@ -11,7 +13,7 @@ type ExpT struct {
 }
 
 func (f *ExpT) Forward(x ...*Variable) []*Variable {
-	y := matrix.Exp(x[0].Data)
+	y := tensor.Exp(x[0].Data)
 	f.y = NewFrom(y)
 
 	return []*Variable{

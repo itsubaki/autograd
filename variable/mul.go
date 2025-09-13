@@ -1,16 +1,20 @@
 package variable
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/vector"
 )
 
 func MulC(c float64, x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MulT{}}).First(New(c), x[0])
+	return (&Function{
+		Forwarder: &MulT{},
+	}).First(New(c), x[0])
 }
 
 func Mul(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MulT{}}).First(x...)
+	return (&Function{
+		Forwarder: &MulT{},
+	}).First(x...)
 }
 
 type MulT struct {
@@ -20,8 +24,8 @@ type MulT struct {
 
 func (f *MulT) Forward(x ...*Variable) []*Variable {
 	f.x0, f.x1 = x[0], x[1]
-	f.x0Shape, f.x1Shape = Shape(x[0]), Shape(x[1])
-	y := matrix.Mul(x[0].Data, x[1].Data)
+	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
+	y := tensor.Mul(x[0].Data, x[1].Data)
 
 	return []*Variable{
 		NewFrom(y),

@@ -8,7 +8,7 @@ import (
 
 func ExampleBroadcastTo() {
 	x := variable.New(2)
-	y := variable.BroadcastTo(1, 3)(x)
+	y := variable.BroadcastTo(4, 2)(x)
 	y.Backward()
 
 	fmt.Println(y)

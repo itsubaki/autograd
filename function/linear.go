@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -15,7 +15,7 @@ type LinearT struct {
 
 func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.w = x[0], x[1]
-	y := matrix.MatMul(x[0].Data, x[1].Data)
+	y := tensor.MatMul(x[0].Data, x[1].Data)
 
 	if len(x) < 3 {
 		// no bias
@@ -25,7 +25,7 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	}
 
 	// add bias
-	f.b, y = x[2], matrix.Add(y, x[2].Data)
+	f.b, y = x[2], tensor.Add(y, x[2].Data)
 
 	return []*variable.Variable{
 		variable.NewFrom(y),
@@ -44,6 +44,6 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	}
 
 	// add bias
-	gb := SumTo(variable.Shape(f.b)...)(gy[0])
+	gb := SumTo(f.b.Shape()...)(gy[0])
 	return append(gxs, gb)
 }

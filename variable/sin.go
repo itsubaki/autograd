@@ -1,9 +1,11 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Sin(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SinT{}}).First(x...)
+	return (&Function{
+		Forwarder: &SinT{},
+	}).First(x...)
 }
 
 type SinT struct {
@@ -12,7 +14,7 @@ type SinT struct {
 
 func (f *SinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-	y := matrix.Sin(x[0].Data)
+	y := tensor.Sin(x[0].Data)
 
 	return []*Variable{
 		NewFrom(y),

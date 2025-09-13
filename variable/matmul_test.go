@@ -3,7 +3,6 @@ package variable_test
 import (
 	"fmt"
 
-	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -21,8 +20,8 @@ func ExampleMatMul() {
 	y := variable.MatMul(x, w)
 	y.Backward()
 
-	fmt.Println(matrix.Shape(x.Grad.Data))
-	fmt.Println(matrix.Shape(w.Grad.Data))
+	fmt.Println(x.Grad.Shape())
+	fmt.Println(w.Grad.Shape())
 
 	// Output:
 	// [2 3]

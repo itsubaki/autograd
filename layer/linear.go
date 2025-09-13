@@ -5,7 +5,7 @@ import (
 	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -57,7 +57,8 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
-		inSize := variable.Shape(x[0])[1]
+		// TODO
+		inSize := x[0].Shape()[1]
 		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
 	}
 
@@ -76,7 +77,7 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 }
 
 func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
-	w := matrix.Randn(inSize, outSize, s)
+	w := tensor.Randn([]int{inSize, outSize}, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
-	return variable.NewFrom(matrix.MulC(xavier, w))
+	return variable.NewFrom(tensor.MulC(xavier, w))
 }

@@ -1,9 +1,11 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Sum(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &SumT{}}).First(x...)
+	return (&Function{
+		Forwarder: &SumT{},
+	}).First(x...)
 }
 
 type SumT struct {
@@ -11,11 +13,11 @@ type SumT struct {
 }
 
 func (f *SumT) Forward(x ...*Variable) []*Variable {
-	f.xShape = Shape(x[0])
+	f.xShape = x[0].Shape()
 
-	y := matrix.Sum(x[0].Data)
+	y := tensor.Sum(x[0].Data)
 	return []*Variable{
-		New(y),
+		NewFrom(y),
 	}
 }
 

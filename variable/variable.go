@@ -5,56 +5,60 @@ import (
 	randv2 "math/rand/v2"
 	"sort"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 )
 
 type Variable struct {
 	Name       string
-	Data       *matrix.Matrix
+	Data       *tensor.Tensor[float64]
 	Grad       *Variable
 	Creator    *Function
 	Generation int
 }
 
 func New(v ...float64) *Variable {
-	return &Variable{Data: matrix.New(v)}
+	if len(v) == 1 {
+		return &Variable{Data: tensor.New(nil, v)}
+	}
+
+	return &Variable{Data: tensor.New([]int{1, len(v)}, v)}
 }
 
 func NewOf(v ...[]float64) *Variable {
-	return &Variable{Data: matrix.New(v...)}
+	data := make([]float64, 0, len(v)*len(v[0]))
+	for _, row := range v {
+		data = append(data, row...)
+	}
+
+	return &Variable{Data: tensor.New([]int{len(v), len(v[0])}, data)}
 }
 
-func NewFrom(v *matrix.Matrix) *Variable {
+func NewFrom(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
 func ZeroLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.ZeroLike(v.Data)}
+	return &Variable{Data: tensor.ZeroLike(v.Data)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.OneLike(v.Data)}
+	return &Variable{Data: tensor.OneLike(v.Data)}
 }
 
-func Zero(rows, cols int) *Variable {
-	return &Variable{Data: matrix.Zero(rows, cols)}
+func Zero(shape ...int) *Variable {
+	return &Variable{Data: tensor.Zero[float64](shape...)}
 }
 
-func Rand(rows, cols int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Rand(rows, cols, s...)}
+func Rand(shape []int, s ...randv2.Source) *Variable {
+	return &Variable{Data: tensor.Rand(shape, s...)}
 }
 
-func Randn(rows, cols int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Randn(rows, cols, s...)}
+func Randn(shape []int, s ...randv2.Source) *Variable {
+	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
-func Shape(v *Variable) []int {
-	return matrix.Shape(v.Data)
-}
-
-// N returns the number of rows.
-func (v *Variable) N() int {
-	return v.Data.Rows
+func (v *Variable) Shape() []int {
+	return v.Data.Shape
 }
 
 func (v *Variable) Cleargrad() {
@@ -148,17 +152,17 @@ func (v *Variable) Backward(opts ...Opts) {
 	}
 }
 
-func (v Variable) String() string {
+func (v *Variable) String() string {
 	name := "variable"
 	if v.Name != "" {
 		name = v.Name
 	}
 
-	if v.N() == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data.Row(0))
+	if len(v.Shape()) == 0 {
+		return fmt.Sprintf("%s(%v)", name, v.Data.Data[0])
 	}
 
-	return fmt.Sprintf("%s(%v)", name, v.Data)
+	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {

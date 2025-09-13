@@ -8,16 +8,16 @@ import (
 
 func ExamplePowT() {
 	x := variable.New(3.0)
-	f := variable.PowT{C: 4.0}
+	f := variable.PowT{P: 4.0}
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))
 	fmt.Println(f.Backward(variable.OneLike(x)))
 
 	// Output:
-	// variable([3])
-	// [variable([81])]
-	// [variable([108])]
+	// variable(3)
+	// [variable(81)]
+	// [variable(108)]
 }
 
 func ExamplePow() {
@@ -29,8 +29,8 @@ func ExamplePow() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([8])
-	// variable([12])
+	// variable(8)
+	// variable(12)
 }
 
 func ExamplePow_double() {
@@ -49,9 +49,9 @@ func ExamplePow_double() {
 	}
 
 	// Output:
-	// variable([8])
-	// variable([12])
-	// variable([12])
-	// variable([6])
-	// variable([0])
+	// variable(8)
+	// variable(12)
+	// variable(12)
+	// variable(6)
+	// variable(0)
 }

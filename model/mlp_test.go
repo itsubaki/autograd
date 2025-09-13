@@ -72,7 +72,7 @@ func ExampleMLP_Params() {
 	m.Forward(x) // gen w
 
 	for k, p := range m.Params() {
-		fmt.Println(k, variable.Shape(p))
+		fmt.Println(k, p.Shape())
 	}
 
 	// Unordered output:

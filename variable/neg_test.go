@@ -16,6 +16,6 @@ func ExampleNeg() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable([-3])
-	// variable([-1])
+	// variable(-3)
+	// variable(-1)
 }

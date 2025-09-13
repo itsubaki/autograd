@@ -111,7 +111,7 @@ func ExampleRandn_seed() {
 
 func ExampleTensor_Reshape() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := v.Reshape(1, 4)
+	w := tensor.Reshape(v, 1, 4)
 
 	fmt.Println(w.Shape)
 	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
@@ -132,7 +132,7 @@ func ExampleTensor_Reshape_invalid() {
 	}()
 
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	_ = v.Reshape(10, 10)
+	_ = tensor.Reshape(v, 10, 10)
 
 	panic("unreachable")
 

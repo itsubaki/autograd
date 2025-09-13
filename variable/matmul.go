@@ -1,11 +1,11 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/matrix"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func MatMul(x ...*Variable) *Variable {
-	return (&Function{Forwarder: &MatMulT{}}).First(x...)
+	return (&Function{
+		Forwarder: &MatMulT{},
+	}).First(x...)
 }
 
 type MatMulT struct {
@@ -14,7 +14,7 @@ type MatMulT struct {
 
 func (f *MatMulT) Forward(x ...*Variable) []*Variable {
 	f.x, f.w = x[0], x[1]
-	y := matrix.MatMul(x[0].Data, x[1].Data)
+	y := tensor.MatMul(x[0].Data, x[1].Data)
 
 	return []*Variable{
 		NewFrom(y),
