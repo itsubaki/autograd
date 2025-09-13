@@ -17,7 +17,6 @@ func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 	y := make([][]float64, len(f.Slices))
 
-	// TOTO
 	// for i, idx := range f.Slices {
 	// 	y[i] = x[0].Data.Row(idx)
 	// }

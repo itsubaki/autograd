@@ -57,8 +57,7 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
-		// TODO
-		inSize := x[0].Shape()[1]
+		inSize := x[0].Shape()[len(x[0].Shape())-1] // last dimension
 		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
 	}
 

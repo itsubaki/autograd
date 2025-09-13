@@ -11,7 +11,6 @@ func ClipGrad(max float64) func(params []layer.Parameter) {
 	return func(params []layer.Parameter) {
 		var total float64
 		for _, p := range params {
-			// TODO:
 			total += tensor.Sum(tensor.Pow(p.Grad.Data, 2.0)).At()
 		}
 
