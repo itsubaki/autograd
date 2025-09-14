@@ -173,6 +173,49 @@ func ExampleTensor_AddAt() {
 	// [11 2 3 4]
 }
 
+func ExampleTensor_ScatterAdd() {
+	v := tensor.New([]int{3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+	})
+	w := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+
+	v.ScatterAdd(w, []int{0, 2}, 0)
+
+	fmt.Println(v.Shape)
+	fmt.Println(v.Data)
+
+	// Output:
+	// [3 2]
+	// [11 13 20 21 33 35]
+}
+
+func ExampleTensor_ScatterAdd_axis1() {
+	v := tensor.New([]int{3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+	})
+	w := tensor.New([]int{3, 2}, []int{
+		1, 2,
+		2, 3,
+		3, 6,
+	})
+
+	v.ScatterAdd(w, []int{0, 0}, 1)
+
+	fmt.Println(v.Shape)
+	fmt.Println(v.Data)
+
+	// Output:
+	// [3 2]
+	// [13 11 25 21 39 31]
+}
+
 func ExampleTake() {
 	v := tensor.New([]int{3, 2}, []int{
 		10, 11,
@@ -1055,7 +1098,7 @@ func ExampleMatMul_invalid() {
 	panic("unreachable")
 
 	// Output:
-	// incompatible matrix shapes
+	// shapes [2 2 2] and [2 3 2] are not aligned for matmul
 }
 
 func ExampleBroadcastTo_backward() {
@@ -1183,6 +1226,131 @@ func TestTake(t *testing.T) {
 		got := tensor.Take(c.v, c.indices, c.axis)
 		if !tensor.Equal(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestScatterAdd(t *testing.T) {
+	cases := []struct {
+		v       *tensor.Tensor[int]
+		w       *tensor.Tensor[int]
+		indices []int
+		axis    int
+		want    *tensor.Tensor[int]
+	}{
+		{
+			v: tensor.New([]int{3, 2}, []int{
+				10, 11,
+				20, 21,
+				30, 31,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				1, 1,
+				2, 2,
+			}),
+			axis:    0,
+			indices: []int{0, 2},
+			want: tensor.New([]int{3, 2}, []int{
+				11, 12,
+				20, 21,
+				32, 33,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    1,
+			indices: []int{2, 0},
+			want: tensor.New([]int{2, 3}, []int{
+				21, 2, 13,
+				44, 5, 36,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 3},
+				[]int{
+					1, 2, 3,
+					4, 5, 6,
+
+					10, 11, 12,
+					13, 14, 15,
+				}),
+			w: tensor.New([]int{2, 2, 2}, []int{
+				100, 200,
+				300, 400,
+
+				1000, 1100,
+				1200, 1300,
+			}),
+			axis:    2,
+			indices: []int{0, 2},
+			want: tensor.New([]int{2, 2, 3}, []int{
+				101, 2, 203,
+				304, 5, 406,
+
+				1010, 11, 1112,
+				1213, 14, 1315,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 3}, []int{
+				10, 20, 30,
+				40, 50, 60,
+			}),
+			axis:    1,
+			indices: []int{1, 1, 2},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 32, 33,
+				4, 95, 66,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 1}, []int{
+				10, 20,
+			}),
+			axis:    -1,
+			indices: []int{1},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 12, 3,
+				4, 25, 6,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    1,
+			indices: []int{-1, 0},
+			want: tensor.New([]int{2, 3}, []int{
+				21, 2, 13,
+				44, 5, 36,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		c.v.ScatterAdd(c.w, c.indices, c.axis)
+		if !tensor.Equal(c.v, c.want) {
+			t.Errorf("got=%v, want=%v", c.v.Data, c.want.Data)
 		}
 	}
 }
@@ -1700,6 +1868,98 @@ func TestTake_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Take(c.v, c.indices, c.axis)
+			t.Fail()
+		}()
+	}
+}
+
+func TestScatterAdd_invalid(t *testing.T) {
+	cases := []struct {
+		v, w    *tensor.Tensor[int]
+		indices []int
+		axis    int
+	}{
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    2,
+			indices: []int{0, 1},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    -3,
+			indices: []int{0, 1},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis:    2,
+			indices: []int{},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    1,
+			indices: []int{3, 0},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			axis:    1,
+			indices: []int{-4, 0},
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 3}, []int{
+				10, 20, 30,
+				40, 50, 60,
+			}),
+			axis:    1,
+			indices: []int{1, 1, 3},
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axis %d and indices %v", c.axis, c.indices)
+			}()
+
+			c.v.ScatterAdd(c.w, c.indices, c.axis)
 			t.Fail()
 		}()
 	}

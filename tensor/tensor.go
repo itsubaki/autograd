@@ -75,7 +75,11 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 	}
 
 	if axis < 0 || axis >= ndim {
-		panic(fmt.Sprintf("invalid axis %d for shape %v", axis, v.Shape))
+		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
+	}
+
+	if len(indices) == 0 {
+		panic("indices is empty")
 	}
 
 	indicesAdj := make([]int, len(indices))
@@ -162,6 +166,41 @@ func (v *Tensor[T]) Set(coord []int, value T) {
 // AddAt adds the given value to the element at the given index.
 func (v *Tensor[T]) AddAt(coord []int, value T) {
 	v.Data[Ravel(v, coord...)] += value
+}
+
+// ScatterAdd adds the elements of w to v at the given indices.
+func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
+	ndim := v.NumDims()
+	if axis < 0 {
+		axis += ndim
+	}
+
+	if axis < 0 || axis >= ndim {
+		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
+	}
+
+	if w.Shape[axis] != len(indices) {
+		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), axis, w.Shape[axis]))
+	}
+
+	indicesAdj := make([]int, len(indices))
+	for i, idx := range indices {
+		if idx < 0 {
+			idx += v.Shape[axis]
+		}
+
+		if idx < 0 || idx >= v.Shape[axis] {
+			panic(fmt.Sprintf("index %d out of range for axis=%d (shape=%v)", idx, axis, v.Shape))
+		}
+
+		indicesAdj[i] = idx
+	}
+
+	for i := range len(w.Data) {
+		coord := Unravel(w, i)
+		coord[axis] = indicesAdj[coord[axis]]
+		v.Data[Ravel(v, coord...)] += w.Data[i]
+	}
 }
 
 // Equal returns true if the two tensors are equal.
@@ -321,7 +360,7 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	}
 
 	if axis < 0 || axis >= ndim {
-		panic(fmt.Sprintf("axis %d is out of bounds for tensor with %d dimensions", axis, ndim))
+		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
 	}
 
 	// NOTE: Consider Transpose implementation.
@@ -460,11 +499,11 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		}
 
 		if a < 0 || a >= ndim {
-			panic("axis out of range")
+			panic(fmt.Sprintf("axis=%v out of range for shape=%v", a, v.Shape))
 		}
 
 		if seen[a] {
-			panic("duplicate axis")
+			panic(fmt.Sprintf("duplicate axis=%v", a))
 		}
 
 		perm[i], seen[a] = a, true
@@ -496,7 +535,7 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		}
 
 		if a < 0 || a >= ndim {
-			panic("axis out of range")
+			panic(fmt.Sprintf("axis=%d out of range for shape=%v", a, v.Shape))
 		}
 
 		if v.Shape[a] == 1 {
@@ -527,7 +566,7 @@ func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	}
 
 	if axis < 0 || axis > ndim {
-		panic(fmt.Sprintf("axis %v out of range for tensor with %v dims", axis, ndim))
+		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
 	}
 
 	// insert 1 at axis
@@ -599,7 +638,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	arows, acols := a.Shape[ndim-2], a.Shape[ndim-1]
 	brows, bcols := b.Shape[ndim-2], b.Shape[ndim-1]
 	if acols != brows {
-		panic("incompatible matrix shapes")
+		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.Shape, w.Shape))
 	}
 
 	// offset
@@ -739,7 +778,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 // Ravel returns the index in the flat data slice for the given multi-dimensional coordinates.
 func Ravel[T Number](v *Tensor[T], coord ...int) int {
 	if len(coord) != len(v.Shape) {
-		panic("invalid number of coord")
+		panic(fmt.Sprintf("coord length=%v are not equal to ndim=%v", len(coord), len(v.Shape)))
 	}
 
 	var idx int
@@ -796,7 +835,7 @@ func stride(shape ...int) []int {
 func validate[T Number](v *Tensor[T], axis ...int) (map[int]bool, int, error) {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return nil, 0, fmt.Errorf("axis out of range (ndim=%v)", ndim)
+		return nil, 0, fmt.Errorf("shape is 0-dim")
 	}
 
 	seen := make(map[int]bool, len(axis))
@@ -806,7 +845,7 @@ func validate[T Number](v *Tensor[T], axis ...int) (map[int]bool, int, error) {
 		}
 
 		if seen[a] {
-			return nil, ndim, fmt.Errorf("duplicate axis %v", a)
+			return nil, ndim, fmt.Errorf("duplicate axis=%v", a)
 		}
 
 		seen[a] = true
