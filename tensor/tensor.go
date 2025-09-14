@@ -363,10 +363,10 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 
 	for i := range out.Data {
 		// index -> outCoord
-  outCoord := Unravel(out, i)
+		outCoord := Unravel(out, i)
 
 		// outCoord -> inCoord
-  inCoord := make([]int, ndim)
+		inCoord := make([]int, ndim)
 		var idx int
 		for j := range ndim {
 			if j == axis {
