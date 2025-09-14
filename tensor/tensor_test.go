@@ -441,7 +441,7 @@ func ExampleSum_axis1() {
 }
 
 func ExampleMax() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{4, 3, 2, 1})
 	w := tensor.Max(v)
 
 	fmt.Println(w.At())
