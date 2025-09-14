@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	randv2 "math/rand/v2"
-	"slices"
 
 	"github.com/itsubaki/autograd/rand"
 )
@@ -269,8 +268,8 @@ func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 // Max returns the maximum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
-func Max[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
-	return Reduce(v, slices.Min(v.Data), func(acc, x T) T {
+func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Reduce(v, -math.MaxFloat64, func(acc, x float64) float64 {
 		if x > acc {
 			return x
 		}
@@ -281,8 +280,8 @@ func Max[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 // Min returns the minimum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
-func Min[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
-	return Reduce(v, slices.Max(v.Data), func(acc, x T) T {
+func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Reduce(v, math.MaxFloat64, func(acc, x float64) float64 {
 		if x < acc {
 			return x
 		}
@@ -294,15 +293,15 @@ func Min[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 // Mean returns the mean of all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	if len(axes) == 0 {
-		// mean all
-		return MulC(1/float64(v.Size()), Sum(v))
-	}
-
 	ndim := v.NumDims()
 	if ndim == 0 {
 		// scalar
 		return v.Clone()
+	}
+
+	if len(axes) == 0 {
+		// mean all
+		return MulC(1/float64(v.Size()), Sum(v))
 	}
 
 	seen := make(map[int]bool, len(axes))
