@@ -103,13 +103,8 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 
 	for i := range len(out.Data) {
 		coords := Unravel(out, i)
-		coord := make([]int, len(coords))
-		copy(coord, coords)
-		coord[axis] = indicesAdj[coords[axis]]
-
-		src := Ravel(v, coord...)
-		dst := Ravel(out, coords...)
-		out.Data[dst] = v.Data[src]
+		coords[axis] = indicesAdj[coords[axis]]
+		out.Data[i] = v.Data[Ravel(v, coords...)]
 	}
 
 	return out
