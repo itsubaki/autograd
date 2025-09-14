@@ -615,32 +615,35 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	// out tensor
 	batch := a.Shape[:ndim-2]
 	shape := append(batch, []int{arows, bcols}...)
-	out := Zero[T](shape...)
+	o := Zero[T](shape...)
 
 	// batch matmul
 	for batchIdx := range size(batch) {
 		offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
 		offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
-		offseto := offset(batchIdx, batch, out.Stride[:ndim-2])
+		offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
 
 		// matmul
 		for i := range arows {
-			for j := range bcols {
-				var sum T
-				for k := range acols {
-					ai := offseta + i*a.Stride[ndim-2] + k*a.Stride[ndim-1]
-					bi := offsetb + k*b.Stride[ndim-2] + j*b.Stride[ndim-1]
-					sum += a.Data[ai] * b.Data[bi]
-				}
+			ai := offseta + i*a.Stride[ndim-2]
+			oi := offseto + i*o.Stride[ndim-2]
 
-				// set
-				idx := offseto + i*out.Stride[ndim-2] + j*out.Stride[ndim-1]
-				out.Data[idx] = sum
+			for k := range acols {
+				aik := a.Data[ai+k*a.Stride[ndim-1]]
+				bk := offsetb + k*b.Stride[ndim-2]
+
+				for j := range bcols {
+					bkj := b.Data[bk+j*b.Stride[ndim-1]]
+					oij := oi + j*o.Stride[ndim-1]
+
+					// o[i,j] += a[i,k] * b[k,j]
+					o.Data[oij] += aik * bkj
+				}
 			}
 		}
 	}
 
-	return out
+	return o
 }
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
