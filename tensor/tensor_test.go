@@ -2160,6 +2160,7 @@ func TestReduce_invalid(t *testing.T) {
 		coord []int
 	}{
 		{v: tensor.Zero[int](1, 4), coord: []int{10}},
+		{v: tensor.Zero[int](1, 4), coord: []int{0, 0}},
 	}
 
 	for _, c := range cases {
