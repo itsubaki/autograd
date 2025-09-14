@@ -70,25 +70,14 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 // Take returns a new tensor with elements selected from the given indices along the specified axis.
 func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 	ndim := v.NumDims()
-	if axis < 0 {
-		axis += ndim
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
 	}
 
-	if axis < 0 || axis >= ndim {
-		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
-	}
-
-	indicesAdj := make([]int, len(indices))
-	for i, idx := range indices {
-		if idx < 0 {
-			idx += v.Shape[axis]
-		}
-
-		if idx < 0 || idx >= v.Shape[axis] {
-			panic(fmt.Sprintf("index %d out of range for axis=%d (shape=%v)", idx, axis, v.Shape))
-		}
-
-		indicesAdj[i] = idx
+	index, err := adjIndices(indices, v.Shape, axis)
+	if err != nil {
+		panic(err)
 	}
 
 	outShape := make([]int, ndim)
@@ -103,7 +92,7 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 
 	for i := range len(out.Data) {
 		coords := Unravel(out, i)
-		coords[axis] = indicesAdj[coords[axis]]
+		coords[axis] = index[coords[axis]]
 		out.Data[i] = v.Data[Ravel(v, coords...)]
 	}
 
@@ -155,34 +144,23 @@ func (v *Tensor[T]) AddAt(coord []int, value T) {
 // ScatterAdd adds the elements of w to v at the given indices.
 func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
 	ndim := v.NumDims()
-	if axis < 0 {
-		axis += ndim
-	}
-
-	if axis < 0 || axis >= ndim {
-		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
 	}
 
 	if w.Shape[axis] != len(indices) {
 		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), axis, w.Shape[axis]))
 	}
 
-	indicesAdj := make([]int, len(indices))
-	for i, idx := range indices {
-		if idx < 0 {
-			idx += v.Shape[axis]
-		}
-
-		if idx < 0 || idx >= v.Shape[axis] {
-			panic(fmt.Sprintf("index %d out of range for axis=%d (shape=%v)", idx, axis, v.Shape))
-		}
-
-		indicesAdj[i] = idx
+	index, err := adjIndices(indices, v.Shape, axis)
+	if err != nil {
+		panic(err)
 	}
 
 	for i := range len(w.Data) {
 		coord := Unravel(w, i)
-		coord[axis] = indicesAdj[coord[axis]]
+		coord[axis] = index[coord[axis]]
 		v.Data[Ravel(v, coord...)] += w.Data[i]
 	}
 }
@@ -317,18 +295,33 @@ func Min[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 // If axes is specified, it reduces along the given axes.
 func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	if len(axes) == 0 {
+		// mean all
 		return MulC(1/float64(v.Size()), Sum(v))
 	}
 
-	// validate
-	validated, _, err := validate(v, axes...)
-	if err != nil {
-		panic(err)
+	ndim := v.NumDims()
+	if ndim == 0 {
+		// scalar
+		return v.Clone()
+	}
+
+	seen := make(map[int]bool, len(axes))
+	for _, a := range axes {
+		a, err := adjAxis(a, ndim)
+		if err != nil {
+			panic(err)
+		}
+
+		if seen[a] {
+			panic(fmt.Sprintf("duplicate axis=%v", a))
+		}
+
+		seen[a] = true
 	}
 
 	// count
 	count := 1
-	for a := range validated {
+	for a := range seen {
 		count = count * v.Shape[a]
 	}
 
@@ -339,12 +332,9 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 // Argmax returns the indices of the maximum values along the given axis.
 func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	ndim := v.NumDims()
-	if axis < 0 {
-		axis += ndim
-	}
-
-	if axis < 0 || axis >= ndim {
-		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
 	}
 
 	// NOTE: Consider Transpose implementation.
@@ -422,7 +412,8 @@ func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return v
+		// scalar
+		return v.Clone()
 	}
 
 	transpose := func(perm ...int) *Tensor[T] {
@@ -468,21 +459,18 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		panic(fmt.Sprintf("axes length=%v are not equal to ndim=%v", len(axes), ndim))
 	}
 
-	perm, seen := make([]int, len(axes)), make([]bool, ndim)
+	seen, perm := make([]bool, len(axes)), make([]int, len(axes))
 	for i, a := range axes {
-		if a < 0 {
-			a += ndim
-		}
-
-		if a < 0 || a >= ndim {
-			panic(fmt.Sprintf("axis=%v out of range for shape=%v", a, v.Shape))
+		a, err := adjAxis(a, ndim)
+		if err != nil {
+			panic(err)
 		}
 
 		if seen[a] {
 			panic(fmt.Sprintf("duplicate axis=%v", a))
 		}
 
-		perm[i], seen[a] = a, true
+		seen[a], perm[i] = true, a
 	}
 
 	return transpose(perm...)
@@ -504,14 +492,11 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		return New(shape, v.Data)
 	}
 
-	ndim, seen := v.NumDims(), make(map[int]bool)
+	seen, ndim := make(map[int]bool), v.NumDims()
 	for _, a := range axes {
-		if a < 0 {
-			a += ndim
-		}
-
-		if a < 0 || a >= ndim {
-			panic(fmt.Sprintf("axis=%d out of range for shape=%v", a, v.Shape))
+		a, err := adjAxis(a, ndim)
+		if err != nil {
+			panic(err)
 		}
 
 		if v.Shape[a] == 1 {
@@ -537,12 +522,9 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 // Expand returns a new tensor with a new axis inserted at the given position.
 func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	ndim := v.NumDims()
-	if axis < 0 {
-		axis += ndim + 1
-	}
-
-	if axis < 0 || axis > ndim {
-		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
+	axis, err := adjAxis(axis, ndim+1)
+	if err != nil {
+		panic(err)
 	}
 
 	// insert 1 at axis
@@ -567,8 +549,9 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 // BroadcastTo returns a new tensor with the given shape by broadcasting v to the shape.
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	out := Zero[T](shape...)
+	outNDim := out.NumDims()
 
-	outNDim, ndim := out.NumDims(), v.NumDims()
+	ndim := v.NumDims()
 	if outNDim < ndim {
 		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
 	}
@@ -695,13 +678,21 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 		return New(nil, []T{acc})
 	}
 
-	// validate
-	validated, ndim, err := validate(v, axes...)
-	if err != nil {
-		panic(err)
+	seen, ndim := make(map[int]bool, len(axes)), v.NumDims()
+	for _, a := range axes {
+		a, err := adjAxis(a, ndim)
+		if err != nil {
+			panic(err)
+		}
+
+		if seen[a] {
+			panic(fmt.Sprintf("duplicate axis=%v", a))
+		}
+
+		seen[a] = true
 	}
 
-	if len(validated) == ndim {
+	if len(seen) == ndim {
 		// reduce all
 		for _, x := range v.Data {
 			acc = f(acc, x)
@@ -711,12 +702,12 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 	}
 
 	// reduced layout
-	outShape := make([]int, 0, ndim-len(validated))
+	outShape := make([]int, 0, ndim-len(seen))
 	outNDim := make([]int, ndim)
 
 	var pos int
 	for i := range ndim {
-		if validated[i] {
+		if seen[i] {
 			outNDim[i] = -1
 			continue
 		}
@@ -807,29 +798,6 @@ func stride(shape ...int) []int {
 	return s
 }
 
-// validate validates the given axes and returns a map of the axes to be reduced.
-func validate[T Number](v *Tensor[T], axis ...int) (map[int]bool, int, error) {
-	ndim := v.NumDims()
-	if ndim == 0 {
-		return nil, 0, fmt.Errorf("shape is 0-dim")
-	}
-
-	seen := make(map[int]bool, len(axis))
-	for _, a := range axis {
-		if a < 0 || a >= ndim {
-			return nil, ndim, fmt.Errorf("axis %v out of range (ndim=%v)", a, ndim)
-		}
-
-		if seen[a] {
-			return nil, ndim, fmt.Errorf("duplicate axis=%v", a)
-		}
-
-		seen[a] = true
-	}
-
-	return seen, ndim, nil
-}
-
 // broadcast returns the broadcasted shape of s0 and s1.
 func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 	pad := func(shape []int, length int) []int {
@@ -901,4 +869,35 @@ func size(shape []int) int {
 	}
 
 	return size
+}
+
+// adjAxis adjusts negative axis and checks the range.
+func adjAxis(axis, ndim int) (int, error) {
+	if axis < 0 {
+		axis += ndim
+	}
+
+	if axis < 0 || axis >= ndim {
+		return -1, fmt.Errorf("axis=%d out of range for ndim=%d", axis, ndim)
+	}
+
+	return axis, nil
+}
+
+// adjIndices adjusts negative indices and checks the range.
+func adjIndices(indices, shape []int, axis int) ([]int, error) {
+	adj := make([]int, len(indices))
+	for i, idx := range indices {
+		if idx < 0 {
+			idx += shape[axis]
+		}
+
+		if idx < 0 || idx >= shape[axis] {
+			return nil, fmt.Errorf("index %d out of range for axis=%d (shape=%v)", idx, axis, shape)
+		}
+
+		adj[i] = idx
+	}
+
+	return adj, nil
 }
