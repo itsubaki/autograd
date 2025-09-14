@@ -39,7 +39,7 @@ func ExampleFull() {
 }
 
 func ExampleZeroLike() {
-	v := tensor.Zero[int](2, 3)
+	v := tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6})
 	w := tensor.ZeroLike(v)
 
 	fmt.Println(w.Shape)
@@ -119,25 +119,6 @@ func ExampleReshape() {
 	// Output:
 	// [1 4]
 	// 1 2 3 4
-}
-
-func ExampleReshape_invalid() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println(r)
-			return
-		}
-
-		panic("unexpected panic for index")
-	}()
-
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	_ = tensor.Reshape(v, 10, 10)
-
-	panic("unreachable")
-
-	// Output:
-	// invalid shape
 }
 
 func ExampleTensor_Clone() {
@@ -337,32 +318,6 @@ func ExampleAdd() {
 	// [11 22 33 44]
 }
 
-func ExampleAdd_broadcast0() {
-	x := tensor.New([]int{1, 2}, []int{1, 2})
-	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
-	z := tensor.Add(x, y)
-
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
-
-	// Output:
-	// [2 2]
-	// [11 22 31 42]
-}
-
-func ExampleAdd_broadcast1() {
-	x := tensor.New([]int{2, 1}, []int{1, 2})
-	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
-	z := tensor.Add(x, y)
-
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
-
-	// Output:
-	// [2 2]
-	// [11 21 32 42]
-}
-
 func ExampleSub() {
 	x := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
 	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
@@ -406,40 +361,6 @@ func ExampleSum() {
 	// 10
 }
 
-func ExampleSum_axisAll() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Sum(v, 0, 1)
-
-	fmt.Println(w.Data)
-
-	// Output:
-	// [10]
-}
-
-func ExampleSum_axis0() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Sum(v, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [4 6]
-}
-
-func ExampleSum_axis1() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Sum(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [3 7]
-}
-
 func ExampleMax() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
 	w := tensor.Max(v)
@@ -448,40 +369,6 @@ func ExampleMax() {
 
 	// Output:
 	// 4
-}
-
-func ExampleMax_axisAll() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Max(v, 0, 1)
-
-	fmt.Println(w.At())
-
-	// Output:
-	// 4
-}
-
-func ExampleMax_axis0() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Max(v, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [3 4]
-}
-
-func ExampleMax_axis1() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Max(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [2 4]
 }
 
 func ExampleMin() {
@@ -494,40 +381,6 @@ func ExampleMin() {
 	// 1
 }
 
-func ExampleMin_axisAll() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Min(v, 0, 1)
-
-	fmt.Println(w.At())
-
-	// Output:
-	// 1
-}
-
-func ExampleMin_axis0() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Min(v, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [1 2]
-}
-
-func ExampleMin_axis1() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := tensor.Min(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [1 3]
-}
-
 func ExampleMean() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Mean(v)
@@ -538,66 +391,7 @@ func ExampleMean() {
 	// 2.5
 }
 
-func ExampleMean_ndim0() {
-	v := tensor.New(nil, []float64{42})
-	w := tensor.Mean(v, 0, 1)
-
-	fmt.Println(w.At())
-
-	// Output:
-	// 42
-}
-
-func ExampleMean_axisAll() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Mean(v, 0, 1)
-
-	fmt.Println(w.At())
-
-	// Output:
-	// 2.5
-}
-
-func ExampleMean_axis0() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Mean(v, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [2 3]
-}
-
-func ExampleMean_axis1() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	w := tensor.Mean(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [1.5 3.5]
-}
-
-func ExampleMean_minus1() {
-	v := tensor.New([]int{2, 2}, []float64{
-		1, 2,
-		3, 4,
-	})
-	w := tensor.Mean(v, -1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [1.5 3.5]
-}
-
-func ExampleArgmax_axis0() {
+func ExampleArgmax() {
 	v := tensor.New([]int{2, 4}, []int{
 		1, 2, 3, 4,
 		4, 3, 2, 1,
@@ -610,21 +404,6 @@ func ExampleArgmax_axis0() {
 	// Output:
 	// [4]
 	// [1 1 0 0]
-}
-
-func ExampleArgmax_axis1() {
-	v := tensor.New([]int{2, 4}, []int{
-		1, 2, 3, 4,
-		4, 3, 2, 1,
-	})
-	w := tensor.Argmax(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2]
-	// [3 0]
 }
 
 func ExampleMask() {
@@ -674,43 +453,7 @@ func ExampleTranspose() {
 	// 3 6
 }
 
-func ExampleTranspose_axes01() {
-	v := tensor.New([]int{2, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Transpose(v, 0, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2))
-	fmt.Println(w.At(1, 0), w.At(1, 1), w.At(1, 2))
-
-	// Output:
-	// [2 3]
-	// 1 2 3
-	// 4 5 6
-}
-
-func ExampleTranspose_axes10() {
-	v := tensor.New([]int{2, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Transpose(v, 1, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1))
-	fmt.Println(w.At(1, 0), w.At(1, 1))
-	fmt.Println(w.At(2, 0), w.At(2, 1))
-
-	// Output:
-	// [3 2]
-	// 1 4
-	// 2 5
-	// 3 6
-}
-
-func ExampleTranspose_plus() {
+func ExampleTranspose_add() {
 	v := tensor.New([]int{2, 3}, []int{
 		1, 2, 3,
 		4, 5, 6,
@@ -740,37 +483,6 @@ func ExampleTranspose_plus() {
 	// 8 12
 }
 
-func ExampleTranspose_minus12() {
-	v := tensor.New([]int{2, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Transpose(v, -1, -2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1))
-	fmt.Println(w.At(1, 0), w.At(1, 1))
-	fmt.Println(w.At(2, 0), w.At(2, 1))
-
-	// Output:
-	// [3 2]
-	// 1 4
-	// 2 5
-	// 3 6
-}
-
-func ExampleTranspose_ndim0() {
-	v := tensor.New([]int{}, []int{1})
-	w := tensor.Transpose(v)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At())
-
-	// Output:
-	// []
-	// 1
-}
-
 func ExampleSqueeze() {
 	v := tensor.New([]int{1, 2, 1, 3}, []int{
 		1, 2, 3,
@@ -783,88 +495,6 @@ func ExampleSqueeze() {
 
 	// Output:
 	// [2 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleSqueeze_axis0() {
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Squeeze(v, 0)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleSqueeze_axis1() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println(r)
-			return
-		}
-
-		panic("unexpected panic for index")
-	}()
-
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	_ = tensor.Squeeze(v, 1)
-
-	panic("unreachable")
-
-	// Output:
-	// axis=1 is not 1 (shape [1 2 1 3])
-}
-
-func ExampleSqueeze_axis2() {
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Squeeze(v, 2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [1 2 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleSqueeze_minus2() {
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Squeeze(v, -2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [1 2 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleSqueeze_minus4() {
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Squeeze(v, -4)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 3]
 	// [1 2 3 4 5 6]
 }
 
@@ -881,168 +511,6 @@ func ExampleExpand() {
 	// Output:
 	// [1 2 1 3]
 	// [1 2 3 4 5 6]
-}
-
-func ExampleExpand_axis1() {
-	v := tensor.New([]int{2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Expand(v, 1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 1 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleExpand_axis2() {
-	v := tensor.New([]int{2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Expand(v, 3)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 3 1]
-	// [1 2 3 4 5 6]
-}
-func ExampleExpand_minus1() {
-	v := tensor.New([]int{2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Expand(v, -1)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 3 1]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleExpand_minus2() {
-	v := tensor.New([]int{2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	w := tensor.Expand(v, -2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
-
-	// Output:
-	// [2 1 1 3]
-	// [1 2 3 4 5 6]
-}
-
-func ExampleBroadcastTo_axis0() {
-	v := tensor.New([]int{1, 4}, []int{1, 2, 3, 4})
-	w := tensor.BroadcastTo(v, 2, 4)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
-	fmt.Println(w.At(1, 0), w.At(1, 1), w.At(1, 2), w.At(1, 3))
-
-	// Output:
-	// [2 4]
-	// 1 2 3 4
-	// 1 2 3 4
-}
-
-func ExampleBroadcastTo_axis1() {
-	v := tensor.New([]int{4, 1}, []int{
-		1,
-		2,
-		3,
-		4,
-	})
-	w := tensor.BroadcastTo(v, 4, 2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1))
-	fmt.Println(w.At(1, 0), w.At(1, 1))
-	fmt.Println(w.At(2, 0), w.At(2, 1))
-	fmt.Println(w.At(3, 0), w.At(3, 1))
-
-	// Output:
-	// [4 2]
-	// 1 1
-	// 2 2
-	// 3 3
-	// 4 4
-}
-
-func ExampleBroadcastTo_same() {
-	v := tensor.New([]int{1, 4}, []int{1, 2, 3, 4})
-	w := tensor.BroadcastTo(v, 1, 4)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
-
-	// Output:
-	// [1 4]
-	// 1 2 3 4
-}
-
-func ExampleBroadcastTo_add() {
-	v := tensor.New([]int{1, 4}, []int{1, 2, 3, 4})
-	w := tensor.BroadcastTo(v, 2, 2, 4)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0, 0), w.At(0, 0, 1), w.At(0, 0, 2), w.At(0, 0, 3))
-	fmt.Println(w.At(0, 1, 0), w.At(0, 1, 1), w.At(0, 1, 2), w.At(0, 1, 3))
-	fmt.Println(w.At(1, 0, 0), w.At(1, 0, 1), w.At(1, 0, 2), w.At(1, 0, 3))
-	fmt.Println(w.At(1, 1, 0), w.At(1, 1, 1), w.At(1, 1, 2), w.At(1, 1, 3))
-
-	// Output:
-	// [2 2 4]
-	// 1 2 3 4
-	// 1 2 3 4
-	// 1 2 3 4
-	// 1 2 3 4
-}
-
-func ExampleBroadcastTo_multi() {
-	v := tensor.New([]int{1, 2, 1}, []int{1, 2})
-	w := tensor.BroadcastTo(v, 3, 2, 4)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0, 0), w.At(0, 0, 1), w.At(0, 0, 2), w.At(0, 0, 3))
-	fmt.Println(w.At(0, 1, 0), w.At(0, 1, 1), w.At(0, 1, 2), w.At(0, 1, 3))
-	fmt.Println(w.At(1, 0, 0), w.At(1, 0, 1), w.At(1, 0, 2), w.At(1, 0, 3))
-	fmt.Println(w.At(1, 1, 0), w.At(1, 1, 1), w.At(1, 1, 2), w.At(1, 1, 3))
-	fmt.Println(w.At(2, 0, 0), w.At(2, 0, 1), w.At(2, 0, 2), w.At(2, 0, 3))
-	fmt.Println(w.At(2, 1, 0), w.At(2, 1, 1), w.At(2, 1, 2), w.At(2, 1, 3))
-
-	// Output:
-	// [3 2 4]
-	// 1 1 1 1
-	// 2 2 2 2
-	// 1 1 1 1
-	// 2 2 2 2
-	// 1 1 1 1
-	// 2 2 2 2
-}
-
-func ExampleBroadcastTo_scalar() {
-	v := tensor.New(nil, []float64{1.5})
-	w := tensor.BroadcastTo(v, 2, 2)
-
-	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1))
-	fmt.Println(w.At(1, 0), w.At(1, 1))
-
-	// Output:
-	// [2 2]
-	// 1.5 1.5
-	// 1.5 1.5
 }
 
 func ExampleMatMul() {
@@ -1065,31 +533,80 @@ func ExampleMatMul() {
 	// [58 64 139 154]
 }
 
-func ExampleMatMul_batch() {
-	a := tensor.New([]int{2, 2, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-
-		7, 8, 9,
-		10, 11, 12,
+func ExampleBroadcastTo_backward() {
+	x := tensor.New([]int{1, 2, 2}, []float64{
+		1, 2,
+		3, 4,
 	})
-	b := tensor.New([]int{2, 3, 2}, []int{
-		7, 8,
-		9, 10,
-		11, 12,
+	y := tensor.BroadcastTo(x, 2, 2, 2)
+	z := tensor.Sum(y, 0)
 
-		13, 14,
-		15, 16,
-		17, 18,
+	fmt.Println(z.Shape)
+	fmt.Println(z.Data)
+
+	// Output:
+	// [2 2]
+	// [2 4 6 8]
+}
+
+func ExampleSum_backward() {
+	x := tensor.New([]int{2, 2, 2}, []float64{
+		1, 2,
+		3, 4,
+
+		1, 2,
+		3, 4,
 	})
-	c := tensor.MatMul(a, b)
+	y := tensor.Sum(x, 0)
+	z := tensor.BroadcastTo(y, 2, 2, 2)
 
-	fmt.Println(c.Shape)
-	fmt.Println(c.Data)
+	fmt.Println(z.Shape)
+	fmt.Println(z.Data)
 
 	// Output:
 	// [2 2 2]
-	// [58 64 139 154 364 388 499 532]
+	// [2 4 6 8 2 4 6 8]
+}
+
+func ExampleReshape_invalid() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			return
+		}
+
+		panic("unexpected panic for index")
+	}()
+
+	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	_ = tensor.Reshape(v, 10, 10)
+
+	panic("unreachable")
+
+	// Output:
+	// invalid shape
+}
+
+func ExampleSqueeze_invalid() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			return
+		}
+
+		panic("unexpected panic for index")
+	}()
+
+	v := tensor.New([]int{1, 2, 1, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+	_ = tensor.Squeeze(v, 1)
+
+	panic("unreachable")
+
+	// Output:
+	// axis=1 is not 1 (shape [1 2 1 3])
 }
 
 func ExampleMatMul_invalid() {
@@ -1126,39 +643,246 @@ func ExampleMatMul_invalid() {
 	// shapes [2 2 2] and [2 3 2] are not aligned for matmul
 }
 
-func ExampleBroadcastTo_backward() {
-	x := tensor.New([]int{1, 2, 2}, []float64{
-		1, 2,
-		3, 4,
-	})
-	y := tensor.BroadcastTo(x, 2, 2, 2)
-	z := tensor.Sum(y, 0)
+func TestAdd(t *testing.T) {
+	cases := []struct {
+		x, y *tensor.Tensor[int]
+		z    *tensor.Tensor[int]
+	}{
+		{
+			// broadcast axis 0
+			x: tensor.New([]int{1, 2}, []int{
+				1, 2,
+			}),
+			y: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			z: tensor.New([]int{2, 2}, []int{
+				11, 22,
+				31, 42,
+			}),
+		},
+		{
+			// broadcast axis 1
+			x: tensor.New([]int{2, 1}, []int{
+				1,
+				2,
+			}),
+			y: tensor.New([]int{2, 2}, []int{
+				10, 20,
+				30, 40,
+			}),
+			z: tensor.New([]int{2, 2}, []int{
+				11, 21,
+				32, 42,
+			}),
+		},
+	}
 
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
-
-	// Output:
-	// [2 2]
-	// [2 4 6 8]
+	for _, c := range cases {
+		got := tensor.Add(c.x, c.y)
+		if !tensor.Equal(got, c.z) {
+			t.Errorf("got=%v, want=%v", got.Data, c.z.Data)
+		}
+	}
 }
 
-func ExampleSum_backward() {
-	x := tensor.New([]int{2, 2, 2}, []float64{
-		1, 2,
-		3, 4,
+func TestSum(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// all
+			v:    tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []int{10}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []int{
+				4, 6,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []int{
+				3,
+				7,
+			}),
+		},
+	}
 
-		1, 2,
-		3, 4,
-	})
-	y := tensor.Sum(x, 0)
-	z := tensor.BroadcastTo(y, 2, 2, 2)
+	for _, c := range cases {
+		got := tensor.Sum(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
 
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
+func TestMax(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// all
+			v:    tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []int{4}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []int{
+				3, 4,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []int{
+				2,
+				4,
+			}),
+		},
+	}
 
-	// Output:
-	// [2 2 2]
-	// [2 4 6 8 2 4 6 8]
+	for _, c := range cases {
+		got := tensor.Max(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestMin(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// all
+			v:    tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []int{1}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []int{
+				1, 2,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []int{
+				1,
+				3,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Min(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestMean(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[float64]
+		axes []int
+		want *tensor.Tensor[float64]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []float64{42}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{42}),
+		},
+		{
+			// all
+			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{2.5}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []float64{
+				2, 3,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []float64{
+				1.5,
+				3.5,
+			}),
+		},
+		{
+			// axis -1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{-1},
+			want: tensor.New([]int{2}, []float64{
+				1.5,
+				3.5,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Mean(c.v, c.axes...)
+		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
 }
 
 func TestTake(t *testing.T) {
@@ -1257,13 +981,13 @@ func TestTake(t *testing.T) {
 
 func TestScatterAdd(t *testing.T) {
 	cases := []struct {
-		v       *tensor.Tensor[int]
-		w       *tensor.Tensor[int]
+		v, w    *tensor.Tensor[int]
 		indices []int
 		axis    int
 		want    *tensor.Tensor[int]
 	}{
 		{
+			// axis 0
 			v: tensor.New([]int{3, 2}, []int{
 				10, 11,
 				20, 21,
@@ -1282,6 +1006,7 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
+			// axis 1
 			v: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -1298,6 +1023,7 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
+			// axis 2
 			v: tensor.New([]int{2, 2, 3},
 				[]int{
 					1, 2, 3,
@@ -1324,6 +1050,7 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
+			// axis 1 with duplicate indices
 			v: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -1340,6 +1067,7 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
+			// axis -1
 			v: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -1355,6 +1083,7 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
+			// indices -1, 0
 			v: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -1482,33 +1211,41 @@ func TestArgmax(t *testing.T) {
 		out  *tensor.Tensor[int]
 	}{
 		{
+			// scalar
 			in: tensor.New([]int{5}, []int{
 				1, 7, 3, 7, 2,
 			}),
 			axis: 0,
-			out:  tensor.New([]int{}, []int{1}),
+			out:  tensor.New(nil, []int{1}),
 		},
 		{
+			// axis 0
 			in: tensor.New([]int{2, 4}, []int{
 				1, 2, 3, 4,
 				4, 3, 2, 1,
 			}),
 			axis: 0,
-			out:  tensor.New([]int{4}, []int{1, 1, 0, 0}),
+			out: tensor.New([]int{4}, []int{
+				1, 1, 0, 0,
+			}),
 		},
 		{
+			// axis 1
 			in: tensor.New([]int{2, 4}, []int{
 				1, 2, 3, 4,
 				4, 3, 2, 1,
 			}),
 			axis: 1,
-			out:  tensor.New([]int{2}, []int{3, 0}),
+			out: tensor.New([]int{2}, []int{
+				3,
+				0,
+			}),
 		},
 		{
 			in: tensor.New([]int{2, 2, 3}, []int{
 				1, 5, 2,
 				9, 3, 0,
-				//
+
 				4, 6, 7,
 				1, 2, 8,
 			}),
@@ -1541,11 +1278,9 @@ func TestArgmax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Argmax(c.in, c.axis)
-		if tensor.Equal(got, c.out) {
-			continue
+		if !tensor.Equal(got, c.out) {
+			t.Errorf("axis=%d, got=%v(%v), want=%v(%v)", c.axis, got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
-
-		t.Errorf("axis=%d, got=%v(%v), want=%v(%v)", c.axis, got.Data, got.Shape, c.out.Data, c.out.Shape)
 	}
 }
 
@@ -1555,6 +1290,7 @@ func TestMatMul(t *testing.T) {
 		out  *tensor.Tensor[int]
 	}{
 		{
+			// batch
 			a: tensor.New([]int{2, 2, 2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -1653,11 +1389,307 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.MatMul(c.a, c.b)
-		if tensor.Equal(got, c.out) {
-			continue
+		if !tensor.Equal(got, c.out) {
+			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
+	}
+}
 
-		t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
+func TestTranspose(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			axes: nil,
+			want: tensor.New(nil, []int{42}),
+		},
+		{
+			// axes 0, 1
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axes 1, 0
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{1, 0},
+			want: tensor.New([]int{3, 2}, []int{
+				1, 4,
+				2, 5,
+				3, 6,
+			}),
+		},
+		{
+			// axes -1, -2
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{-1, -2},
+			want: tensor.New([]int{3, 2}, []int{
+				1, 4,
+				2, 5,
+				3, 6,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Transpose(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestSqueeze(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// axis 0
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis 2
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{2},
+			want: tensor.New([]int{1, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis -2
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{-2},
+			want: tensor.New([]int{1, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis -4
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{-4},
+			want: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+
+				4, 5, 6,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Squeeze(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestExpand(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axis int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// axis 0
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis: 0,
+			want: tensor.New([]int{1, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis: 1,
+			want: tensor.New([]int{2, 1, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis 3
+			v: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis: 3,
+			want: tensor.New([]int{2, 1, 3, 1}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis -1
+			v: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis: -1,
+			want: tensor.New([]int{2, 1, 3, 1}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis -2
+			v: tensor.New([]int{2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axis: -2,
+			want: tensor.New([]int{2, 1, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Expand(c.v, c.axis)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestBroadcastTo(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		shape []int
+		want  *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:     tensor.New(nil, []int{42}),
+			shape: []int{2, 2},
+			want: tensor.New([]int{2, 2}, []int{
+				42, 42,
+				42, 42,
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{1, 4}, []int{
+				1, 2, 3, 4,
+			}),
+			shape: []int{2, 4},
+			want: tensor.New([]int{2, 4}, []int{
+				1, 2, 3, 4,
+				1, 2, 3, 4,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{4, 1}, []int{
+				1,
+				2,
+				3,
+				4,
+			}),
+			shape: []int{4, 2},
+			want: tensor.New([]int{4, 2}, []int{
+				1, 1,
+				2, 2,
+				3, 3,
+				4, 4,
+			}),
+		},
+		{
+			// same
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			shape: []int{2, 3},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
+			// shape 2, 2, 4
+			v: tensor.New([]int{1, 4}, []int{
+				1, 2, 3, 4,
+			}),
+			shape: []int{2, 2, 4},
+			want: tensor.New([]int{2, 2, 4}, []int{
+				1, 2, 3, 4,
+				1, 2, 3, 4,
+
+				1, 2, 3, 4,
+				1, 2, 3, 4,
+			}),
+		},
+		{
+			// shape 3, 2, 4
+			v: tensor.New([]int{1, 2, 1}, []int{
+				1,
+				2,
+			}),
+			shape: []int{3, 2, 4},
+			want: tensor.New([]int{3, 2, 4}, []int{
+				1, 1, 1, 1,
+				2, 2, 2, 2,
+
+				1, 1, 1, 1,
+				2, 2, 2, 2,
+
+				1, 1, 1, 1,
+				2, 2, 2, 2,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.BroadcastTo(c.v, c.shape...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
+		}
 	}
 }
 
@@ -1677,11 +1709,9 @@ func TestRavel(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Ravel(c.v, c.coord...)
-		if got == c.want {
-			continue
+		if got != c.want {
+			t.Errorf("coord=%v, got=%v, want=%v", c.coord, got, c.want)
 		}
-
-		t.Errorf("coord=%v, got=%v, want=%v", c.coord, got, c.want)
 	}
 }
 
@@ -1704,11 +1734,9 @@ func TestUnravel(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Unravel(c.v, c.index)
-		if reflect.DeepEqual(got, c.want) {
-			continue
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
 		}
-
-		t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
 	}
 }
 
@@ -1726,11 +1754,9 @@ func TestStride(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Stride(c.shape...)
-		if reflect.DeepEqual(got, c.want) {
-			continue
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got, c.want)
 		}
-
-		t.Errorf("shape=%v, got=%v, want=%v", c.shape, got, c.want)
 	}
 }
 
@@ -1784,7 +1810,6 @@ func TestBroadcastShape(t *testing.T) {
 			}
 
 			t.Errorf("unexpected error for shapes %v and %v: %v", c.s0, c.s1, err)
-			continue
 		}
 
 		if !reflect.DeepEqual(got0, c.want0) {
