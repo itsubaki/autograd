@@ -1945,7 +1945,7 @@ func TestScatterAdd_invalid(t *testing.T) {
 				40, 50, 60,
 			}),
 			axis:    1,
-			indices: []int{1, 1, 3},
+			indices: []int{1, 1, 3, 1},
 		},
 	}
 

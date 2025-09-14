@@ -78,10 +78,6 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 		panic(fmt.Sprintf("axis=%d out of range for shape=%v", axis, v.Shape))
 	}
 
-	if len(indices) == 0 {
-		panic("indices is empty")
-	}
-
 	indicesAdj := make([]int, len(indices))
 	for i, idx := range indices {
 		if idx < 0 {
