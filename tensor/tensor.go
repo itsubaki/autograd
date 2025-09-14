@@ -574,7 +574,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 				continue
 			}
 
-			if s := v.Shape[j]; s == 1 {
+			if v.Shape[j] == 1 {
 				// broadcast dimension -> always 0
 				continue
 			}
