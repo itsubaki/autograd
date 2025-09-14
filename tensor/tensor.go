@@ -782,22 +782,6 @@ func rnd(s ...randv2.Source) *randv2.Rand {
 	return randv2.New(s[0])
 }
 
-// stride returns the stride for the given shape.
-func stride(shape ...int) []int {
-	n := len(shape)
-	if n == 0 {
-		return nil
-	}
-
-	s := make([]int, n)
-	s[n-1] = 1
-	for i := n - 2; i >= 0; i-- {
-		s[i] = s[i+1] * shape[i+1]
-	}
-
-	return s
-}
-
 // broadcast returns the broadcasted shape of s0 and s1.
 func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 	pad := func(shape []int, length int) []int {
@@ -844,6 +828,22 @@ func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 
 	// append the tail back
 	return append(shape, tail0...), append(shape, tail1...), nil
+}
+
+// stride returns the stride for the given shape.
+func stride(shape ...int) []int {
+	n := len(shape)
+	if n == 0 {
+		return nil
+	}
+
+	s := make([]int, n)
+	s[n-1] = 1
+	for i := n - 2; i >= 0; i-- {
+		s[i] = s[i+1] * shape[i+1]
+	}
+
+	return s
 }
 
 // equal returns true if the two shapes are equal.
