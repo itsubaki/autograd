@@ -69,44 +69,12 @@ func ExampleRand() {
 	// [2 3]
 }
 
-func ExampleRand_seed() {
-	s := rand.Const()
-	v := tensor.Rand([]int{2, 3}, s)
-
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
-
-	// Output:
-	// 0.9999, 0.8856, 0.3815
-	// 0.4813, 0.4442, 0.5210
-}
-
-func ExampleRand_nil() {
-	v := tensor.Rand([]int{2, 3}, nil)
-	fmt.Println(v.Shape)
-
-	// Output:
-	// [2 3]
-}
-
 func ExampleRandn() {
 	v := tensor.Randn([]int{2, 3})
 	fmt.Println(v.Shape)
 
 	// Output:
 	// [2 3]
-}
-
-func ExampleRandn_seed() {
-	s := rand.Const()
-	v := tensor.Randn([]int{2, 3}, s)
-
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
-
-	// Output:
-	// 0.5665, -0.6124, 0.5899
-	// -0.3678, 1.0920, -0.4438
 }
 
 func ExampleReshape() {
@@ -265,8 +233,10 @@ func ExampleExp() {
 }
 
 func ExampleLog() {
-	data := []float64{math.Exp(0), math.Exp(1), math.Exp(2), math.Exp(3)}
-	v := tensor.New([]int{2, 2}, data)
+	v := tensor.New([]int{2, 2}, []float64{
+		math.Exp(0), math.Exp(1),
+		math.Exp(2), math.Exp(3),
+	})
 	w := tensor.Log(v)
 
 	fmt.Printf("%.4f\n", w.Data)
@@ -276,8 +246,10 @@ func ExampleLog() {
 }
 
 func ExampleSin() {
-	data := []float64{0, math.Pi / 2, math.Pi, 3 * math.Pi / 2}
-	v := tensor.New([]int{2, 2}, data)
+	v := tensor.New([]int{2, 2}, []float64{
+		0, math.Pi / 2,
+		math.Pi, 3 * math.Pi / 2,
+	})
 	w := tensor.Sin(v)
 
 	fmt.Printf("%.4f\n", w.Data)
@@ -287,8 +259,10 @@ func ExampleSin() {
 }
 
 func ExampleCos() {
-	data := []float64{0, math.Pi / 2, math.Pi, 3 * math.Pi / 2}
-	v := tensor.New([]int{2, 2}, data)
+	v := tensor.New([]int{2, 2}, []float64{
+		0, math.Pi / 2,
+		math.Pi, 3 * math.Pi / 2,
+	})
 	w := tensor.Cos(v)
 
 	fmt.Printf("%.4f\n", w.Data)
@@ -312,9 +286,11 @@ func ExampleAdd() {
 	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
 	z := tensor.Add(x, y)
 
+	fmt.Println(z.Shape)
 	fmt.Println(z.Data)
 
 	// Output:
+	// [2 2]
 	// [11 22 33 44]
 }
 
@@ -362,7 +338,7 @@ func ExampleSum() {
 }
 
 func ExampleMax() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{4, 3, 2, 1})
 	w := tensor.Max(v)
 
 	fmt.Println(w.At())
@@ -372,7 +348,7 @@ func ExampleMax() {
 }
 
 func ExampleMin() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Min(v)
 
 	fmt.Println(w.At())
@@ -420,9 +396,8 @@ func ExampleMask() {
 
 func ExampleClip() {
 	v := tensor.New([]int{2, 10}, []int{
-		-3, -2, -1, 0,
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-		11, 12, 13, 14, 15, 16,
+		-3, -2, -1, 0, 1, 2, 3, 4, 5, 6,
+		7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 	})
 	w := tensor.Clip(v, 0, 10)
 
@@ -566,6 +541,38 @@ func ExampleSum_backward() {
 	// Output:
 	// [2 2 2]
 	// [2 4 6 8 2 4 6 8]
+}
+
+func ExampleRand_nil() {
+	v := tensor.Rand([]int{2, 3}, nil)
+	fmt.Println(v.Shape)
+
+	// Output:
+	// [2 3]
+}
+
+func ExampleRand_seed() {
+	s := rand.Const()
+	v := tensor.Rand([]int{2, 3}, s)
+
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+
+	// Output:
+	// 0.9999, 0.8856, 0.3815
+	// 0.4813, 0.4442, 0.5210
+}
+
+func ExampleRandn_seed() {
+	s := rand.Const()
+	v := tensor.Randn([]int{2, 3}, s)
+
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
+	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+
+	// Output:
+	// 0.5665, -0.6124, 0.5899
+	// -0.3678, 1.0920, -0.4438
 }
 
 func ExampleReshape_invalid() {
@@ -734,35 +741,35 @@ func TestSum(t *testing.T) {
 
 func TestMax(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[int]
+		v    *tensor.Tensor[float64]
 		axes []int
-		want *tensor.Tensor[int]
+		want *tensor.Tensor[float64]
 	}{
 		{
 			// all
-			v:    tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []int{4}),
+			want: tensor.New(nil, []float64{4}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []int{
+			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []int{
+			want: tensor.New([]int{2}, []float64{
 				3, 4,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []int{
+			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []int{
+			want: tensor.New([]int{2}, []float64{
 				2,
 				4,
 			}),
@@ -771,7 +778,7 @@ func TestMax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Max(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -779,35 +786,35 @@ func TestMax(t *testing.T) {
 
 func TestMin(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[int]
+		v    *tensor.Tensor[float64]
 		axes []int
-		want *tensor.Tensor[int]
+		want *tensor.Tensor[float64]
 	}{
 		{
 			// all
-			v:    tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []int{1}),
+			want: tensor.New(nil, []float64{1}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []int{
+			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []int{
+			want: tensor.New([]int{2}, []float64{
 				1, 2,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []int{
+			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []int{
+			want: tensor.New([]int{2}, []float64{
 				1,
 				3,
 			}),
@@ -816,7 +823,7 @@ func TestMin(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Min(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
