@@ -441,7 +441,7 @@ func ExampleSum_axis1() {
 }
 
 func ExampleMax() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Max(v)
 
 	fmt.Println(w.At())
@@ -451,7 +451,7 @@ func ExampleMax() {
 }
 
 func ExampleMax_axisAll() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Max(v, 0, 1)
 
 	fmt.Println(w.At())
@@ -461,7 +461,7 @@ func ExampleMax_axisAll() {
 }
 
 func ExampleMax_axis0() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Max(v, 0)
 
 	fmt.Println(w.Shape)
@@ -473,7 +473,7 @@ func ExampleMax_axis0() {
 }
 
 func ExampleMax_axis1() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Max(v, 1)
 
 	fmt.Println(w.Shape)
@@ -485,7 +485,7 @@ func ExampleMax_axis1() {
 }
 
 func ExampleMin() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Min(v)
 
 	fmt.Println(w.At())
@@ -495,7 +495,7 @@ func ExampleMin() {
 }
 
 func ExampleMin_axisAll() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Min(v, 0, 1)
 
 	fmt.Println(w.At())
@@ -505,7 +505,7 @@ func ExampleMin_axisAll() {
 }
 
 func ExampleMin_axis0() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Min(v, 0)
 
 	fmt.Println(w.Shape)
@@ -517,7 +517,7 @@ func ExampleMin_axis0() {
 }
 
 func ExampleMin_axis1() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Min(v, 1)
 
 	fmt.Println(w.Shape)
