@@ -553,13 +553,13 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	out := Zero[T](shape...)
 
-	ndim, vndim := out.NumDims(), v.NumDims()
-	if ndim < vndim {
+	outNDim, ndim := out.NumDims(), v.NumDims()
+	if outNDim < ndim {
 		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
 	}
 
-	for i := range vndim {
-		s0, s1 := v.Shape[vndim-1-i], shape[ndim-1-i]
+	for i := range ndim {
+		s0, s1 := v.Shape[ndim-1-i], shape[outNDim-1-i]
 		if s0 != s1 && s0 != 1 {
 			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.Shape))
 		}
@@ -567,11 +567,11 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 	for i := range len(out.Data) {
 		k, remain := 0, i
-		for a := range ndim {
+		for a := range outNDim {
 			coord := remain / out.Stride[a]
 			remain %= out.Stride[a]
 
-			j := a - (ndim - vndim)
+			j := a - (outNDim - ndim)
 			if j < 0 {
 				// implicit leading dimension (=1) in original; always pick index 0
 				continue
