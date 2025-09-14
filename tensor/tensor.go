@@ -293,15 +293,15 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 // Mean returns the mean of all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	if len(axes) == 0 {
-		// mean all
-		return MulC(1/float64(v.Size()), Sum(v))
-	}
-
 	ndim := v.NumDims()
 	if ndim == 0 {
 		// scalar
 		return v.Clone()
+	}
+
+	if len(axes) == 0 {
+		// mean all
+		return MulC(1/float64(v.Size()), Sum(v))
 	}
 
 	seen := make(map[int]bool, len(axes))
