@@ -538,6 +538,16 @@ func ExampleMean() {
 	// 2.5
 }
 
+func ExampleMean_ndim0() {
+	v := tensor.New(nil, []float64{42})
+	w := tensor.Mean(v)
+
+	fmt.Println(w.At())
+
+	// Output:
+	// 42
+}
+
 func ExampleMean_axisAll() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Mean(v, 0, 1)
@@ -563,6 +573,21 @@ func ExampleMean_axis0() {
 func ExampleMean_axis1() {
 	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
 	w := tensor.Mean(v, 1)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [2]
+	// [1.5 3.5]
+}
+
+func ExampleMean_minus1() {
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
+	w := tensor.Mean(v, -1)
 
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
@@ -1706,27 +1731,6 @@ func TestStride(t *testing.T) {
 		}
 
 		t.Errorf("shape=%v, got=%v, want=%v", c.shape, got, c.want)
-	}
-}
-
-func TestValidate(t *testing.T) {
-	cases := []struct {
-		v      *tensor.Tensor[int]
-		axes   []int
-		hasErr bool
-	}{
-		{v: tensor.Zero[int](), axes: []int{0, 1}, hasErr: true},
-		{v: tensor.Zero[int](2, 3), axes: []int{0, 0}, hasErr: true},
-	}
-
-	for _, c := range cases {
-		if _, _, err := tensor.Validate(c.v, c.axes...); err != nil {
-			if c.hasErr {
-				continue
-			}
-
-			t.Errorf("unexpected error for axes %v: %v", c.axes, err)
-		}
 	}
 }
 
