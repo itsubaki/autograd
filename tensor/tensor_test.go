@@ -540,7 +540,7 @@ func ExampleMean() {
 
 func ExampleMean_ndim0() {
 	v := tensor.New(nil, []float64{42})
-	w := tensor.Mean(v)
+	w := tensor.Mean(v, 0, 1)
 
 	fmt.Println(w.At())
 
@@ -1803,6 +1803,7 @@ func TestMean_invalid(t *testing.T) {
 		axes []int
 	}{
 		{v: tensor.Zero[float64](1, 4), axes: []int{10}},
+		{v: tensor.Zero[float64](1, 4), axes: []int{0, 0}},
 	}
 
 	for _, c := range cases {
@@ -2058,7 +2059,7 @@ func TestBroadcastTo_invalid(t *testing.T) {
 		shape []int
 	}{
 		{v: tensor.Zero[int](2, 3), shape: []int{2}},
-		{v: tensor.Zero[int](2, 3), shape: []int{3, 3}},
+		{v: tensor.Zero[int](2, 3), shape: []int{0, 0}},
 	}
 
 	for _, c := range cases {
