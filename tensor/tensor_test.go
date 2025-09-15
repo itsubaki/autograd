@@ -590,6 +590,24 @@ func ExampleConcat() {
 	// 3 4 7 8
 }
 
+func ExampleSplit() {
+	v := tensor.New([]int{2, 4}, []int{
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+	})
+	w := tensor.Split(v, 2, 0)
+
+	fmt.Println(len(w), w[0].Shape, w[1].Shape)
+
+	fmt.Println(w[0].At(0, 0), w[0].At(0, 1), w[0].At(0, 2), w[0].At(0, 3))
+	fmt.Println(w[1].At(0, 0), w[1].At(0, 1), w[1].At(0, 2), w[1].At(0, 3))
+
+	// Output:
+	// 2 [1 4] [1 4]
+	// 1 2 3 4
+	// 5 6 7 8
+}
+
 func ExampleRepeat() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
@@ -1954,12 +1972,117 @@ func TestConcat(t *testing.T) {
 				3, 4, 8, 9, 10,
 			}),
 		},
+		{
+			// batch
+			a: tensor.New([]int{1, 2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			b: tensor.New([]int{1, 2, 2}, []int{
+				5, 6,
+				7, 8,
+			}),
+			axis: 0,
+			want: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+		},
 	}
 
 	for _, c := range cases {
 		got := tensor.Concat(c.a, c.b, c.axis)
 		if !tensor.Equal(got, c.want) {
 			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestSplit(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		n    int
+		axis int
+		want []*tensor.Tensor[int]
+	}{
+		{
+			// axis 0
+			v: tensor.New([]int{4, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+				10, 11, 12,
+			}),
+			n:    2,
+			axis: 0,
+			want: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 4}, []int{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+			}),
+			n:    2,
+			axis: 1,
+			want: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 2}, []int{
+					1, 2,
+					5, 6,
+				}),
+				tensor.New([]int{2, 2}, []int{
+					3, 4,
+					7, 8,
+				}),
+			},
+		},
+		{
+			// batch
+			v: tensor.New([]int{2, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+
+				7, 8, 9,
+				10, 11, 12,
+			}),
+			n:    2,
+			axis: 0,
+			want: []*tensor.Tensor[int]{
+				tensor.New([]int{1, 2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{1, 2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Split(c.v, c.n, c.axis)
+		if len(got) != len(c.want) {
+			t.Errorf("n=%v, axis=%v, got len=%v, want len=%v", c.n, c.axis, len(got), len(c.want))
+			continue
+		}
+
+		for i := range got {
+			if !tensor.Equal(got[i], c.want[i]) {
+				t.Errorf("n=%v, axis=%v, got=%v(%v), want=%v(%v)", c.n, c.axis, got[i].Data, got[i].Shape, c.want[i].Data, c.want[i].Shape)
+			}
 		}
 	}
 }
@@ -2004,6 +2127,22 @@ func TestRepeat(t *testing.T) {
 			want: tensor.New([]int{2, 6}, []int{
 				1, 2, 3, 1, 2, 3,
 				4, 5, 6, 4, 5, 6,
+			}),
+		},
+		{
+			// batch
+			v: tensor.New([]int{1, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			n:    2,
+			axis: 0,
+			want: tensor.New([]int{2, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+
+				1, 2, 3,
+				4, 5, 6,
 			}),
 		},
 	}
@@ -2564,6 +2703,54 @@ func TestConcat_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Concat(c.a, c.b, c.axis)
+			t.Fail()
+		}()
+	}
+}
+
+func TestSplit_invalid(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		n    int
+		axis int
+	}{
+		{
+			// n is less than 1
+			v:    tensor.Zero[int](2, 3),
+			n:    0,
+			axis: 0,
+		},
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			n:    2,
+			axis: 0,
+		},
+		{
+			// not divisible
+			v:    tensor.Zero[int](2, 3),
+			n:    4,
+			axis: 0,
+		},
+		{
+			// axis out of range
+			v:    tensor.Zero[int](2, 3),
+			n:    2,
+			axis: 10,
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for n=%d and axis %d", c.n, c.axis)
+			}()
+
+			_ = tensor.Split(c.v, c.n, c.axis)
 			t.Fail()
 		}()
 	}

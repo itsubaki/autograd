@@ -741,6 +741,52 @@ func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 	return out
 }
 
+// Split returns a new tensors by splitting v into n tensors along the given axis.
+func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
+	if n < 1 {
+		panic("n is less than 1")
+	}
+
+	ndim := v.NumDims()
+	if ndim == 0 {
+		panic("tensor is a scalar")
+	}
+
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	if v.Shape[axis]%n != 0 {
+		panic(fmt.Sprintf("shape %v is not divisible by n=%d along axis=%d", v.Shape, n, axis))
+	}
+
+	// out tensor
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+
+	// new shape
+	part := v.Shape[axis] / n
+	shape[axis] = part
+
+	// n tensors
+	out := make([]*Tensor[T], n)
+	for i := range n {
+		out[i] = Zero[T](shape...)
+	}
+
+	for i := range len(v.Data) {
+		coord := Unravel(v, i)
+		idx := coord[axis] / part
+		coord[axis] = coord[axis] % part
+		j := Ravel(out[idx], coord...)
+
+		out[idx].Data[j] = v.Data[i]
+	}
+
+	return out
+}
+
 // Repeat returns a new tensor by repeating the elements of v n times along the given axis.
 func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	if n < 1 {
@@ -750,7 +796,7 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
 		data := make([]T, n)
-		for i := range data {
+		for i := range n {
 			data[i] = v.Data[0]
 		}
 
