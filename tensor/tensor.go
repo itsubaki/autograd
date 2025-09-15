@@ -309,18 +309,9 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 		return MulC(1/float64(v.Size()), Sum(v))
 	}
 
-	seen := make(map[int]bool, len(axes))
-	for _, a := range axes {
-		a, err := adjAxis(a, ndim)
-		if err != nil {
-			panic(err)
-		}
-
-		if seen[a] {
-			panic(fmt.Sprintf("duplicate axis=%v", a))
-		}
-
-		seen[a] = true
+	_, seen, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
 	}
 
 	// count
@@ -463,21 +454,40 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		panic(fmt.Sprintf("axes length=%v are not equal to ndim=%v", len(axes), ndim))
 	}
 
-	seen, perm := make([]bool, len(axes)), make([]int, len(axes))
-	for i, a := range axes {
-		a, err := adjAxis(a, ndim)
-		if err != nil {
-			panic(err)
-		}
-
-		if seen[a] {
-			panic(fmt.Sprintf("duplicate axis=%v", a))
-		}
-
-		seen[a], perm[i] = true, a
+	perm, _, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
 	}
 
 	return transpose(perm...)
+}
+
+// Flip returns a new tensor with the elements reversed along the given axes.
+func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
+	ndim := v.NumDims()
+	if len(axes) == 0 {
+		axes = make([]int, ndim)
+		for i := 0; i < ndim; i++ {
+			axes[i] = i
+		}
+	}
+
+	_, seen, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
+	}
+
+	out := ZeroLike(v)
+	for i := range len(v.Data) {
+		coord := Unravel(v, i)
+		for a := range seen {
+			coord[a] = v.Shape[a] - 1 - coord[a]
+		}
+
+		out.Data[i] = v.Data[Ravel(v, coord...)]
+	}
+
+	return out
 }
 
 // Squeeze returns a new tensor with the given axes removed.
@@ -718,18 +728,10 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 		return New(nil, []T{acc})
 	}
 
-	seen, ndim := make(map[int]bool, len(axes)), v.NumDims()
-	for _, a := range axes {
-		a, err := adjAxis(a, ndim)
-		if err != nil {
-			panic(err)
-		}
-
-		if seen[a] {
-			panic(fmt.Sprintf("duplicate axis=%v", a))
-		}
-
-		seen[a] = true
+	ndim := v.NumDims()
+	_, seen, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
 	}
 
 	if len(seen) == ndim {
@@ -940,4 +942,23 @@ func adjIndices(indices, shape []int, axis int) ([]int, error) {
 	}
 
 	return adj, nil
+}
+
+// adjAxes adjusts negative axes, checks the range, and checks for duplicates.
+func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
+	adj, seen := make([]int, len(axes)), make(map[int]bool, len(axes))
+	for i, a := range axes {
+		a, err := adjAxis(a, ndim)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if seen[a] {
+			return nil, nil, fmt.Errorf("duplicate axis=%v", a)
+		}
+
+		seen[a], adj[i] = true, a
+	}
+
+	return adj, seen, nil
 }
