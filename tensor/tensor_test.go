@@ -509,39 +509,37 @@ func ExampleMatMul() {
 	// [58 64 139 154]
 }
 
-func ExampleBroadcastTo_backward() {
-	x := tensor.New([]int{1, 2, 2}, []float64{
+func ExampleBroadcastTo() {
+	v := tensor.New([]int{1, 2, 2}, []float64{
 		1, 2,
 		3, 4,
 	})
-	y := tensor.BroadcastTo(x, 2, 2, 2)
-	z := tensor.Sum(y, 0)
+	w := tensor.BroadcastTo(v, 2, 2, 2)
 
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [2 2 2]
+	// [1 2 3 4 1 2 3 4]
+}
+
+func ExampleSumTo() {
+	v := tensor.New([]int{2, 2, 2}, []float64{
+		1, 2,
+		3, 4,
+
+		1, 2,
+		3, 4,
+	})
+	w := tensor.SumTo(v, 1, 2, 2)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
 
 	// Output:
 	// [2 2]
 	// [2 4 6 8]
-}
-
-func ExampleSum_backward() {
-	x := tensor.New([]int{2, 2, 2}, []float64{
-		1, 2,
-		3, 4,
-
-		1, 2,
-		3, 4,
-	})
-	y := tensor.Sum(x, 0)
-	z := tensor.BroadcastTo(y, 2, 2, 2)
-
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
-
-	// Output:
-	// [2 2 2]
-	// [2 4 6 8 2 4 6 8]
 }
 
 func ExampleRand_nil() {
@@ -1673,6 +1671,94 @@ func TestBroadcastTo(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.BroadcastTo(c.v, c.shape...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestSumTo(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		shape []int
+		want  *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:     tensor.New(nil, []int{42}),
+			shape: []int{},
+			want:  tensor.New(nil, []int{42}),
+		},
+		{
+			// same
+			v:     tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
+			shape: []int{2, 3},
+			want:  tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
+		},
+		{
+			// all
+			v:     tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
+			shape: []int{},
+			want:  tensor.New(nil, []int{21}),
+		},
+		{
+			// shape 1, 4
+			v: tensor.New([]int{2, 4}, []int{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+			}),
+			shape: []int{4},
+			want:  tensor.New([]int{4}, []int{6, 8, 10, 12}),
+		},
+		{
+			// shape 4, 1
+			v: tensor.New([]int{4, 2}, []int{
+				1, 2,
+				3, 4,
+				5, 6,
+				7, 8,
+			}),
+			shape: []int{4, 1},
+			want:  tensor.New([]int{4}, []int{3, 7, 11, 15}),
+		},
+		{
+			// shape 1, 2, 4
+			v: tensor.New([]int{2, 2, 4}, []int{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+
+				9, 10, 11, 12,
+				13, 14, 15, 16,
+			}),
+			shape: []int{1, 2, 4},
+			want: tensor.New([]int{2, 4}, []int{
+				10, 12, 14, 16,
+				18, 20, 22, 24,
+			}),
+		},
+		{
+			// shape 3, 1, 4
+			v: tensor.New([]int{3, 2, 4}, []int{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+
+				9, 10, 11, 12,
+				13, 14, 15, 16,
+
+				17, 18, 19, 20,
+				21, 22, 23, 24,
+			}),
+			shape: []int{3, 1, 4},
+			want: tensor.New([]int{3, 4}, []int{
+				6, 8, 10, 12,
+				22, 24, 26, 28,
+				38, 40, 42, 44,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.SumTo(c.v, c.shape...)
 		if !tensor.Equal(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
 		}

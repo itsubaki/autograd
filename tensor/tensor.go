@@ -588,6 +588,39 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return out
 }
 
+// SumTo returns a new tensor with the given shape by summing v to the shape.
+func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
+	sumAxes := func(a, b []int) []int {
+		if len(a) < len(b) {
+			diff := len(b) - len(a)
+
+			adj := make([]int, len(b))
+			for i := range diff {
+				adj[i] = 1
+			}
+
+			copy(adj[diff:], a)
+			a = adj
+		}
+
+		var axes []int
+		for i := range a {
+			if a[i] == 1 && b[i] > 1 {
+				axes = append(axes, i)
+			}
+		}
+
+		return axes
+	}
+
+	axis := sumAxes(shape, v.Shape)
+	if len(axis) == 0 {
+		return Reshape(v, shape...)
+	}
+
+	return Sum(v, axis...)
+}
+
 // MatMul returns the matrix multiplication of v and w.
 func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	a, b := Broadcast(v, w, 2)
