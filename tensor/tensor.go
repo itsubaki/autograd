@@ -66,9 +66,9 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return New(shape, v.Data)
 }
 
-// Flatten returns a new tensor with the same data as v with shape (1, size).
+// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
 func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
-	return Reshape(v, 1, v.Size())
+	return Reshape(v, v.Size())
 }
 
 // Take returns a new tensor with elements selected from the given indices along the specified axis.
@@ -736,6 +736,42 @@ func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 		coord := Unravel(w, i)
 		coord[axis] += v.Shape[axis]
 		out.Data[Ravel(out, coord...)] = w.Data[i]
+	}
+
+	return out
+}
+
+// Repeat returns a new tensor by repeating the elements of v n times along the given axis.
+func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
+	if n < 1 {
+		panic("n is less than 1")
+	}
+
+	ndim := v.NumDims()
+	if ndim == 0 {
+		data := make([]T, n)
+		for i := range data {
+			data[i] = v.Data[0]
+		}
+
+		return New([]int{n}, data)
+	}
+
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	// out tensor
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+	shape[axis] = v.Shape[axis] * n
+	out := Zero[T](shape...)
+
+	for i := range out.Data {
+		coords := Unravel(out, i)
+		coords[axis] = coords[axis] % v.Shape[axis]
+		out.Data[i] = v.Data[Ravel(v, coords...)]
 	}
 
 	return out
