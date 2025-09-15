@@ -471,6 +471,21 @@ func ExampleTranspose_add() {
 	// 8 12
 }
 
+func ExampleFlip() {
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+	w := tensor.Flip(v, 0)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [2 3]
+	// [4 5 6 1 2 3]
+}
+
 func ExampleSqueeze() {
 	v := tensor.New([]int{1, 2, 1, 3}, []int{
 		1, 2, 3,
@@ -1451,6 +1466,76 @@ func TestTranspose(t *testing.T) {
 	}
 }
 
+func TestFlip(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			axes: nil,
+			want: tensor.New(nil, []int{42}),
+		},
+		{
+			// all
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New([]int{2, 3}, []int{
+				6, 5, 4,
+				3, 2, 1,
+			}),
+		},
+		{
+			// all
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{},
+			want: tensor.New([]int{2, 3}, []int{
+				6, 5, 4,
+				3, 2, 1,
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2, 3}, []int{
+				4, 5, 6,
+				1, 2, 3,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2, 3}, []int{
+				3, 2, 1,
+				6, 5, 4,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Flip(c.v, c.axes...)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
+		}
+	}
+}
+
 func TestSqueeze(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
@@ -2132,6 +2217,31 @@ func TestTranspose_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Transpose(c.v, c.axes...)
+			t.Fail()
+		}()
+	}
+}
+
+func TestFlip_invalid(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		axes []int
+	}{
+		{v: tensor.Zero[int](2, 3), axes: []int{0, -3}},
+		{v: tensor.Zero[int](2, 3), axes: []int{2}},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axes %v", c.axes)
+			}()
+
+			_ = tensor.Flip(c.v, c.axes...)
 			t.Fail()
 		}()
 	}
