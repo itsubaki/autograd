@@ -807,31 +807,35 @@ func TestMax(t *testing.T) {
 	}{
 		{
 			// all
-			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
-			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{4}),
-		},
-		{
-			// axis 0
 			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{
+				4,
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 3}, []float64{
+				1, 3, 2,
+				6, 5, 4,
+			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []float64{
-				3, 4,
+			want: tensor.New([]int{3}, []float64{
+				6, 5, 4,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []float64{
-				1, 2,
-				3, 4,
+			v: tensor.New([]int{2, 3}, []float64{
+				1, 3, 2,
+				6, 5, 4,
 			}),
 			axes: []int{1},
 			want: tensor.New([]int{2}, []float64{
-				2,
-				4,
+				3, 6,
 			}),
 		},
 	}
@@ -839,7 +843,7 @@ func TestMax(t *testing.T) {
 	for _, c := range cases {
 		got := tensor.Max(c.v, c.axes...)
 		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
-			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.want.Data, c.want.Shape)
 		}
 	}
 }
@@ -852,25 +856,30 @@ func TestMin(t *testing.T) {
 	}{
 		{
 			// all
-			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
-			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{1}),
-		},
-		{
-			// axis 0
 			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{
+				1,
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []float64{
+				2, 1,
+				3, 4,
+			}),
 			axes: []int{0},
 			want: tensor.New([]int{2}, []float64{
-				1, 2,
+				2, 1,
 			}),
 		},
 		{
 			// axis 1
 			v: tensor.New([]int{2, 2}, []float64{
-				1, 2,
+				2, 1,
 				3, 4,
 			}),
 			axes: []int{1},
@@ -903,9 +912,14 @@ func TestMean(t *testing.T) {
 		},
 		{
 			// all
-			v:    tensor.New([]int{2, 2}, []float64{1, 2, 3, 4}),
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{2.5}),
+			want: tensor.New(nil, []float64{
+				2.5,
+			}),
 		},
 		{
 			// axis 0
@@ -1117,23 +1131,6 @@ func TestScatterAdd(t *testing.T) {
 			}),
 		},
 		{
-			// axis 1 with duplicate indices
-			v: tensor.New([]int{2, 3}, []int{
-				1, 2, 3,
-				4, 5, 6,
-			}),
-			w: tensor.New([]int{2, 3}, []int{
-				10, 20, 30,
-				40, 50, 60,
-			}),
-			axis:    1,
-			indices: []int{1, 1, 2},
-			want: tensor.New([]int{2, 3}, []int{
-				1, 32, 33,
-				4, 95, 66,
-			}),
-		},
-		{
 			// axis -1
 			v: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
@@ -1164,6 +1161,45 @@ func TestScatterAdd(t *testing.T) {
 			want: tensor.New([]int{2, 3}, []int{
 				21, 2, 13,
 				44, 5, 36,
+			}),
+		},
+		{
+			// duplicate indices
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 3}, []int{
+				10, 20, 30,
+				40, 50, 60,
+			}),
+			axis:    1,
+			indices: []int{1, 1, 2},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 32, 33,
+				4, 95, 66,
+			}),
+		},
+		{
+			v: tensor.New([]int{4, 3}, []int{
+				0, 0, 0,
+				0, 0, 0,
+				0, 0, 0,
+				0, 0, 0,
+			}),
+			w: tensor.New([]int{4, 3}, []int{
+				1, 1, 1,
+				2, 2, 2,
+				3, 3, 3,
+				4, 4, 4,
+			}),
+			axis:    0,
+			indices: []int{0, 1, 0, 1},
+			want: tensor.New([]int{4, 3}, []int{
+				4, 4, 4,
+				6, 6, 6,
+				0, 0, 0,
+				0, 0, 0,
 			}),
 		},
 	}
