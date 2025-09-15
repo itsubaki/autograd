@@ -89,6 +89,18 @@ func ExampleReshape() {
 	// 1 2 3 4
 }
 
+func ExampleFlatten() {
+	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	w := tensor.Flatten(v)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
+
+	// Output:
+	// [1 4]
+	// 1 2 3 4
+}
+
 func ExampleTensor_Clone() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
 	w := v.Clone()

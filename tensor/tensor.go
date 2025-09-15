@@ -66,6 +66,11 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return New(shape, v.Data)
 }
 
+// Flatten returns a new tensor with the same data as v with shape (1, size).
+func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
+	return Reshape(v, 1, v.Size())
+}
+
 // Take returns a new tensor with elements selected from the given indices along the specified axis.
 func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 	ndim := v.NumDims()
