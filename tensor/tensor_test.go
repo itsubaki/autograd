@@ -569,6 +569,27 @@ func ExampleSumTo() {
 	// [2 4 6 8]
 }
 
+func ExampleConcat() {
+	x := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.New([]int{2, 2}, []int{
+		5, 6,
+		7, 8,
+	})
+	z := tensor.Concat(x, y, 1)
+
+	fmt.Println(z.Shape)
+	fmt.Println(z.At(0, 0), z.At(0, 1), z.At(0, 2), z.At(0, 3))
+	fmt.Println(z.At(1, 0), z.At(1, 1), z.At(1, 2), z.At(1, 3))
+
+	// Output:
+	// [2 4]
+	// 1 2 5 6
+	// 3 4 7 8
+}
+
 func ExampleRand_nil() {
 	v := tensor.Rand([]int{2, 3}, nil)
 	fmt.Println(v.Shape)
@@ -1862,6 +1883,70 @@ func TestSumTo(t *testing.T) {
 	}
 }
 
+func TestConcat(t *testing.T) {
+	cases := []struct {
+		a, b *tensor.Tensor[int]
+		axis int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// axis 0
+			a: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			b: tensor.New([]int{1, 3}, []int{
+				7, 8, 9,
+			}),
+			axis: 0,
+			want: tensor.New([]int{3, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+			}),
+		},
+		{
+			// axis 1
+			a: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			b: tensor.New([]int{2, 3}, []int{
+				5, 6, 7,
+				8, 9, 10,
+			}),
+			axis: 1,
+			want: tensor.New([]int{2, 5}, []int{
+				1, 2, 5, 6, 7,
+				3, 4, 8, 9, 10,
+			}),
+		},
+		{
+			// axis -1
+			a: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			b: tensor.New([]int{2, 3}, []int{
+				5, 6, 7,
+				8, 9, 10,
+			}),
+			axis: -1,
+			want: tensor.New([]int{2, 5}, []int{
+				1, 2, 5, 6, 7,
+				3, 4, 8, 9, 10,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Concat(c.a, c.b, c.axis)
+		if !tensor.Equal(got, c.want) {
+			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
 func TestRavel(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]
@@ -2348,6 +2433,68 @@ func TestBroadcast_invalid(t *testing.T) {
 			}()
 
 			_, _ = tensor.Broadcast(c.v1, c.v2)
+			t.Fail()
+		}()
+	}
+}
+
+func TestConcat_invalid(t *testing.T) {
+	cases := []struct {
+		a, b *tensor.Tensor[int]
+		axis int
+	}{
+		{
+			// scalar
+			a:    tensor.New(nil, []int{1}),
+			b:    tensor.New(nil, []int{2}),
+			axis: 0,
+		},
+		{
+			// number of dimensions mismatch
+			a: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			b: tensor.New([]int{3}, []int{
+				7, 8, 9,
+			}),
+			axis: 0,
+		},
+		{
+			// shape mismatch
+			a: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			b: tensor.New([]int{1, 4}, []int{
+				7, 8, 9, 10,
+			}),
+			axis: 0,
+		},
+		{
+			// axis out of range
+			a: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			b: tensor.New([]int{1, 3}, []int{
+				7, 8, 9,
+			}),
+			axis: 2,
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axis %d", c.axis)
+			}()
+
+			_ = tensor.Concat(c.a, c.b, c.axis)
 			t.Fail()
 		}()
 	}
