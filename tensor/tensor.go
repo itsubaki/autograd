@@ -57,23 +57,6 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
-// Clone returns a copy of the tensor.
-func (v *Tensor[T]) Clone() *Tensor[T] {
-	data := make([]T, len(v.Data))
-	copy(data, v.Data)
-	return New(v.Shape, data)
-}
-
-// Float64 returns a new tensor with elements casted to float64.
-func (v *Tensor[T]) Float64() *Tensor[float64] {
-	data := make([]float64, len(v.Data))
-	for i, x := range v.Data {
-		data[i] = float64(x)
-	}
-
-	return New(v.Shape, data)
-}
-
 // NumDims returns the number of dimensions of the tensor.
 func (v *Tensor[T]) NumDims() int {
 	return len(v.Shape)
@@ -121,37 +104,6 @@ func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
 		coord[axis] = index[coord[axis]]
 		v.Data[Ravel(v, coord...)] += w.Data[i]
 	}
-}
-
-// Equal returns true if the two tensors are equal.
-func Equal(v, w *Tensor[int]) bool {
-	if !equal(v.Shape, w.Shape) {
-		return false
-	}
-
-	for i := range v.Data {
-		if v.Data[i] != w.Data[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
-// IsClose returns true if the two tensors are close enough.
-func IsClose(v, w *Tensor[float64], atol, rtol float64) bool {
-	if !equal(v.Shape, w.Shape) {
-		return false
-	}
-
-	for i := range v.Data {
-		a, b := v.Data[i], w.Data[i]
-		if math.Abs(a-b) > atol+rtol*math.Abs(b) {
-			return false
-		}
-	}
-
-	return true
 }
 
 // AddC applies c + v for each element in v and returns a new tensor.
@@ -255,7 +207,7 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
 	if ndim == 0 {
 		// scalar
-		return v.Clone()
+		return Clone(v)
 	}
 
 	if len(axes) == 0 {
@@ -357,6 +309,23 @@ func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
 	})
 }
 
+// Clone returns a copy of the tensor.
+func Clone[T Number](v *Tensor[T]) *Tensor[T] {
+	data := make([]T, len(v.Data))
+	copy(data, v.Data)
+	return New(v.Shape, data)
+}
+
+// Float64 returns a new tensor with elements casted to float64.
+func Float64(v *Tensor[int]) *Tensor[float64] {
+	data := make([]float64, len(v.Data))
+	for i, x := range v.Data {
+		data[i] = float64(x)
+	}
+
+	return New(v.Shape, data)
+}
+
 // Reshape returns a new tensor with the same data as v with the given shape.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	if size(shape) != v.Size() {
@@ -405,7 +374,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
 		// scalar
-		return v.Clone()
+		return Clone(v)
 	}
 
 	transpose := func(perm ...int) *Tensor[T] {
@@ -634,64 +603,6 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	return Sum(v, axis...)
 }
 
-// MatMul returns the matrix multiplication of v and w.
-func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
-	a, b := Broadcast(v, w, 2)
-	ndim := a.NumDims()
-
-	arows, acols := a.Shape[ndim-2], a.Shape[ndim-1]
-	brows, bcols := b.Shape[ndim-2], b.Shape[ndim-1]
-	if acols != brows {
-		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.Shape, w.Shape))
-	}
-
-	// offset
-	offset := func(batch int, shape, stride []int) int {
-		var v int
-		for i := len(shape) - 1; i >= 0; i-- {
-			idx := batch % shape[i]
-			batch /= shape[i]
-
-			v += idx * stride[i]
-		}
-
-		return v
-	}
-
-	// out tensor
-	batch := a.Shape[:ndim-2]
-	shape := append(batch, []int{arows, bcols}...)
-	o := Zero[T](shape...)
-
-	// batch matmul
-	for batchIdx := range size(batch) {
-		offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
-		offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
-		offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
-
-		// matmul
-		for i := range arows {
-			ai := offseta + i*a.Stride[ndim-2]
-			oi := offseto + i*o.Stride[ndim-2]
-
-			for k := range acols {
-				aik := a.Data[ai+k*a.Stride[ndim-1]]
-				bk := offsetb + k*b.Stride[ndim-2]
-
-				for j := range bcols {
-					bkj := b.Data[bk+j*b.Stride[ndim-1]]
-					oij := oi + j*o.Stride[ndim-1]
-
-					// o[i,j] += a[i,k] * b[k,j]
-					o.Data[oij] += aik * bkj
-				}
-			}
-		}
-	}
-
-	return o
-}
-
 // Concat concatenates the tensors along the given axis.
 func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 	ndim := v.NumDims()
@@ -824,6 +735,95 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	}
 
 	return out
+}
+
+// MatMul returns the matrix multiplication of v and w.
+func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
+	a, b := Broadcast(v, w, 2)
+	ndim := a.NumDims()
+
+	arows, acols := a.Shape[ndim-2], a.Shape[ndim-1]
+	brows, bcols := b.Shape[ndim-2], b.Shape[ndim-1]
+	if acols != brows {
+		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.Shape, w.Shape))
+	}
+
+	// offset
+	offset := func(batch int, shape, stride []int) int {
+		var v int
+		for i := len(shape) - 1; i >= 0; i-- {
+			idx := batch % shape[i]
+			batch /= shape[i]
+
+			v += idx * stride[i]
+		}
+
+		return v
+	}
+
+	// out tensor
+	batch := a.Shape[:ndim-2]
+	shape := append(batch, []int{arows, bcols}...)
+	o := Zero[T](shape...)
+
+	// batch matmul
+	for batchIdx := range size(batch) {
+		offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
+		offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
+		offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
+
+		// matmul
+		for i := range arows {
+			ai := offseta + i*a.Stride[ndim-2]
+			oi := offseto + i*o.Stride[ndim-2]
+
+			for k := range acols {
+				aik := a.Data[ai+k*a.Stride[ndim-1]]
+				bk := offsetb + k*b.Stride[ndim-2]
+
+				for j := range bcols {
+					bkj := b.Data[bk+j*b.Stride[ndim-1]]
+					oij := oi + j*o.Stride[ndim-1]
+
+					// o[i,j] += a[i,k] * b[k,j]
+					o.Data[oij] += aik * bkj
+				}
+			}
+		}
+	}
+
+	return o
+}
+
+// Equal returns true if the two tensors are equal.
+func Equal(v, w *Tensor[int]) bool {
+	if !equal(v.Shape, w.Shape) {
+		return false
+	}
+
+	for i := range v.Data {
+		if v.Data[i] != w.Data[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsClose returns true if the two tensors are close enough.
+func IsClose(v, w *Tensor[float64], atol, rtol float64) bool {
+	if !equal(v.Shape, w.Shape) {
+		return false
+	}
+
+	for i := range v.Data {
+		a, b := v.Data[i], w.Data[i]
+		if math.Abs(a-b) > atol+rtol*math.Abs(b) {
+			return false
+		}
+	}
+
+	return true
 }
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
