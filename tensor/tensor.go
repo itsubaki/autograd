@@ -694,6 +694,53 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return o
 }
 
+// Concat concatenates the tensors along the given axis.
+func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	if ndim != w.NumDims() {
+		panic("tensors are not the same number of dimensions")
+	}
+
+	if ndim == 0 {
+		// scalar
+		panic("tensor is a scalar")
+	}
+
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := range ndim {
+		if i == axis {
+			continue
+		}
+
+		if v.Shape[i] != w.Shape[i] {
+			panic(fmt.Sprintf("shapes %v and %v are not compatible for concat", v.Shape, w.Shape))
+		}
+	}
+
+	// out tensor
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+	shape[axis] = v.Shape[axis] + w.Shape[axis]
+	out := Zero[T](shape...)
+
+	for i := range len(v.Data) {
+		coord := Unravel(v, i)
+		out.Data[Ravel(out, coord...)] = v.Data[i]
+	}
+
+	for i := range len(w.Data) {
+		coord := Unravel(w, i)
+		coord[axis] += v.Shape[axis]
+		out.Data[Ravel(out, coord...)] = w.Data[i]
+	}
+
+	return out
+}
+
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 	out := ZeroLike(v)
