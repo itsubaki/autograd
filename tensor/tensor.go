@@ -94,7 +94,7 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 		Data:   make([]T, size(outShape)),
 	}
 
-	for i := range len(out.Data) {
+	for i := range out.Data {
 		coords := Unravel(out, i)
 		coords[axis] = index[coords[axis]]
 		out.Data[i] = v.Data[Ravel(v, coords...)]
@@ -162,7 +162,7 @@ func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
 		panic(err)
 	}
 
-	for i := range len(w.Data) {
+	for i := range w.Data {
 		coord := Unravel(w, i)
 		coord[axis] = index[coord[axis]]
 		v.Data[Ravel(v, coord...)] += w.Data[i]
@@ -427,7 +427,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 		// new data
 		data := make([]T, len(v.Data))
-		for i := range len(v.Data) {
+		for i := range v.Data {
 			k, remain := 0, i
 			for j := range ndim {
 				k += (remain / newStride[j]) * oldStride[j]
@@ -478,7 +478,7 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	out := ZeroLike(v)
-	for i := range len(v.Data) {
+	for i := range v.Data {
 		coord := Unravel(v, i)
 		for a := range seen {
 			coord[a] = v.Shape[a] - 1 - coord[a]
@@ -577,7 +577,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		}
 	}
 
-	for i := range len(out.Data) {
+	for i := range out.Data {
 		k, remain := 0, i
 		for a := range outNDim {
 			coord := remain / out.Stride[a]
@@ -727,12 +727,12 @@ func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 	shape[axis] = v.Shape[axis] + w.Shape[axis]
 	out := Zero[T](shape...)
 
-	for i := range len(v.Data) {
+	for i := range v.Data {
 		coord := Unravel(v, i)
 		out.Data[Ravel(out, coord...)] = v.Data[i]
 	}
 
-	for i := range len(w.Data) {
+	for i := range w.Data {
 		coord := Unravel(w, i)
 		coord[axis] += v.Shape[axis]
 		out.Data[Ravel(out, coord...)] = w.Data[i]
@@ -775,7 +775,7 @@ func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
 		out[i] = Zero[T](shape...)
 	}
 
-	for i := range len(v.Data) {
+	for i := range v.Data {
 		coord := Unravel(v, i)
 		idx := coord[axis] / part
 		coord[axis] = coord[axis] % part
@@ -891,7 +891,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 
 	// output
 	out := Full(outShape, acc)
-	for x := range len(v.Data) {
+	for x := range v.Data {
 		i, remain := 0, x
 		for j := range ndim {
 			coord := remain / v.Stride[j]
