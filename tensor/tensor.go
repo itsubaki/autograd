@@ -57,52 +57,6 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
-// Reshape returns a new tensor with the same data as v with the given shape.
-func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
-	if size(shape) != v.Size() {
-		panic("invalid shape")
-	}
-
-	return New(shape, v.Data)
-}
-
-// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
-func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
-	return Reshape(v, v.Size())
-}
-
-// Take returns a new tensor with elements selected from the given indices along the specified axis.
-func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	axis, err := adjAxis(axis, ndim)
-	if err != nil {
-		panic(err)
-	}
-
-	index, err := adjIndices(indices, v.Shape, axis)
-	if err != nil {
-		panic(err)
-	}
-
-	outShape := make([]int, ndim)
-	copy(outShape, v.Shape)
-	outShape[axis] = len(indices)
-
-	out := &Tensor[T]{
-		Shape:  outShape,
-		Stride: stride(outShape...),
-		Data:   make([]T, size(outShape)),
-	}
-
-	for i := range out.Data {
-		coords := Unravel(out, i)
-		coords[axis] = index[coords[axis]]
-		out.Data[i] = v.Data[Ravel(v, coords...)]
-	}
-
-	return out
-}
-
 // Clone returns a copy of the tensor.
 func (v *Tensor[T]) Clone() *Tensor[T] {
 	data := make([]T, len(v.Data))
@@ -309,14 +263,14 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 		return MulC(1/float64(v.Size()), Sum(v))
 	}
 
-	_, seen, err := adjAxes(ndim, axes...)
+	axis, _, err := adjAxes(ndim, axes...)
 	if err != nil {
 		panic(err)
 	}
 
 	// count
 	count := 1
-	for a := range seen {
+	for _, a := range axis {
 		count = count * v.Shape[a]
 	}
 
@@ -403,6 +357,49 @@ func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
 	})
 }
 
+// Reshape returns a new tensor with the same data as v with the given shape.
+func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
+	if size(shape) != v.Size() {
+		panic("invalid shape")
+	}
+
+	return New(shape, v.Data)
+}
+
+// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
+func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
+	return Reshape(v, v.Size())
+}
+
+// Take returns a new tensor with elements selected from the given indices along the specified axis.
+func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	index, err := adjIndices(indices, v.Shape, axis)
+	if err != nil {
+		panic(err)
+	}
+
+	// out tensor
+	outShape := make([]int, ndim)
+	copy(outShape, v.Shape)
+	outShape[axis] = len(indices)
+	out := Zero[T](outShape...)
+
+	// take
+	for i := range out.Data {
+		coords := Unravel(out, i)
+		coords[axis] = index[coords[axis]]
+		out.Data[i] = v.Data[Ravel(v, coords...)]
+	}
+
+	return out
+}
+
 // Transpose returns a new tensor with the axes transposed.
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
@@ -412,32 +409,31 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	transpose := func(perm ...int) *Tensor[T] {
-		// new shape
-		shape := make([]int, ndim)
-		for i, a := range perm {
-			shape[i] = v.Shape[a]
-		}
-
-		// stride
-		newStride := stride(shape...)
+		// old
 		oldStride := make([]int, ndim)
 		for i := range ndim {
 			oldStride[i] = v.Stride[perm[i]]
 		}
 
-		// new data
-		data := make([]T, len(v.Data))
+		// out tensor
+		shape := make([]int, ndim)
+		for i, a := range perm {
+			shape[i] = v.Shape[a]
+		}
+		out := Zero[T](shape...)
+
+		// transpose
 		for i := range v.Data {
 			k, remain := 0, i
 			for j := range ndim {
-				k += (remain / newStride[j]) * oldStride[j]
-				remain %= newStride[j]
+				k += (remain / out.Stride[j]) * oldStride[j]
+				remain %= out.Stride[j]
 			}
 
-			data[i] = v.Data[k]
+			out.Data[i] = v.Data[k]
 		}
 
-		return New(shape, data)
+		return out
 	}
 
 	if len(axes) == 0 {
@@ -467,12 +463,12 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if len(axes) == 0 {
 		axes = make([]int, ndim)
-		for i := 0; i < ndim; i++ {
+		for i := range ndim {
 			axes[i] = i
 		}
 	}
 
-	_, seen, err := adjAxes(ndim, axes...)
+	axis, _, err := adjAxes(ndim, axes...)
 	if err != nil {
 		panic(err)
 	}
@@ -480,7 +476,7 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	out := ZeroLike(v)
 	for i := range v.Data {
 		coord := Unravel(v, i)
-		for a := range seen {
+		for _, a := range axis {
 			coord[a] = v.Shape[a] - 1 - coord[a]
 		}
 
@@ -547,6 +543,7 @@ func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	shape[axis] = 1
 	copy(shape[axis+1:], v.Shape[axis:])
 
+	// out tensor
 	return New(shape, v.Data)
 }
 
@@ -577,13 +574,14 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		}
 	}
 
+	diff := outNDim - ndim
 	for i := range out.Data {
 		k, remain := 0, i
 		for a := range outNDim {
 			coord := remain / out.Stride[a]
 			remain %= out.Stride[a]
 
-			j := a - (outNDim - ndim)
+			j := a - diff
 			if j < 0 {
 				// implicit leading dimension (=1) in original; always pick index 0
 				continue
@@ -605,7 +603,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 // SumTo returns a new tensor with the given shape by summing v to the shape.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
-	sumAxes := func(a, b []int) []int {
+	ax := func(a, b []int) []int {
 		if len(a) < len(b) {
 			diff := len(b) - len(a)
 
@@ -628,7 +626,7 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 		return axes
 	}
 
-	axis := sumAxes(shape, v.Shape)
+	axis := ax(shape, v.Shape)
 	if len(axis) == 0 {
 		return Reshape(v, shape...)
 	}
@@ -727,6 +725,7 @@ func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 	shape[axis] = v.Shape[axis] + w.Shape[axis]
 	out := Zero[T](shape...)
 
+	// concat
 	for i := range v.Data {
 		coord := Unravel(v, i)
 		out.Data[Ravel(out, coord...)] = v.Data[i]
@@ -761,26 +760,28 @@ func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
 		panic(fmt.Sprintf("shape %v is not divisible by n=%d along axis=%d", v.Shape, n, axis))
 	}
 
-	// out tensor
+	// new shape
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 
-	// new shape
 	part := v.Shape[axis] / n
 	shape[axis] = part
 
-	// n tensors
+	// out tensors
 	out := make([]*Tensor[T], n)
 	for i := range n {
 		out[i] = Zero[T](shape...)
 	}
 
+	// split
 	for i := range v.Data {
 		coord := Unravel(v, i)
 		idx := coord[axis] / part
+
 		coord[axis] = coord[axis] % part
 		j := Ravel(out[idx], coord...)
 
+		// set
 		out[idx].Data[j] = v.Data[i]
 	}
 
@@ -795,6 +796,7 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 
 	ndim := v.NumDims()
 	if ndim == 0 {
+		// scalar
 		data := make([]T, n)
 		for i := range n {
 			data[i] = v.Data[0]
@@ -814,6 +816,7 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	shape[axis] = v.Shape[axis] * n
 	out := Zero[T](shape...)
 
+	// repeat
 	for i := range out.Data {
 		coords := Unravel(out, i)
 		coords[axis] = coords[axis] % v.Shape[axis]
@@ -872,11 +875,11 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 		return New(nil, []T{acc})
 	}
 
-	// reduced layout
+	// out tensor
 	outShape := make([]int, 0, ndim-len(seen))
 	outNDim := make([]int, ndim)
-
 	var pos int
+
 	for i := range ndim {
 		if seen[i] {
 			outNDim[i] = -1
@@ -887,7 +890,6 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 		outNDim[i] = pos
 		pos++
 	}
-	outStride := stride(outShape...)
 
 	// output
 	out := Full(outShape, acc)
@@ -903,7 +905,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 				continue
 			}
 
-			i += coord * outStride[idx]
+			i += coord * out.Stride[idx]
 		}
 
 		// set
