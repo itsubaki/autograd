@@ -396,8 +396,9 @@ func ExampleMask() {
 
 func ExampleClip() {
 	v := tensor.New([]int{2, 10}, []int{
-		-3, -2, -1, 0, 1, 2, 3, 4, 5, 6,
-		7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+		-3, -2, -1,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+		11, 12, 13, 14, 15, 16,
 	})
 	w := tensor.Clip(v, 0, 10)
 
@@ -592,28 +593,6 @@ func ExampleReshape_invalid() {
 
 	// Output:
 	// invalid shape
-}
-
-func ExampleSqueeze_invalid() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println(r)
-			return
-		}
-
-		panic("unexpected panic for index")
-	}()
-
-	v := tensor.New([]int{1, 2, 1, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-	_ = tensor.Squeeze(v, 1)
-
-	panic("unreachable")
-
-	// Output:
-	// axis=1 is not 1 (shape [1 2 1 3])
 }
 
 func ExampleMatMul_invalid() {
@@ -1128,7 +1107,7 @@ func TestEqual(t *testing.T) {
 		},
 		{
 			v:    tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 0}),
+			w:    tensor.New([]int{2, 3}, []int{6, 5, 4, 3, 2, 1}),
 			want: false,
 		},
 		{
@@ -1845,7 +1824,7 @@ func TestMean_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for coord %v", c.axes)
+				t.Errorf("unexpected panic for axes %v", c.axes)
 			}()
 
 			_ = tensor.Mean(c.v, c.axes...)
@@ -2067,6 +2046,14 @@ func TestSqueeze_invalid(t *testing.T) {
 	}{
 		{v: tensor.Zero[int](1, 3), axes: []int{0, -10}},
 		{v: tensor.Zero[int](1, 3), axes: []int{0, 10}},
+		{
+			// axis 1 length is not 1
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{1},
+		},
 	}
 
 	for _, c := range cases {
