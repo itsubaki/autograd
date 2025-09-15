@@ -101,9 +101,9 @@ func ExampleFlatten() {
 	// 1 2 3 4
 }
 
-func ExampleTensor_Clone() {
+func ExampleClone() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := v.Clone()
+	w := tensor.Clone(v)
 	w.Set([]int{0, 0}, 10)
 
 	fmt.Println(v.Data)
@@ -114,9 +114,9 @@ func ExampleTensor_Clone() {
 	// [10 2 3 4]
 }
 
-func ExampleTensor_Float64() {
+func ExampleFloat64() {
 	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	w := v.Float64()
+	w := tensor.Float64(v)
 
 	fmt.Printf("%T", w.Data)
 
