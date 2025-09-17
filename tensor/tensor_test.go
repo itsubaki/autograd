@@ -748,7 +748,7 @@ func TestAdd(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Add(c.x, c.y)
-		if !tensor.Equal(got, c.z) {
+		if !tensor.EqualAll(got, c.z) {
 			t.Errorf("got=%v, want=%v", got.Data, c.z.Data)
 		}
 	}
@@ -793,7 +793,7 @@ func TestSum(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Sum(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -842,7 +842,7 @@ func TestMax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Max(c.v, c.axes...)
-		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.want.Data, c.want.Shape)
 		}
 	}
@@ -892,7 +892,7 @@ func TestMin(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Min(c.v, c.axes...)
-		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -960,7 +960,7 @@ func TestMean(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Mean(c.v, c.axes...)
-		if !tensor.IsClose(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -1054,7 +1054,7 @@ func TestTake(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Take(c.v, c.indices, c.axis)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -1206,13 +1206,71 @@ func TestScatterAdd(t *testing.T) {
 
 	for _, c := range cases {
 		c.v.ScatterAdd(c.w, c.indices, c.axis)
-		if !tensor.Equal(c.v, c.want) {
+		if !tensor.EqualAll(c.v, c.want) {
 			t.Errorf("got=%v, want=%v", c.v.Data, c.want.Data)
 		}
 	}
 }
 
 func TestEqual(t *testing.T) {
+	cases := []struct {
+		v, w *tensor.Tensor[int]
+		want *tensor.Tensor[int]
+	}{
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 3}, []int{
+				1, 2, 0,
+				4, 0, 6,
+			}),
+			want: tensor.New([]int{2, 3}, []int{
+				1, 1, 0,
+				1, 0, 1,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Equal(c.v, c.w)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestIsClose(t *testing.T) {
+	cases := []struct {
+		v, w *tensor.Tensor[float64]
+		want *tensor.Tensor[int]
+	}{
+		{
+			v: tensor.New([]int{2, 3}, []float64{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			w: tensor.New([]int{2, 3}, []float64{
+				1, 2, 3.0000001,
+				4, 5.00001, 6.1,
+			}),
+			want: tensor.New([]int{2, 3}, []int{
+				1, 1, 1,
+				1, 1, 0,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.IsClose(c.v, c.w, 1e-8, 1e-5)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestEqualAll(t *testing.T) {
 	cases := []struct {
 		v, w *tensor.Tensor[int]
 		want bool
@@ -1235,14 +1293,14 @@ func TestEqual(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Equal(c.v, c.w)
+		got := tensor.EqualAll(c.v, c.w)
 		if got != c.want {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
-func TestIsClose(t *testing.T) {
+func TestIsCloseAll(t *testing.T) {
 	cases := []struct {
 		v, w *tensor.Tensor[float64]
 		want bool
@@ -1270,7 +1328,7 @@ func TestIsClose(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.IsClose(c.v, c.w, 1e-8, 1e-5)
+		got := tensor.IsCloseAll(c.v, c.w, 1e-8, 1e-5)
 		if got != c.want {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
@@ -1381,7 +1439,7 @@ func TestArgmax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Argmax(c.in, c.axis)
-		if !tensor.Equal(got, c.out) {
+		if !tensor.EqualAll(got, c.out) {
 			t.Errorf("axis=%d, got=%v(%v), want=%v(%v)", c.axis, got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
 	}
@@ -1492,7 +1550,7 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.MatMul(c.a, c.b)
-		if !tensor.Equal(got, c.out) {
+		if !tensor.EqualAll(got, c.out) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
 	}
@@ -1552,7 +1610,7 @@ func TestTranspose(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Transpose(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
 		}
 	}
@@ -1622,7 +1680,7 @@ func TestFlip(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Flip(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
 		}
 	}
@@ -1688,7 +1746,7 @@ func TestSqueeze(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Squeeze(c.v, c.axes...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
 		}
 	}
@@ -1764,7 +1822,7 @@ func TestExpand(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Expand(c.v, c.axis)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
 		}
 	}
@@ -1860,7 +1918,7 @@ func TestBroadcastTo(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.BroadcastTo(c.v, c.shape...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
 		}
 	}
@@ -1948,7 +2006,7 @@ func TestSumTo(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.SumTo(c.v, c.shape...)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
 		}
 	}
@@ -2031,7 +2089,7 @@ func TestConcat(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Concat(c.a, c.b, c.axis)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
 		}
 	}
@@ -2116,7 +2174,7 @@ func TestSplit(t *testing.T) {
 		}
 
 		for i := range got {
-			if !tensor.Equal(got[i], c.want[i]) {
+			if !tensor.EqualAll(got[i], c.want[i]) {
 				t.Errorf("n=%v, axis=%v, got=%v(%v), want=%v(%v)", c.n, c.axis, got[i].Data, got[i].Shape, c.want[i].Data, c.want[i].Shape)
 			}
 		}
@@ -2185,7 +2243,7 @@ func TestTile(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Tile(c.v, c.n, c.axis)
-		if !tensor.Equal(got, c.want) {
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("n=%v, axis=%v, got=%v, want=%v", c.n, c.axis, got.Data, c.want.Data)
 		}
 	}
