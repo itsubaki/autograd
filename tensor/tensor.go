@@ -230,6 +230,54 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return MulC(1/float64(count), Sum(v, ax...))
 }
 
+// Clip returns a new tensor with elements that are clipped to the interval [min, max].
+func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
+	return F(v, func(x T) T {
+		if x < min {
+			return min
+		}
+
+		if x > max {
+			return max
+		}
+
+		return x
+	})
+}
+
+// Mask returns a new tensor with elements that 1 if f() is true and 0 otherwise.
+func Mask[T Number](v *Tensor[T], f func(x T) bool) *Tensor[T] {
+	return F(v, func(x T) T {
+		if f(x) {
+			return 1
+		}
+
+		return 0
+	})
+}
+
+// Equal returns a new tensor with elements that are 1 if v and w are equal and 0 otherwise.
+func Equal(v, w *Tensor[int]) *Tensor[int] {
+	return F2(v, w, func(a, b int) int {
+		if a == b {
+			return 1
+		}
+
+		return 0
+	})
+}
+
+// IsClose returns a new tensor with elements that are 1 if v and w are close enough and 0 otherwise.
+func IsClose(v, w *Tensor[float64], atol, rtol float64) *Tensor[int] {
+	return F2(v, w, func(a, b float64) int {
+		if isClose(a, b, atol, rtol) {
+			return 1
+		}
+
+		return 0
+	})
+}
+
 // Argmax returns the indices of the maximum values along the given axis.
 func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	ndim := v.NumDims()
@@ -279,32 +327,6 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	}
 
 	return out
-}
-
-// Mask returns a new tensor with elements that 1 if f() is true and 0 otherwise.
-func Mask[T Number](v *Tensor[T], f func(x T) bool) *Tensor[T] {
-	return F(v, func(x T) T {
-		if f(x) {
-			return 1
-		}
-
-		return 0
-	})
-}
-
-// Clip returns a new tensor with elements that are clipped to the interval [min, max].
-func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
-	return F(v, func(x T) T {
-		if x < min {
-			return min
-		}
-
-		if x > max {
-			return max
-		}
-
-		return x
-	})
 }
 
 // Clone returns a copy of the tensor.
@@ -792,8 +814,8 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return o
 }
 
-// Equal returns true if the two tensors are equal.
-func Equal(v, w *Tensor[int]) bool {
+// EqualAll returns true if the two tensors are equal.
+func EqualAll(v, w *Tensor[int]) bool {
 	if !equal(v.Shape, w.Shape) {
 		return false
 	}
@@ -807,15 +829,15 @@ func Equal(v, w *Tensor[int]) bool {
 	return true
 }
 
-// IsClose returns true if the two tensors are close enough.
-func IsClose(v, w *Tensor[float64], atol, rtol float64) bool {
+// IsCloseAll returns true if the two tensors are close enough.
+func IsCloseAll(v, w *Tensor[float64], atol, rtol float64) bool {
 	if !equal(v.Shape, w.Shape) {
 		return false
 	}
 
 	for i := range v.Data {
 		a, b := v.Data[i], w.Data[i]
-		if math.Abs(a-b) > atol+rtol*math.Abs(b) {
+		if !isClose(a, b, atol, rtol) {
 			return false
 		}
 	}
@@ -835,10 +857,10 @@ func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
 // v and w are broadcasted to a common shape.
-func F2[T Number](v, w *Tensor[T], f func(a, b T) T) *Tensor[T] {
+func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
 
-	out := ZeroLike(a)
+	out := Zero[U](a.Shape...)
 	for i := range a.Data {
 		out.Data[i] = f(a.Data[i], b.Data[i])
 	}
@@ -1089,4 +1111,8 @@ func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
 	}
 
 	return adj, seen, nil
+}
+
+func isClose(a, b float64, atol, rtol float64) bool {
+	return math.Abs(a-b) <= atol+rtol*math.Abs(b)
 }
