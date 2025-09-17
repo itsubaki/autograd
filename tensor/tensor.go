@@ -696,8 +696,8 @@ func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
 	return out
 }
 
-// Repeat returns a new tensor by repeating the elements of v n times along the given axis.
-func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
+// Tile returns a new tensor by repeating v n times along the given axis.
+func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	if n < 1 {
 		panic("n is less than 1")
 	}
