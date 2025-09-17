@@ -608,12 +608,12 @@ func ExampleSplit() {
 	// 5 6 7 8
 }
 
-func ExampleRepeat() {
+func ExampleTile() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Repeat(v, 3, 1)
+	w := tensor.Tile(v, 3, 1)
 
 	fmt.Println(w.Shape)
 	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3), w.At(0, 4), w.At(0, 5))
@@ -2123,7 +2123,7 @@ func TestSplit(t *testing.T) {
 	}
 }
 
-func TestRepeat(t *testing.T) {
+func TestTile(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
 		n    int
@@ -2184,7 +2184,7 @@ func TestRepeat(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Repeat(c.v, c.n, c.axis)
+		got := tensor.Tile(c.v, c.n, c.axis)
 		if !tensor.Equal(got, c.want) {
 			t.Errorf("n=%v, axis=%v, got=%v, want=%v", c.n, c.axis, got.Data, c.want.Data)
 		}
@@ -2792,7 +2792,7 @@ func TestSplit_invalid(t *testing.T) {
 	}
 }
 
-func TestRepeat_invalid(t *testing.T) {
+func TestTile_invalid(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
 		n    int
@@ -2813,7 +2813,7 @@ func TestRepeat_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for n=%d and axis %d", c.n, c.axis)
 			}()
 
-			_ = tensor.Repeat(c.v, c.n, c.axis)
+			_ = tensor.Tile(c.v, c.n, c.axis)
 			t.Fail()
 		}()
 	}
