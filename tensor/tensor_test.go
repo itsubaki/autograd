@@ -38,6 +38,16 @@ func ExampleFull() {
 	// [3.14 3.14 3.14 3.14 3.14 3.14]
 }
 
+func ExampleOne() {
+	v := tensor.One[int](2, 3)
+	fmt.Println(v.Shape)
+	fmt.Println(v.Data)
+
+	// Output:
+	// [2 3]
+	// [1 1 1 1 1 1]
+}
+
 func ExampleZeroLike() {
 	v := tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6})
 	w := tensor.ZeroLike(v)

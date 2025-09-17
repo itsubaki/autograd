@@ -47,6 +47,11 @@ func Zero[T Number](shape ...int) *Tensor[T] {
 	return New(shape, make([]T, size(shape)))
 }
 
+// One returns a new tensor with elements that are all one.
+func One[T Number](shape ...int) *Tensor[T] {
+	return F(Zero[T](shape...), func(_ T) T { return 1 })
+}
+
 // ZeroLike returns a new tensor with the same shape as v and elements that are all zero.
 func ZeroLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return Zero[T](v.Shape...)
