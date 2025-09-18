@@ -51,8 +51,8 @@ func ExampleOneLike() {
 	// variable[1 4]([1 1 1 1])
 }
 
-func ExampleZero() {
-	fmt.Println(variable.Zero([]int{2, 3}))
+func ExampleZeros() {
+	fmt.Println(variable.Zeros([]int{2, 3}))
 
 	// Output:
 	// variable[2 3]([[0 0 0] [0 0 0]])

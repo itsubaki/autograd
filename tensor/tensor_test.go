@@ -11,7 +11,7 @@ import (
 )
 
 func Example() {
-	v := tensor.Zero[float64](2, 3)
+	v := tensor.Zeros[float64](2, 3)
 
 	v.Set([]int{0, 0}, 1.5)
 	v.Set([]int{0, 1}, 2.5)
@@ -38,8 +38,8 @@ func ExampleFull() {
 	// [3.14 3.14 3.14 3.14 3.14 3.14]
 }
 
-func ExampleOne() {
-	v := tensor.One[int](2, 3)
+func ExampleOnes() {
+	v := tensor.Ones[int](2, 3)
 	fmt.Println(v.Shape)
 	fmt.Println(v.Data)
 
@@ -61,7 +61,7 @@ func ExampleZeroLike() {
 }
 
 func ExampleOneLike() {
-	v := tensor.Zero[int](2, 3)
+	v := tensor.Zeros[int](2, 3)
 	w := tensor.OneLike(v)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
@@ -242,6 +242,16 @@ func ExamplePow() {
 
 	// Output:
 	// [1 8 27 64]
+}
+
+func ExampleSqrt() {
+	v := tensor.New([]int{2, 2}, []float64{1, 4, 9, 16})
+	w := tensor.Sqrt(v)
+
+	fmt.Printf("%.2f\n", w.Data)
+
+	// Output:
+	// [1.00 2.00 3.00 4.00]
 }
 
 func ExampleExp() {
@@ -2265,12 +2275,12 @@ func TestRavel(t *testing.T) {
 		coord []int
 		want  int
 	}{
-		{v: tensor.Zero[int](2, 3), coord: []int{0, 0}, want: 0},
-		{v: tensor.Zero[int](2, 3), coord: []int{0, 1}, want: 1},
-		{v: tensor.Zero[int](2, 3), coord: []int{0, 2}, want: 2},
-		{v: tensor.Zero[int](2, 3), coord: []int{1, 0}, want: 3},
-		{v: tensor.Zero[int](2, 3), coord: []int{1, 1}, want: 4},
-		{v: tensor.Zero[int](2, 3), coord: []int{1, 2}, want: 5},
+		{v: tensor.Zeros[int](2, 3), coord: []int{0, 0}, want: 0},
+		{v: tensor.Zeros[int](2, 3), coord: []int{0, 1}, want: 1},
+		{v: tensor.Zeros[int](2, 3), coord: []int{0, 2}, want: 2},
+		{v: tensor.Zeros[int](2, 3), coord: []int{1, 0}, want: 3},
+		{v: tensor.Zeros[int](2, 3), coord: []int{1, 1}, want: 4},
+		{v: tensor.Zeros[int](2, 3), coord: []int{1, 2}, want: 5},
 	}
 
 	for _, c := range cases {
@@ -2287,15 +2297,15 @@ func TestUnravel(t *testing.T) {
 		index int
 		want  []int
 	}{
-		{v: tensor.Zero[int](), index: 0, want: []int{}},
-		{v: tensor.Zero[int](5), index: 0, want: []int{0}},
-		{v: tensor.Zero[int](5), index: 4, want: []int{4}},
-		{v: tensor.Zero[int](2, 3), index: 0, want: []int{0, 0}},
-		{v: tensor.Zero[int](2, 3), index: 1, want: []int{0, 1}},
-		{v: tensor.Zero[int](2, 3), index: 2, want: []int{0, 2}},
-		{v: tensor.Zero[int](2, 3), index: 3, want: []int{1, 0}},
-		{v: tensor.Zero[int](2, 3), index: 4, want: []int{1, 1}},
-		{v: tensor.Zero[int](2, 3), index: 5, want: []int{1, 2}},
+		{v: tensor.Zeros[int](), index: 0, want: []int{}},
+		{v: tensor.Zeros[int](5), index: 0, want: []int{0}},
+		{v: tensor.Zeros[int](5), index: 4, want: []int{4}},
+		{v: tensor.Zeros[int](2, 3), index: 0, want: []int{0, 0}},
+		{v: tensor.Zeros[int](2, 3), index: 1, want: []int{0, 1}},
+		{v: tensor.Zeros[int](2, 3), index: 2, want: []int{0, 2}},
+		{v: tensor.Zeros[int](2, 3), index: 3, want: []int{1, 0}},
+		{v: tensor.Zeros[int](2, 3), index: 4, want: []int{1, 1}},
+		{v: tensor.Zeros[int](2, 3), index: 5, want: []int{1, 2}},
 	}
 
 	for _, c := range cases {
@@ -2393,8 +2403,8 @@ func TestMean_invalid(t *testing.T) {
 		v    *tensor.Tensor[float64]
 		axes []int
 	}{
-		{v: tensor.Zero[float64](1, 4), axes: []int{10}},
-		{v: tensor.Zero[float64](1, 4), axes: []int{0, 0}},
+		{v: tensor.Zeros[float64](1, 4), axes: []int{10}},
+		{v: tensor.Zeros[float64](1, 4), axes: []int{0, 0}},
 	}
 
 	for _, c := range cases {
@@ -2597,10 +2607,10 @@ func TestTranspose_invalid(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axes []int
 	}{
-		{v: tensor.Zero[int](2, 3), axes: []int{0, 0}},
-		{v: tensor.Zero[int](2, 3), axes: []int{0, -3}},
-		{v: tensor.Zero[int](2, 3), axes: []int{0, 3}},
-		{v: tensor.Zero[int](2, 3), axes: []int{0, 1, 2}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{0, 0}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{0, -3}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{0, 3}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{0, 1, 2}},
 	}
 
 	for _, c := range cases {
@@ -2624,8 +2634,8 @@ func TestFlip_invalid(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axes []int
 	}{
-		{v: tensor.Zero[int](2, 3), axes: []int{0, -3}},
-		{v: tensor.Zero[int](2, 3), axes: []int{2}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{0, -3}},
+		{v: tensor.Zeros[int](2, 3), axes: []int{2}},
 	}
 
 	for _, c := range cases {
@@ -2649,8 +2659,8 @@ func TestSqueeze_invalid(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axes []int
 	}{
-		{v: tensor.Zero[int](1, 3), axes: []int{0, -10}},
-		{v: tensor.Zero[int](1, 3), axes: []int{0, 10}},
+		{v: tensor.Zeros[int](1, 3), axes: []int{0, -10}},
+		{v: tensor.Zeros[int](1, 3), axes: []int{0, 10}},
 		{
 			// axis 1 length is not 1
 			v: tensor.New([]int{1, 2, 1, 3}, []int{
@@ -2682,8 +2692,8 @@ func TestBroadcastTo_invalid(t *testing.T) {
 		v     *tensor.Tensor[int]
 		shape []int
 	}{
-		{v: tensor.Zero[int](2, 3), shape: []int{2}},
-		{v: tensor.Zero[int](2, 3), shape: []int{0, 0}},
+		{v: tensor.Zeros[int](2, 3), shape: []int{2}},
+		{v: tensor.Zeros[int](2, 3), shape: []int{0, 0}},
 	}
 
 	for _, c := range cases {
@@ -2707,8 +2717,8 @@ func TestExpand_invalid(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axis int
 	}{
-		{v: tensor.Zero[int](2, 3), axis: -4},
-		{v: tensor.Zero[int](2, 3), axis: 3},
+		{v: tensor.Zeros[int](2, 3), axis: -4},
+		{v: tensor.Zeros[int](2, 3), axis: 3},
 	}
 
 	for _, c := range cases {
@@ -2731,7 +2741,7 @@ func TestBroadcast_invalid(t *testing.T) {
 	cases := []struct {
 		v1, v2 *tensor.Tensor[int]
 	}{
-		{v1: tensor.Zero[int](2, 3), v2: tensor.Zero[int](3, 2)},
+		{v1: tensor.Zeros[int](2, 3), v2: tensor.Zeros[int](3, 2)},
 	}
 
 	for _, c := range cases {
@@ -2820,7 +2830,7 @@ func TestSplit_invalid(t *testing.T) {
 	}{
 		{
 			// n is less than 1
-			v:    tensor.Zero[int](2, 3),
+			v:    tensor.Zeros[int](2, 3),
 			n:    0,
 			axis: 0,
 		},
@@ -2832,13 +2842,13 @@ func TestSplit_invalid(t *testing.T) {
 		},
 		{
 			// not divisible
-			v:    tensor.Zero[int](2, 3),
+			v:    tensor.Zeros[int](2, 3),
 			n:    4,
 			axis: 0,
 		},
 		{
 			// axis out of range
-			v:    tensor.Zero[int](2, 3),
+			v:    tensor.Zeros[int](2, 3),
 			n:    2,
 			axis: 10,
 		},
@@ -2866,9 +2876,9 @@ func TestTile_invalid(t *testing.T) {
 		n    int
 		axis int
 	}{
-		{v: tensor.Zero[int](2, 3), n: 2, axis: -3},
-		{v: tensor.Zero[int](2, 3), n: 2, axis: 2},
-		{v: tensor.Zero[int](2, 3), n: 0, axis: 1},
+		{v: tensor.Zeros[int](2, 3), n: 2, axis: -3},
+		{v: tensor.Zeros[int](2, 3), n: 2, axis: 2},
+		{v: tensor.Zeros[int](2, 3), n: 0, axis: 1},
 	}
 
 	for _, c := range cases {
@@ -2892,11 +2902,11 @@ func TestRavel_invalid(t *testing.T) {
 		v     *tensor.Tensor[int]
 		coord []int
 	}{
-		{v: tensor.Zero[int](2, 3), coord: []int{1}},
-		{v: tensor.Zero[int](2, 3), coord: []int{2, 3, 4}},
-		{v: tensor.Zero[int](2, 3), coord: []int{-1, 0}},
-		{v: tensor.Zero[int](2, 3), coord: []int{2, 0}},
-		{v: tensor.Zero[int](2, 3), coord: []int{0, 3}},
+		{v: tensor.Zeros[int](2, 3), coord: []int{1}},
+		{v: tensor.Zeros[int](2, 3), coord: []int{2, 3, 4}},
+		{v: tensor.Zeros[int](2, 3), coord: []int{-1, 0}},
+		{v: tensor.Zeros[int](2, 3), coord: []int{2, 0}},
+		{v: tensor.Zeros[int](2, 3), coord: []int{0, 3}},
 	}
 
 	for _, c := range cases {
@@ -2920,8 +2930,8 @@ func TestReduce_invalid(t *testing.T) {
 		v     *tensor.Tensor[int]
 		coord []int
 	}{
-		{v: tensor.Zero[int](1, 4), coord: []int{10}},
-		{v: tensor.Zero[int](1, 4), coord: []int{0, 0}},
+		{v: tensor.Zeros[int](1, 4), coord: []int{10}},
+		{v: tensor.Zeros[int](1, 4), coord: []int{0, 0}},
 	}
 
 	for _, c := range cases {

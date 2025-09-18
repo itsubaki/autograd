@@ -36,8 +36,8 @@ func OneLike(v *Variable) *Variable {
 	return &Variable{Data: matrix.OneLike(v.Data)}
 }
 
-func Zero(shape []int) *Variable {
-	return &Variable{Data: matrix.Zero(shape[0], shape[1])}
+func Zeros(shape []int) *Variable {
+	return &Variable{Data: matrix.Zeros(shape[0], shape[1])}
 }
 
 func Rand(shape []int, s ...randv2.Source) *Variable {
