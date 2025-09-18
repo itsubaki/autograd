@@ -68,8 +68,8 @@ func BenchmarkMatMul1D(b *testing.B) {
 	}
 }
 
-func ExampleZero() {
-	for _, r := range matrix.Zero(2, 3).Seq2() {
+func ExampleZeros() {
+	for _, r := range matrix.Zeros(2, 3).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -93,7 +93,7 @@ func ExampleZeroLike() {
 }
 
 func ExampleOneLike() {
-	A := matrix.Zero(2, 3)
+	A := matrix.Zeros(2, 3)
 	for _, r := range matrix.OneLike(A).Seq2() {
 		fmt.Println(r)
 	}
@@ -150,7 +150,7 @@ func ExampleRandn_seed() {
 }
 
 func ExampleSize() {
-	A := matrix.Zero(2, 3)
+	A := matrix.Zeros(2, 3)
 	fmt.Println(matrix.Size(A))
 
 	// Output:
@@ -158,7 +158,7 @@ func ExampleSize() {
 }
 
 func ExampleShape() {
-	A := matrix.Zero(2, 3)
+	A := matrix.Zeros(2, 3)
 	fmt.Println(matrix.Shape(A))
 
 	// Output:
@@ -166,7 +166,7 @@ func ExampleShape() {
 }
 
 func ExampleDim() {
-	A := matrix.Zero(2, 3)
+	A := matrix.Zeros(2, 3)
 	fmt.Println(matrix.Dim(A))
 
 	// Output:

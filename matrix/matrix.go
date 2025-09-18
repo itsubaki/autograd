@@ -35,8 +35,8 @@ func New(v ...[]float64) *Matrix {
 	}
 }
 
-// Zero returns a zero matrix.
-func Zero(rows, cols int) *Matrix {
+// Zeros returns a zero matrix.
+func Zeros(rows, cols int) *Matrix {
 	return &Matrix{
 		Rows: rows,
 		Cols: cols,
@@ -45,7 +45,7 @@ func Zero(rows, cols int) *Matrix {
 }
 
 func ZeroLike(m *Matrix) *Matrix {
-	return Zero(Dim(m))
+	return Zeros(Dim(m))
 }
 
 func OneLike(m *Matrix) *Matrix {
@@ -56,14 +56,14 @@ func OneLike(m *Matrix) *Matrix {
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
 func Rand(rows, cols int, s ...randv2.Source) *Matrix {
-	return F(Zero(rows, cols), func(_ float64) float64 { return rnd(s...).Float64() })
+	return F(Zeros(rows, cols), func(_ float64) float64 { return rnd(s...).Float64() })
 }
 
 // Randn returns a matrix with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
 // m, n is the dimension of the matrix.
 // s is the source of the pseudo-random number.
 func Randn(rows, cols int, s ...randv2.Source) *Matrix {
-	return F(Zero(rows, cols), func(_ float64) float64 { return rnd(s...).NormFloat64() })
+	return F(Zeros(rows, cols), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
 // rnd returns a pseudo-random number generator.
@@ -252,7 +252,7 @@ func MatMul(m, n *Matrix) *Matrix {
 	a, b := m.Rows, m.Cols
 	_, p := n.Rows, n.Cols
 
-	out := Zero(a, p)
+	out := Zeros(a, p)
 	for i := range a {
 		for k := range b {
 			mik := m.Data[i*b+k]
@@ -308,7 +308,7 @@ func BroadcastTo(shape []int, m *Matrix) *Matrix {
 
 	if m.Rows == 1 {
 		// b is ignored
-		out := Zero(rows, m.Cols)
+		out := Zeros(rows, m.Cols)
 		for i := range rows {
 			out.SetRow(i, m.Row(0))
 		}
@@ -318,7 +318,7 @@ func BroadcastTo(shape []int, m *Matrix) *Matrix {
 
 	if m.Cols == 1 {
 		// a is ignored
-		out := Zero(m.Rows, cols)
+		out := Zeros(m.Rows, cols)
 		for i := range m.Rows {
 			for j := range cols {
 				out.Set(i, j, m.At(i, 0))
@@ -399,7 +399,7 @@ func MaxAxis1(m *Matrix) *Matrix {
 func Transpose(m *Matrix) *Matrix {
 	rows, cols := Dim(m)
 
-	out := Zero(cols, rows)
+	out := Zeros(cols, rows)
 	for i := range rows {
 		for j := range cols {
 			out.Set(j, i, m.At(i, j))
@@ -422,7 +422,7 @@ func Reshape(shape []int, m *Matrix) *Matrix {
 		b = rows * cols / a
 	}
 
-	out := Zero(a, b)
+	out := Zeros(a, b)
 	copy(out.Data, m.Data)
 	return out
 }

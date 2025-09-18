@@ -53,7 +53,7 @@ func label(t *variable.Variable) []int {
 }
 
 func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
-	out := matrix.Zero(len(label), 1)
+	out := matrix.Zeros(len(label), 1)
 	for i, v := range label {
 		out.Set(i, 0, m.At(i, v))
 	}
@@ -64,7 +64,7 @@ func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
 func onehot(t []float64, size int) *matrix.Matrix {
 	x := vector.Int(t)
 
-	out := matrix.Zero(len(x), size)
+	out := matrix.Zeros(len(x), size)
 	for i, v := range x {
 		out.Set(i, v, 1)
 	}

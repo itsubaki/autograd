@@ -29,32 +29,32 @@ func New[T Number](shape []int, data []T) *Tensor[T] {
 
 // Full returns a new tensor with elements that are all the given value.
 func Full[T Number](shape []int, value T) *Tensor[T] {
-	return F(Zero[T](shape...), func(_ T) T { return value })
+	return F(Zeros[T](shape...), func(_ T) T { return value })
 }
 
 // Rand returns a new tensor with elements that pseudo-random number in the half-open interval [0.0,1.0).
 func Rand(shape []int, s ...randv2.Source) *Tensor[float64] {
-	return F(Zero[float64](shape...), func(_ float64) float64 { return rnd(s...).Float64() })
+	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).Float64() })
 }
 
 // Randn returns a new tensor with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
 func Randn(shape []int, s ...randv2.Source) *Tensor[float64] {
-	return F(Zero[float64](shape...), func(_ float64) float64 { return rnd(s...).NormFloat64() })
+	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
 
-// Zero returns a new tensor with elements that are all zero.
-func Zero[T Number](shape ...int) *Tensor[T] {
+// Zeros returns a new tensor with elements that are all zero.
+func Zeros[T Number](shape ...int) *Tensor[T] {
 	return New(shape, make([]T, size(shape)))
 }
 
-// One returns a new tensor with elements that are all one.
-func One[T Number](shape ...int) *Tensor[T] {
-	return F(Zero[T](shape...), func(_ T) T { return 1 })
+// Ones returns a new tensor with elements that are all one.
+func Ones[T Number](shape ...int) *Tensor[T] {
+	return F(Zeros[T](shape...), func(_ T) T { return 1 })
 }
 
 // ZeroLike returns a new tensor with the same shape as v and elements that are all zero.
 func ZeroLike[T Number](v *Tensor[T]) *Tensor[T] {
-	return Zero[T](v.Shape...)
+	return Zeros[T](v.Shape...)
 }
 
 // OneLike returns a new tensor with the same shape as v and elements that are all one.
@@ -129,6 +129,11 @@ func MulC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 // Pow applies v**p for each element in v and returns a new tensor.
 func Pow(p float64, v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Pow(a, p) })
+}
+
+// Sqrt applies sqrt(v) for each element in v and returns a new tensor.
+func Sqrt(v *Tensor[float64]) *Tensor[float64] {
+	return F(v, func(a float64) float64 { return math.Sqrt(a) })
 }
 
 // Exp applies exp(v) for each element in v and returns a new tensor.
@@ -303,7 +308,7 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 
 		shape = append(shape, s)
 	}
-	out := Zero[int](shape...)
+	out := Zeros[int](shape...)
 
 	for i := range out.Data {
 		coord := Unravel(out, i)
@@ -382,7 +387,7 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[ax] = len(indices)
-	out := Zero[T](shape...)
+	out := Zeros[T](shape...)
 
 	// take
 	for i := range out.Data {
@@ -413,7 +418,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		for i, a := range perm {
 			shape[i] = v.Shape[a]
 		}
-		out := Zero[T](shape...)
+		out := Zeros[T](shape...)
 
 		// transpose
 		for i := range v.Data {
@@ -552,7 +557,7 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 
 // BroadcastTo returns a new tensor with the given shape by broadcasting v to the shape.
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
-	out := Zero[T](shape...)
+	out := Zeros[T](shape...)
 	ndim := out.NumDims()
 
 	vndim := v.NumDims()
@@ -658,7 +663,7 @@ func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[ax] = v.Shape[ax] + w.Shape[ax]
-	out := Zero[T](shape...)
+	out := Zeros[T](shape...)
 
 	// concat
 	for i := range v.Data {
@@ -705,7 +710,7 @@ func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
 	// out tensors
 	out := make([]*Tensor[T], n)
 	for i := range n {
-		out[i] = Zero[T](shape...)
+		out[i] = Zeros[T](shape...)
 	}
 
 	// split
@@ -749,7 +754,7 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[ax] = v.Shape[ax] * n
-	out := Zero[T](shape...)
+	out := Zeros[T](shape...)
 
 	// repeat
 	for i := range out.Data {
@@ -788,7 +793,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	// out tensor
 	batch := a.Shape[:ndim-2]
 	shape := append(batch, []int{arows, bcols}...)
-	o := Zero[T](shape...)
+	o := Zeros[T](shape...)
 
 	// batch matmul
 	for batchIdx := range size(batch) {
@@ -865,7 +870,7 @@ func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
 
-	out := Zero[U](a.Shape...)
+	out := Zeros[U](a.Shape...)
 	for i := range a.Data {
 		out.Data[i] = f(a.Data[i], b.Data[i])
 	}
