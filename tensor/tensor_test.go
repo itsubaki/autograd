@@ -986,6 +986,239 @@ func TestMean(t *testing.T) {
 	}
 }
 
+func TestVariance(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[float64]
+		axes []int
+		want *tensor.Tensor[float64]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []float64{42}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{0}),
+		},
+		{
+			// all
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{
+				1.25,
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []float64{
+				1, 1,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []float64{
+				0.25,
+				0.25,
+			}),
+		},
+		{
+			// axis -1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{-1},
+			want: tensor.New([]int{2}, []float64{
+				0.25,
+				0.25,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 2}, []float64{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{1, 2},
+			want: tensor.New([]int{2}, []float64{
+				1.25,
+				1.25,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 2}, []float64{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 1, 2},
+			want: tensor.New(nil, []float64{5.25}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []float64{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []float64{
+				0.6666666667,
+				0.6666666667,
+			}),
+		},
+		{
+			// 1 row, axis 0, should be all 0
+			v: tensor.New([]int{1, 3}, []float64{
+				10, 20, 30,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{3}, []float64{
+				0, 0, 0,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 2}, []float64{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{1, -1}, // same as (1, 2)
+			want: tensor.New([]int{2}, []float64{
+				1.25,
+				1.25,
+			}),
+		},
+		{
+			// 1 dim
+			v: tensor.New([]int{5}, []float64{
+				1, 2, 3, 4, 5,
+			}),
+			axes: []int{0},
+			want: tensor.New(nil, []float64{
+				2.0,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Variance(c.v, c.axes...)
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestStd(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[float64]
+		axes []int
+		want *tensor.Tensor[float64]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []float64{42}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{0}),
+		},
+		{
+			// all
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{
+				math.Sqrt(1.25),
+			}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{0},
+			want: tensor.New([]int{2}, []float64{
+				1, 1,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{1},
+			want: tensor.New([]int{2}, []float64{
+				math.Sqrt(0.25),
+				math.Sqrt(0.25),
+			}),
+		},
+		{
+			// axis -1
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{-1},
+			want: tensor.New([]int{2}, []float64{
+				math.Sqrt(0.25),
+				math.Sqrt(0.25),
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 2}, []float64{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{1, 2},
+			want: tensor.New([]int{2}, []float64{
+				math.Sqrt(1.25),
+				math.Sqrt(1.25),
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 2}, []float64{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 1, 2},
+			want: tensor.New(nil, []float64{
+				math.Sqrt(5.25),
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Std(c.v, c.axes...)
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
 func TestTake(t *testing.T) {
 	cases := []struct {
 		v       *tensor.Tensor[int]
@@ -1056,7 +1289,9 @@ func TestTake(t *testing.T) {
 			}),
 			axis:    -1,
 			indices: []int{1},
-			want:    tensor.New([]int{2, 1}, []int{2, 5}),
+			want: tensor.New([]int{2, 1}, []int{
+				2, 5,
+			}),
 		},
 		{
 			v: tensor.New([]int{2, 3}, []int{

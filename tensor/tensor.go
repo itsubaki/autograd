@@ -240,6 +240,36 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return MulC(1/float64(count), Sum(v, ax...))
 }
 
+// Variance returns a new tensor with the variance of elements in v.
+func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	ndim := v.NumDims()
+	if ndim == 0 {
+		// scalar
+		return New(nil, []float64{0})
+	}
+
+	// insert 1 at the given axes
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+	for _, ax := range axes {
+		ax, err := adjAxis(ax, ndim)
+		if err != nil {
+			panic(err)
+		}
+
+		shape[ax] = 1
+	}
+
+	mu := Mean(v, axes...)
+	xc := Sub(v, Reshape(mu, shape...))
+	return Mean(Mul(xc, xc), axes...)
+}
+
+// Std returns a new tensor with the standard deviation of elements in v.
+func Std(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Sqrt(Variance(v, axes...))
+}
+
 // Clip returns a new tensor with elements that are clipped to the interval [min, max].
 func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
 	return F(v, func(x T) T {
