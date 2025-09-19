@@ -2658,6 +2658,30 @@ func TestMean_invalid(t *testing.T) {
 	}
 }
 
+func TestVariance_invalid(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[float64]
+		axes []int
+	}{
+		{v: tensor.Zeros[float64](1, 4), axes: []int{10}},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axes %v", c.axes)
+			}()
+
+			_ = tensor.Variance(c.v, c.axes...)
+			t.Fail()
+		}()
+	}
+}
+
 func TestTake_invalid(t *testing.T) {
 	cases := []struct {
 		v       *tensor.Tensor[int]
