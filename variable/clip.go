@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/tensor"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func Clip(min, max float64) func(x ...*Variable) *Variable {
 	return (&Function{
