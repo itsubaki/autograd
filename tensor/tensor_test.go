@@ -205,6 +205,45 @@ func ExampleTensor_ScatterAdd_axis1() {
 	// [13 11 25 21 39 31]
 }
 
+func ExampleTensor_Seq2() {
+	v := tensor.New([]int{3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+	})
+	for i, row := range v.Seq2() {
+		fmt.Println(i, row)
+	}
+
+	// Output:
+	// 0 [10 11]
+	// 1 [20 21]
+	// 2 [30 31]
+}
+
+func ExampleTensor_Seq2_batch() {
+	v := tensor.New([]int{2, 3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+
+		40, 41,
+		50, 51,
+		60, 61,
+	})
+	for i, row := range v.Seq2() {
+		fmt.Println(i, row)
+	}
+
+	// Output:
+	// 0 [10 11]
+	// 1 [20 21]
+	// 2 [30 31]
+	// 3 [40 41]
+	// 4 [50 51]
+	// 5 [60 61]
+}
+
 func ExampleTake() {
 	v := tensor.New([]int{3, 2}, []int{
 		10, 11,
