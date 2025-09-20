@@ -1,6 +1,11 @@
 package layer
 
-import "github.com/itsubaki/autograd/variable"
+import (
+	"iter"
+	"slices"
+
+	"github.com/itsubaki/autograd/variable"
+)
 
 type Parameter = *variable.Variable
 
@@ -22,5 +27,21 @@ func (p Parameters) Params() Parameters {
 func (p Parameters) Cleargrads() {
 	for k := range p {
 		p[k].Cleargrad()
+	}
+}
+
+func (p Parameters) Seq2() iter.Seq2[string, Parameter] {
+	keys := make([]string, 0, len(p))
+	for k := range p {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+
+	return func(yield func(string, Parameter) bool) {
+		for _, k := range keys {
+			if !yield(k, p[k]) {
+				return
+			}
+		}
 	}
 }
