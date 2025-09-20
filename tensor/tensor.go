@@ -1120,6 +1120,10 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 
 // Ravel returns the index in the flat data slice for the given multi-dimensional coordinates.
 func Ravel[T Number](v *Tensor[T], coord ...int) int {
+	if len(coord) == 0 {
+		return 0
+	}
+
 	if len(coord) != len(v.Shape) {
 		panic(fmt.Sprintf("coord length=%v are not equal to ndim=%v", len(coord), len(v.Shape)))
 	}
