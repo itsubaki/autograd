@@ -13,7 +13,7 @@ func ExampleGetItemGrad() {
 		[]float64{1, 1, 1},
 	)
 
-	y := variable.GetItemGrad([]int{0, 0, 1}, []int{2, 3})(gy)
+	y := variable.GetItemGrad([]int{0, 0, 1}, []int{2, 3}, 0)(gy)
 	y.Backward()
 
 	fmt.Println(y)

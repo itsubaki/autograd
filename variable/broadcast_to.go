@@ -11,7 +11,8 @@ func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
 }
 
 type BroadcastToT struct {
-	Shape, xShape []int
+	Shape  []int
+	xShape []int
 }
 
 func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {

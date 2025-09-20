@@ -11,7 +11,8 @@ func Reshape(shape ...int) func(x ...*Variable) *Variable {
 }
 
 type ReshapeT struct {
-	Shape, xShape []int
+	Shape  []int
+	xShape []int
 }
 
 func (f *ReshapeT) Forward(x ...*Variable) []*Variable {

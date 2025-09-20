@@ -11,7 +11,8 @@ func SumTo(shape ...int) func(x ...*Variable) *Variable {
 }
 
 type SumToT struct {
-	Shape, xShape []int
+	Shape  []int
+	xShape []int
 }
 
 func (f *SumToT) Forward(x ...*Variable) []*Variable {

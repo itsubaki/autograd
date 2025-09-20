@@ -18,7 +18,8 @@ func Add(x ...*Variable) *Variable {
 }
 
 type AddT struct {
-	x0Shape, x1Shape []int
+	x0Shape []int
+	x1Shape []int
 }
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {

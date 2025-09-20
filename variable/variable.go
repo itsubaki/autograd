@@ -160,15 +160,17 @@ func (v *Variable) String() string {
 		name = v.Name
 	}
 
-	scalar := true
+	s1 := true
 	for _, s := range v.Shape() {
-		if s != 1 {
-			scalar = false
-			break
+		if s == 1 {
+			continue
 		}
+
+		s1 = false
+		break
 	}
 
-	if scalar {
+	if s1 {
 		return fmt.Sprintf("%s(%v)", name, v.At())
 	}
 

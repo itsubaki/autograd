@@ -34,7 +34,7 @@ var (
 	_ Func = F.Sigmoid
 	_ Func = F.ReLU
 	_ Func = F.MeanSquaredError
-	_ Func = F.GetItem([]int{0, 0, 1})
+	_ Func = F.GetItem([]int{0, 0, 1}, 0)
 	_ Func = F.Softmax
 	_ Func = F.SoftmaxCrossEntropy
 )
