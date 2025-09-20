@@ -2,7 +2,7 @@ package numerical
 
 import (
 	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -44,9 +44,9 @@ func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
 		h = append(h, 1e-4)
 	}
 
-	y0 := f(xh(x, h[0], matrix.AddC)...)          // f(x+h)
-	y1 := f(xh(x, -1.0*h[0], matrix.AddC)...)     // f(x-h)
-	df := matrix.F2(y0.Data, y1.Data, diff(h[0])) // (f(x+h) - f(x-h)) / 2h
+	y0 := f(xh(x, h[0], tensor.AddC)...)          // f(x+h)
+	y1 := f(xh(x, -1.0*h[0], tensor.AddC)...)     // f(x-h)
+	df := tensor.F2(y0.Data, y1.Data, diff(h[0])) // (f(x+h) - f(x-h)) / 2h
 	return &variable.Variable{Data: df}
 }
 
@@ -54,7 +54,7 @@ func diff(h float64) func(a, b float64) float64 {
 	return func(a, b float64) float64 { return (a - b) / (2 * h) }
 }
 
-func xh(x []*variable.Variable, h float64, f func(c float64, v *matrix.Matrix) *matrix.Matrix) []*variable.Variable {
+func xh(x []*variable.Variable, h float64, f func(c float64, v *tensor.Tensor[float64]) *tensor.Tensor[float64]) []*variable.Variable {
 	x0 := make([]*variable.Variable, len(x))
 	for i := range x {
 		x0[i] = variable.NewFrom(f(h, x[i].Data))

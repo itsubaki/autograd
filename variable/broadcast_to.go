@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
@@ -17,9 +17,8 @@ type BroadcastToT struct {
 func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
-	y := matrix.BroadcastTo(f.Shape, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		NewFrom(tensor.BroadcastTo(x[0].Data, f.Shape...)),
 	}
 }
 

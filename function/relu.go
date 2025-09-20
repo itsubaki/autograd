@@ -3,7 +3,7 @@ package function
 import (
 	"math"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -17,16 +17,14 @@ type ReLUT struct {
 
 func (f *ReLUT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
-	y := matrix.F(x[0].Data, maximum)
 
 	return []*variable.Variable{
-		variable.NewFrom(y),
+		variable.NewFrom(tensor.F(x[0].Data, maximum)),
 	}
 }
 
 func (f *ReLUT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	mask := matrix.Mask(f.x.Data, relu)
-
+	mask := tensor.Mask(f.x.Data, relu)
 	return []*variable.Variable{
 		Mul(gy[0], variable.NewFrom(mask)), // gy * mask
 	}

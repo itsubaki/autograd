@@ -5,55 +5,64 @@ import (
 	randv2 "math/rand/v2"
 	"sort"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 )
 
 type Variable struct {
 	Name       string
-	Data       *matrix.Matrix
+	Data       *tensor.Tensor[float64]
 	Grad       *Variable
 	Creator    *Function
 	Generation int
 }
 
 func New(v ...float64) *Variable {
-	return &Variable{Data: matrix.New(v)}
+	return &Variable{
+		Data: tensor.New([]int{1, len(v)}, v),
+	}
 }
 
 func NewOf(v ...[]float64) *Variable {
-	return &Variable{Data: matrix.New(v...)}
+	data := make([]float64, 0, len(v)*len(v[0]))
+	for _, row := range v {
+		data = append(data, row...)
+	}
+
+	return &Variable{
+		Data: tensor.New([]int{len(v), len(v[0])}, data),
+	}
 }
 
-func NewFrom(v *matrix.Matrix) *Variable {
+func NewFrom(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
 func ZeroLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.ZeroLike(v.Data)}
+	return &Variable{Data: tensor.ZeroLike(v.Data)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.OneLike(v.Data)}
+	return &Variable{Data: tensor.OneLike(v.Data)}
 }
 
-func Zeros(shape []int) *Variable {
-	return &Variable{Data: matrix.Zeros(shape[0], shape[1])}
+func Zeros(shape ...int) *Variable {
+	return &Variable{Data: tensor.Zeros[float64](shape...)}
 }
 
 func Rand(shape []int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Rand(shape[0], shape[1], s...)}
+	return &Variable{Data: tensor.Rand(shape, s...)}
 }
 
 func Randn(shape []int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Randn(shape[0], shape[1], s...)}
+	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
 func (v *Variable) At(coord ...int) float64 {
-	return v.Data.At(coord[0], coord[1])
+	return v.Data.At(coord...)
 }
 
 func (v *Variable) Shape() []int {
-	return matrix.Shape(v.Data)
+	return v.Data.Shape
 }
 
 func (v *Variable) Cleargrad() {
@@ -75,7 +84,6 @@ func (v *Variable) UnchainBackward() {
 	}
 
 	fs := append(make([]*Function, 0), v.Creator)
-
 	for {
 		if len(fs) == 0 {
 			break
@@ -108,7 +116,6 @@ func (v *Variable) Backward(opts ...Opts) {
 
 	seen := make(map[*Function]bool)
 	fs := addFunc(make([]*Function, 0), v.Creator, seen)
-
 	for {
 		if len(fs) == 0 {
 			break
@@ -153,15 +160,19 @@ func (v *Variable) String() string {
 		name = v.Name
 	}
 
-	if v.Data.Rows == 1 && v.Data.Cols == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data.Data[0])
+	scalar := true
+	for _, s := range v.Shape() {
+		if s != 1 {
+			scalar = false
+			break
+		}
 	}
 
-	if v.Data.Rows == 1 {
-		return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Row(0))
+	if scalar {
+		return fmt.Sprintf("%s(%v)", name, v.At())
 	}
 
-	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data)
+	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {

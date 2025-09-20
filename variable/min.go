@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Min(x ...*Variable) *Variable {
 	return (&Function{
@@ -14,7 +14,7 @@ type MinT struct {
 
 func (f *MinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-	f.y = New(matrix.Min(x[0].Data))
+	f.y = NewFrom(tensor.Min(x[0].Data))
 
 	return []*Variable{
 		f.y,

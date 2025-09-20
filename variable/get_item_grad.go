@@ -1,29 +1,26 @@
 package variable
 
 import (
-	"github.com/itsubaki/autograd/matrix"
-	"github.com/itsubaki/autograd/vector"
+	"github.com/itsubaki/autograd/tensor"
 )
 
-func GetItemGrad(slices, inShape []int) func(x ...*Variable) *Variable {
+func GetItemGrad(indices, inShape []int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &GetItemGradT{
-			Slices:  slices,
+			Indices: indices,
 			InShape: inShape,
 		},
 	}).First
 }
 
 type GetItemGradT struct {
-	Slices  []int
+	Indices []int
 	InShape []int
 }
 
 func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
-	gx := matrix.Zeros(f.InShape[0], f.InShape[1])
-	for i, idx := range f.Slices {
-		gx.SetRow(idx, vector.Add(gx.Row(idx), gy[0].Data.Row(i)))
-	}
+	gx := tensor.Zeros[float64](f.InShape...)
+	gx.ScatterAdd(gy[0].Data, f.Indices, 0)
 
 	return []*Variable{
 		NewFrom(gx),
@@ -32,6 +29,6 @@ func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 
 func (f *GetItemGradT) Backward(ggx ...*Variable) []*Variable {
 	return []*Variable{
-		GetItem(f.Slices)(ggx...),
+		GetItem(f.Indices)(ggx...),
 	}
 }

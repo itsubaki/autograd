@@ -2,13 +2,13 @@ package hook
 
 import (
 	"github.com/itsubaki/autograd/layer"
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 )
 
 func WeightDecay(lambda float64) func(params []layer.Parameter) {
 	return func(params []layer.Parameter) {
 		for _, p := range params {
-			p.Data = matrix.F2(p.Data, p.Grad.Data, decay(lambda))
+			p.Data = tensor.F2(p.Data, p.Grad.Data, decay(lambda))
 		}
 	}
 }

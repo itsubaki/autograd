@@ -34,5 +34,5 @@ func ExampleSum_matrix() {
 
 	// Output:
 	// variable(21)
-	// variable[2 3]([[1 1 1] [1 1 1]])
+	// variable[2 3]([1 1 1 1 1 1])
 }

@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Reshape(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
@@ -17,9 +17,8 @@ type ReshapeT struct {
 func (f *ReshapeT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
-	y := matrix.Reshape(f.Shape, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		NewFrom(tensor.Reshape(x[0].Data, f.Shape...)),
 	}
 }
 
