@@ -51,7 +51,7 @@ func ExampleLinear_nobias() {
 	x := variable.New(1, 2, 3)
 	l.Forward(x)
 
-	for _, v := range l.Params() {
+	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name)
 	}
 
@@ -66,7 +66,7 @@ func ExampleLinear_backward() {
 	y := l.Forward(x)
 	y[0].Backward()
 
-	for _, v := range l.Params() {
+	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name, v.Grad)
 	}
 

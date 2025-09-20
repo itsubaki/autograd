@@ -90,6 +90,26 @@ func ExampleRandn() {
 	// [2 3]
 }
 
+func ExampleArange() {
+	v := tensor.Arange(-5, 5)
+	fmt.Println(v.Shape)
+	fmt.Println(v.Data)
+
+	// Output:
+	// [10]
+	// [-5 -4 -3 -2 -1 0 1 2 3 4]
+}
+
+func ExampleLinspace() {
+	v := tensor.Linspace(0, 1, 5)
+	fmt.Println(v.Shape)
+	fmt.Println(v.Data)
+
+	// Output:
+	// [5]
+	// [0 0.25 0.5 0.75 1]
+}
+
 func ExampleReshape() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
@@ -218,30 +238,6 @@ func ExampleTensor_Seq2() {
 	// 0 [10 11]
 	// 1 [20 21]
 	// 2 [30 31]
-}
-
-func ExampleTensor_Seq2_batch() {
-	v := tensor.New([]int{2, 3, 2}, []int{
-		10, 11,
-		20, 21,
-		30, 31,
-
-		40, 41,
-		50, 51,
-		60, 61,
-	})
-
-	for i, row := range v.Seq2() {
-		fmt.Println(i, row)
-	}
-
-	// Output:
-	// 0 [10 11]
-	// 1 [20 21]
-	// 2 [30 31]
-	// 3 [40 41]
-	// 4 [50 51]
-	// 5 [60 61]
 }
 
 func ExampleTensor_Seq2_break() {
@@ -827,6 +823,24 @@ func ExampleRandn_seed() {
 	// -0.3678, 1.0920, -0.4438
 }
 
+func ExampleLinspace_invalid() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			return
+		}
+
+		panic("unexpected panic for index")
+	}()
+
+	_ = tensor.Linspace(0, 1, 1)
+
+	panic("unreachable")
+
+	// Output:
+	// num is less than 2
+}
+
 func ExampleReshape_invalid() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -878,6 +892,76 @@ func ExampleMatMul_invalid() {
 
 	// Output:
 	// shapes [2 2 2] and [2 3 2] are not aligned for matmul
+}
+
+func TestArange(t *testing.T) {
+	cases := []struct {
+		start, stop, step int
+		want              *tensor.Tensor[int]
+	}{
+		{
+			start: 0,
+			stop:  10,
+			step:  1,
+			want: tensor.New([]int{10}, []int{
+				0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+			}),
+		},
+		{
+			start: -10,
+			stop:  10,
+			step:  2,
+			want: tensor.New([]int{10}, []int{
+				-10, -8, -6, -4, -2, 0, 2, 4, 6, 8,
+			}),
+		},
+		{
+			start: 5,
+			stop:  0,
+			step:  -1,
+			want: tensor.New([]int{5}, []int{
+				5, 4, 3, 2, 1,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Arange(c.start, c.stop, c.step)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestArange_f64(t *testing.T) {
+	cases := []struct {
+		start, stop, step float64
+		want              *tensor.Tensor[float64]
+	}{
+		{
+			start: 1.2,
+			stop:  5.2,
+			step:  0.5,
+			want: tensor.New([]int{8}, []float64{
+				1.2, 1.7, 2.2, 2.7, 3.2, 3.7, 4.2, 4.7,
+			}),
+		},
+		{
+			start: 1.0,
+			stop:  -1.0,
+			step:  -0.3,
+			want: tensor.New([]int{7}, []float64{
+				1.0, 0.7, 0.4, 0.1, -0.2, -0.5, -0.8,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Arange(c.start, c.stop, c.step)
+		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
 }
 
 func TestAdd(t *testing.T) {
@@ -1613,6 +1697,52 @@ func TestScatterAdd(t *testing.T) {
 		c.v.ScatterAdd(c.w, c.indices, c.axis)
 		if !tensor.EqualAll(c.v, c.want) {
 			t.Errorf("got=%v, want=%v", c.v.Data, c.want.Data)
+		}
+	}
+}
+
+func TestTensor_Seq2(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		want [][]int
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			want: [][]int{{42}},
+		},
+		{
+			// batch
+			v: tensor.New([]int{2, 3, 2}, []int{
+				10, 11,
+				20, 21,
+				30, 31,
+
+				40, 41,
+				50, 51,
+				60, 61,
+			}),
+			want: [][]int{
+				{10, 11},
+				{20, 21},
+				{30, 31},
+				{40, 41},
+				{50, 51},
+				{60, 61},
+			},
+		},
+	}
+
+	for _, c := range cases {
+		got := make([][]int, len(c.want))
+		for i, row := range c.v.Seq2() {
+			got[i] = row
+		}
+
+		for i := range c.want {
+			if !reflect.DeepEqual(got[i], c.want[i]) {
+				t.Errorf("got=%v, want=%v", got, c.want)
+			}
 		}
 	}
 }
