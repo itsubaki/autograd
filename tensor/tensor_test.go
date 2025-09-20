@@ -244,6 +244,25 @@ func ExampleTensor_Seq2_batch() {
 	// 5 [60 61]
 }
 
+func ExampleTensor_Seq2_break() {
+	v := tensor.New([]int{3, 2}, []int{
+		10, 11,
+		20, 21,
+		30, 31,
+	})
+
+	for i, row := range v.Seq2() {
+		if i == 1 {
+			break
+		}
+
+		fmt.Println(i, row)
+	}
+
+	// Output:
+	// 0 [10 11]
+}
+
 func ExampleTake() {
 	v := tensor.New([]int{3, 2}, []int{
 		10, 11,

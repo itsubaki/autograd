@@ -32,15 +32,15 @@ func ExampleMLP_backward() {
 	y := m.Forward(x)
 	y.Backward()
 
-	for _, p := range m.Params() {
-		fmt.Println(p.Name, p.Grad)
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Grad)
 	}
 
-	// Unordered output:
-	// w variable[2 5]([[0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009] [0 0 -0.23571254300015912 -0.34550753645974064 -0.2905673555708018]])
-	// b variable(1)
-	// w variable[5 1]([[0] [0] [1.62887541989766] [0.7662326556923662] [1.9766127473463149]])
-	// b variable[1 5]([0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009])
+	// Output:
+	// 0.b variable[1 5]([0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009])
+	// 0.w variable[2 5]([[0 0 -0.11785627150007956 -0.17275376822987032 -0.1452836777854009] [0 0 -0.23571254300015912 -0.34550753645974064 -0.2905673555708018]])
+	// 1.b variable(1)
+	// 1.w variable[5 1]([[0] [0] [1.62887541989766] [0.7662326556923662] [1.9766127473463149]])
 }
 
 func ExampleMLP_cleargrads() {
@@ -54,15 +54,15 @@ func ExampleMLP_cleargrads() {
 	y.Backward()
 	m.Cleargrads()
 
-	for _, p := range m.Params() {
-		fmt.Println(p.Name, p.Grad)
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Grad)
 	}
 
-	// Unordered output:
-	// b <nil>
-	// w <nil>
-	// b <nil>
-	// w <nil>
+	// Output:
+	// 0.b <nil>
+	// 0.w <nil>
+	// 1.b <nil>
+	// 1.w <nil>
 }
 
 func ExampleMLP_Params() {
@@ -71,13 +71,13 @@ func ExampleMLP_Params() {
 	x := variable.New(1, 2)
 	m.Forward(x) // gen w
 
-	for k, p := range m.Params() {
-		fmt.Println(k, p.Shape())
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Shape())
 	}
 
-	// Unordered output:
-	// 0.w [2 5]
+	// Output:
 	// 0.b [1 5]
-	// 1.w [5 1]
+	// 0.w [2 5]
 	// 1.b [1 1]
+	// 1.w [5 1]
 }
