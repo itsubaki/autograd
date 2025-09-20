@@ -2,6 +2,7 @@ package tensor
 
 import (
 	"fmt"
+	"iter"
 	"math"
 	randv2 "math/rand/v2"
 
@@ -108,6 +109,22 @@ func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
 		coord := Unravel(w, i)
 		coord[ax] = idx[coord[ax]]
 		v.Data[Ravel(v, coord...)] += w.Data[i]
+	}
+}
+
+// Seq2 returns a sequence of rows.
+func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
+	ndim := v.NumDims()
+	size := v.Shape[ndim-1]
+	total := len(v.Data) / size
+
+	return func(yield func(int, []T) bool) {
+		for i := range total {
+			start := i * size
+			if !yield(i, v.Data[start:start+size]) {
+				return
+			}
+		}
 	}
 }
 
