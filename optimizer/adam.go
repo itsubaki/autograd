@@ -3,7 +3,7 @@ package optimizer
 import (
 	"math"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -13,15 +13,15 @@ type Adam struct {
 	Beta2  float64
 	Hook   []Hook
 	iter   int
-	ms, vs map[*variable.Variable]*matrix.Matrix
+	ms, vs map[*variable.Variable]*tensor.Tensor[float64]
 }
 
 func (o *Adam) Update(model Model) {
 	params := Params(model, o.Hook)
 
 	if len(o.ms) == 0 {
-		o.ms = make(map[*variable.Variable]*matrix.Matrix)
-		o.vs = make(map[*variable.Variable]*matrix.Matrix)
+		o.ms = make(map[*variable.Variable]*tensor.Tensor[float64])
+		o.vs = make(map[*variable.Variable]*tensor.Tensor[float64])
 	}
 
 	o.iter++
@@ -31,15 +31,15 @@ func (o *Adam) Update(model Model) {
 
 	for _, p := range params {
 		if _, ok := o.ms[p]; !ok {
-			o.ms[p] = matrix.ZeroLike(p.Data)
-			o.vs[p] = matrix.ZeroLike(p.Data)
+			o.ms[p] = tensor.ZeroLike[float64](p.Data)
+			o.vs[p] = tensor.ZeroLike[float64](p.Data)
 		}
 
-		o.ms[p] = matrix.F2(o.ms[p], p.Grad.Data, func(m, grad float64) float64 { return m + ((1 - o.Beta1) * (grad - m)) })      // m = m + ((1-beta1) * (grad - m))
-		o.vs[p] = matrix.F2(o.vs[p], p.Grad.Data, func(v, grad float64) float64 { return v + ((1 - o.Beta2) * (grad*grad - v)) }) // v = v + ((1-beta2) * (grad^2 - v))
+		o.ms[p] = tensor.F2(o.ms[p], p.Grad.Data, func(m, grad float64) float64 { return m + ((1 - o.Beta1) * (grad - m)) })      // m = m + ((1-beta1) * (grad - m))
+		o.vs[p] = tensor.F2(o.vs[p], p.Grad.Data, func(v, grad float64) float64 { return v + ((1 - o.Beta2) * (grad*grad - v)) }) // v = v + ((1-beta2) * (grad^2 - v))
 
 		// param = param - (lr * m / (sqrt(v) + 1e-8))
-		p.Data = matrix.Sub(p.Data, matrix.F2(o.ms[p], o.vs[p], func(m, v float64) float64 {
+		p.Data = tensor.Sub(p.Data, tensor.F2(o.ms[p], o.vs[p], func(m, v float64) float64 {
 			return lr * m / (math.Sqrt(v) + 1e-8)
 		}))
 	}

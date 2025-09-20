@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Sum(x ...*Variable) *Variable {
 	return (&Function{
@@ -15,9 +15,8 @@ type SumT struct {
 func (f *SumT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
-	y := matrix.Sum(x[0].Data)
 	return []*Variable{
-		New(y),
+		NewFrom(tensor.Sum(x[0].Data)),
 	}
 }
 

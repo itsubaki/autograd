@@ -32,7 +32,7 @@ func ExampleVariable_Name_matrix() {
 	fmt.Println(v)
 
 	// Output:
-	// variable[2 3]([[1 2 3] [4 5 6]])
+	// variable[2 3]([1 2 3 4 5 6])
 }
 
 func ExampleZeroLike() {
@@ -52,10 +52,10 @@ func ExampleOneLike() {
 }
 
 func ExampleZeros() {
-	fmt.Println(variable.Zeros([]int{2, 3}))
+	fmt.Println(variable.Zeros(2, 3))
 
 	// Output:
-	// variable[2 3]([[0 0 0] [0 0 0]])
+	// variable[2 3]([0 0 0 0 0 0])
 }
 
 func ExampleRand() {

@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -14,12 +14,11 @@ type SoftmaxT struct {
 }
 
 func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
-	max := matrix.MaxAxis1(x[0].Data)              // max(x, axis=1)
-	expy := matrix.Exp(matrix.Sub(x[0].Data, max)) // expy = exp(x - max)
-	sumy := matrix.SumAxis1(expy)                  // sumy = sum(expy, axis=1)
-	y := matrix.Div(expy, sumy)                    // y = expy / sumy
+	max := tensor.Expand(tensor.Max(x[0].Data, 1), 1)
+	expy := tensor.Exp(tensor.Sub(x[0].Data, max)) // expy = exp(x - max)
+	sumy := tensor.Expand(tensor.Sum(expy, 1), 1)  // sumy = sum(expy, axis=1)
 
-	f.y = variable.NewFrom(y)
+	f.y = variable.NewFrom(tensor.Div(expy, sumy)) // y = expy / sumy
 	return []*variable.Variable{
 		f.y,
 	}

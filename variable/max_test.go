@@ -20,5 +20,5 @@ func ExampleMax() {
 
 	// Output:
 	// variable(10)
-	// variable[2 3]([[0 0 0] [0 1 0]])
+	// variable[2 3]([0 0 0 0 1 0])
 }

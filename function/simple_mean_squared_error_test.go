@@ -26,6 +26,6 @@ func ExampleMeanSquaredErrorSimple() {
 
 	// Output:
 	// variable(12)
-	// variable[2 3]([[-2 -2 -2] [-2 -2 -2]])
-	// variable[2 3]([[2 2 2] [2 2 2]])
+	// variable[2 3]([-2 -2 -2 -2 -2 -2])
+	// variable[2 3]([2 2 2 2 2 2])
 }

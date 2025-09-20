@@ -16,6 +16,6 @@ func ExampleTranspose() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[3 2]([[1 4] [2 5] [3 6]])
-	// variable[2 3]([[1 1 1] [1 1 1]])
+	// variable[3 2]([1 4 2 5 3 6])
+	// variable[2 3]([1 1 1 1 1 1])
 }
