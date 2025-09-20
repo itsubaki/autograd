@@ -737,7 +737,7 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 		return Reshape(v, shape...)
 	}
 
-	return Sum(v, ax...)
+	return Reshape(Sum(v, ax...), shape...)
 }
 
 // Concat concatenates the tensors along the given axis.
