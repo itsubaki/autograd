@@ -30,22 +30,24 @@ func Example() {
 
 func ExampleFull() {
 	v := tensor.Full([]int{2, 3}, 3.14)
-	fmt.Println(v.Shape)
-	fmt.Println(v.Data)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 3]
-	// [3.14 3.14 3.14 3.14 3.14 3.14]
+	// [3.14 3.14 3.14]
+	// [3.14 3.14 3.14]
 }
 
 func ExampleOnes() {
 	v := tensor.Ones[int](2, 3)
-	fmt.Println(v.Shape)
-	fmt.Println(v.Data)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 3]
-	// [1 1 1 1 1 1]
+	// [1 1 1]
+	// [1 1 1]
 }
 
 func ExampleZeroLike() {
@@ -53,25 +55,28 @@ func ExampleZeroLike() {
 		1, 2, 3,
 		4, 5, 6,
 	})
-	w := tensor.ZeroLike(v)
 
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	w := tensor.ZeroLike(v)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 3]
-	// [0 0 0 0 0 0]
+	// [0 0 0]
+	// [0 0 0]
 }
 
 func ExampleOneLike() {
 	v := tensor.Zeros[int](2, 3)
+
 	w := tensor.OneLike(v)
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 3]
-	// [1 1 1 1 1 1]
+	// [1 1 1]
+	// [1 1 1]
 }
 
 func ExampleRand() {
@@ -110,19 +115,43 @@ func ExampleLinspace() {
 	// [0 0.25 0.5 0.75 1]
 }
 
+func ExampleIdentity() {
+	v := tensor.Identity[int](3, 5)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [1 0 0 0 0]
+	// [0 1 0 0 0]
+	// [0 0 1 0 0]
+}
+
+func ExampleEye() {
+	v := tensor.Eye[int](3)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [1 0 0]
+	// [0 1 0]
+	// [0 0 1]
+}
+
 func ExampleReshape() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Reshape(v, 1, 4)
 
+	w := tensor.Reshape(v, 1, 4)
 	fmt.Println(w.Shape)
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3))
+	fmt.Println(w.Data)
 
 	// Output:
 	// [1 4]
-	// 1 2 3 4
+	// [1 2 3 4]
 }
 
 func ExampleFlatten() {
@@ -130,14 +159,14 @@ func ExampleFlatten() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Flatten(v)
 
+	w := tensor.Flatten(v)
 	fmt.Println(w.Shape)
-	fmt.Println(w.At(0), w.At(1), w.At(2), w.At(3))
+	fmt.Println(w.Data)
 
 	// Output:
 	// [4]
-	// 1 2 3 4
+	// [1 2 3 4]
 }
 
 func ExampleClone() {
@@ -145,14 +174,15 @@ func ExampleClone() {
 		1, 2,
 		3, 4,
 	})
+
 	w := tensor.Clone(v)
 	w.Set([]int{0, 0}, 10)
 
-	fmt.Println(v.Data)
+	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
 	// Output:
-	// [1 2 3 4]
+	// [2 2]
 	// [10 2 3 4]
 }
 
@@ -161,8 +191,8 @@ func ExampleFloat64() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Float64(v)
 
+	w := tensor.Float64(v)
 	fmt.Printf("%T", w.Data)
 
 	// Output:
@@ -174,8 +204,8 @@ func ExampleTensor_AddAt() {
 		1, 2,
 		3, 4,
 	})
-	v.AddAt([]int{0, 0}, 10)
 
+	v.AddAt([]int{0, 0}, 10)
 	fmt.Println(v.Data)
 
 	// Output:
@@ -192,8 +222,8 @@ func ExampleTensor_ScatterAdd() {
 		1, 2,
 		3, 4,
 	})
-	v.ScatterAdd(w, []int{0, 2}, 0)
 
+	v.ScatterAdd(w, []int{0, 2}, 0)
 	fmt.Println(v.Shape)
 	fmt.Println(v.Data)
 
@@ -213,8 +243,8 @@ func ExampleTensor_ScatterAdd_axis1() {
 		2, 3,
 		3, 6,
 	})
-	v.ScatterAdd(w, []int{0, 0}, 1)
 
+	v.ScatterAdd(w, []int{0, 0}, 1)
 	fmt.Println(v.Shape)
 	fmt.Println(v.Data)
 
@@ -265,8 +295,8 @@ func ExampleTake() {
 		20, 21,
 		30, 31,
 	})
-	w := tensor.Take(v, []int{0, 2}, 0)
 
+	w := tensor.Take(v, []int{0, 2}, 0)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -280,8 +310,8 @@ func ExampleAddC() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.AddC(10, v)
 
+	w := tensor.AddC(10, v)
 	fmt.Println(w.Data)
 
 	// Output:
@@ -293,8 +323,8 @@ func ExampleSubC() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.SubC(10, v)
 
+	w := tensor.SubC(10, v)
 	fmt.Println(w.Data)
 
 	// Output:
@@ -306,8 +336,8 @@ func ExampleMulC() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.MulC(10, v)
 
+	w := tensor.MulC(10, v)
 	fmt.Println(w.Data)
 
 	// Output:
@@ -319,8 +349,8 @@ func ExamplePow() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Pow(3, v)
 
+	w := tensor.Pow(3, v)
 	fmt.Println(w.Data)
 
 	// Output:
@@ -332,8 +362,8 @@ func ExampleSqrt() {
 		1, 4,
 		9, 16,
 	})
-	w := tensor.Sqrt(v)
 
+	w := tensor.Sqrt(v)
 	fmt.Printf("%.2f\n", w.Data)
 
 	// Output:
@@ -345,8 +375,8 @@ func ExampleExp() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Exp(v)
 
+	w := tensor.Exp(v)
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
@@ -358,8 +388,8 @@ func ExampleLog() {
 		math.Exp(0), math.Exp(1),
 		math.Exp(2), math.Exp(3),
 	})
-	w := tensor.Log(v)
 
+	w := tensor.Log(v)
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
@@ -372,8 +402,8 @@ func ExampleSin() {
 		2 * math.Pi / 4, 3 * math.Pi / 4,
 		4 * math.Pi / 4, 5 * math.Pi / 4,
 	})
-	w := tensor.Sin(v)
 
+	w := tensor.Sin(v)
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
@@ -386,8 +416,8 @@ func ExampleCos() {
 		2 * math.Pi / 4, 3 * math.Pi / 4,
 		4 * math.Pi / 4, 5 * math.Pi / 4,
 	})
-	w := tensor.Cos(v)
 
+	w := tensor.Cos(v)
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
@@ -398,8 +428,8 @@ func ExampleTanh() {
 	v := tensor.New([]int{1, 9}, []float64{
 		-10, -5, -2, -1, 0, 1, 2, 5, 10,
 	})
-	w := tensor.Tanh(v)
 
+	w := tensor.Tanh(v)
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
@@ -415,8 +445,8 @@ func ExampleAdd() {
 		10, 20,
 		30, 40,
 	})
-	z := tensor.Add(x, y)
 
+	z := tensor.Add(x, y)
 	fmt.Println(z.Shape)
 	fmt.Println(z.Data)
 
@@ -434,8 +464,8 @@ func ExampleSub() {
 		10, 20,
 		30, 40,
 	})
-	z := tensor.Sub(x, y)
 
+	z := tensor.Sub(x, y)
 	fmt.Println(z.Data)
 
 	// Output:
@@ -451,8 +481,8 @@ func ExampleMul() {
 		10, 20,
 		30, 40,
 	})
-	z := tensor.Mul(x, y)
 
+	z := tensor.Mul(x, y)
 	fmt.Println(z.Data)
 
 	// Output:
@@ -468,8 +498,8 @@ func ExampleDiv() {
 		10, 20,
 		30, 40,
 	})
-	z := tensor.Div(x, y)
 
+	z := tensor.Div(x, y)
 	fmt.Printf("%.4f\n", z.Data)
 
 	// Output:
@@ -481,8 +511,8 @@ func ExampleSum() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Sum(v)
 
+	w := tensor.Sum(v)
 	fmt.Println(w.At())
 
 	// Output:
@@ -494,8 +524,8 @@ func ExampleMax() {
 		4, 3,
 		2, 1,
 	})
-	w := tensor.Max(v)
 
+	w := tensor.Max(v)
 	fmt.Println(w.At())
 
 	// Output:
@@ -507,8 +537,8 @@ func ExampleMin() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Min(v)
 
+	w := tensor.Min(v)
 	fmt.Println(w.At())
 
 	// Output:
@@ -520,8 +550,8 @@ func ExampleMean() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Mean(v)
 
+	w := tensor.Mean(v)
 	fmt.Println(w.At())
 
 	// Output:
@@ -533,8 +563,8 @@ func ExampleArgmax() {
 		1, 2, 3, 4,
 		4, 3, 2, 1,
 	})
-	w := tensor.Argmax(v, 0)
 
+	w := tensor.Argmax(v, 0)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -548,8 +578,8 @@ func ExampleMask() {
 		-1, 2,
 		-3, 4,
 	})
-	w := tensor.Mask(v, func(v int) bool { return v > 0 })
 
+	w := tensor.Mask(v, func(v int) bool { return v > 0 })
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -564,8 +594,8 @@ func ExampleClip() {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 		11, 12, 13, 14, 15, 16,
 	})
-	w := tensor.Clip(v, 0, 10)
 
+	w := tensor.Clip(v, 0, 10)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -579,9 +609,10 @@ func ExampleTranspose() {
 		1, 2, 3,
 		4, 5, 6,
 	})
-	w := tensor.Transpose(v)
 
+	w := tensor.Transpose(v)
 	fmt.Println(w.Shape)
+
 	fmt.Println(w.At(0, 0), w.At(0, 1))
 	fmt.Println(w.At(1, 0), w.At(1, 1))
 	fmt.Println(w.At(2, 0), w.At(2, 1))
@@ -608,9 +639,10 @@ func ExampleTranspose_add() {
 		3, 4,
 		5, 6,
 	})
-	z := tensor.Add(x, y)
 
+	z := tensor.Add(x, y)
 	fmt.Println(z.Shape)
+
 	fmt.Println(z.At(0, 0), z.At(0, 1))
 	fmt.Println(z.At(1, 0), z.At(1, 1))
 	fmt.Println(z.At(2, 0), z.At(2, 1))
@@ -627,8 +659,8 @@ func ExampleFlip() {
 		1, 2, 3,
 		4, 5, 6,
 	})
-	w := tensor.Flip(v, 0)
 
+	w := tensor.Flip(v, 0)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -642,8 +674,8 @@ func ExampleSqueeze() {
 		1, 2, 3,
 		4, 5, 6,
 	})
-	w := tensor.Squeeze(v)
 
+	w := tensor.Squeeze(v)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -657,8 +689,8 @@ func ExampleExpand() {
 		1, 2, 3,
 		4, 5, 6,
 	})
-	w := tensor.Expand(v, 0)
 
+	w := tensor.Expand(v, 0)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -677,8 +709,8 @@ func ExampleMatMul() {
 		9, 10,
 		11, 12,
 	})
-	z := tensor.MatMul(x, y)
 
+	z := tensor.MatMul(x, y)
 	fmt.Println(z.Shape)
 	fmt.Println(z.Data)
 
@@ -692,8 +724,8 @@ func ExampleBroadcastTo() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.BroadcastTo(v, 2, 2, 2)
 
+	w := tensor.BroadcastTo(v, 2, 2, 2)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -710,8 +742,8 @@ func ExampleSumTo() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.SumTo(v, 1, 2, 2)
 
+	w := tensor.SumTo(v, 1, 2, 2)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -729,9 +761,10 @@ func ExampleConcat() {
 		5, 6,
 		7, 8,
 	})
-	z := tensor.Concat(x, y, 1)
 
+	z := tensor.Concat(x, y, 1)
 	fmt.Println(z.Shape)
+
 	fmt.Println(z.At(0, 0), z.At(0, 1), z.At(0, 2), z.At(0, 3))
 	fmt.Println(z.At(1, 0), z.At(1, 1), z.At(1, 2), z.At(1, 3))
 
@@ -746,9 +779,10 @@ func ExampleSplit() {
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 	})
-	w := tensor.Split(v, 2, 0)
 
+	w := tensor.Split(v, 2, 0)
 	fmt.Println(len(w), w[0].Shape, w[1].Shape)
+
 	fmt.Println(w[0].At(0, 0), w[0].At(0, 1), w[0].At(0, 2), w[0].At(0, 3))
 	fmt.Println(w[1].At(0, 0), w[1].At(0, 1), w[1].At(0, 2), w[1].At(0, 3))
 
@@ -763,9 +797,10 @@ func ExampleTile() {
 		1, 2,
 		3, 4,
 	})
-	w := tensor.Tile(v, 3, 1)
 
+	w := tensor.Tile(v, 3, 1)
 	fmt.Println(w.Shape)
+
 	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3), w.At(0, 4), w.At(0, 5))
 	fmt.Println(w.At(1, 0), w.At(1, 1), w.At(1, 2), w.At(1, 3), w.At(1, 4), w.At(1, 5))
 
@@ -781,8 +816,8 @@ func ExampleTril() {
 		4, 5, 6,
 		7, 8, 9,
 	})
-	w := tensor.Tril(v)
 
+	w := tensor.Tril(v)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
