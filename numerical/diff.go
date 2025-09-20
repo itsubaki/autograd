@@ -25,7 +25,7 @@ var (
 	_ Func = F.SumTo(1, 1)
 	_ Func = F.BroadcastTo(1, 3)
 	_ Func = F.Reshape(2, 2)
-	_ Func = F.Transpose
+	_ Func = F.Transpose(-1, -2)
 	_ Func = F.MatMul
 	_ Func = F.Max
 	_ Func = F.Min

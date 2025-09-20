@@ -22,7 +22,7 @@ func (f *MatMulT) Forward(x ...*Variable) []*Variable {
 
 func (f *MatMulT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
-		MatMul(gy[0], Transpose(f.w)), // gy * w.T
-		MatMul(Transpose(f.x), gy[0]), // x.T * gy
+		MatMul(gy[0], Transpose(-1, -2)(f.w)), // gy * w.T
+		MatMul(Transpose(-1, -2)(f.x), gy[0]), // x.T * gy
 	}
 }

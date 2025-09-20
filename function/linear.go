@@ -33,8 +33,8 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	gxs := []*variable.Variable{
-		MatMul(gy[0], Transpose(f.w)), // gy * w.T
-		MatMul(Transpose(f.x), gy[0]), // x.T * gy
+		MatMul(gy[0], Transpose(-1, -2)(f.w)), // gy * w.T
+		MatMul(Transpose(-1, -2)(f.x), gy[0]), // x.T * gy
 	}
 
 	if f.b == nil {
