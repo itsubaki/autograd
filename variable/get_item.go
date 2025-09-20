@@ -21,7 +21,7 @@ func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
 	return []*Variable{
-		NewFrom(tensor.Take(x[0].Data, f.Indices, 0)),
+		NewFrom(tensor.Take(x[0].Data, f.Indices, f.Axis)),
 	}
 }
 
