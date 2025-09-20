@@ -2562,7 +2562,7 @@ func TestSumTo(t *testing.T) {
 				7, 8,
 			}),
 			shape: []int{4, 1},
-			want:  tensor.New([]int{4}, []int{3, 7, 11, 15}),
+			want:  tensor.New([]int{4, 1}, []int{3, 7, 11, 15}),
 		},
 		{
 			// shape 1, 2, 4
@@ -2574,7 +2574,7 @@ func TestSumTo(t *testing.T) {
 				13, 14, 15, 16,
 			}),
 			shape: []int{1, 2, 4},
-			want: tensor.New([]int{2, 4}, []int{
+			want: tensor.New([]int{1, 2, 4}, []int{
 				10, 12, 14, 16,
 				18, 20, 22, 24,
 			}),
@@ -2592,7 +2592,7 @@ func TestSumTo(t *testing.T) {
 				21, 22, 23, 24,
 			}),
 			shape: []int{3, 1, 4},
-			want: tensor.New([]int{3, 4}, []int{
+			want: tensor.New([]int{3, 1, 4}, []int{
 				6, 8, 10, 12,
 				22, 24, 26, 28,
 				38, 40, 42, 44,
