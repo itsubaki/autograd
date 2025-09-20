@@ -49,7 +49,10 @@ func ExampleOnes() {
 }
 
 func ExampleZeroLike() {
-	v := tensor.New([]int{2, 3}, []int{1, 2, 3, 4, 5, 6})
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
 	w := tensor.ZeroLike(v)
 
 	fmt.Println(w.Shape)
@@ -88,7 +91,10 @@ func ExampleRandn() {
 }
 
 func ExampleReshape() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Reshape(v, 1, 4)
 
 	fmt.Println(w.Shape)
@@ -100,7 +106,10 @@ func ExampleReshape() {
 }
 
 func ExampleFlatten() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Flatten(v)
 
 	fmt.Println(w.Shape)
@@ -112,7 +121,10 @@ func ExampleFlatten() {
 }
 
 func ExampleClone() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Clone(v)
 	w.Set([]int{0, 0}, 10)
 
@@ -125,7 +137,10 @@ func ExampleClone() {
 }
 
 func ExampleFloat64() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Float64(v)
 
 	fmt.Printf("%T", w.Data)
@@ -135,7 +150,10 @@ func ExampleFloat64() {
 }
 
 func ExampleTensor_AddAt() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	v.AddAt([]int{0, 0}, 10)
 
 	fmt.Println(v.Data)
@@ -205,7 +223,10 @@ func ExampleTake() {
 }
 
 func ExampleAddC() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.AddC(10, v)
 
 	fmt.Println(w.Data)
@@ -215,7 +236,10 @@ func ExampleAddC() {
 }
 
 func ExampleSubC() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.SubC(10, v)
 
 	fmt.Println(w.Data)
@@ -225,7 +249,10 @@ func ExampleSubC() {
 }
 
 func ExampleMulC() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.MulC(10, v)
 
 	fmt.Println(w.Data)
@@ -235,7 +262,10 @@ func ExampleMulC() {
 }
 
 func ExamplePow() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Pow(3, v)
 
 	fmt.Println(w.Data)
@@ -245,7 +275,10 @@ func ExamplePow() {
 }
 
 func ExampleSqrt() {
-	v := tensor.New([]int{2, 2}, []float64{1, 4, 9, 16})
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 4,
+		9, 16,
+	})
 	w := tensor.Sqrt(v)
 
 	fmt.Printf("%.2f\n", w.Data)
@@ -255,7 +288,10 @@ func ExampleSqrt() {
 }
 
 func ExampleExp() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Exp(v)
 
 	fmt.Printf("%.4f\n", w.Data)
@@ -278,44 +314,54 @@ func ExampleLog() {
 }
 
 func ExampleSin() {
-	v := tensor.New([]int{2, 2}, []float64{
-		0, math.Pi / 2,
-		math.Pi, 3 * math.Pi / 2,
+	v := tensor.New([]int{3, 2}, []float64{
+		0 * math.Pi / 4, 1 * math.Pi / 4,
+		2 * math.Pi / 4, 3 * math.Pi / 4,
+		4 * math.Pi / 4, 5 * math.Pi / 4,
 	})
 	w := tensor.Sin(v)
 
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [0.0000 1.0000 0.0000 -1.0000]
+	// [0.0000 0.7071 1.0000 0.7071 0.0000 -0.7071]
 }
 
 func ExampleCos() {
-	v := tensor.New([]int{2, 2}, []float64{
-		0, math.Pi / 2,
-		math.Pi, 3 * math.Pi / 2,
+	v := tensor.New([]int{3, 2}, []float64{
+		0 * math.Pi / 4, 1 * math.Pi / 4,
+		2 * math.Pi / 4, 3 * math.Pi / 4,
+		4 * math.Pi / 4, 5 * math.Pi / 4,
 	})
 	w := tensor.Cos(v)
 
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [1.0000 0.0000 -1.0000 -0.0000]
+	// [1.0000 0.7071 0.0000 -0.7071 -1.0000 -0.7071]
 }
 
 func ExampleTanh() {
-	v := tensor.New([]int{2, 2}, []float64{-1, 0, 1, 2})
+	v := tensor.New([]int{1, 9}, []float64{
+		-10, -5, -2, -1, 0, 1, 2, 5, 10,
+	})
 	w := tensor.Tanh(v)
 
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [-0.7616 0.0000 0.7616 0.9640]
+	// [-1.0000 -0.9999 -0.9640 -0.7616 0.0000 0.7616 0.9640 0.9999 1.0000]
 }
 
 func ExampleAdd() {
-	x := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
+	x := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.New([]int{2, 2}, []int{
+		10, 20,
+		30, 40,
+	})
 	z := tensor.Add(x, y)
 
 	fmt.Println(z.Shape)
@@ -327,8 +373,14 @@ func ExampleAdd() {
 }
 
 func ExampleSub() {
-	x := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
+	x := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.New([]int{2, 2}, []int{
+		10, 20,
+		30, 40,
+	})
 	z := tensor.Sub(x, y)
 
 	fmt.Println(z.Data)
@@ -338,8 +390,14 @@ func ExampleSub() {
 }
 
 func ExampleMul() {
-	x := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	y := tensor.New([]int{2, 2}, []int{10, 20, 30, 40})
+	x := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.New([]int{2, 2}, []int{
+		10, 20,
+		30, 40,
+	})
 	z := tensor.Mul(x, y)
 
 	fmt.Println(z.Data)
@@ -349,8 +407,14 @@ func ExampleMul() {
 }
 
 func ExampleDiv() {
-	x := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
-	y := tensor.New([]int{2, 2}, []float64{10, 20, 30, 40})
+	x := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
+	y := tensor.New([]int{2, 2}, []float64{
+		10, 20,
+		30, 40,
+	})
 	z := tensor.Div(x, y)
 
 	fmt.Printf("%.4f\n", z.Data)
@@ -360,7 +424,10 @@ func ExampleDiv() {
 }
 
 func ExampleSum() {
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Sum(v)
 
 	fmt.Println(w.At())
@@ -370,7 +437,10 @@ func ExampleSum() {
 }
 
 func ExampleMax() {
-	v := tensor.New([]int{2, 2}, []float64{4, 3, 2, 1})
+	v := tensor.New([]int{2, 2}, []float64{
+		4, 3,
+		2, 1,
+	})
 	w := tensor.Max(v)
 
 	fmt.Println(w.At())
@@ -380,7 +450,10 @@ func ExampleMax() {
 }
 
 func ExampleMin() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Min(v)
 
 	fmt.Println(w.At())
@@ -390,7 +463,10 @@ func ExampleMin() {
 }
 
 func ExampleMean() {
-	v := tensor.New([]int{2, 2}, []float64{1, 2, 3, 4})
+	v := tensor.New([]int{2, 2}, []float64{
+		1, 2,
+		3, 4,
+	})
 	w := tensor.Mean(v)
 
 	fmt.Println(w.At())
@@ -415,7 +491,10 @@ func ExampleArgmax() {
 }
 
 func ExampleMask() {
-	v := tensor.New([]int{2, 2}, []int{-1, 2, -3, 4})
+	v := tensor.New([]int{2, 2}, []int{
+		-1, 2,
+		-3, 4,
+	})
 	w := tensor.Mask(v, func(v int) bool { return v > 0 })
 
 	fmt.Println(w.Shape)
