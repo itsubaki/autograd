@@ -2289,6 +2289,17 @@ func TestSqueeze(t *testing.T) {
 		want *tensor.Tensor[int]
 	}{
 		{
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
+		{
 			// axis 0
 			v: tensor.New([]int{1, 2, 1, 3}, []int{
 				1, 2, 3,
