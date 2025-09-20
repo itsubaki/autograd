@@ -224,12 +224,14 @@ func ExampleTensor_ScatterAdd() {
 	})
 
 	v.ScatterAdd(w, []int{0, 2}, 0)
-	fmt.Println(v.Shape)
-	fmt.Println(v.Data)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [3 2]
-	// [11 13 20 21 33 35]
+	// [11 13]
+	// [20 21]
+	// [33 35]
 }
 
 func ExampleTensor_ScatterAdd_axis1() {
@@ -245,12 +247,14 @@ func ExampleTensor_ScatterAdd_axis1() {
 	})
 
 	v.ScatterAdd(w, []int{0, 0}, 1)
-	fmt.Println(v.Shape)
-	fmt.Println(v.Data)
+	for _, row := range v.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [3 2]
-	// [13 11 25 21 39 31]
+	// [13 11]
+	// [25 21]
+	// [39 31]
 }
 
 func ExampleTensor_Seq2() {
@@ -297,12 +301,13 @@ func ExampleTake() {
 	})
 
 	w := tensor.Take(v, []int{0, 2}, 0)
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 2]
-	// [10 11 30 31]
+	// [10 11]
+	// [30 31]
 }
 
 func ExampleAddC() {
@@ -580,12 +585,13 @@ func ExampleMask() {
 	})
 
 	w := tensor.Mask(v, func(v int) bool { return v > 0 })
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 2]
-	// [0 1 0 1]
+	// [0 1]
+	// [0 1]
 }
 
 func ExampleClip() {
@@ -611,17 +617,14 @@ func ExampleTranspose() {
 	})
 
 	w := tensor.Transpose(v)
-	fmt.Println(w.Shape)
-
-	fmt.Println(w.At(0, 0), w.At(0, 1))
-	fmt.Println(w.At(1, 0), w.At(1, 1))
-	fmt.Println(w.At(2, 0), w.At(2, 1))
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [3 2]
-	// 1 4
-	// 2 5
-	// 3 6
+	// [1 4]
+	// [2 5]
+	// [3 6]
 }
 
 func ExampleTranspose_add() {
@@ -641,17 +644,14 @@ func ExampleTranspose_add() {
 	})
 
 	z := tensor.Add(x, y)
-	fmt.Println(z.Shape)
-
-	fmt.Println(z.At(0, 0), z.At(0, 1))
-	fmt.Println(z.At(1, 0), z.At(1, 1))
-	fmt.Println(z.At(2, 0), z.At(2, 1))
+	for _, row := range z.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [3 2]
-	// 2 6
-	// 5 9
-	// 8 12
+	// [2 6]
+	// [5 9]
+	// [8 12]
 }
 
 func ExampleFlip() {
@@ -661,12 +661,13 @@ func ExampleFlip() {
 	})
 
 	w := tensor.Flip(v, 0)
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 3]
-	// [4 5 6 1 2 3]
+	// [4 5 6]
+	// [1 2 3]
 }
 
 func ExampleSqueeze() {
@@ -711,12 +712,13 @@ func ExampleMatMul() {
 	})
 
 	z := tensor.MatMul(x, y)
-	fmt.Println(z.Shape)
-	fmt.Println(z.Data)
+	for _, row := range z.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 2]
-	// [58 64 139 154]
+	// [58 64]
+	// [139 154]
 }
 
 func ExampleBroadcastTo() {
@@ -744,12 +746,13 @@ func ExampleSumTo() {
 	})
 
 	w := tensor.SumTo(v, 1, 2, 2)
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 2]
-	// [2 4 6 8]
+	// [2 4]
+	// [6 8]
 }
 
 func ExampleConcat() {
@@ -763,15 +766,13 @@ func ExampleConcat() {
 	})
 
 	z := tensor.Concat(x, y, 1)
-	fmt.Println(z.Shape)
-
-	fmt.Println(z.At(0, 0), z.At(0, 1), z.At(0, 2), z.At(0, 3))
-	fmt.Println(z.At(1, 0), z.At(1, 1), z.At(1, 2), z.At(1, 3))
+	for _, row := range z.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 4]
-	// 1 2 5 6
-	// 3 4 7 8
+	// [1 2 5 6]
+	// [3 4 7 8]
 }
 
 func ExampleSplit() {
@@ -783,13 +784,18 @@ func ExampleSplit() {
 	w := tensor.Split(v, 2, 0)
 	fmt.Println(len(w), w[0].Shape, w[1].Shape)
 
-	fmt.Println(w[0].At(0, 0), w[0].At(0, 1), w[0].At(0, 2), w[0].At(0, 3))
-	fmt.Println(w[1].At(0, 0), w[1].At(0, 1), w[1].At(0, 2), w[1].At(0, 3))
+	for _, row := range w[0].Seq2() {
+		fmt.Println(row)
+	}
+
+	for _, row := range w[1].Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
 	// 2 [1 4] [1 4]
-	// 1 2 3 4
-	// 5 6 7 8
+	// [1 2 3 4]
+	// [5 6 7 8]
 }
 
 func ExampleTile() {
@@ -836,12 +842,14 @@ func ExampleTril() {
 	})
 
 	w := tensor.Tril(v)
-	fmt.Println(w.Shape)
-	fmt.Println(w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [3 3]
-	// [1 0 0 4 5 0 7 8 9]
+	// [1 0 0]
+	// [4 5 0]
+	// [7 8 9]
 }
 
 func ExampleRand_nil() {
@@ -855,25 +863,25 @@ func ExampleRand_nil() {
 func ExampleRand_seed() {
 	s := rand.Const()
 	v := tensor.Rand([]int{2, 3}, s)
-
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+	for _, row := range v.Seq2() {
+		fmt.Printf("%.4f\n", row)
+	}
 
 	// Output:
-	// 0.9999, 0.8856, 0.3815
-	// 0.4813, 0.4442, 0.5210
+	// [0.9999 0.8856 0.3815]
+	// [0.4813 0.4442 0.5210]
 }
 
 func ExampleRandn_seed() {
 	s := rand.Const()
 	v := tensor.Randn([]int{2, 3}, s)
-
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(0, 0), v.At(0, 1), v.At(0, 2))
-	fmt.Printf("%.4f, %.4f, %.4f\n", v.At(1, 0), v.At(1, 1), v.At(1, 2))
+	for _, row := range v.Seq2() {
+		fmt.Printf("%.4f\n", row)
+	}
 
 	// Output:
-	// 0.5665, -0.6124, 0.5899
-	// -0.3678, 1.0920, -0.4438
+	// [0.5665 -0.6124 0.5899]
+	// [-0.3678 1.0920 -0.4438]
 }
 
 func ExampleLinspace_invalid() {
