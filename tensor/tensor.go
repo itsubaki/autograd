@@ -102,6 +102,21 @@ func Linspace(start, stop float64, num int) *Tensor[float64] {
 	return New([]int{num}, data)
 }
 
+// Identity returns a new tensor with ones on the diagonal and zeros elsewhere.
+func Identity[T Number](rows, cols int) *Tensor[T] {
+	data := make([]T, rows*cols)
+	for i := 0; i < rows && i < cols; i++ {
+		data[i*cols+i] = 1
+	}
+
+	return New([]int{rows, cols}, data)
+}
+
+// Eye returns a new tensor with ones on the diagonal and zeros elsewhere.
+func Eye[T Number](n int) *Tensor[T] {
+	return Identity[T](n, n)
+}
+
 // NumDims returns the number of dimensions of the tensor.
 func (v *Tensor[T]) NumDims() int {
 	return len(v.Shape)
