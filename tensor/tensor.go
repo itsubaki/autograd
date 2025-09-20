@@ -796,6 +796,32 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	return out
 }
 
+// Tril returns a new tensor with the elements below the k-th diagonal zeroed.
+func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
+	ndim := v.NumDims()
+	if ndim < 2 {
+		// scalar or vector
+		return Clone(v)
+	}
+
+	var kk int
+	if len(k) != 0 {
+		kk = k[0]
+	}
+
+	out := ZeroLike(v)
+	for i := range v.Data {
+		coord := Unravel(v, i)
+		if coord[ndim-1] > coord[ndim-2]+kk {
+			continue
+		}
+
+		out.Data[i] = v.Data[i]
+	}
+
+	return out
+}
+
 // MatMul returns the matrix multiplication of v and w.
 func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	a, b := Broadcast(v, w, 2)

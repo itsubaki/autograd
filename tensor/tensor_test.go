@@ -724,6 +724,22 @@ func ExampleTile() {
 	// 3 4 3 4 3 4
 }
 
+func ExampleTril() {
+	v := tensor.New([]int{3, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9,
+	})
+	w := tensor.Tril(v)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [3 3]
+	// [1 0 0 4 5 0 7 8 9]
+}
+
 func ExampleRand_nil() {
 	v := tensor.Rand([]int{2, 3}, nil)
 	fmt.Println(v.Shape)
@@ -2579,6 +2595,142 @@ func TestTile(t *testing.T) {
 		got := tensor.Tile(c.v, c.n, c.axis)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("n=%v, axis=%v, got=%v, want=%v", c.n, c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestTril(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		k    int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			k:    0,
+			want: tensor.New(nil, []int{42}),
+		},
+		{
+			// vector
+			v:    tensor.New([]int{3}, []int{1, 2, 3}),
+			k:    0,
+			want: tensor.New([]int{3}, []int{1, 2, 3}),
+		},
+		{
+			// k 0
+			v: tensor.New([]int{3, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+			}),
+			k: 0,
+			want: tensor.New([]int{3, 3}, []int{
+				1, 0, 0,
+				4, 5, 0,
+				7, 8, 9,
+			}),
+		},
+		{
+			// k 1
+			v: tensor.New([]int{3, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+			}),
+			k: 1,
+			want: tensor.New([]int{3, 3}, []int{
+				1, 2, 0,
+				4, 5, 6,
+				7, 8, 9,
+			}),
+		},
+		{
+			// k -1
+			v: tensor.New([]int{3, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+			}),
+			k: -1,
+			want: tensor.New([]int{3, 3}, []int{
+				0, 0, 0,
+				4, 0, 0,
+				7, 8, 0,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			k: 0,
+			want: tensor.New([]int{2, 3}, []int{
+				1, 0, 0,
+				4, 5, 0,
+			}),
+		},
+		{
+			v: tensor.New([]int{3, 2}, []int{
+				1, 2,
+				3, 4,
+				5, 6,
+			}),
+			k: 0,
+			want: tensor.New([]int{3, 2}, []int{
+				1, 0,
+				3, 4,
+				5, 6,
+			}),
+		},
+		{
+			// large k
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			k: 5,
+			want: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+		},
+		{
+			// small k
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			k: -5,
+			want: tensor.New([]int{2, 2}, []int{
+				0, 0,
+				0, 0,
+			}),
+		},
+		{
+			// batch
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			k: 0,
+			want: tensor.New([]int{2, 2, 2}, []int{
+				1, 0,
+				3, 4,
+
+				5, 0,
+				7, 8,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Tril(c.v, c.k)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("k=%v, got=%v, want=%v", c.k, got.Data, c.want.Data)
 		}
 	}
 }
