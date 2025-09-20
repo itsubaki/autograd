@@ -389,8 +389,8 @@ func Example_linearRegression() {
 	t := variable.NewFrom(tensor.Add(tensor.MulC(2, xrand), tensor.AddC(5, yrand))) // t = 2x+5+yrand
 
 	// parameter
-	w := variable.New(0.0) // w = 0
-	b := variable.New(0.0) // b = 0
+	w := variable.New(0.0)
+	b := variable.New(0.0)
 
 	predict := func(x *variable.Variable) *variable.Variable {
 		return F.Add(F.MatMul(x, w), b) // y = x.w + b
