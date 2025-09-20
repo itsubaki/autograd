@@ -63,6 +63,45 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
+// Arange returns a new tensor with evenly spaced values within a given interval.
+func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
+	var s T = 1
+	if len(step) != 0 {
+		s = step[0]
+	}
+
+	if s > 0 {
+		var data []T
+		for i := start; i < stop; i += s {
+			data = append(data, i)
+		}
+
+		return New([]int{len(data)}, data)
+	}
+
+	var data []T
+	for i := start; i > stop; i += s {
+		data = append(data, i)
+	}
+
+	return New([]int{len(data)}, data)
+}
+
+// Linspace returns a new tensor with num evenly spaced samples, calculated over the interval [start, stop].
+func Linspace(start, stop float64, num int) *Tensor[float64] {
+	if num < 2 {
+		panic("num is less than 2")
+	}
+
+	step := (stop - start) / float64(num-1)
+	data := make([]float64, num)
+	for i := range num {
+		data[i] = start + float64(i)*step
+	}
+
+	return New([]int{num}, data)
+}
+
 // NumDims returns the number of dimensions of the tensor.
 func (v *Tensor[T]) NumDims() int {
 	return len(v.Shape)
@@ -115,6 +154,13 @@ func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
 // Seq2 returns a sequence of rows.
 func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 	ndim := v.NumDims()
+	if ndim == 0 {
+		// scalar
+		return func(yield func(int, []T) bool) {
+			yield(0, v.Data)
+		}
+	}
+
 	size := v.Shape[ndim-1]
 	total := len(v.Data) / size
 
