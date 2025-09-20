@@ -13,7 +13,7 @@ func ExampleGetItem() {
 		[]float64{4, 5, 6},
 	)
 
-	y := variable.GetItem([]int{1})(A)
+	y := variable.GetItem([]int{1}, 0)(A)
 	y.Backward()
 
 	fmt.Println(y)
@@ -31,7 +31,7 @@ func ExampleGetItem_indices() {
 		[]float64{4, 5, 6},
 	)
 
-	y := variable.GetItem([]int{0, 0, 1})(A)
+	y := variable.GetItem([]int{0, 0, 1}, 0)(A)
 	y.Backward()
 
 	fmt.Println(y)

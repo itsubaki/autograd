@@ -20,7 +20,8 @@ func Sub(x ...*Variable) *Variable {
 }
 
 type SubT struct {
-	x0Shape, x1Shape []int
+	x0Shape []int
+	x1Shape []int
 }
 
 func (f *SubT) Forward(x ...*Variable) []*Variable {
