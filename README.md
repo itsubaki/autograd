@@ -58,7 +58,7 @@ rosenbrock := func(x0, x1 *variable.Variable) *variable.Variable {
 
 update := func(lr float64, x ...*variable.Variable) {
 	for _, v := range x {
-		v.Data = matrix.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+		v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
 			return a - lr*b
 		})
 	}
