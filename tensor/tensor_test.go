@@ -799,15 +799,33 @@ func ExampleTile() {
 	})
 
 	w := tensor.Tile(v, 3, 1)
-	fmt.Println(w.Shape)
-
-	fmt.Println(w.At(0, 0), w.At(0, 1), w.At(0, 2), w.At(0, 3), w.At(0, 4), w.At(0, 5))
-	fmt.Println(w.At(1, 0), w.At(1, 1), w.At(1, 2), w.At(1, 3), w.At(1, 4), w.At(1, 5))
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
 
 	// Output:
-	// [2 6]
-	// 1 2 1 2 1 2
-	// 3 4 3 4 3 4
+	// [1 2 1 2 1 2]
+	// [3 4 3 4 3 4]
+}
+
+func ExampleRepeat() {
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+
+	w := tensor.Repeat(v, 3, 0)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [1 2]
+	// [1 2]
+	// [1 2]
+	// [3 4]
+	// [3 4]
+	// [3 4]
 }
 
 func ExampleTril() {
@@ -2819,6 +2837,58 @@ func TestTile(t *testing.T) {
 	}
 }
 
+func TestRepeat(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		n    int
+		axis int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// scalar
+			v:    tensor.New(nil, []int{42}),
+			n:    3,
+			axis: 0,
+			want: tensor.New([]int{3}, []int{42, 42, 42}),
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			n:    2,
+			axis: 0,
+			want: tensor.New([]int{4, 3}, []int{
+				1, 2, 3,
+				1, 2, 3,
+				4, 5, 6,
+				4, 5, 6,
+			}),
+		},
+		{
+			// axis 1
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			n:    2,
+			axis: 1,
+			want: tensor.New([]int{2, 6}, []int{
+				1, 1, 2, 2, 3, 3,
+				4, 4, 5, 5, 6, 6,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Repeat(c.v, c.n, c.axis)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("n=%v, axis=%v, got=%v, want=%v", c.n, c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
 func TestTril(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
@@ -3602,6 +3672,33 @@ func TestTile_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Tile(c.v, c.n, c.axis)
+			t.Fail()
+		}()
+	}
+}
+
+func TestRepeat_invalid(t *testing.T) {
+	cases := []struct {
+		v    *tensor.Tensor[int]
+		n    int
+		axis int
+	}{
+		{v: tensor.Zeros[int](2, 3), n: 2, axis: -3},
+		{v: tensor.Zeros[int](2, 3), n: 2, axis: 2},
+		{v: tensor.Zeros[int](2, 3), n: 0, axis: 1},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for n=%d and axis %d", c.n, c.axis)
+			}()
+
+			_ = tensor.Repeat(c.v, c.n, c.axis)
 			t.Fail()
 		}()
 	}

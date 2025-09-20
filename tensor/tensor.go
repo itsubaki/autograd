@@ -836,7 +836,7 @@ func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
 	return out
 }
 
-// Tile returns a new tensor by repeating v n times along the given axis.
+// Tile returns a new tensor by concatenating v with itself n times along the given axis.
 func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	if n < 1 {
 		panic("n is less than 1")
@@ -869,6 +869,46 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 		coords := Unravel(out, i)
 		coords[ax] = coords[ax] % v.Shape[ax]
 		out.Data[i] = v.Data[Ravel(v, coords...)]
+	}
+
+	return out
+}
+
+// Repeat returns a new tensor where each element of v is repeated n times along the given axis.
+func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
+	if n < 1 {
+		panic("n is less than 1")
+	}
+
+	ndim := v.NumDims()
+	if ndim == 0 {
+		// scalar
+		data := make([]T, n)
+		for i := range n {
+			data[i] = v.Data[0]
+		}
+
+		return New([]int{n}, data)
+	}
+
+	axis, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+	shape[axis] *= n
+	out := Zeros[T](shape...)
+
+	for i := range out.Data {
+		coords := Unravel(out, i)
+
+		inCoord := make([]int, ndim)
+		copy(inCoord, coords)
+		inCoord[axis] = coords[axis] / n
+
+		out.Data[i] = v.Data[Ravel(v, inCoord...)]
 	}
 
 	return out
