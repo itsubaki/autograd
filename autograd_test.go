@@ -406,9 +406,9 @@ func Example_linearRegression() {
 
 	lr := 0.1
 	iters := 100
-	var loss *variable.Variable
 
-	for i := 0; i < iters; i++ {
+	var loss *variable.Variable
+	for range iters {
 		y := predict(x)
 		loss = F.MeanSquaredError(y, t)
 
@@ -422,6 +422,7 @@ func Example_linearRegression() {
 	w.Name = "w"
 	b.Name = "b"
 	loss.Name = "loss"
+
 	fmt.Println(w)
 	fmt.Println(b)
 	fmt.Println(loss)
