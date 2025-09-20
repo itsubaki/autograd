@@ -142,30 +142,6 @@ func (v *Tensor[T]) AddAt(coord []int, value T) {
 	v.Data[Ravel(v, coord...)] += value
 }
 
-// ScatterAdd adds the elements of w to v at the given indices.
-func (v *Tensor[T]) ScatterAdd(w *Tensor[T], indices []int, axis int) {
-	ndim := v.NumDims()
-	ax, err := adjAxis(axis, ndim)
-	if err != nil {
-		panic(err)
-	}
-
-	if w.Shape[ax] != len(indices) {
-		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.Shape[ax]))
-	}
-
-	idx, err := adjIndices(indices, v.Shape, ax)
-	if err != nil {
-		panic(err)
-	}
-
-	for i := range w.Data {
-		coord := Unravel(w, i)
-		coord[ax] = idx[coord[ax]]
-		v.Data[Ravel(v, coord...)] += w.Data[i]
-	}
-}
-
 // Seq2 returns a sequence of rows.
 func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 	ndim := v.NumDims()
@@ -502,6 +478,33 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 		coords := Unravel(out, i)
 		coords[ax] = idx[coords[ax]]
 		out.Data[i] = v.Data[Ravel(v, coords...)]
+	}
+
+	return out
+}
+
+// ScatterAdd return a new tensor with elements added from w at the given indices along the specified axis.
+func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	ax, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	if w.Shape[ax] != len(indices) {
+		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.Shape[ax]))
+	}
+
+	idx, err := adjIndices(indices, v.Shape, ax)
+	if err != nil {
+		panic(err)
+	}
+
+	out := Clone(v)
+	for i := range w.Data {
+		coord := Unravel(w, i)
+		coord[ax] = idx[coord[ax]]
+		out.Data[Ravel(out, coord...)] += w.Data[i]
 	}
 
 	return out
