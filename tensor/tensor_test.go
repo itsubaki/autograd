@@ -172,7 +172,6 @@ func ExampleTensor_ScatterAdd() {
 		1, 2,
 		3, 4,
 	})
-
 	v.ScatterAdd(w, []int{0, 2}, 0)
 
 	fmt.Println(v.Shape)
@@ -194,7 +193,6 @@ func ExampleTensor_ScatterAdd_axis1() {
 		2, 3,
 		3, 6,
 	})
-
 	v.ScatterAdd(w, []int{0, 0}, 1)
 
 	fmt.Println(v.Shape)
@@ -211,6 +209,7 @@ func ExampleTensor_Seq2() {
 		20, 21,
 		30, 31,
 	})
+
 	for i, row := range v.Seq2() {
 		fmt.Println(i, row)
 	}
@@ -231,6 +230,7 @@ func ExampleTensor_Seq2_batch() {
 		50, 51,
 		60, 61,
 	})
+
 	for i, row := range v.Seq2() {
 		fmt.Println(i, row)
 	}
@@ -269,7 +269,6 @@ func ExampleTake() {
 		20, 21,
 		30, 31,
 	})
-
 	w := tensor.Take(v, []int{0, 2}, 0)
 
 	fmt.Println(w.Shape)
@@ -607,14 +606,13 @@ func ExampleTranspose_add() {
 	// [1, 4]
 	// [2, 5]
 	// [3, 6]
-	x0 := tensor.Transpose(v, 1, 0)
-	x1 := tensor.New([]int{3, 2}, []int{
+	x := tensor.Transpose(v, 1, 0)
+	y := tensor.New([]int{3, 2}, []int{
 		1, 2,
 		3, 4,
 		5, 6,
 	})
-
-	z := tensor.Add(x0, x1)
+	z := tensor.Add(x, y)
 
 	fmt.Println(z.Shape)
 	fmt.Println(z.At(0, 0), z.At(0, 1))
@@ -674,19 +672,19 @@ func ExampleExpand() {
 }
 
 func ExampleMatMul() {
-	a := tensor.New([]int{2, 3}, []int{
+	x := tensor.New([]int{2, 3}, []int{
 		1, 2, 3,
 		4, 5, 6,
 	})
-	b := tensor.New([]int{3, 2}, []int{
+	y := tensor.New([]int{3, 2}, []int{
 		7, 8,
 		9, 10,
 		11, 12,
 	})
-	c := tensor.MatMul(a, b)
+	z := tensor.MatMul(x, y)
 
-	fmt.Println(c.Shape)
-	fmt.Println(c.Data)
+	fmt.Println(z.Shape)
+	fmt.Println(z.Data)
 
 	// Output:
 	// [2 2]
@@ -755,7 +753,6 @@ func ExampleSplit() {
 	w := tensor.Split(v, 2, 0)
 
 	fmt.Println(len(w), w[0].Shape, w[1].Shape)
-
 	fmt.Println(w[0].At(0, 0), w[0].At(0, 1), w[0].At(0, 2), w[0].At(0, 3))
 	fmt.Println(w[1].At(0, 0), w[1].At(0, 1), w[1].At(0, 2), w[1].At(0, 3))
 
@@ -859,14 +856,14 @@ func ExampleMatMul_invalid() {
 		panic("unexpected panic for index")
 	}()
 
-	a := tensor.New([]int{2, 2, 2}, []int{
+	x := tensor.New([]int{2, 2, 2}, []int{
 		1, 2,
 		4, 5,
 
 		6, 7,
 		8, 9,
 	})
-	b := tensor.New([]int{2, 3, 2}, []int{
+	y := tensor.New([]int{2, 3, 2}, []int{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -876,7 +873,7 @@ func ExampleMatMul_invalid() {
 		17, 18,
 	})
 
-	_ = tensor.MatMul(a, b)
+	_ = tensor.MatMul(x, y)
 	panic("unreachable")
 
 	// Output:
@@ -1745,28 +1742,28 @@ func TestIsCloseAll(t *testing.T) {
 
 func TestEqualShape(t *testing.T) {
 	cases := []struct {
-		a, b []int
+		x, y []int
 		want bool
 	}{
 		{
-			a:    []int{2, 3},
-			b:    []int{2, 3},
+			x:    []int{2, 3},
+			y:    []int{2, 3},
 			want: true,
 		},
 		{
-			a:    []int{2, 3},
-			b:    []int{3, 2},
+			x:    []int{2, 3},
+			y:    []int{3, 2},
 			want: false,
 		},
 		{
-			a:    []int{2, 3},
-			b:    []int{2, 3, 1},
+			x:    []int{2, 3},
+			y:    []int{2, 3, 1},
 			want: false,
 		},
 	}
 
 	for _, c := range cases {
-		got := tensor.EqualShape(c.a, c.b)
+		got := tensor.EqualShape(c.x, c.y)
 		if got != c.want {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
@@ -1855,12 +1852,12 @@ func TestArgmax(t *testing.T) {
 
 func TestMatMul(t *testing.T) {
 	cases := []struct {
-		a, b *tensor.Tensor[int]
+		x, y *tensor.Tensor[int]
 		out  *tensor.Tensor[int]
 	}{
 		{
 			// batch
-			a: tensor.New([]int{2, 2, 2, 3}, []int{
+			x: tensor.New([]int{2, 2, 2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 
@@ -1873,7 +1870,7 @@ func TestMatMul(t *testing.T) {
 				3, 3, 3,
 				1, 2, 3,
 			}),
-			b: tensor.New([]int{2, 2, 3, 2}, []int{
+			y: tensor.New([]int{2, 2, 3, 2}, []int{
 				1, 0,
 				0, 1,
 				1, 1,
@@ -1905,11 +1902,11 @@ func TestMatMul(t *testing.T) {
 			}),
 		},
 		{
-			a: tensor.New([]int{2, 3}, []int{
+			x: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 			}),
-			b: tensor.New([]int{3, 2}, []int{
+			y: tensor.New([]int{3, 2}, []int{
 				0, 0,
 				0, 0,
 				0, 0,
@@ -1920,10 +1917,10 @@ func TestMatMul(t *testing.T) {
 			}),
 		},
 		{
-			a: tensor.New([]int{1, 4}, []int{
+			x: tensor.New([]int{1, 4}, []int{
 				1, 2, 3, 4,
 			}),
-			b: tensor.New([]int{4, 1}, []int{
+			y: tensor.New([]int{4, 1}, []int{
 				1,
 				2,
 				3,
@@ -1935,11 +1932,11 @@ func TestMatMul(t *testing.T) {
 		},
 		{
 			// broadcast
-			a: tensor.New([]int{1, 2, 2}, []int{
+			x: tensor.New([]int{1, 2, 2}, []int{
 				1, 2,
 				3, 4,
 			}),
-			b: tensor.New([]int{2, 2, 2}, []int{
+			y: tensor.New([]int{2, 2, 2}, []int{
 				1, 2,
 				3, 4,
 
@@ -1957,7 +1954,7 @@ func TestMatMul(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.MatMul(c.a, c.b)
+		got := tensor.MatMul(c.x, c.y)
 		if !tensor.EqualAll(got, c.out) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
@@ -2422,17 +2419,17 @@ func TestSumTo(t *testing.T) {
 
 func TestConcat(t *testing.T) {
 	cases := []struct {
-		a, b *tensor.Tensor[int]
+		x, y *tensor.Tensor[int]
 		axis int
 		want *tensor.Tensor[int]
 	}{
 		{
 			// axis 0
-			a: tensor.New([]int{2, 3}, []int{
+			x: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 			}),
-			b: tensor.New([]int{1, 3}, []int{
+			y: tensor.New([]int{1, 3}, []int{
 				7, 8, 9,
 			}),
 			axis: 0,
@@ -2444,11 +2441,11 @@ func TestConcat(t *testing.T) {
 		},
 		{
 			// axis 1
-			a: tensor.New([]int{2, 2}, []int{
+			x: tensor.New([]int{2, 2}, []int{
 				1, 2,
 				3, 4,
 			}),
-			b: tensor.New([]int{2, 3}, []int{
+			y: tensor.New([]int{2, 3}, []int{
 				5, 6, 7,
 				8, 9, 10,
 			}),
@@ -2460,11 +2457,11 @@ func TestConcat(t *testing.T) {
 		},
 		{
 			// axis -1
-			a: tensor.New([]int{2, 2}, []int{
+			x: tensor.New([]int{2, 2}, []int{
 				1, 2,
 				3, 4,
 			}),
-			b: tensor.New([]int{2, 3}, []int{
+			y: tensor.New([]int{2, 3}, []int{
 				5, 6, 7,
 				8, 9, 10,
 			}),
@@ -2476,11 +2473,11 @@ func TestConcat(t *testing.T) {
 		},
 		{
 			// batch
-			a: tensor.New([]int{1, 2, 2}, []int{
+			x: tensor.New([]int{1, 2, 2}, []int{
 				1, 2,
 				3, 4,
 			}),
-			b: tensor.New([]int{1, 2, 2}, []int{
+			y: tensor.New([]int{1, 2, 2}, []int{
 				5, 6,
 				7, 8,
 			}),
@@ -2496,7 +2493,7 @@ func TestConcat(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Concat(c.a, c.b, c.axis)
+		got := tensor.Concat(c.x, c.y, c.axis)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
 		}
