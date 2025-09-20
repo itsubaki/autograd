@@ -8,8 +8,12 @@ import (
 
 func ExampleTranspose() {
 	// p286
-	x := variable.NewOf([]float64{1, 2, 3}, []float64{4, 5, 6})
-	y := variable.Transpose(x)
+	x := variable.NewOf(
+		[]float64{1, 2, 3},
+		[]float64{4, 5, 6},
+	)
+
+	y := variable.Transpose(-1, -2)(x)
 	y.Backward()
 
 	fmt.Println(y)
