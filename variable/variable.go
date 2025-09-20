@@ -154,7 +154,7 @@ func (v *Variable) String() string {
 	}
 
 	if v.Data.Rows == 1 && v.Data.Cols == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.Data.Data[0])
+		return fmt.Sprintf("%s(%v)", name, v.At(0, 0))
 	}
 
 	if v.Data.Rows == 1 {
