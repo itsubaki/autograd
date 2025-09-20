@@ -212,19 +212,19 @@ func ExampleTensor_AddAt() {
 	// [11 2 3 4]
 }
 
-func ExampleTensor_ScatterAdd() {
-	v := tensor.New([]int{3, 2}, []int{
+func ExampleScatterAdd() {
+	x := tensor.New([]int{3, 2}, []int{
 		10, 11,
 		20, 21,
 		30, 31,
 	})
-	w := tensor.New([]int{2, 2}, []int{
+	y := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
 
-	v.ScatterAdd(w, []int{0, 2}, 0)
-	for _, row := range v.Seq2() {
+	z := tensor.ScatterAdd(x, y, []int{0, 2}, 0)
+	for _, row := range z.Seq2() {
 		fmt.Println(row)
 	}
 
@@ -234,20 +234,20 @@ func ExampleTensor_ScatterAdd() {
 	// [33 35]
 }
 
-func ExampleTensor_ScatterAdd_axis1() {
-	v := tensor.New([]int{3, 2}, []int{
+func ExampleScatterAdd_axis1() {
+	x := tensor.New([]int{3, 2}, []int{
 		10, 11,
 		20, 21,
 		30, 31,
 	})
-	w := tensor.New([]int{3, 2}, []int{
+	y := tensor.New([]int{3, 2}, []int{
 		1, 2,
 		2, 3,
 		3, 6,
 	})
 
-	v.ScatterAdd(w, []int{0, 0}, 1)
-	for _, row := range v.Seq2() {
+	z := tensor.ScatterAdd(x, y, []int{0, 0}, 1)
+	for _, row := range z.Seq2() {
 		fmt.Println(row)
 	}
 
@@ -1755,9 +1755,9 @@ func TestScatterAdd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		c.v.ScatterAdd(c.w, c.indices, c.axis)
-		if !tensor.EqualAll(c.v, c.want) {
-			t.Errorf("got=%v, want=%v", c.v.Data, c.want.Data)
+		got := tensor.ScatterAdd(c.v, c.w, c.indices, c.axis)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
 }
@@ -2288,6 +2288,17 @@ func TestSqueeze(t *testing.T) {
 		axes []int
 		want *tensor.Tensor[int]
 	}{
+		{
+			v: tensor.New([]int{1, 2, 1, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			axes: []int{},
+			want: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+		},
 		{
 			// axis 0
 			v: tensor.New([]int{1, 2, 1, 3}, []int{
@@ -3353,7 +3364,7 @@ func TestScatterAdd_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for axis %d and indices %v", c.axis, c.indices)
 			}()
 
-			c.v.ScatterAdd(c.w, c.indices, c.axis)
+			_ = tensor.ScatterAdd(c.v, c.w, c.indices, c.axis)
 			t.Fail()
 		}()
 	}
