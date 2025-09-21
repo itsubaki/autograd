@@ -14,8 +14,8 @@ type MinT struct {
 
 func (f *MinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-	f.y = NewFrom(tensor.Min(x[0].Data))
 
+	f.y = From(tensor.Min(x[0].Data))
 	return []*Variable{
 		f.y,
 	}

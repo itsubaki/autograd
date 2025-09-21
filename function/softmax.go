@@ -19,7 +19,7 @@ func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 	sumy := tensor.Expand(tensor.Sum(expy, 1), 1)  // sumy = sum(expy, axis=1)
 	div := tensor.Div(expy, sumy)                  // y = expy / sumy
 
-	f.y = variable.NewFrom(div)
+	f.y = variable.From(div)
 	return []*variable.Variable{
 		f.y,
 	}

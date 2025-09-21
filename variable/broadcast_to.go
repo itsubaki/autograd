@@ -18,8 +18,9 @@ type BroadcastToT struct {
 func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
+	y := tensor.BroadcastTo(x[0].Data, f.Shape...)
 	return []*Variable{
-		NewFrom(tensor.BroadcastTo(x[0].Data, f.Shape...)),
+		From(y),
 	}
 }
 

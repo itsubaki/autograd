@@ -18,8 +18,9 @@ type ReshapeT struct {
 func (f *ReshapeT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
+	y := tensor.Reshape(x[0].Data, f.Shape...)
 	return []*Variable{
-		NewFrom(tensor.Reshape(x[0].Data, f.Shape...)),
+		From(y),
 	}
 }
 

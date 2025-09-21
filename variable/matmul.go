@@ -15,8 +15,9 @@ type MatMulT struct {
 func (f *MatMulT) Forward(x ...*Variable) []*Variable {
 	f.x, f.w = x[0], x[1]
 
+	y := tensor.MatMul(x[0].Data, x[1].Data)
 	return []*Variable{
-		NewFrom(tensor.MatMul(x[0].Data, x[1].Data)),
+		From(y),
 	}
 }
 

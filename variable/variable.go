@@ -22,18 +22,7 @@ func New(v ...float64) *Variable {
 	}
 }
 
-func NewOf(v ...[]float64) *Variable {
-	data := make([]float64, 0, len(v)*len(v[0]))
-	for _, row := range v {
-		data = append(data, row...)
-	}
-
-	return &Variable{
-		Data: tensor.New([]int{len(v), len(v[0])}, data),
-	}
-}
-
-func NewFrom(v *tensor.Tensor[float64]) *Variable {
+func From(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
@@ -63,6 +52,11 @@ func (v *Variable) At(coord ...int) float64 {
 
 func (v *Variable) Shape() []int {
 	return v.Data.Shape
+}
+
+func (v *Variable) Reshape(shape ...int) *Variable {
+	v.Data = tensor.Reshape(v.Data, shape...)
+	return v
 }
 
 func (v *Variable) Cleargrad() {

@@ -899,7 +899,7 @@ func ExampleLinspace_invalid() {
 	panic("unreachable")
 
 	// Output:
-	// num is less than 2
+	// n is less than 2
 }
 
 func ExampleReshape_invalid() {

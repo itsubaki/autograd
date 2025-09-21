@@ -15,8 +15,9 @@ type LogT struct {
 func (f *LogT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
+	y := tensor.Log(x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.Log(x[0].Data)),
+		From(y),
 	}
 }
 

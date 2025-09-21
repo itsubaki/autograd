@@ -78,7 +78,7 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	w := tensor.Randn([]int{inSize, outSize}, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
-	return variable.NewFrom(tensor.MulC(xavier, w))
+	return variable.From(tensor.MulC(xavier, w))
 }
 
 func last(shape []int) int {

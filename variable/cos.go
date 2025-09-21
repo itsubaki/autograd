@@ -15,8 +15,9 @@ type CosT struct {
 func (f *CosT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
+	y := tensor.Cos(x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.Cos(x[0].Data)),
+		From(y),
 	}
 }
 

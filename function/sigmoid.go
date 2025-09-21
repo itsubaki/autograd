@@ -17,7 +17,7 @@ func (f *SigmoidT) Forward(x ...*variable.Variable) []*variable.Variable {
 	tanh := tensor.Tanh(tensor.MulC(0.5, x[0].Data)) // tanh(0.5 * x)
 	y := tensor.AddC(0.5, tensor.MulC(0.5, tanh))    // 0.5 + 0.5 * tanh(0.5 * x)
 
-	f.y = variable.NewFrom(y)
+	f.y = variable.From(y)
 	return []*variable.Variable{
 		f.y,
 	}

@@ -8,10 +8,11 @@ import (
 
 func ExampleSumTo() {
 	// p301
-	x := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 5, 6},
-	)
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
 	y := variable.SumTo(1, 3)(x)
 	y.Backward()
 
@@ -25,10 +26,11 @@ func ExampleSumTo() {
 
 func ExampleSumTo_axes21() {
 	// p301
-	x := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 5, 6},
-	)
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
 	y := variable.SumTo(2, 1)(x)
 	y.Backward()
 

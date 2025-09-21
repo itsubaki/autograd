@@ -15,8 +15,9 @@ type SumT struct {
 func (f *SumT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
+	y := tensor.Sum(x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.Sum(x[0].Data)),
+		From(y),
 	}
 }
 

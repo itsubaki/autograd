@@ -11,5 +11,5 @@ func Accuracy(y, t *variable.Variable) *variable.Variable {
 	argmax := tensor.Argmax(y.Data, 1)
 	pred := tensor.Reshape(argmax, t.Shape()...)
 	result := tensor.F2(tensor.Float64(pred), t.Data, variable.IsClose)
-	return variable.NewFrom(tensor.Mean(result))
+	return variable.From(tensor.Mean(result))
 }

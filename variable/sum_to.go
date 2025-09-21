@@ -20,7 +20,7 @@ func (f *SumToT) Forward(x ...*Variable) []*Variable {
 
 	y := tensor.SumTo(x[0].Data, f.Shape...)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

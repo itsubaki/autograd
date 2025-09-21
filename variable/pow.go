@@ -18,8 +18,9 @@ type PowT struct {
 func (f *PowT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
+	y := tensor.Pow(f.P, x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.Pow(f.P, x[0].Data)),
+		From(y),
 	}
 }
 
