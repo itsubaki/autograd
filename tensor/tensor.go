@@ -5,6 +5,8 @@ import (
 	"iter"
 	"math"
 	randv2 "math/rand/v2"
+	"runtime"
+	"sync"
 
 	"github.com/itsubaki/autograd/rand"
 )
@@ -973,31 +975,44 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	o := Zeros[T](shape...)
 
 	// batch matmul
-	for batchIdx := range size(batch) {
-		offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
-		offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
-		offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
+	workers := runtime.NumCPU()
+	chunk := (arows + workers - 1) / workers
 
-		// matmul
-		for i := range arows {
-			ai := offseta + i*a.Stride[ndim-2]
-			oi := offseto + i*o.Stride[ndim-2]
+	var wg sync.WaitGroup
+	for w := range workers {
+		wg.Add(1)
 
-			for k := range acols {
-				aik := a.Data[ai+k*a.Stride[ndim-1]]
-				bk := offsetb + k*b.Stride[ndim-2]
+		start := w * chunk
+		end := min(start+chunk, arows)
+		go func(start, end int) {
+			defer wg.Done()
 
-				for j := range bcols {
-					bkj := b.Data[bk+j*b.Stride[ndim-1]]
-					oij := oi + j*o.Stride[ndim-1]
+			// batch
+			for batchIdx := range size(batch) {
+				offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
+				offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
+				offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
 
-					// o[i,j] += a[i,k] * b[k,j]
-					o.Data[oij] += aik * bkj
+				// matmul
+				for i := start; i < end; i++ {
+					ai := offseta + i*a.Stride[ndim-2]
+					oi := offseto + i*o.Stride[ndim-2]
+
+					for k := range acols {
+						aik := a.Data[ai+k*a.Stride[ndim-1]]
+						bk := offsetb + k*b.Stride[ndim-2]
+
+						for j := range bcols {
+							bkj := b.Data[bk+j*b.Stride[ndim-1]]
+							o.Data[oi+j*o.Stride[ndim-1]] += aik * bkj
+						}
+					}
 				}
 			}
-		}
+		}(start, end)
 	}
 
+	wg.Wait()
 	return o
 }
 
