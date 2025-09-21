@@ -8,10 +8,10 @@ import (
 )
 
 func ExampleSoftmaxSimple() {
-	x := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 4, 8},
-	)
+	x := variable.New(
+		1, 2, 3,
+		4, 4, 8,
+	).Reshape(2, 3)
 
 	y := F.SoftmaxSimple(x)
 	y.Backward()

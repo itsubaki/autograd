@@ -7,10 +7,10 @@ import (
 )
 
 func ExampleMin() {
-	A := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, -5, 6},
-	)
+	A := variable.New(
+		1, 2, 3,
+		4, -5, 6,
+	).Reshape(2, 3)
 
 	y := variable.Min(A)
 	y.Backward()

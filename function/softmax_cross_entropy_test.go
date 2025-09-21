@@ -9,10 +9,11 @@ import (
 )
 
 func ExampleSoftmaxCrossEntropy() {
-	x := variable.NewOf(
-		[]float64{0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0},
-		[]float64{0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0},
-	)
+	x := variable.New(
+		0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0,
+		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
+	).Reshape(2, 10)
+
 	t := variable.New(2, 2)
 
 	y := F.SoftmaxCrossEntropy(x, t)
