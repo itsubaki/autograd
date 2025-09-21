@@ -2921,7 +2921,7 @@ func TestTril(t *testing.T) {
 			want: tensor.New(nil, []int{42}),
 		},
 		{
-			// vector
+			// 1 dim
 			v:    tensor.New([]int{3}, []int{1, 2, 3}),
 			k:    0,
 			want: tensor.New([]int{3}, []int{1, 2, 3}),
