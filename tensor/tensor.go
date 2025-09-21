@@ -477,9 +477,9 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 
 	// take
 	for i := range out.Data {
-		coords := Unravel(out, i)
-		coords[ax] = idx[coords[ax]]
-		out.Data[i] = v.Data[Ravel(v, coords...)]
+		coord := Unravel(out, i)
+		coord[ax] = idx[coord[ax]]
+		out.Data[i] = v.Data[Ravel(v, coord...)]
 	}
 
 	return out
@@ -746,48 +746,73 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 }
 
 // Concat concatenates the tensors along the given axis.
-func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	if ndim != w.NumDims() {
-		panic("tensors are not the same number of dimensions")
-	}
-
-	if ndim == 0 {
-		// scalar
-		panic("tensor is a scalar")
-	}
-
+func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
+	ndim := v[0].NumDims()
 	ax, err := adjAxis(axis, ndim)
 	if err != nil {
 		panic(err)
 	}
 
-	for i := range ndim {
-		if i == ax {
-			continue
-		}
-
-		if v.Shape[i] != w.Shape[i] {
-			panic(fmt.Sprintf("shapes %v and %v are not compatible for concat", v.Shape, w.Shape))
-		}
-	}
-
 	// out tensor
 	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-	shape[ax] = v.Shape[ax] + w.Shape[ax]
+	copy(shape, v[0].Shape)
+	shape[ax] = 0
+	for i := range v {
+		for j := range ndim {
+			if j == ax {
+				continue
+			}
+		}
+
+		shape[ax] += v[i].Shape[ax]
+	}
 	out := Zeros[T](shape...)
 
 	// concat
-	for i := range v.Data {
-		coord := Unravel(v, i)
-		out.Data[Ravel(out, coord...)] = v.Data[i]
+	var offset int
+	for _, w := range v {
+		for j := range w.Data {
+			coord := Unravel(w, j)
+			coord[ax] += offset
+
+			out.Data[Ravel(out, coord...)] = w.Data[j]
+		}
+
+		offset += w.Shape[ax]
 	}
 
-	for i := range w.Data {
-		coord := Unravel(w, i)
-		coord[ax] += v.Shape[ax]
-		out.Data[Ravel(out, coord...)] = w.Data[i]
+	return out
+}
+
+// Stack returns a new tensor by stacking the tensors along the given axis.
+func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
+	ndim := v[0].NumDims()
+	ax, err := adjAxis(axis, ndim+1)
+	if err != nil {
+		panic(err)
+	}
+
+	// out
+	shape := make([]int, ndim+1)
+	copy(shape[:ax], v[0].Shape[:ax])
+	shape[ax] = len(v)
+	copy(shape[ax+1:], v[0].Shape[ax:])
+	out := Zeros[T](shape...)
+
+	// stack
+	for i, w := range v {
+		for j := range w.Data {
+			coord := Unravel(w, j)
+
+			// insert i at axis
+			ocoord := make([]int, ndim+1)
+			copy(ocoord[:ax], coord[:ax])
+			ocoord[ax] = i
+			copy(ocoord[ax+1:], coord[ax:])
+
+			// set
+			out.Data[Ravel(out, ocoord...)] = w.Data[j]
+		}
 	}
 
 	return out
@@ -871,9 +896,9 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 
 	// repeat
 	for i := range out.Data {
-		coords := Unravel(out, i)
-		coords[ax] = coords[ax] % v.Shape[ax]
-		out.Data[i] = v.Data[Ravel(v, coords...)]
+		coord := Unravel(out, i)
+		coord[ax] = coord[ax] % v.Shape[ax]
+		out.Data[i] = v.Data[Ravel(v, coord...)]
 	}
 
 	return out
@@ -907,13 +932,12 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	out := Zeros[T](shape...)
 
 	for i := range out.Data {
-		coords := Unravel(out, i)
+		coord := Unravel(out, i)
+		vcoord := make([]int, ndim)
+		copy(vcoord, coord)
+		vcoord[axis] = coord[axis] / n
 
-		inCoord := make([]int, ndim)
-		copy(inCoord, coords)
-		inCoord[axis] = coords[axis] / n
-
-		out.Data[i] = v.Data[Ravel(v, inCoord...)]
+		out.Data[i] = v.Data[Ravel(v, vcoord...)]
 	}
 
 	return out
