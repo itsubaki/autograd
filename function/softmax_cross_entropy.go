@@ -12,15 +12,15 @@ func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 }
 
 type SoftmaxCrossEntropyT struct {
-	x, t *variable.Variable
+	x, t  *variable.Variable
+	label []int
 }
 
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x, f.t = x[0], x[1]
+	f.x, f.t, f.label = x[0], x[1], toInt(x[1].Data.Data)
 
-	label := label(x[1])
 	logz := logsumexp(x[0].Data)
-	logp := logp(tensor.Sub(x[0].Data, logz), label)
+	logp := logp(tensor.Sub(x[0].Data, logz), f.label)
 	N := x[0].Shape()[0]
 
 	y := -1.0 / float64(N) * tensor.Sum(logp).At()
@@ -30,43 +30,31 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 }
 
 func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	shape := f.x.Shape()
-	N, C := shape[0], shape[1]
+	y := Softmax(f.x)
+	for i, l := range f.label {
+		y.Data.Set([]int{i, l}, y.Data.At(i, l)-1)
+	}
+	N := f.x.Shape()[0]
 
-	t := variable.From(onehot(f.t.Data.Data, C)) // t = onehot(t, C)
-	y := Softmax(f.x)                            // y = softmax(x)
+	gx := Mul(y, MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
-		Mul(Sub(y, t), MulC(1.0/float64(N), gy[0])), // (y - t) * gy / N
+		gx, // (y - t) * gy / N
 	}
 }
 
 func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
-	max := tensor.Expand(tensor.Max(x, 1), 1)     // max(x, axis=1)
-	expy := tensor.Exp(tensor.Sub(x, max))        // expy = exp(x - max)
-	sumy := tensor.Expand(tensor.Sum(expy, 1), 1) // sumy = sum(expy)
-	logsumy := tensor.Log(sumy)                   // logsumy = log(sumy)
-	return tensor.Add(max, logsumy)               // logsumexp = max + logsumy
+	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
+	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max)
+	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sumy = sum(expy)
+	logsumy := tensor.Log(sum1)                   // logsumy = log(sumy)
+	return tensor.Add(max1, logsumy)              // logsumexp = max + logsumy
 }
 
-func label(t *variable.Variable) []int {
-	return toInt(t.Data.Data)
-}
-
-func logp(m *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
+func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
 	out := tensor.Zeros[float64](len(label), 1)
 	for i, v := range label {
-		out.Set([]int{i, 0}, m.At(i, v))
-	}
-
-	return out
-}
-
-func onehot(t []float64, size int) *tensor.Tensor[float64] {
-	x := toInt(t)
-	out := tensor.Zeros[float64](len(x), size)
-
-	for i, v := range x {
-		out.Set([]int{i, v}, 1)
+		out.Set([]int{i, 0}, x.At(i, v))
 	}
 
 	return out
