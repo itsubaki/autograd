@@ -10,11 +10,9 @@ import (
 	"time"
 
 	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 // pi returns a slice of float64 in [0, c*PI].
@@ -65,9 +63,9 @@ func (l *DataLoader) Next() bool {
 
 func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
-	x, y := vector.Transpose(l.Data[begin:end]), vector.Transpose(l.Label[begin:end])
+	x, y := l.Data[begin:end], l.Label[begin:end]
 	l.iter++
-	return variable.From(matrix.New(x...)), variable.From(matrix.New(y...))
+	return variable.New(x...).Reshape(len(x), 1), variable.New(y...).Reshape(len(y), 1)
 }
 
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {

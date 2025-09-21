@@ -1,9 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/matrix"
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/matrix"
 
 // SubC returns a variable that c - x[0].
 func SubC(c float64, x ...*Variable) *Variable {
@@ -36,7 +33,7 @@ func (f *SubT) Backward(gy ...*Variable) []*Variable {
 	gx0 := gy[0]
 	gx1 := Neg(gy[0]) // -1.0 * gy
 
-	if vector.Equal(f.x0Shape, f.x1Shape) {
+	if equal(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,
