@@ -28,7 +28,7 @@ func (f *SubT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Sub(x[0].Data, x[1].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

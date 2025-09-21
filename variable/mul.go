@@ -24,7 +24,7 @@ func (f *MulT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Mul(x[0].Data, x[1].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

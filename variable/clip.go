@@ -21,14 +21,14 @@ func (f *ClipT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Clip(x[0].Data, f.Min, f.Max)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 
 func (f *ClipT) Backward(gy ...*Variable) []*Variable {
 	mask := matrix.Mask(f.x.Data, clip(f.Min, f.Max))
 	return []*Variable{
-		Mul(gy[0], NewFrom(mask)), // gy * mask
+		Mul(gy[0], From(mask)), // gy * mask
 	}
 }
 

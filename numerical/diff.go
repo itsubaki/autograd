@@ -57,7 +57,7 @@ func diff(h float64) func(a, b float64) float64 {
 func xh(x []*variable.Variable, h float64, f func(c float64, v *matrix.Matrix) *matrix.Matrix) []*variable.Variable {
 	x0 := make([]*variable.Variable, len(x))
 	for i := range x {
-		x0[i] = variable.NewFrom(f(h, x[i].Data))
+		x0[i] = variable.From(f(h, x[i].Data))
 	}
 
 	return x0

@@ -26,7 +26,7 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
-	mask := NewFrom(matrix.F2(f.x.Data, f.y.Data, IsClose))
+	mask := From(matrix.F2(f.x.Data, f.y.Data, IsClose))
 	return []*Variable{
 		Mul(gy[0], mask),
 	}

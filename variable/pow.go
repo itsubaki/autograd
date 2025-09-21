@@ -20,7 +20,7 @@ func (f *PowT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Pow(f.P, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

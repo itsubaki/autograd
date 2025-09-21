@@ -28,7 +28,7 @@ func (f *DivT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Div(x[0].Data, x[1].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

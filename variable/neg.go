@@ -13,7 +13,7 @@ type NegT struct{}
 func (f *NegT) Forward(x ...*Variable) []*Variable {
 	y := matrix.MulC(-1.0, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

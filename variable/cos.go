@@ -17,7 +17,7 @@ func (f *CosT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Cos(x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

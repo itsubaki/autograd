@@ -15,20 +15,19 @@ type LinearT struct {
 
 func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.w = x[0], x[1]
-	y := matrix.MatMul(x[0].Data, x[1].Data)
 
+	y := matrix.MatMul(x[0].Data, x[1].Data)
 	if len(x) < 3 {
 		// no bias
 		return []*variable.Variable{
-			variable.NewFrom(y),
+			variable.From(y),
 		}
 	}
 
 	// add bias
 	f.b, y = x[2], matrix.Add(y, x[2].Data)
-
 	return []*variable.Variable{
-		variable.NewFrom(y),
+		variable.From(y),
 	}
 }
 

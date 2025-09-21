@@ -15,7 +15,7 @@ func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variab
 
 		shape := x[0].Shape()
 		mask := matrix.Mask(matrix.Rand(shape[0], shape[1], s...), mask(ratio))
-		return MulC(1.0/(1.0-ratio), Mul(x[0], variable.NewFrom(mask))) // y = x * mask / (1 - ratio)
+		return MulC(1.0/(1.0-ratio), Mul(x[0], variable.From(mask))) // y = x * mask / (1 - ratio)
 	}
 }
 

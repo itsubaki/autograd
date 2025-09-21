@@ -11,7 +11,7 @@ type TransposeT struct{}
 func (f *TransposeT) Forward(x ...*Variable) []*Variable {
 	y := matrix.Transpose(x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 
