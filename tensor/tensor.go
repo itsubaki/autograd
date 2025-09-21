@@ -758,12 +758,6 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	copy(shape, v[0].Shape)
 	shape[ax] = 0
 	for i := range v {
-		for j := range ndim {
-			if j == ax {
-				continue
-			}
-		}
-
 		shape[ax] += v[i].Shape[ax]
 	}
 	out := Zeros[T](shape...)
