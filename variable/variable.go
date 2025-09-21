@@ -20,7 +20,7 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: matrix.New(v)}
 }
 
-func NewFrom(v *matrix.Matrix) *Variable {
+func From(v *matrix.Matrix) *Variable {
 	return &Variable{Data: v}
 }
 

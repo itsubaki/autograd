@@ -19,7 +19,7 @@ func (f *ReshapeT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Reshape(x[0].Data, f.Shape...)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

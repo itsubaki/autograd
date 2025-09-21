@@ -17,7 +17,7 @@ func (f *SinT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Sin(x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

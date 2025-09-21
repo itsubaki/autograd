@@ -385,8 +385,8 @@ func Example_linearRegression() {
 	yrand := matrix.Rand(100, 1, s)
 
 	// variable
-	x := variable.NewFrom(xrand)                                                    // x = xrand
-	t := variable.NewFrom(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))) // t = 2x+5+yrand
+	x := variable.From(xrand)                                                    // x = xrand
+	t := variable.From(matrix.Add(matrix.MulC(2, xrand), matrix.AddC(5, yrand))) // t = 2x+5+yrand
 
 	// parameter
 	w := variable.New(0.0)

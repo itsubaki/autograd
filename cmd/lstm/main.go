@@ -67,7 +67,7 @@ func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
 	x, y := vector.Transpose(l.Data[begin:end]), vector.Transpose(l.Label[begin:end])
 	l.iter++
-	return variable.NewFrom(matrix.New(x...)), variable.NewFrom(matrix.New(y...))
+	return variable.From(matrix.New(x...)), variable.From(matrix.New(y...))
 }
 
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {

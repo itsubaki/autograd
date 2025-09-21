@@ -24,7 +24,7 @@ func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	}
 
 	return []*Variable{
-		NewFrom(matrix.New(y...)),
+		From(matrix.New(y...)),
 	}
 }
 

@@ -26,7 +26,7 @@ func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 	}
 
 	return []*Variable{
-		NewFrom(gx),
+		From(gx),
 	}
 }
 

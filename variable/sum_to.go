@@ -19,7 +19,7 @@ func (f *SumToT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.SumTo(f.Shape, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

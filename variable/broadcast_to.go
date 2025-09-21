@@ -19,7 +19,7 @@ func (f *BroadcastToT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.BroadcastTo(f.Shape, x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 

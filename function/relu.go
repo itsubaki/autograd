@@ -20,7 +20,7 @@ func (f *ReLUT) Forward(x ...*variable.Variable) []*variable.Variable {
 	y := matrix.F(x[0].Data, maximum)
 
 	return []*variable.Variable{
-		variable.NewFrom(y),
+		variable.From(y),
 	}
 }
 
@@ -28,7 +28,7 @@ func (f *ReLUT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	mask := matrix.Mask(f.x.Data, relu)
 
 	return []*variable.Variable{
-		Mul(gy[0], variable.NewFrom(mask)), // gy * mask
+		Mul(gy[0], variable.From(mask)), // gy * mask
 	}
 }
 

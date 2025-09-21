@@ -17,7 +17,7 @@ func (f *LogT) Forward(x ...*Variable) []*Variable {
 
 	y := matrix.Log(x[0].Data)
 	return []*Variable{
-		NewFrom(y),
+		From(y),
 	}
 }
 
