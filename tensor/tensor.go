@@ -5,6 +5,8 @@ import (
 	"iter"
 	"math"
 	randv2 "math/rand/v2"
+	"runtime"
+	"sync"
 
 	"github.com/itsubaki/autograd/rand"
 )
@@ -972,32 +974,76 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	shape := append(batch, []int{arows, bcols}...)
 	o := Zeros[T](shape...)
 
+	// Determine the number of rows each goroutine will handle.
+	// We use "ceiling division" to make sure all rows are covered,
+	// even if rows is not divisible by workers.
+	//
+	// Example:
+	//   rows = 10, workers = 3
+	//   chunk = (10 + 3 - 1) / 3 = 12 / 3 = 4
+	//   Goroutine row ranges:
+	//     Worker 0: rows 0, 1, 2, 3
+	//     Worker 1: rows 4, 5, 6, 7
+	//     Worker 2: rows 8, 9
+	//   Notice that the last worker handles the remaining 2 rows.
+	//
+	// If we simply divided by workers using integer division (rows / workers),
+	// the rows might not be distributed evenly.
+	//
+	// Example:
+	//   rows = 10, workers = 3
+	//   chunk: 10 / 3 = 3
+	//     Worker 0: rows 0, 1, 2
+	//     Worker 1: rows 3, 4, 5
+	//     Worker 2: rows 6, 7, 8
+	//     Row 9 would be left unassigned.
+	//
+	// Note:
+	//   If there is a remainder, the workload balance among workers is uneven.
+	//   Some workers may finish earlier and stay idle while others process the extra rows.
+	//   Ceiling division helps distribute the workload more evenly.
+	//
+	workers := runtime.NumCPU()
+	chunk := (arows + workers - 1) / workers
+
 	// batch matmul
-	for batchIdx := range size(batch) {
-		offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
-		offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
-		offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
+	var wg sync.WaitGroup
+	for w := range workers {
+		wg.Add(1)
 
-		// matmul
-		for i := range arows {
-			ai := offseta + i*a.Stride[ndim-2]
-			oi := offseto + i*o.Stride[ndim-2]
+		start := w * chunk
+		end := min(start+chunk, arows)
+		go func(start, end int) {
+			defer wg.Done()
 
-			for k := range acols {
-				aik := a.Data[ai+k*a.Stride[ndim-1]]
-				bk := offsetb + k*b.Stride[ndim-2]
+			// batch
+			for batchIdx := range size(batch) {
+				offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
+				offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
+				offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
 
-				for j := range bcols {
-					bkj := b.Data[bk+j*b.Stride[ndim-1]]
-					oij := oi + j*o.Stride[ndim-1]
+				// matmul
+				for i := start; i < end; i++ {
+					ai := offseta + i*a.Stride[ndim-2]
+					oi := offseto + i*o.Stride[ndim-2]
 
-					// o[i,j] += a[i,k] * b[k,j]
-					o.Data[oij] += aik * bkj
+					for k := range acols {
+						aik := a.Data[ai+k*a.Stride[ndim-1]]
+						bk := offsetb + k*b.Stride[ndim-2]
+
+						for j := range bcols {
+							bkj := b.Data[bk+j*b.Stride[ndim-1]]
+							oij := oi + j*o.Stride[ndim-1]
+
+							o.Data[oij] += aik * bkj
+						}
+					}
 				}
 			}
-		}
+		}(start, end)
 	}
 
+	wg.Wait()
 	return o
 }
 
