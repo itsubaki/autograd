@@ -974,10 +974,39 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	shape := append(batch, []int{arows, bcols}...)
 	o := Zeros[T](shape...)
 
-	// batch matmul
+	// Determine the number of rows each goroutine will handle.
+	// We use "ceiling division" to make sure all rows are covered,
+	// even if arows is not divisible by workers.
+	//
+	// Example:
+	//   rows = 10, workers = 3
+	//   chunk = (10 + 3 - 1) / 3 = 12 / 3 = 4
+	//   Goroutine row ranges:
+	//     Worker 0: rows 0, 1, 2, 3
+	//     Worker 1: rows 4, 5, 6, 7
+	//     Worker 2: rows 8, 9
+	//   Notice that the last worker handles the remaining 2 rows.
+	//
+	// If we simply divided by workers using integer division (rows / workers),
+	// the rows might not be distributed evenly.
+	//
+	// Example:
+	//   rows = 10, workers = 3
+	//   chunk: 10 / 3 = 3
+	//     Worker 0: rows 0, 1, 2
+	//     Worker 1: rows 3, 4, 5
+	//     Worker 2: rows 6, 7, 8
+	//     Row 9 would be left unassigned.
+	//
+	// Note:
+	//   If there is a remainder, the workload balance among workers is uneven.
+	//   Some workers may finish earlier and stay idle while others process the extra rows.
+	//   Ceiling division helps distribute the workload more evenly.
+	//
 	workers := runtime.NumCPU()
 	chunk := (arows + workers - 1) / workers
 
+	// batch matmul
 	var wg sync.WaitGroup
 	for w := range workers {
 		wg.Add(1)
@@ -1004,7 +1033,9 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 
 						for j := range bcols {
 							bkj := b.Data[bk+j*b.Stride[ndim-1]]
-							o.Data[oi+j*o.Stride[ndim-1]] += aik * bkj
+							oij := oi + j*o.Stride[ndim-1]
+
+							o.Data[oij] += aik * bkj
 						}
 					}
 				}
