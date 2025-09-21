@@ -65,10 +65,7 @@ func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
 	x, y := l.Data[begin:end], l.Label[begin:end]
 	l.iter++
-
-	xt := variable.New(x...).Reshape(len(x), 1)
-	yt := variable.New(y...).Reshape(len(y), 1)
-	return xt, yt
+	return variable.New(x...).Reshape(len(x), 1), variable.New(y...).Reshape(len(y), 1)
 }
 
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {

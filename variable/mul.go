@@ -1,9 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/tensor"
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func MulC(c float64, x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MulT{}}).First(New(c), x[0])
@@ -32,7 +29,7 @@ func (f *MulT) Backward(gy ...*Variable) []*Variable {
 	gx0 := Mul(gy[0], f.x1) // gy * x1
 	gx1 := Mul(gy[0], f.x0) // gy * x0
 
-	if vector.Equal(f.x0Shape, f.x1Shape) {
+	if equal(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,

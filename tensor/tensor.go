@@ -921,7 +921,7 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim < 2 {
-		// scalar or vector
+		// scalar or 1 dim
 		return Clone(v)
 	}
 
