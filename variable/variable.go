@@ -46,14 +46,18 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
+// At returns the value at the given coordinates.
+// If no coordinates are given, it returns the first element.
 func (v *Variable) At(coord ...int) float64 {
 	return v.Data.At(coord...)
 }
 
+// Shape returns the shape of the variable.
 func (v *Variable) Shape() []int {
 	return v.Data.Shape
 }
 
+// Reshape changes the shape of the variable.
 func (v *Variable) Reshape(shape ...int) *Variable {
 	v.Data = tensor.Reshape(v.Data, shape...)
 	return v
