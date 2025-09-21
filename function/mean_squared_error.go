@@ -19,7 +19,7 @@ func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variabl
 	f.x0, f.x1 = x[0], x[1]
 
 	diff := tensor.Sub(x[0].Data, x[1].Data)
-	N := diff.Shape[0]
+	N := diff.Size()
 
 	y := tensor.Sum(tensor.Mul(diff, diff)).At() / float64(N) // (x0 - x1)^2 / N
 	return []*variable.Variable{
@@ -29,7 +29,7 @@ func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variabl
 
 func (f *MeanSquaredErrorT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	diff := Sub(f.x0, f.x1)
-	N := diff.Shape()[0]
+	N := diff.Data.Size()
 
 	gx0 := MulC(2.0/float64(N), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
 	gx1 := Neg(gx0)                               // -gx0
