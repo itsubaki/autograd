@@ -63,13 +63,7 @@ func ExampleRand() {
 	s := rand.Const()
 	v := variable.Rand([]int{2, 3}, s)
 
-	shape := v.Shape()
-	for i := range shape[0] {
-		row := make([]float64, shape[1])
-		for j := range shape[1] {
-			row[j] = v.At(i, j)
-		}
-
+	for _, row := range v.Data.Seq2() {
 		fmt.Println(row)
 	}
 
@@ -82,13 +76,7 @@ func ExampleRandn() {
 	s := rand.Const()
 	v := variable.Randn([]int{2, 3}, s)
 
-	shape := v.Shape()
-	for i := range shape[0] {
-		row := make([]float64, shape[1])
-		for j := range shape[1] {
-			row[j] = v.At(i, j)
-		}
-
+	for _, row := range v.Data.Seq2() {
 		fmt.Println(row)
 	}
 
