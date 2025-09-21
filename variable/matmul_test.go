@@ -23,12 +23,12 @@ func ExampleMatMul() {
 	y := variable.MatMul(x, w)
 	y.Backward()
 
-	fmt.Println(x.Grad.Shape(), x.Grad)
-	fmt.Println(w.Grad.Shape(), w.Grad)
+	fmt.Println(x.Grad)
+	fmt.Println(w.Grad)
 
 	// Output:
-	// [2 3] variable[2 3]([10 26 42 10 26 42])
-	// [3 4] variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
+	// variable[2 3]([10 26 42 10 26 42])
+	// variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
 }
 
 func TestMatMul(t *testing.T) {
