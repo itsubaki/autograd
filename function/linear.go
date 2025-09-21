@@ -35,8 +35,8 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 
 func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	gxs := []*variable.Variable{
-		MatMul(gy[0], Transpose(-1, -2)(f.w)), // gy * w.T
-		MatMul(Transpose(-1, -2)(f.x), gy[0]), // x.T * gy
+		MatMul(gy[0], Transpose(axes(f.w.Data.NumDims())...)(f.w)), // gy * w.T
+		MatMul(Transpose(axes(f.x.Data.NumDims())...)(f.x), gy[0]), // x.T * gy
 	}
 
 	if f.b == nil {
@@ -47,4 +47,16 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	// add bias
 	gb := SumTo(f.b.Shape()...)(gy[0])
 	return append(gxs, gb)
+}
+
+func axes(ndim int) []int {
+	axes := make([]int, ndim)
+	for i := range ndim - 2 {
+		axes[i] = i
+	}
+
+	// swap last two axes
+	axes[ndim-2] = ndim - 1
+	axes[ndim-1] = ndim - 2
+	return axes
 }
