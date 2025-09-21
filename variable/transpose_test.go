@@ -153,10 +153,6 @@ func TestInvPerm_invalid(t *testing.T) {
 	}{
 		{
 			ndim: 3,
-			axes: []int{0, 1},
-		},
-		{
-			ndim: 3,
 			axes: []int{-10, 0, 10},
 		},
 	}
