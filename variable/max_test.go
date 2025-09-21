@@ -7,10 +7,10 @@ import (
 )
 
 func ExampleMax() {
-	A := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 10, 6},
-	)
+	A := variable.New(
+		1, 2, 3,
+		4, 10, 6,
+	).Reshape(2, 3)
 
 	y := variable.Max(A)
 	y.Backward()

@@ -19,15 +19,16 @@ type ClipT struct {
 func (f *ClipT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
+	y := tensor.Clip(x[0].Data, f.Min, f.Max)
 	return []*Variable{
-		NewFrom(tensor.Clip(x[0].Data, f.Min, f.Max)),
+		From(y),
 	}
 }
 
 func (f *ClipT) Backward(gy ...*Variable) []*Variable {
 	mask := tensor.Mask(f.x.Data, clip(f.Min, f.Max))
 	return []*Variable{
-		Mul(gy[0], NewFrom(mask)), // gy * mask
+		Mul(gy[0], From(mask)), // gy * mask
 	}
 }
 

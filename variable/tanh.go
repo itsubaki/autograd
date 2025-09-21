@@ -13,8 +13,7 @@ type TanhT struct {
 }
 
 func (f *TanhT) Forward(x ...*Variable) []*Variable {
-	f.y = NewFrom(tensor.Tanh(x[0].Data))
-
+	f.y = From(tensor.Tanh(x[0].Data))
 	return []*Variable{
 		f.y,
 	}

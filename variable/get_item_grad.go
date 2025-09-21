@@ -23,7 +23,7 @@ func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 	gx := tensor.ScatterAdd(z, gy[0].Data, f.Indices, f.Axis)
 
 	return []*Variable{
-		NewFrom(gx),
+		From(gx),
 	}
 }
 

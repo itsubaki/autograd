@@ -57,7 +57,7 @@ func diff(h float64) func(a, b float64) float64 {
 func xh(x []*variable.Variable, h float64, f func(c float64, v *tensor.Tensor[float64]) *tensor.Tensor[float64]) []*variable.Variable {
 	x0 := make([]*variable.Variable, len(x))
 	for i := range x {
-		x0[i] = variable.NewFrom(f(h, x[i].Data))
+		x0[i] = variable.From(f(h, x[i].Data))
 	}
 
 	return x0

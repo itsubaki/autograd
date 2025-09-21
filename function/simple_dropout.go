@@ -13,8 +13,9 @@ func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variab
 			return x[0]
 		}
 
-		mask := tensor.Mask(tensor.Rand(x[0].Shape(), s...), mask(ratio))
-		return MulC(1.0/(1.0-ratio), Mul(x[0], variable.NewFrom(mask))) // y = x * mask / (1 - ratio)
+		rand := tensor.Rand(x[0].Shape(), s...)
+		mask := tensor.Mask(rand, mask(ratio))
+		return MulC(1.0/(1.0-ratio), Mul(x[0], variable.From(mask))) // y = x * mask / (1 - ratio)
 	}
 }
 

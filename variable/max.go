@@ -18,8 +18,8 @@ type MaxT struct {
 
 func (f *MaxT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
-	f.y = NewFrom(tensor.Max(x[0].Data))
 
+	f.y = From(tensor.Max(x[0].Data))
 	return []*Variable{
 		f.y,
 	}
@@ -28,7 +28,7 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	mask := tensor.F2(f.x.Data, f.y.Data, IsClose)
 	return []*Variable{
-		Mul(gy[0], NewFrom(mask)),
+		Mul(gy[0], From(mask)),
 	}
 }
 

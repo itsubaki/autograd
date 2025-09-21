@@ -11,8 +11,9 @@ func Neg(x ...*Variable) *Variable {
 type NegT struct{}
 
 func (f *NegT) Forward(x ...*Variable) []*Variable {
+	y := tensor.MulC(-1.0, x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.MulC(-1.0, x[0].Data)),
+		From(y),
 	}
 }
 

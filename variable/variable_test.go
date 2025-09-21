@@ -25,10 +25,11 @@ func ExampleVariable_Name() {
 }
 
 func ExampleVariable_Name_matrix() {
-	v := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 5, 6},
-	)
+	v := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
 	fmt.Println(v)
 
 	// Output:

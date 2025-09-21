@@ -20,14 +20,14 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if len(x) < 3 {
 		// no bias
 		return []*variable.Variable{
-			variable.NewFrom(y),
+			variable.From(y),
 		}
 	}
 
 	// add bias
 	f.b, y = x[2], tensor.Add(y, x[2].Data)
 	return []*variable.Variable{
-		variable.NewFrom(y),
+		variable.From(y),
 	}
 }
 

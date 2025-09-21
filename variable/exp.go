@@ -13,8 +13,7 @@ type ExpT struct {
 }
 
 func (f *ExpT) Forward(x ...*Variable) []*Variable {
-	f.y = NewFrom(tensor.Exp(x[0].Data))
-
+	f.y = From(tensor.Exp(x[0].Data))
 	return []*Variable{
 		f.y,
 	}

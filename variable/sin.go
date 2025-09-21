@@ -15,8 +15,9 @@ type SinT struct {
 func (f *SinT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
+	y := tensor.Sin(x[0].Data)
 	return []*Variable{
-		NewFrom(tensor.Sin(x[0].Data)),
+		From(y),
 	}
 }
 

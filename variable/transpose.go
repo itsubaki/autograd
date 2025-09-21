@@ -15,8 +15,9 @@ type TransposeT struct {
 }
 
 func (f *TransposeT) Forward(x ...*Variable) []*Variable {
+	y := tensor.Transpose(x[0].Data, f.Axes...)
 	return []*Variable{
-		NewFrom(tensor.Transpose(x[0].Data, f.Axes...)),
+		From(y),
 	}
 }
 
