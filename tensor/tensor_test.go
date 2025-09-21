@@ -777,6 +777,28 @@ func ExampleConcat() {
 	// [3 4 7 8]
 }
 
+func ExampleStack() {
+	x := []*tensor.Tensor[int]{
+		tensor.New([]int{2, 2}, []int{
+			1, 2,
+			3, 4,
+		}),
+		tensor.New([]int{2, 2}, []int{
+			5, 6,
+			7, 8,
+		}),
+	}
+
+	y := tensor.Stack(x, 0)
+
+	fmt.Println(y.Shape)
+	fmt.Println(y.Data)
+
+	// Output:
+	// [2 2 2]
+	// [1 2 3 4 5 6 7 8]
+}
+
 func ExampleSplit() {
 	v := tensor.New([]int{2, 4}, []int{
 		1, 2, 3, 4,
@@ -2712,6 +2734,87 @@ func TestConcat(t *testing.T) {
 	}
 }
 
+func TestStack(t *testing.T) {
+	cases := []struct {
+		x    []*tensor.Tensor[int]
+		axis int
+		want *tensor.Tensor[int]
+	}{
+		{
+			// axis 0
+			x: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+			axis: 0,
+			want: tensor.New([]int{2, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+
+				7, 8, 9,
+				10, 11, 12,
+			}),
+		},
+		{
+			// axis 1
+			x: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+			axis: 1,
+			want: tensor.New([]int{2, 2, 3}, []int{
+				1, 2, 3,
+				7, 8, 9,
+
+				4, 5, 6,
+				10, 11, 12,
+			}),
+		},
+		{
+			// axis -1
+			x: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+			axis: -1,
+			want: tensor.New([]int{2, 3, 2}, []int{
+				1, 7,
+				2, 8,
+				3, 9,
+
+				4, 10,
+				5, 11,
+				6, 12,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Stack(c.x, c.axis)
+		if !tensor.EqualAll(got, c.want) {
+			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
+		}
+	}
+}
+
 func TestSplit(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
@@ -3634,6 +3737,42 @@ func TestConcat_invalid(t *testing.T) {
 			}()
 
 			_ = tensor.Concat(c.x, c.axis)
+			t.Fail()
+		}()
+	}
+}
+
+func TestStack_invalid(t *testing.T) {
+	cases := []struct {
+		x    []*tensor.Tensor[int]
+		axis int
+	}{
+		{
+			// axis out of range
+			x: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{1, 3}, []int{
+					7, 8, 9,
+				}),
+			},
+			axis: 3,
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for axis %d", c.axis)
+			}()
+
+			_ = tensor.Stack(c.x, c.axis)
 			t.Fail()
 		}()
 	}
