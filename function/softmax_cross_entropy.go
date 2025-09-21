@@ -3,7 +3,6 @@ package function
 import (
 	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/variable"
-	"github.com/itsubaki/autograd/vector"
 )
 
 func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
@@ -49,7 +48,7 @@ func logsumexp(x *matrix.Matrix) *matrix.Matrix {
 }
 
 func label(t *variable.Variable) []int {
-	return vector.Int(t.Data.Data)
+	return toInt(t.Data.Data)
 }
 
 func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
@@ -62,11 +61,19 @@ func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
 }
 
 func onehot(t []float64, size int) *matrix.Matrix {
-	x := vector.Int(t)
-
+	x := toInt(t)
 	out := matrix.Zeros(len(x), size)
 	for i, v := range x {
 		out.Set(i, v, 1)
+	}
+
+	return out
+}
+
+func toInt(x []float64) []int {
+	out := make([]int, len(x))
+	for i, v := range x {
+		out[i] = int(v)
 	}
 
 	return out
