@@ -976,7 +976,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 
 	// Determine the number of rows each goroutine will handle.
 	// We use "ceiling division" to make sure all rows are covered,
-	// even if arows is not divisible by workers.
+	// even if rows is not divisible by workers.
 	//
 	// Example:
 	//   rows = 10, workers = 3
