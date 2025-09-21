@@ -16,10 +16,10 @@ type SoftmaxT struct {
 }
 
 func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
-	max := tensor.Expand(tensor.Max(x[0].Data, 1), 1)
-	expy := tensor.Exp(tensor.Sub(x[0].Data, max)) // expy = exp(x - max)
-	sumy := tensor.Expand(tensor.Sum(expy, 1), 1)  // sumy = sum(expy, axis=1)
-	div := tensor.Div(expy, sumy)                  // y = expy / sumy
+	max1 := tensor.Expand(tensor.Max(x[0].Data, 1), 1) // max1 = max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x[0].Data, max1))    // expy = exp(x - max1)
+	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1)      // sum1 = sum(expy, axis=1)
+	div := tensor.Div(expy, sum1)                      // y = expy / sum1
 
 	f.y = variable.From(div)
 	return []*variable.Variable{
@@ -30,9 +30,10 @@ func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	gyy := Mul(gy[0], f.y) // gyy = gy * y
 	N := gyy.Shape()[0]
-	sum := SumTo(N, 1)(gyy) // sum = sum(gx, axis=1)
+	sum := SumTo(N, 1)(gyy) // sum = sum(gy, axis=1)
 
+	gx := Sub(gyy, Mul(f.y, sum)) // gyy - y * sum
 	return []*variable.Variable{
-		Sub(gyy, Mul(f.y, sum)), // gyy - y * sum
+		gx,
 	}
 }
