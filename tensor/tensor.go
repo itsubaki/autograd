@@ -746,48 +746,39 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 }
 
 // Concat concatenates the tensors along the given axis.
-func Concat[T Number](v, w *Tensor[T], axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	if ndim != w.NumDims() {
-		panic("tensors are not the same number of dimensions")
-	}
-
-	if ndim == 0 {
-		// scalar
-		panic("tensor is a scalar")
-	}
-
+func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
+	ndim := v[0].NumDims()
 	ax, err := adjAxis(axis, ndim)
 	if err != nil {
 		panic(err)
 	}
 
-	for i := range ndim {
-		if i == ax {
-			continue
-		}
-
-		if v.Shape[i] != w.Shape[i] {
-			panic(fmt.Sprintf("shapes %v and %v are not compatible for concat", v.Shape, w.Shape))
-		}
-	}
-
 	// out tensor
 	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-	shape[ax] = v.Shape[ax] + w.Shape[ax]
+	copy(shape, v[0].Shape)
+	shape[ax] = 0
+	for i := range v {
+		for j := range ndim {
+			if j == ax {
+				continue
+			}
+		}
+
+		shape[ax] += v[i].Shape[ax]
+	}
 	out := Zeros[T](shape...)
 
 	// concat
-	for i := range v.Data {
-		coord := Unravel(v, i)
-		out.Data[Ravel(out, coord...)] = v.Data[i]
-	}
+	var offset int
+	for _, w := range v {
+		for j := range w.Data {
+			coord := Unravel(w, j)
+			coord[ax] += offset
 
-	for i := range w.Data {
-		coord := Unravel(w, i)
-		coord[ax] += v.Shape[ax]
-		out.Data[Ravel(out, coord...)] = w.Data[i]
+			out.Data[Ravel(out, coord...)] = w.Data[j]
+		}
+
+		offset += w.Shape[ax]
 	}
 
 	return out
