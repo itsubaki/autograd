@@ -31,18 +31,10 @@ func (f *TransposeT) Backward(gy ...*Variable) []*Variable {
 }
 
 func invperm(ndim int, axes ...int) []int {
-	if ndim != len(axes) {
-		panic("axes must specify all dimensions")
-	}
-
 	out := make([]int, ndim)
 	for i, a := range axes {
 		if a < 0 {
 			a = ndim + a
-		}
-
-		if a < 0 || a >= ndim {
-			panic("invalid axis index")
 		}
 
 		out[a] = i
