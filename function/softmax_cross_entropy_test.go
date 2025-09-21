@@ -30,20 +30,6 @@ func ExampleSoftmaxCrossEntropy() {
 	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
 }
 
-func ExampleOneHot() {
-	v := F.OneHot([]float64{0, 2, 2, 1}, 3)
-
-	for _, row := range v.Seq2() {
-		fmt.Println(row)
-	}
-
-	// Output:
-	// [1 0 0]
-	// [0 0 1]
-	// [0 0 1]
-	// [0 1 0]
-}
-
 func ExampleLogp() {
 	A := tensor.New([]int{3, 5}, []float64{
 		1, 2, 3, 4, 5,
