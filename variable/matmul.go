@@ -22,14 +22,14 @@ func (f *MatMulT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *MatMulT) Backward(gy ...*Variable) []*Variable {
-	ax := axes(f.w.Data.NumDims())
-
-	gx := MatMul(gy[0], Transpose(ax...)(f.w)) // gy * w.T
+	axw := axes(f.w.Data.NumDims())
+	gx := MatMul(gy[0], Transpose(axw...)(f.w)) // gy * w.T
 	if !equal(gx.Shape(), f.x.Shape()) {
 		gx = SumTo(f.x.Shape()...)(gx)
 	}
 
-	gw := MatMul(Transpose(ax...)(f.x), gy[0]) // x.T * gy
+	axx := axes(f.x.Data.NumDims())
+	gw := MatMul(Transpose(axx...)(f.x), gy[0]) // x.T * gy
 	if !equal(gw.Shape(), f.w.Shape()) {
 		gw = SumTo(f.w.Shape()...)(gw)
 	}
