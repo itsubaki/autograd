@@ -10,6 +10,7 @@ import (
 	"time"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/matrix"
 	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
@@ -66,7 +67,7 @@ func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
 	x, y := vector.Transpose(l.Data[begin:end]), vector.Transpose(l.Label[begin:end])
 	l.iter++
-	return variable.NewOf(x...), variable.NewOf(y...)
+	return variable.NewFrom(matrix.New(x...)), variable.NewFrom(matrix.New(y...))
 }
 
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {

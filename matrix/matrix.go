@@ -303,7 +303,7 @@ func BroadcastTo(shape []int, m *Matrix) *Matrix {
 			data[i] = m.At(0, 0)
 		}
 
-		return Reshape(shape, New(data))
+		return Reshape(New(data), shape...)
 	}
 
 	if m.Rows == 1 {
@@ -410,7 +410,7 @@ func Transpose(m *Matrix) *Matrix {
 }
 
 // Reshape returns the matrix with the given shape.
-func Reshape(shape []int, m *Matrix) *Matrix {
+func Reshape(m *Matrix, shape ...int) *Matrix {
 	rows, cols := Dim(m)
 	a, b := shape[0], shape[1]
 

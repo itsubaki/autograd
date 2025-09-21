@@ -9,7 +9,7 @@ import (
 // The return values cannot be backpropagated.
 func Accuracy(y, t *variable.Variable) *variable.Variable {
 	argmax := matrix.New(f64(matrix.Argmax(y.Data)))
-	pred := matrix.Reshape(matrix.Shape(t.Data), argmax)
+	pred := matrix.Reshape(argmax, t.Shape()...)
 	result := matrix.F2(pred, t.Data, variable.IsClose)
 	return variable.New(matrix.Mean(result))
 }

@@ -20,10 +20,6 @@ func New(v ...float64) *Variable {
 	return &Variable{Data: matrix.New(v)}
 }
 
-func NewOf(v ...[]float64) *Variable {
-	return &Variable{Data: matrix.New(v...)}
-}
-
 func NewFrom(v *matrix.Matrix) *Variable {
 	return &Variable{Data: v}
 }
@@ -54,6 +50,11 @@ func (v *Variable) At(coord ...int) float64 {
 
 func (v *Variable) Shape() []int {
 	return matrix.Shape(v.Data)
+}
+
+func (v *Variable) Reshape(shape ...int) *Variable {
+	v.Data = matrix.Reshape(v.Data, shape...)
+	return v
 }
 
 func (v *Variable) Cleargrad() {

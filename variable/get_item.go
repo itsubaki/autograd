@@ -1,5 +1,7 @@
 package variable
 
+import "github.com/itsubaki/autograd/matrix"
+
 func GetItem(slices []int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &GetItemT{
@@ -22,7 +24,7 @@ func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	}
 
 	return []*Variable{
-		NewOf(y...),
+		NewFrom(matrix.New(y...)),
 	}
 }
 

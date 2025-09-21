@@ -8,10 +8,10 @@ import (
 
 func ExampleGetItem() {
 	// p361
-	A := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 5, 6},
-	)
+	A := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
 
 	y := variable.GetItem([]int{1})(A)
 	y.Backward()
@@ -26,10 +26,10 @@ func ExampleGetItem() {
 
 func ExampleGetItem_indices() {
 	// p363
-	A := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{4, 5, 6},
-	)
+	A := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
 
 	y := variable.GetItem([]int{0, 0, 1})(A)
 	y.Backward()

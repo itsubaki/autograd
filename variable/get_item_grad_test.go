@@ -7,11 +7,11 @@ import (
 )
 
 func ExampleGetItemGrad() {
-	gy := variable.NewOf(
-		[]float64{1, 1, 1},
-		[]float64{1, 1, 1},
-		[]float64{1, 1, 1},
-	)
+	gy := variable.New(
+		1, 1, 1,
+		1, 1, 1,
+		1, 1, 1,
+	).Reshape(3, 3)
 
 	y := variable.GetItemGrad([]int{0, 0, 1}, []int{2, 3})(gy)
 	y.Backward()

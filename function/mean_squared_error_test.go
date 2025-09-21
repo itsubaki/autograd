@@ -8,14 +8,15 @@ import (
 )
 
 func ExampleMeanSquaredError() {
-	x0 := variable.NewOf(
-		[]float64{1, 2, 3},
-		[]float64{1, 2, 3},
-	)
-	x1 := variable.NewOf(
-		[]float64{3, 4, 5},
-		[]float64{3, 4, 5},
-	)
+	x0 := variable.New(
+		1, 2, 3,
+		1, 2, 3,
+	).Reshape(2, 3)
+
+	x1 := variable.New(
+		3, 4, 5,
+		3, 4, 5,
+	).Reshape(2, 3)
 
 	y := F.MeanSquaredError(x0, x1)
 	y.Backward()
