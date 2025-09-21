@@ -103,6 +103,38 @@ func TestMatMul(t *testing.T) {
 				21, 21, 21, 21,
 			).Reshape(2, 3, 4),
 		},
+		{
+			// broadcast
+			x: variable.New(
+				1, 2,
+				3, 4,
+			).Reshape(1, 2, 2),
+			w: variable.New(
+				1, 2, 3,
+				4, 5, 6,
+
+				7, 8, 9,
+				10, 11, 12,
+			).Reshape(2, 2, 3),
+			y: variable.New(
+				9, 12, 15,
+				19, 26, 33,
+
+				27, 30, 33,
+				61, 68, 75,
+			).Reshape(2, 2, 3),
+			gx: variable.New(
+				30, 48,
+				30, 48,
+			).Reshape(1, 2, 2),
+			gw: variable.New(
+				4, 4, 4,
+				6, 6, 6,
+
+				4, 4, 4,
+				6, 6, 6,
+			).Reshape(2, 2, 3),
+		},
 	}
 
 	for _, c := range cases {
