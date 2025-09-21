@@ -104,7 +104,7 @@ func TestTranspose(t *testing.T) {
 			).Reshape(2, 2, 3),
 		},
 		{
-			// traspose -1 -3 -2
+			// transpose -1 -3 -2
 			x: variable.New(
 				1, 2, 3,
 				4, 5, 6,
