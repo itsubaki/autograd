@@ -13,7 +13,7 @@ func ExampleSoftmax() {
 		4, 4, 8,
 	).Reshape(2, 3)
 
-	y := F.Softmax(x)
+	y := F.Softmax(1)(x)
 	y.Backward()
 
 	fmt.Println(y)

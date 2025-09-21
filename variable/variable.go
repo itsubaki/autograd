@@ -54,7 +54,9 @@ func (v *Variable) At(coord ...int) float64 {
 
 // Shape returns the shape of the variable.
 func (v *Variable) Shape() []int {
-	return v.Data.Shape
+	shape := make([]int, len(v.Data.Shape))
+	copy(shape, v.Data.Shape)
+	return shape
 }
 
 // Reshape changes the shape of the variable.
