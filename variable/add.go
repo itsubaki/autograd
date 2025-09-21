@@ -1,9 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/tensor"
-	"github.com/itsubaki/autograd/vector"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func AddC(c float64, x ...*Variable) *Variable {
 	return (&Function{
@@ -32,7 +29,7 @@ func (f *AddT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *AddT) Backward(gy ...*Variable) []*Variable {
-	if vector.Equal(f.x0Shape, f.x1Shape) {
+	if equal(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gy[0],
 			gy[0],
