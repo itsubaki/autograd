@@ -38,17 +38,17 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 
 	gx := Mul(y, MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
-		gx, // (y - t) * gy / N
+		gx,
 	}
 }
 
 func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
-	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max(x, axis=1)
-	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max)
-	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sumy = sum(expy)
-	logsumy := tensor.Log(sum1)                   // logsumy = log(sumy)
-	return tensor.Add(max1, logsumy)              // logsumexp = max + logsumy
+	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max1)
+	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sum1 = sum(expy)
+	logsumy := tensor.Log(sum1)                   // logsum1 = log(sum1)
+	return tensor.Add(max1, logsumy)              // logsumexp = max1 + logsum1
 }
 
 func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
