@@ -12,12 +12,12 @@ func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 }
 
 type SoftmaxCrossEntropyT struct {
-	x, t  *variable.Variable
+	x     *variable.Variable
 	label []int
 }
 
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x, f.t, f.label = x[0], x[1], toInt(x[1].Data.Data)
+	f.x, f.label = x[0], toInt(x[1].Data.Data)
 
 	logz := logsumexp(x[0].Data)
 	logp := logp(tensor.Sub(x[0].Data, logz), f.label)
