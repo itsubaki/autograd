@@ -87,19 +87,19 @@ func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 	return New([]int{len(data)}, data)
 }
 
-// Linspace returns a new tensor with num evenly spaced samples, calculated over the interval [start, stop].
-func Linspace(start, stop float64, num int) *Tensor[float64] {
-	if num < 2 {
-		panic("num is less than 2")
+// Linspace returns a new tensor with n evenly spaced samples, calculated over the interval [start, stop].
+func Linspace(start, stop float64, n int) *Tensor[float64] {
+	if n < 2 {
+		panic("n is less than 2")
 	}
 
-	step := (stop - start) / float64(num-1)
-	data := make([]float64, num)
-	for i := range num {
+	step := (stop - start) / float64(n-1)
+	data := make([]float64, n)
+	for i := range n {
 		data[i] = start + float64(i)*step
 	}
 
-	return New([]int{num}, data)
+	return New([]int{n}, data)
 }
 
 // Identity returns a new tensor with ones on the diagonal and zeros elsewhere.
