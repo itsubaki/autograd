@@ -20,13 +20,7 @@ func ExampleSoftmaxCrossEntropy() {
 	y.Backward()
 	fmt.Println(y)
 
-	shape := x.Grad.Shape()
-	for i := range shape[0] {
-		row := make([]float64, shape[1])
-		for j := range shape[1] {
-			row[j] = x.Grad.At(i, j)
-		}
-
+	for _, row := range x.Grad.Data.Seq2() {
 		fmt.Printf("%.8f\n", row)
 	}
 
@@ -39,13 +33,7 @@ func ExampleSoftmaxCrossEntropy() {
 func ExampleOneHot() {
 	v := F.OneHot([]float64{0, 2, 2, 1}, 3)
 
-	shape := v.Shape
-	for i := range shape[0] {
-		row := make([]float64, shape[1])
-		for j := range shape[1] {
-			row[j] = v.At(i, j)
-		}
-
+	for _, row := range v.Seq2() {
 		fmt.Println(row)
 	}
 
