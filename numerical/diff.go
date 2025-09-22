@@ -21,7 +21,7 @@ var (
 	_ Func = F.Pow(2.0)
 	_ Func = F.Square
 	_ Func = F.Neg
-	_ Func = F.Sum
+	_ Func = F.Sum()
 	_ Func = F.SumTo(1, 1)
 	_ Func = F.BroadcastTo(1, 3)
 	_ Func = F.Reshape(2, 2)
