@@ -93,7 +93,7 @@ func ExampleLinear_batchx() {
 	x := variable.New(
 		1, 2, 3,
 		4, 5, 6,
-	).Reshape(1, 2, 3)
+	).Reshape(2, 3)
 
 	w := variable.New(
 		1, 2, 3, 4,
@@ -114,7 +114,7 @@ func ExampleLinear_batchx() {
 
 	// Output:
 	// variable[2 2 4]([38 44 50 56 83 98 113 128 110 116 122 128 263 278 293 308])
-	// variable[1 2 3]([68 100 132 68 100 132])
+	// variable[2 3]([68 100 132 68 100 132])
 	// variable[2 3 4]([5 5 5 5 7 7 7 7 9 9 9 9 5 5 5 5 7 7 7 7 9 9 9 9])
 }
 
