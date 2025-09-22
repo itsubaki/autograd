@@ -83,3 +83,31 @@ func ExampleLinear_backward() {
 	// b variable[1 5]([2 2 2 2 2])
 	// w variable[3 5]([2 2 2 2 2 4 4 4 4 4 6 6 6 6 6])
 }
+
+func ExampleLinear_batch() {
+	l := L.Linear(5, L.WithSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := l.Forward(x)
+	y[0].Backward()
+
+	fmt.Println(y[0].Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range l.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 5]
+	// [2 2 2]
+	// b [1 5]
+	// w [2 5]
+}
