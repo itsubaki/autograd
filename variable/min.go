@@ -9,7 +9,7 @@ func Min(x ...*Variable) *Variable {
 }
 
 type MinT struct {
-	MaxT
+	x, y *Variable
 }
 
 func (f *MinT) Forward(x ...*Variable) []*Variable {
@@ -18,5 +18,12 @@ func (f *MinT) Forward(x ...*Variable) []*Variable {
 	f.y = From(tensor.Min(x[0].Data))
 	return []*Variable{
 		f.y,
+	}
+}
+
+func (f *MinT) Backward(gy ...*Variable) []*Variable {
+	mask := tensor.F2(f.x.Data, f.y.Data, IsClose)
+	return []*Variable{
+		Mul(gy[0], From(mask)),
 	}
 }

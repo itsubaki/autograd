@@ -110,3 +110,44 @@ func ExampleLSTM_Params() {
 	// 1.b [1 1]
 	// 1.w [100 1]
 }
+
+func ExampleLSTM_batch() {
+	m := model.NewLSTM(5, 1, model.WithLSTMSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := m.Forward(x)
+	y.Backward()
+	m.Cleargrads()
+
+	fmt.Println(y.Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 1]
+	// [2 2 2]
+	// 0.h2f.w [5 5]
+	// 0.h2i.w [5 5]
+	// 0.h2o.w [5 5]
+	// 0.h2u.w [5 5]
+	// 0.x2f.b [1 5]
+	// 0.x2f.w [2 5]
+	// 0.x2i.b [1 5]
+	// 0.x2i.w [2 5]
+	// 0.x2o.b [1 5]
+	// 0.x2o.w [2 5]
+	// 0.x2u.b [1 5]
+	// 0.x2u.w [2 5]
+	// 1.b [1 1]
+	// 1.w [5 1]
+}
