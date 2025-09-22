@@ -24,7 +24,7 @@ func ExampleVariable_Name() {
 	// v[1 4]([1 2 3 4])
 }
 
-func ExampleVariable_Name_matrix() {
+func ExampleVariable_String() {
 	v := variable.New(
 		1, 2, 3,
 		4, 5, 6,
@@ -83,6 +83,18 @@ func ExampleRandn() {
 	// Output:
 	// [0.5665360716030388 -0.6123972949371448 0.5898947122637695]
 	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
+}
+
+func ExampleVariable_Size() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(x.Size())
+
+	// Output:
+	// 6
 }
 
 func ExampleVariable_Unchain() {

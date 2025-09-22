@@ -9,14 +9,14 @@ import (
 
 func ExampleMeanSquaredErrorSimple() {
 	x0 := variable.New(
-		1, 2, 3,
-		1, 2, 3,
-	).Reshape(2, 3)
+		1, 1, 1, 1,
+		1, 1, 1, 1,
+	).Reshape(2, 4)
 
 	x1 := variable.New(
-		3, 4, 5,
-		3, 4, 5,
-	).Reshape(2, 3)
+		3, 3, 3, 3,
+		3, 3, 3, 3,
+	).Reshape(2, 4)
 
 	y := F.MeanSquaredErrorSimple(x0, x1)
 	y.Backward()
@@ -26,7 +26,7 @@ func ExampleMeanSquaredErrorSimple() {
 	fmt.Println(x1.Grad)
 
 	// Output:
-	// variable(12)
-	// variable[2 3]([-2 -2 -2 -2 -2 -2])
-	// variable[2 3]([2 2 2 2 2 2])
+	// variable(4)
+	// variable[2 4]([-0.5 -0.5 -0.5 -0.5 -0.5 -0.5 -0.5 -0.5])
+	// variable[2 4]([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5])
 }

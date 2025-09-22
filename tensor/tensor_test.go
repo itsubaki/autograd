@@ -186,6 +186,25 @@ func ExampleClone() {
 	// [10 2 3 4]
 }
 
+func ExampleInt() {
+	v := tensor.New([]int{2, 2}, []float64{
+		1.5, 2.5,
+		3.5, 4.5,
+	})
+
+	w := tensor.Int(v)
+
+	fmt.Printf("%T\n", w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// []int
+	// [1 2]
+	// [3 4]
+}
+
 func ExampleFloat64() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
@@ -551,7 +570,7 @@ func ExampleMin() {
 }
 
 func ExampleMean() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
