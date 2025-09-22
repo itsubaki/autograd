@@ -20,7 +20,7 @@ func ExampleSum() {
 	// variable[1 6]([1 1 1 1 1 1])
 }
 
-func ExampleSum_matrix() {
+func ExampleSum_axis01() {
 	// p293
 	x := variable.New(
 		1, 2, 3,
