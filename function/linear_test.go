@@ -117,14 +117,3 @@ func ExampleLinear_batchx() {
 	// variable[2 3]([68 100 132 68 100 132])
 	// variable[2 3 4]([5 5 5 5 7 7 7 7 9 9 9 9 5 5 5 5 7 7 7 7 9 9 9 9])
 }
-
-func Example_equal() {
-	fmt.Println(F.Equal([]int{1, 2, 3}, []int{1, 2, 3}))
-	fmt.Println(F.Equal([]int{1, 2, 3}, []int{3, 2, 1}))
-	fmt.Println(F.Equal([]int{1, 2, 3}, []int{1, 2}))
-
-	// Output:
-	// true
-	// false
-	// false
-}
