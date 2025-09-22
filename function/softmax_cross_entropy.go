@@ -17,7 +17,7 @@ type SoftmaxCrossEntropyT struct {
 }
 
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x, f.label = x[0], toInt(x[1].Data.Data)
+	f.x, f.label = x[0], tensor.Int(x[1].Data).Data
 
 	logz := logsumexp(x[0].Data)
 	logp := logp(tensor.Sub(x[0].Data, logz), f.label)
@@ -55,15 +55,6 @@ func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
 	out := tensor.Zeros[float64](len(label), 1)
 	for i, v := range label {
 		out.Set([]int{i, 0}, x.At(i, v))
-	}
-
-	return out
-}
-
-func toInt(x []float64) []int {
-	out := make([]int, len(x))
-	for i, v := range x {
-		out[i] = int(v)
 	}
 
 	return out
