@@ -47,8 +47,8 @@ func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
 	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max1)
 	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sum1 = sum(expy)
-	logsumy := tensor.Log(sum1)                   // logsum1 = log(sum1)
-	return tensor.Add(max1, logsumy)              // logsumexp = max1 + logsum1
+	logsum1 := tensor.Log(sum1)                   // logsum1 = log(sum1)
+	return tensor.Add(max1, logsum1)              // logsumexp = max1 + logsum1
 }
 
 func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
