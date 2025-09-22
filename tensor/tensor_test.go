@@ -1147,6 +1147,51 @@ func TestSum(t *testing.T) {
 				7,
 			}),
 		},
+		{
+			// axis 1, 2
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{1, 2},
+			want: tensor.New([]int{2}, []int{
+				10,
+				26,
+			}),
+		},
+		{
+			// axis 0,1
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New([]int{2}, []int{
+				16,
+				20,
+			}),
+		},
+		{
+			// axis 0,2
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 2},
+			want: tensor.New([]int{2}, []int{
+				14,
+				22,
+			}),
+		},
 	}
 
 	for _, c := range cases {
