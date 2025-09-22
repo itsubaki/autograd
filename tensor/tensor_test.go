@@ -1955,36 +1955,6 @@ func TestIsCloseAll(t *testing.T) {
 	}
 }
 
-func TestEqualShape(t *testing.T) {
-	cases := []struct {
-		x, y []int
-		want bool
-	}{
-		{
-			x:    []int{2, 3},
-			y:    []int{2, 3},
-			want: true,
-		},
-		{
-			x:    []int{2, 3},
-			y:    []int{3, 2},
-			want: false,
-		},
-		{
-			x:    []int{2, 3},
-			y:    []int{2, 3, 1},
-			want: false,
-		},
-	}
-
-	for _, c := range cases {
-		got := tensor.EqualShape(c.x, c.y)
-		if got != c.want {
-			t.Errorf("got=%v, want=%v", got, c.want)
-		}
-	}
-}
-
 func TestArgmax(t *testing.T) {
 	cases := []struct {
 		in   *tensor.Tensor[int]
@@ -3325,6 +3295,36 @@ func TestBroadcastShape(t *testing.T) {
 
 		if !reflect.DeepEqual(got1, c.want1) {
 			t.Errorf("s1=%v, got1=%v, want1=%v", c.s1, got1, c.want1)
+		}
+	}
+}
+
+func TestShapeEqual(t *testing.T) {
+	cases := []struct {
+		a, b []int
+		want bool
+	}{
+		{
+			a:    []int{2, 3},
+			b:    []int{2, 3},
+			want: true,
+		},
+		{
+			a:    []int{2, 3},
+			b:    []int{1, 3},
+			want: false,
+		},
+		{
+			a:    []int{2, 3},
+			b:    []int{2},
+			want: false,
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.ShapeEqual(c.a, c.b)
+		if got != c.want {
+			t.Errorf("a=%v, b=%v, got=%v, want=%v", c.a, c.b, got, c.want)
 		}
 	}
 }
