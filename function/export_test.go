@@ -1,7 +1,6 @@
 package function
 
 var (
-	Logp  = logp
-	Relu  = relu
-	Equal = equal
+	Logp = logp
+	Relu = relu
 )

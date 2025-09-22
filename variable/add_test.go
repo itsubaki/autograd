@@ -64,14 +64,3 @@ func ExampleAdd_broadcast() {
 	// variable[1 3]([11 12 13])
 	// variable[1 3]([1 1 1]) variable(3)
 }
-
-func Example_equal() {
-	fmt.Println(variable.Equal([]int{1, 2, 3}, []int{1, 2, 3}))
-	fmt.Println(variable.Equal([]int{1, 2, 3}, []int{3, 2, 1}))
-	fmt.Println(variable.Equal([]int{1, 2, 3}, []int{1, 2}))
-
-	// Output:
-	// true
-	// false
-	// false
-}

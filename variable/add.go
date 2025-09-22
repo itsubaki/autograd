@@ -29,7 +29,7 @@ func (f *AddT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *AddT) Backward(gy ...*Variable) []*Variable {
-	if equal(f.x0Shape, f.x1Shape) {
+	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gy[0],
 			gy[0],
@@ -40,18 +40,4 @@ func (f *AddT) Backward(gy ...*Variable) []*Variable {
 		SumTo(f.x0Shape...)(gy[0]),
 		SumTo(f.x1Shape...)(gy[0]),
 	}
-}
-
-func equal(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
 }

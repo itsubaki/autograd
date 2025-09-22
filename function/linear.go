@@ -34,13 +34,15 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gx := MatMul(gy[0], Transpose(axes(f.w.Data.NumDims())...)(f.w)) // gy * w.T
-	if !equal(gx.Shape(), f.x.Shape()) {
+	axw := axes(f.w.Data.NumDims())
+	gx := MatMul(gy[0], Transpose(axw...)(f.w)) // gy * w.T
+	if !tensor.ShapeEqual(gx.Shape(), f.x.Shape()) {
 		gx = SumTo(f.x.Shape()...)(gx)
 	}
 
-	gw := MatMul(Transpose(axes(f.x.Data.NumDims())...)(f.x), gy[0]) // x.T * gy
-	if !equal(gw.Shape(), f.w.Shape()) {
+	axx := axes(f.x.Data.NumDims())
+	gw := MatMul(Transpose(axx...)(f.x), gy[0]) // x.T * gy
+	if !tensor.ShapeEqual(gw.Shape(), f.w.Shape()) {
 		gw = SumTo(f.w.Shape()...)(gw)
 	}
 
@@ -71,18 +73,4 @@ func axes(ndim int) []int {
 	axes[ndim-2] = ndim - 1
 	axes[ndim-1] = ndim - 2
 	return axes
-}
-
-func equal(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
 }
