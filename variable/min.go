@@ -33,8 +33,8 @@ func (f *MinT) Backward(gy ...*Variable) []*Variable {
 	}
 
 	shape := shapeMax(f.x.Shape(), f.Axes)
-	y := Reshape(shape...)(f.y)
-	mask := tensor.F2(f.x.Data, y.Data, IsClose)
+	y := tensor.Reshape(f.y.Data, shape...)
+	mask := tensor.F2(f.x.Data, y, IsClose)
 
 	gy0 := Reshape(shape...)(gy[0])
 	bgy := BroadcastTo(mask.Shape...)(gy0)
