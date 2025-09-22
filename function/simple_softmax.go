@@ -2,6 +2,11 @@ package function
 
 import "github.com/itsubaki/autograd/variable"
 
-func SoftmaxSimple(x *variable.Variable) *variable.Variable {
-	return Div(Exp(x), SumTo(x.Shape()[0], 1)(Exp(x)))
+func SoftmaxSimple(x *variable.Variable, axis int) *variable.Variable {
+	shape := x.Shape()
+	shape[axis] = 1
+
+	y := Exp(x)
+	sumy := SumTo(shape...)(y)
+	return Div(y, sumy)
 }

@@ -52,6 +52,11 @@ func (v *Variable) At(coord ...int) float64 {
 	return v.Data.At(coord...)
 }
 
+// Size returns the number of elements in the variable.
+func (v *Variable) Size() int {
+	return v.Data.Size()
+}
+
 // Shape returns the shape of the variable.
 func (v *Variable) Shape() []int {
 	shape := make([]int, len(v.Data.Shape))
