@@ -7,16 +7,16 @@ import (
 )
 
 func ExampleMin() {
-	A := variable.New(
+	x := variable.New(
 		1, 2, 3,
 		4, -5, 6,
 	).Reshape(2, 3)
 
-	y := variable.Min(A)
+	y := variable.Min(x)
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(A.Grad)
+	fmt.Println(x.Grad)
 
 	// Output:
 	// variable(-5)

@@ -8,16 +8,16 @@ import (
 
 func ExampleGetItem() {
 	// p361
-	A := variable.New(
+	x := variable.New(
 		1, 2, 3,
 		4, 5, 6,
 	).Reshape(2, 3)
 
-	y := variable.GetItem([]int{1}, 0)(A)
+	y := variable.GetItem([]int{1}, 0)(x)
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(A.Grad)
+	fmt.Println(x.Grad)
 
 	// Output:
 	// variable[1 3]([4 5 6])
@@ -26,16 +26,16 @@ func ExampleGetItem() {
 
 func ExampleGetItem_indices() {
 	// p363
-	A := variable.New(
+	x := variable.New(
 		1, 2, 3,
 		4, 5, 6,
 	).Reshape(2, 3)
 
-	y := variable.GetItem([]int{0, 0, 1}, 0)(A)
+	y := variable.GetItem([]int{0, 0, 1}, 0)(x)
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(A.Grad)
+	fmt.Println(x.Grad)
 
 	// Output:
 	// variable[3 3]([1 2 3 1 2 3 4 5 6])

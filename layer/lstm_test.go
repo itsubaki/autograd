@@ -117,3 +117,41 @@ func ExampleLSTMT_ResetState() {
 	// x2u.b
 	// x2u.w
 }
+
+func ExampleLSTM_batch() {
+	l := L.LSTM(2, L.WithLSTMSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := l.Forward(x)
+	y[0].Backward()
+
+	fmt.Println(y[0].Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range l.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 2]
+	// [2 2 2]
+	// h2f.w [2 2]
+	// h2i.w [2 2]
+	// h2o.w [2 2]
+	// h2u.w [2 2]
+	// x2f.b [1 2]
+	// x2f.w [2 2]
+	// x2i.b [1 2]
+	// x2i.w [2 2]
+	// x2o.b [1 2]
+	// x2o.w [2 2]
+	// x2u.b [1 2]
+	// x2u.w [2 2]
+}

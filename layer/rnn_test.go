@@ -90,3 +90,32 @@ func ExampleRNNT_ResetState() {
 	// x2h.b b
 	// x2h.w w
 }
+
+func ExampleRNN_batch() {
+	l := L.RNN(2, L.WithRNNSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := l.Forward(x)
+	y[0].Backward()
+
+	fmt.Println(y[0].Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range l.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 2]
+	// [2 2 2]
+	// h2h.w [2 2]
+	// x2h.b [1 2]
+	// x2h.w [2 2]
+}

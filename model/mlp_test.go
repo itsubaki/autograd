@@ -81,3 +81,37 @@ func ExampleMLP_Params() {
 	// 1.b [1 1]
 	// 1.w [5 1]
 }
+
+func ExampleMLP_batch() {
+	m := model.NewMLP([]int{5, 1},
+		model.WithMLPSource(rand.Const()),
+		model.WithMLPActivation(F.ReLU),
+	)
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := m.Forward(x)
+	y.Backward()
+	m.Cleargrads()
+
+	fmt.Println(y.Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 1]
+	// [2 2 2]
+	// 0.b [1 5]
+	// 0.w [2 5]
+	// 1.b [1 1]
+	// 1.w [5 1]
+}

@@ -31,13 +31,13 @@ func ExampleSoftmaxCrossEntropy() {
 }
 
 func ExampleLogp() {
-	A := tensor.New([]int{3, 5}, []float64{
+	x := tensor.New([]int{3, 5}, []float64{
 		1, 2, 3, 4, 5,
 		6, 7, 8, 9, 10,
 		11, 12, 13, 14, 15,
 	})
 
-	for _, v := range F.Logp(A, []int{0, 1, 3}).Seq2() {
+	for _, v := range F.Logp(x, []int{0, 1, 3}).Seq2() {
 		fmt.Println(v)
 	}
 
