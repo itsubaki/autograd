@@ -27,7 +27,7 @@ func ExampleSoftmaxSimple() {
 func Example_softmax1d() {
 	softmax1d := func(x *variable.Variable) *variable.Variable {
 		y := F.Exp(x)
-		sumy := F.Sum(y)
+		sumy := F.Sum()(y)
 		return F.Div(y, sumy)
 	}
 
