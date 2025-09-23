@@ -46,11 +46,7 @@ func Graph(v *variable.Variable, opts ...Opts) []string {
 	fs := addFunc(make([]*variable.Function, 0), v.Creator, seen)
 
 	out := append([]string{"digraph g {"}, Var(v, opts...))
-	for {
-		if len(fs) == 0 {
-			break
-		}
-
+	for len(fs) > 0 {
 		// pop
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]

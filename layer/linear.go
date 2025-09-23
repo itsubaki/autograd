@@ -19,13 +19,13 @@ func WithSource(s randv2.Source) OptionFunc {
 
 func WithInSize(inSize int) OptionFunc {
 	return func(l *LinearT) {
-		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
+		l.Add("w", initw(inSize, l.outSize, l.s))
 	}
 }
 
 func WithNoBias() OptionFunc {
 	return func(l *LinearT) {
-		l.Parameters.Delete("b")
+		l.Delete("b")
 	}
 }
 
@@ -58,7 +58,7 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
 		inSize := last(x[0].Shape())
-		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
+		l.Add("w", initw(inSize, l.outSize, l.s))
 	}
 
 	return []*variable.Variable{

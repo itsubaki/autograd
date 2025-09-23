@@ -92,11 +92,7 @@ func (v *Variable) UnchainBackward() {
 	}
 
 	fs := append(make([]*Function, 0), v.Creator)
-	for {
-		if len(fs) == 0 {
-			break
-		}
-
+	for len(fs) > 0 {
 		// pop
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
@@ -124,11 +120,7 @@ func (v *Variable) Backward(opts ...Opts) {
 
 	seen := make(map[*Function]bool)
 	fs := addFunc(make([]*Function, 0), v.Creator, seen)
-	for {
-		if len(fs) == 0 {
-			break
-		}
-
+	for len(fs) > 0 {
 		// pop
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
