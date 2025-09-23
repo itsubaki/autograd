@@ -11,7 +11,7 @@ import (
 func ExampleRNN() {
 	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.Forward(x)
 	fmt.Println(y[0])
 
@@ -29,7 +29,7 @@ func ExampleRNN() {
 func ExampleRNN_backward() {
 	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -58,7 +58,7 @@ func ExampleRNN_backward() {
 func ExampleRNN_cleargrads() {
 	l := L.RNN(3)
 
-	x := variable.New(1)
+	x := variable.New(1).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -76,7 +76,7 @@ func ExampleRNN_cleargrads() {
 func ExampleRNNT_ResetState() {
 	l := L.RNN(3)
 
-	x := variable.New(1)
+	x := variable.New(1).Reshape(1, 1)
 	l.Forward(x)   // set hidden state
 	l.ResetState() // reset hidden state
 	l.Forward(x)   // h2h is not used

@@ -23,9 +23,13 @@ func ExampleLSTM() {
 func ExampleLSTM_backward() {
 	m := model.NewLSTM(1, 1, model.WithLSTMSource(rand.Const()))
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	y := m.Forward(x)
 	y.Backward()
+
 	y = m.Forward(x)
 	y.Backward()
 
@@ -58,7 +62,10 @@ func ExampleLSTM_backward() {
 func ExampleLSTM_ResetState() {
 	m := model.NewLSTM(1, 1)
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	m.Forward(x)
 	m.ResetState()
 	m.Forward(x)
@@ -87,9 +94,11 @@ func ExampleLSTM_ResetState() {
 func ExampleLSTM_Params() {
 	m := model.NewLSTM(100, 1)
 
-	x := variable.New(1, 2, 3)
-	m.Forward(x)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
 
+	m.Forward(x)
 	for k, v := range m.Params().Seq2() {
 		fmt.Println(k, v.Shape())
 	}

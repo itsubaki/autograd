@@ -17,7 +17,7 @@ func ExampleSum() {
 
 	// Output:
 	// variable(21)
-	// variable[1 6]([1 1 1 1 1 1])
+	// variable[6]([1 1 1 1 1 1])
 }
 
 func ExampleSum_axis01() {

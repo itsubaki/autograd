@@ -78,11 +78,6 @@ func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
 
 // flatten reshapes the input shape to (N, C) where C is the dimension of the given axis.
 func flatten(shape []int, axis int) []int {
-	ndim := len(shape)
-	if axis < 0 {
-		axis += ndim
-	}
-
 	N := 1
 	for i, s := range shape {
 		if i == axis {

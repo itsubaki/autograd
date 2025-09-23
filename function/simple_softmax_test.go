@@ -24,7 +24,6 @@ func ExampleSoftmaxSimple() {
 	// variable[2 3]([0 0 0 0 0 0])
 }
 
-
 func ExampleSoftmaxSimple_axis1n() {
 	x := variable.New(
 		1, 2, 3,
@@ -57,6 +56,6 @@ func Example_softmax1d() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[1 3]([0.09003057317038046 0.24472847105479767 0.6652409557748219])
-	// variable[1 3]([0 0 0])
+	// variable[3]([0.09003057317038046 0.24472847105479767 0.6652409557748219])
+	// variable[3]([0 0 0])
 }

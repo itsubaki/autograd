@@ -11,7 +11,10 @@ import (
 func ExampleLinear() {
 	l := L.Linear(5, L.WithSource(rand.Const()))
 
-	x := variable.New(1, 2, 3)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
+
 	y := l.Forward(x)
 	fmt.Println(y[0])
 
@@ -31,7 +34,10 @@ func ExampleLinear_inSize() {
 		L.WithInSize(3),
 	)
 
-	x := variable.New(1, 2, 3)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
+
 	y := l.Forward(x)
 	fmt.Println(y[0])
 
@@ -48,9 +54,11 @@ func ExampleLinear_inSize() {
 func ExampleLinear_nobias() {
 	l := L.Linear(5, L.WithNoBias())
 
-	x := variable.New(1, 2, 3)
-	l.Forward(x)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
 
+	l.Forward(x)
 	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name)
 	}
@@ -62,17 +70,20 @@ func ExampleLinear_nobias() {
 func ExampleLinear_backward() {
 	l := L.Linear(5)
 
-	x := variable.New(1, 2, 3)
-	y := l.Forward(x)
-	y[0].Backward()
+	y := l.Forward(variable.New(
+		1, 2, 3,
+	).Reshape(1, 3))
 
+	y[0].Backward()
 	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name, v.Grad)
 	}
 
-	y = l.Forward(variable.New(1, 2, 3))
-	y[0].Backward()
+	y = l.Forward(variable.New(
+		1, 2, 3,
+	).Reshape(1, 3))
 
+	y[0].Backward()
 	for k, v := range l.Params().Seq2() {
 		fmt.Println(k, v.Grad)
 	}

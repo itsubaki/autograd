@@ -17,9 +17,7 @@ type Variable struct {
 }
 
 func New(v ...float64) *Variable {
-	return &Variable{
-		Data: tensor.New([]int{1, len(v)}, v),
-	}
+	return &Variable{Data: tensor.New([]int{len(v)}, v)}
 }
 
 func From(v *tensor.Tensor[float64]) *Variable {

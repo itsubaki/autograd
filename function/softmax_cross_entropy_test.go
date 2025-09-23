@@ -14,7 +14,9 @@ func ExampleSoftmaxCrossEntropy() {
 		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
 	).Reshape(2, 10)
 
-	t := variable.New(2, 2)
+	t := variable.New(
+		2, 2,
+	).Reshape(1, 2)
 
 	y := F.SoftmaxCrossEntropy(x, t)
 	y.Backward()
@@ -36,7 +38,9 @@ func ExampleSoftmaxCrossEntropy_double() {
 		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
 	).Reshape(2, 10)
 
-	t := variable.New(2, 2)
+	t := variable.New(
+		2, 2,
+	).Reshape(1, 2)
 
 	y := F.SoftmaxCrossEntropy(x, t)
 	y.Backward(variable.Opts{CreateGraph: true})
