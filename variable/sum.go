@@ -1,8 +1,6 @@
 package variable
 
-import (
-	"github.com/itsubaki/autograd/tensor"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func Sum(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
