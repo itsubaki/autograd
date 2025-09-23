@@ -37,10 +37,14 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 		}
 	}
 
-	shape := shapeMax(f.x.Shape(), f.Axes)
+	// shape=[2, 3, 4], axes=[1] -> [2, 1, 4]
+	shape := keepDims(f.x.Shape(), f.Axes)
+
+	// mask
 	y := tensor.Reshape(f.y.Data, shape...)
 	mask := tensor.F2(f.x.Data, y, IsClose)
 
+	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
 	bgy := BroadcastTo(mask.Shape...)(gy0)
 	return []*Variable{
@@ -57,7 +61,7 @@ func IsClose(a, b float64) float64 {
 	return 0
 }
 
-func shapeMax(shape []int, axis []int) []int {
+func keepDims(shape []int, axis []int) []int {
 	out := make([]int, len(shape))
 	for i, s := range shape {
 		if slices.Contains(axis, i) {

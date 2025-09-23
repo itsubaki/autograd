@@ -1,8 +1,6 @@
 package variable
 
 import (
-	"sort"
-
 	"github.com/itsubaki/autograd/tensor"
 )
 
@@ -35,18 +33,13 @@ func (f *SumT) Backward(gy ...*Variable) []*Variable {
 		}
 	}
 
-	shape := shapeSum(gy[0].Shape(), f.Axes)
+	// shape=[2, 3, 4], axes=[1] -> [2, 1, 4]
+	shape := keepDims(f.xShape, f.Axes)
+
+	// broadcast
+	gy0 := Reshape(shape...)(gy[0])
+	bgy := BroadcastTo(f.xShape...)(gy0)
 	return []*Variable{
-		BroadcastTo(f.xShape...)(Reshape(shape...)(gy[0])),
+		bgy,
 	}
-}
-
-func shapeSum(shape []int, axes []int) []int {
-	sort.Ints(axes)
-	for _, a := range axes {
-		tail := append([]int{1}, shape[a:]...) // insert 1 at axis a
-		shape = append(shape[:a], tail...)
-	}
-
-	return shape
 }

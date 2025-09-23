@@ -3,15 +3,16 @@ package function
 import "github.com/itsubaki/autograd/variable"
 
 func LinearSimple(x, w *variable.Variable, b ...*variable.Variable) *variable.Variable {
-	xw := MatMul(x, w)
-	if len(b) == 0 {
-		return xw
+	t := MatMul(x, w)
+	if len(b) != 0 {
+		y := Add(t, b[0])
+
+		// `t` is not used in backprop for `MatMul` and `Add`.
+		// Clear to save memory.
+		t.Data = nil
+		return y
 	}
 
-	y := Add(xw, b[0])
+	return t
 
-	// `xw` is not used in backprop for `MatMul` and `Add`.
-	// Clear to save memory.
-	xw.Data = nil
-	return y
 }

@@ -34,8 +34,8 @@ func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Va
 	for i, l := range f.label {
 		y.Data.Set([]int{i, l}, y.Data.At(i, l)-1)
 	}
-
 	N := f.x.Shape()[0]
+
 	gx := Mul(y, MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
 		gx,

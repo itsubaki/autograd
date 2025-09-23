@@ -22,14 +22,13 @@ func (f *MatMulT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *MatMulT) Backward(gy ...*Variable) []*Variable {
-	axw := axes(f.w.Data.NumDims())
-	gx := MatMul(gy[0], Transpose(axw...)(f.w)) // gy * w.T
+	gx := MatMul(gy[0], TransposeMatMul(f.w.NumDims())(f.w)) // gy * w.T
+	gw := MatMul(TransposeMatMul(f.x.NumDims())(f.x), gy[0]) // x.T * gy
+
 	if !tensor.ShapeEqual(gx.Shape(), f.x.Shape()) {
 		gx = SumTo(f.x.Shape()...)(gx)
 	}
 
-	axx := axes(f.x.Data.NumDims())
-	gw := MatMul(Transpose(axx...)(f.x), gy[0]) // x.T * gy
 	if !tensor.ShapeEqual(gw.Shape(), f.w.Shape()) {
 		gw = SumTo(f.w.Shape()...)(gw)
 	}
@@ -38,16 +37,4 @@ func (f *MatMulT) Backward(gy ...*Variable) []*Variable {
 		gx,
 		gw,
 	}
-}
-
-func axes(ndim int) []int {
-	axes := make([]int, ndim)
-	for i := range ndim - 2 {
-		axes[i] = i
-	}
-
-	// swap last two axes
-	axes[ndim-2] = ndim - 1
-	axes[ndim-1] = ndim - 2
-	return axes
 }
