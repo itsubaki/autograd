@@ -45,19 +45,19 @@ func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 		gw = SumTo(f.w.Shape()...)(gw)
 	}
 
-	if f.b != nil {
-		// add bias
-		gb := SumTo(f.b.Shape()...)(gy[0])
+	if f.b == nil {
+		// no bias
 		return []*variable.Variable{
 			gx,
 			gw,
-			gb,
 		}
 	}
 
-	// no bias
+	// add bias
+	gb := SumTo(f.b.Shape()...)(gy[0])
 	return []*variable.Variable{
 		gx,
 		gw,
+		gb,
 	}
 }
