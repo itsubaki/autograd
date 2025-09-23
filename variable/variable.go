@@ -52,6 +52,11 @@ func (v *Variable) At(coord ...int) float64 {
 	return v.Data.At(coord...)
 }
 
+// NumDims returns the number of dimensions of the variable.
+func (v *Variable) NumDims() int {
+	return v.Data.NumDims()
+}
+
 // Size returns the number of elements in the variable.
 func (v *Variable) Size() int {
 	return v.Data.Size()

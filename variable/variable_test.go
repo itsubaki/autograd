@@ -85,6 +85,18 @@ func ExampleRandn() {
 	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
 }
 
+func ExampleVariable_NumDims() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(x.NumDims())
+
+	// Output:
+	// 2
+}
+
 func ExampleVariable_Size() {
 	x := variable.New(
 		1, 2, 3,
