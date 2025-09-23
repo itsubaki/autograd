@@ -31,8 +31,7 @@ func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	shape := f.y.Shape()
-	shape[f.Axis] = 1
+	shape := keepDims(f.y.Shape(), f.Axis)
 
 	gyy := Mul(gy[0], f.y)        // gyy = gy * y
 	sum := SumTo(shape...)(gyy)   // sum = sum(gy, axis=1)
@@ -40,4 +39,14 @@ func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	return []*variable.Variable{
 		gx,
 	}
+}
+
+func keepDims(shape []int, axis int) []int {
+	ndim := len(shape)
+	if axis < 0 {
+		axis += ndim
+	}
+
+	shape[axis] = 1
+	return shape
 }

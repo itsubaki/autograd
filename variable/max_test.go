@@ -73,3 +73,20 @@ func ExampleMax_axis1() {
 	// variable[2]([3 10])
 	// variable[2 3]([0 0 1 0 1 0])
 }
+
+func ExampleMax_axis21() {
+	x := variable.New(
+		1, 2, 3,
+		4, 10, 6,
+	).Reshape(2, 3)
+
+	y := variable.Max(-2, -1)(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable(10)
+	// variable[2 3]([0 0 0 0 1 0])
+}

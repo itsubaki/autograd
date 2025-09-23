@@ -62,6 +62,13 @@ func IsClose(a, b float64) float64 {
 }
 
 func keepDims(shape []int, axis []int) []int {
+	ndim := len(shape)
+	for i := range axis {
+		if axis[i] < 0 {
+			axis[i] += ndim
+		}
+	}
+
 	out := make([]int, len(shape))
 	for i, s := range shape {
 		if slices.Contains(axis, i) {
