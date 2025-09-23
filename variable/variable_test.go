@@ -12,7 +12,7 @@ func ExampleVariable() {
 	fmt.Println(v)
 
 	// Output:
-	// variable[1 4]([1 2 3 4])
+	// variable[4]([1 2 3 4])
 }
 
 func ExampleVariable_Name() {
@@ -21,7 +21,7 @@ func ExampleVariable_Name() {
 	fmt.Println(v)
 
 	// Output:
-	// v[1 4]([1 2 3 4])
+	// v[4]([1 2 3 4])
 }
 
 func ExampleVariable_String() {
@@ -41,7 +41,7 @@ func ExampleZeroLike() {
 	fmt.Println(variable.ZeroLike(v))
 
 	// Output:
-	// variable[1 4]([0 0 0 0])
+	// variable[4]([0 0 0 0])
 }
 
 func ExampleOneLike() {
@@ -49,7 +49,7 @@ func ExampleOneLike() {
 	fmt.Println(variable.OneLike(v))
 
 	// Output:
-	// variable[1 4]([1 1 1 1])
+	// variable[4]([1 1 1 1])
 }
 
 func ExampleZeros() {

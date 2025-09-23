@@ -11,7 +11,7 @@ import (
 func ExampleLSTM() {
 	l := L.LSTM(2, L.WithLSTMSource(rand.Const()))
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.Forward(x)
 	fmt.Println(y[0])
 
@@ -38,7 +38,7 @@ func ExampleLSTM() {
 func ExampleLSTM_backward() {
 	l := L.LSTM(2, L.WithLSTMSource(rand.Const()))
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -67,7 +67,7 @@ func ExampleLSTM_backward() {
 func ExampleLSTM_cleargrads() {
 	l := L.LSTM(3)
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -94,7 +94,7 @@ func ExampleLSTM_cleargrads() {
 func ExampleLSTMT_ResetState() {
 	l := L.LSTM(3)
 
-	x := variable.New(1.0)
+	x := variable.New(1.0).Reshape(1, 1)
 	l.Forward(x)   // set hidden state
 	l.ResetState() // reset hidden state
 	l.Forward(x)   // h2h is not used

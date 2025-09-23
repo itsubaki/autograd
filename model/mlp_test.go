@@ -28,7 +28,10 @@ func ExampleMLP_backward() {
 		model.WithMLPActivation(F.ReLU),
 	)
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	y := m.Forward(x)
 	y.Backward()
 
@@ -49,7 +52,10 @@ func ExampleMLP_cleargrads() {
 		model.WithMLPActivation(F.ReLU),
 	)
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	y := m.Forward(x)
 	y.Backward()
 	m.Cleargrads()
@@ -68,9 +74,11 @@ func ExampleMLP_cleargrads() {
 func ExampleMLP_Params() {
 	m := model.NewMLP([]int{5, 1})
 
-	x := variable.New(1, 2)
-	m.Forward(x) // gen w
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
 
+	m.Forward(x) // gen w
 	for k, v := range m.Params().Seq2() {
 		fmt.Println(k, v.Shape())
 	}

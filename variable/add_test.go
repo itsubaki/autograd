@@ -17,10 +17,10 @@ func ExampleAddT() {
 	fmt.Println(f.Backward(variable.OneLike(a), variable.OneLike(b)))
 
 	// Output:
-	// variable[1 2]([2 3])
-	// variable[1 2]([3 4])
-	// [variable[1 2]([5 7])]
-	// [variable[1 2]([1 1]) variable[1 2]([1 1])]
+	// variable[2]([2 3])
+	// variable[2]([3 4])
+	// [variable[2]([5 7])]
+	// [variable[2]([1 1]) variable[2]([1 1])]
 }
 
 func ExampleAdd() {
@@ -33,8 +33,8 @@ func ExampleAdd() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable[1 2]([1 1])
-	// variable[1 2]([1 1])
+	// variable[2]([1 1])
+	// variable[2]([1 1])
 }
 
 func ExampleAddC() {
@@ -61,6 +61,6 @@ func ExampleAdd_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 3]([11 12 13])
-	// variable[1 3]([1 1 1]) variable(3)
+	// variable[3]([11 12 13])
+	// variable[3]([1 1 1]) variable(3)
 }
