@@ -15,25 +15,13 @@ func ExampleVariable() {
 	// variable[4]([1 2 3 4])
 }
 
-func ExampleVariable_Name() {
+func ExampleVariable_name() {
 	v := variable.New(1, 2, 3, 4)
 	v.Name = "v"
 	fmt.Println(v)
 
 	// Output:
 	// v[4]([1 2 3 4])
-}
-
-func ExampleVariable_String() {
-	v := variable.New(
-		1, 2, 3,
-		4, 5, 6,
-	).Reshape(2, 3)
-
-	fmt.Println(v)
-
-	// Output:
-	// variable[2 3]([1 2 3 4 5 6])
 }
 
 func ExampleZeroLike() {
@@ -107,6 +95,18 @@ func ExampleVariable_Size() {
 
 	// Output:
 	// 6
+}
+
+func ExampleVariable_Reshape() {
+	v := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(v)
+
+	// Output:
+	// variable[2 3]([1 2 3 4 5 6])
 }
 
 func ExampleVariable_Unchain() {
