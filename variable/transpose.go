@@ -54,7 +54,7 @@ func invperm(ndim int, axes ...int) []int {
 	out := make([]int, ndim)
 	for i, a := range axes {
 		if a < 0 {
-			a = ndim + a
+			a += ndim
 		}
 
 		out[a] = i

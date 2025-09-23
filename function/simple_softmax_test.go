@@ -24,6 +24,24 @@ func ExampleSoftmaxSimple() {
 	// variable[2 3]([0 0 0 0 0 0])
 }
 
+
+func ExampleSoftmaxSimple_axis1n() {
+	x := variable.New(
+		1, 2, 3,
+		4, 4, 8,
+	).Reshape(2, 3)
+
+	y := F.SoftmaxSimple(x, -1)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[2 3]([0.09003057317038046 0.24472847105479767 0.6652409557748219 0.017668422014048047 0.017668422014048047 0.9646631559719039])
+	// variable[2 3]([0 0 0 0 0 0])
+}
+
 func Example_softmax1d() {
 	softmax1d := func(x *variable.Variable) *variable.Variable {
 		y := F.Exp(x)
