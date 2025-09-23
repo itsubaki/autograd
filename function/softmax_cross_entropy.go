@@ -5,41 +5,57 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// SoftmaxCrossEntropy computes the softmax cross-entropy loss.
+// It expects `x[0]` to have shape (N, C, ...) and `x[1]`(`t`) to have shape (N, ...).
 func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
-		Forwarder: &SoftmaxCrossEntropyT{},
+		Forwarder: &SoftmaxCrossEntropyT{
+			AxisN: 0,
+			AxisC: 1,
+		},
 	}).First(x...)
 }
 
 type SoftmaxCrossEntropyT struct {
-	x     *variable.Variable
-	label []int
+	AxisN, AxisC int
+	N, C         int
+	x            *variable.Variable
+	label        []int
 }
 
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x, f.label = x[0], tensor.Int(x[1].Data).Data
+	f.x = x[0]
+	f.label = tensor.Int(tensor.Reshape(x[1].Data, flatten(x[1].Shape(), f.AxisC)...)).Data // (N, )
+	xFlat := tensor.Reshape(x[0].Data, flatten(x[0].Shape(), f.AxisC)...)                   // (N, C)
+	f.N, f.C = xFlat.Shape[f.AxisN], xFlat.Shape[f.AxisC]
 
-	logz := logsumexp(x[0].Data)
-	logp := logp(tensor.Sub(x[0].Data, logz), f.label)
-	N := x[0].Shape()[0]
+	logz := logsumexp(xFlat)
+	logp := logp(tensor.Sub(xFlat, logz), f.label)
+	sum := tensor.Sum(logp).At()
 
-	y := -1.0 / float64(N) * tensor.Sum(logp).At()
 	return []*variable.Variable{
-		variable.New(y),
+		variable.New(-1.0 / float64(f.N) * sum),
 	}
 }
 
 func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	y := Softmax(1)(f.x)
-	for i, l := range f.label {
-		y.Data.Set([]int{i, l}, y.Data.At(i, l)-1)
-	}
-	N := f.x.Shape()[0]
+	t := variable.From(oneHot(f.label, f.C))                              // t
+	y := Softmax(f.AxisC)(Reshape(flatten(f.x.Shape(), f.AxisC)...)(f.x)) // y
+	yt := MulC(1.0/float64(f.N), Sub(y, t))                               // (y - t)/N
+	gx := Mul(yt, gy[0])                                                  // (y - t)/N * gy
 
-	gx := Mul(y, MulC(1.0/float64(N), gy[0])) // (y - t) * gy / N
 	return []*variable.Variable{
-		gx,
+		Reshape(f.x.Shape()...)(gx),
 	}
+}
+
+func oneHot(label []int, CNums int) *tensor.Tensor[float64] {
+	out := tensor.Zeros[float64](len(label), CNums)
+	for i, v := range label {
+		out.Set([]int{i, v}, 1.0)
+	}
+
+	return out
 }
 
 func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
@@ -58,4 +74,23 @@ func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
 	}
 
 	return out
+}
+
+// flatten reshapes the input shape to (N, C) where C is the dimension of the given axis.
+func flatten(shape []int, axis int) []int {
+	ndim := len(shape)
+	if axis < 0 {
+		axis += ndim
+	}
+
+	N := 1
+	for i, s := range shape {
+		if i == axis {
+			continue
+		}
+
+		N *= s
+	}
+
+	return []int{N, shape[axis]} // (N, C)
 }
