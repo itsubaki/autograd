@@ -45,6 +45,6 @@ func ExampleDiv_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 5]([0.5 1 1.5 2 2.5])
-	// variable[1 5]([0.5 0.5 0.5 0.5 0.5]) variable(-3.75)
+	// variable[5]([0.5 1 1.5 2 2.5])
+	// variable[5]([0.5 0.5 0.5 0.5 0.5]) variable(-3.75)
 }

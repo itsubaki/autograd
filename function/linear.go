@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -18,7 +18,7 @@ type LinearT struct {
 func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.w = x[0], x[1]
 
-	y := matrix.MatMul(x[0].Data, x[1].Data)
+	y := tensor.MatMul(x[0].Data, x[1].Data)
 	if len(x) < 3 {
 		// no bias
 		return []*variable.Variable{
@@ -27,24 +27,37 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	}
 
 	// add bias
-	f.b, y = x[2], matrix.Add(y, x[2].Data)
+	f.b, y = x[2], tensor.Add(y, x[2].Data)
 	return []*variable.Variable{
 		variable.From(y),
 	}
 }
 
 func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gxs := []*variable.Variable{
-		MatMul(gy[0], Transpose(f.w)), // gy * w.T
-		MatMul(Transpose(f.x), gy[0]), // x.T * gy
+	gx := MatMul(gy[0], TransposeMatMul(f.w.NumDims())(f.w)) // gy * w.T
+	gw := MatMul(TransposeMatMul(f.x.NumDims())(f.x), gy[0]) // x.T * gy
+
+	if !tensor.ShapeEqual(gx.Shape(), f.x.Shape()) {
+		gx = SumTo(f.x.Shape()...)(gx)
+	}
+
+	if !tensor.ShapeEqual(gw.Shape(), f.w.Shape()) {
+		gw = SumTo(f.w.Shape()...)(gw)
 	}
 
 	if f.b == nil {
 		// no bias
-		return gxs
+		return []*variable.Variable{
+			gx,
+			gw,
+		}
 	}
 
 	// add bias
 	gb := SumTo(f.b.Shape()...)(gy[0])
-	return append(gxs, gb)
+	return []*variable.Variable{
+		gx,
+		gw,
+		gb,
+	}
 }

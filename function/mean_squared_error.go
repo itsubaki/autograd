@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -17,20 +17,18 @@ type MeanSquaredErrorT struct {
 
 func (f *MeanSquaredErrorT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x0, f.x1 = x[0], x[1]
-	diff := matrix.Sub(x[0].Data, x[1].Data)
-	y := matrix.Sum(matrix.Mul(diff, diff)) / float64(diff.N()) // sum((x0 - x1)^2) * (1/N)
 
+	diff := tensor.Sub(x[0].Data, x[1].Data)                            // x0 - x1
+	y := tensor.Sum(tensor.Mul(diff, diff)).At() / float64(diff.Size()) // (x0 - x1)^2 / N
 	return []*variable.Variable{
 		variable.New(y),
 	}
 }
 
 func (f *MeanSquaredErrorT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	diff := Sub(f.x0, f.x1)
-	N := diff.Shape()[0]
-	gx0 := MulC(2.0/float64(N), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
-	gx1 := Neg(gx0)                               // -gx0
-
+	diff := Sub(f.x0, f.x1)                                 // x0 - x1
+	gx0 := MulC(2.0/float64(diff.Size()), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
+	gx1 := Neg(gx0)                                         // -gx0
 	return []*variable.Variable{
 		gx0,
 		gx1,

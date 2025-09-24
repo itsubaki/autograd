@@ -11,18 +11,21 @@ import (
 func ExampleLinear() {
 	l := L.Linear(5, L.WithSource(rand.Const()))
 
-	x := variable.New(1, 2, 3)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
+
 	y := l.Forward(x)
-	fmt.Printf("%.4f\n", y[0].Data.Data)
+	fmt.Printf("%v, %.4f\n", y[0].Shape(), y[0].Data.Data)
 
 	for k, v := range l.Params().Seq2() {
 		fmt.Println(k, v)
 	}
 
 	// Output:
-	// [-3.7536 -1.7199 0.8735 -0.0434 1.0512]
+	// [1 5], [-3.7536 -1.7199 0.8735 -0.0434 1.0512]
 	// b b[1 5]([0 0 0 0 0])
-	// w w[3 5]([[0.32708975344564756 -0.35356774308295924 0.34057587091902425 -0.21236342053185778 0.630441958972765] [-0.25624794608861706 -0.1448844842619606 0.4946976700923148 0.41899488204992313 0.49172779552683027] [-1.1894036897019482 -0.3588555362697145 -0.15215179225530268 -0.2230241557829546 -0.18756042151287408]])
+	// w w[3 5]([0.32708975344564756 -0.35356774308295924 0.34057587091902425 -0.21236342053185778 0.630441958972765 -0.25624794608861706 -0.1448844842619606 0.4946976700923148 0.41899488204992313 0.49172779552683027 -1.1894036897019482 -0.3588555362697145 -0.15215179225530268 -0.2230241557829546 -0.18756042151287408])
 }
 
 func ExampleLinear_inSize() {
@@ -31,26 +34,31 @@ func ExampleLinear_inSize() {
 		L.WithInSize(3),
 	)
 
-	x := variable.New(1, 2, 3)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
+
 	y := l.Forward(x)
-	fmt.Printf("%.4f\n", y[0].Data.Data)
+	fmt.Printf("%v, %.4f\n", y[0].Shape(), y[0].Data.Data)
 
 	for k, v := range l.Params().Seq2() {
 		fmt.Println(k, v)
 	}
 
 	// Output:
-	// [-3.7536 -1.7199 0.8735 -0.0434 1.0512]
+	// [1 5], [-3.7536 -1.7199 0.8735 -0.0434 1.0512]
 	// b b[1 5]([0 0 0 0 0])
-	// w w[3 5]([[0.32708975344564756 -0.35356774308295924 0.34057587091902425 -0.21236342053185778 0.630441958972765] [-0.25624794608861706 -0.1448844842619606 0.4946976700923148 0.41899488204992313 0.49172779552683027] [-1.1894036897019482 -0.3588555362697145 -0.15215179225530268 -0.2230241557829546 -0.18756042151287408]])
+	// w w[3 5]([0.32708975344564756 -0.35356774308295924 0.34057587091902425 -0.21236342053185778 0.630441958972765 -0.25624794608861706 -0.1448844842619606 0.4946976700923148 0.41899488204992313 0.49172779552683027 -1.1894036897019482 -0.3588555362697145 -0.15215179225530268 -0.2230241557829546 -0.18756042151287408])
 }
 
 func ExampleLinear_nobias() {
 	l := L.Linear(5, L.WithNoBias())
 
-	x := variable.New(1, 2, 3)
-	l.Forward(x)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
 
+	l.Forward(x)
 	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name)
 	}
@@ -62,24 +70,55 @@ func ExampleLinear_nobias() {
 func ExampleLinear_backward() {
 	l := L.Linear(5)
 
-	x := variable.New(1, 2, 3)
-	y := l.Forward(x)
-	y[0].Backward()
+	y := l.Forward(variable.New(
+		1, 2, 3,
+	).Reshape(1, 3))
 
+	y[0].Backward()
 	for _, v := range l.Params().Seq2() {
 		fmt.Println(v.Name, v.Grad)
 	}
 
-	y = l.Forward(variable.New(1, 2, 3))
-	y[0].Backward()
+	y = l.Forward(variable.New(
+		1, 2, 3,
+	).Reshape(1, 3))
 
+	y[0].Backward()
 	for k, v := range l.Params().Seq2() {
 		fmt.Println(k, v.Grad)
 	}
 
 	// Output:
 	// b variable[1 5]([1 1 1 1 1])
-	// w variable[3 5]([[1 1 1 1 1] [2 2 2 2 2] [3 3 3 3 3]])
+	// w variable[3 5]([1 1 1 1 1 2 2 2 2 2 3 3 3 3 3])
 	// b variable[1 5]([2 2 2 2 2])
-	// w variable[3 5]([[2 2 2 2 2] [4 4 4 4 4] [6 6 6 6 6]])
+	// w variable[3 5]([2 2 2 2 2 4 4 4 4 4 6 6 6 6 6])
+}
+
+func ExampleLinear_batch() {
+	l := L.Linear(5, L.WithSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := l.Forward(x)
+	y[0].Backward()
+
+	fmt.Println(y[0].Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range l.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 5]
+	// [2 2 2]
+	// b [1 5]
+	// w [2 5]
 }

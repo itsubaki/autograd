@@ -27,9 +27,9 @@ func ExampleLinearSimple() {
 	fmt.Println(w.Grad)
 
 	// Output:
-	// variable[2 4]([[38 44 50 56] [83 98 113 128]])
-	// variable[2 3]([[10 26 42] [10 26 42]])
-	// variable[3 4]([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
+	// variable[2 4]([38 44 50 56 83 98 113 128])
+	// variable[2 3]([10 26 42 10 26 42])
+	// variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
 }
 
 func ExampleLinearSimple_bias() {
@@ -55,8 +55,36 @@ func ExampleLinearSimple_bias() {
 	fmt.Println(b.Grad)
 
 	// Output:
-	// variable[2 4]([[39 45 51 57] [84 99 114 129]])
-	// variable[2 3]([[10 26 42] [10 26 42]])
-	// variable[3 4]([[5 5 5 5] [7 7 7 7] [9 9 9 9]])
+	// variable[2 4]([39 45 51 57 84 99 114 129])
+	// variable[2 3]([10 26 42 10 26 42])
+	// variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
 	// variable(8)
+}
+
+func ExampleLinearSimple_batch() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+
+		7, 8, 9,
+		10, 11, 12,
+	).Reshape(2, 2, 3)
+
+	w := variable.New(
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+	).Reshape(1, 3, 4)
+
+	y := F.LinearSimple(x, w)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+	fmt.Println(w.Grad)
+
+	// Output:
+	// variable[2 2 4]([38 44 50 56 83 98 113 128 128 152 176 200 173 206 239 272])
+	// variable[2 2 3]([10 26 42 10 26 42 10 26 42 10 26 42])
+	// variable[1 3 4]([22 22 22 22 26 26 26 26 30 30 30 30])
 }

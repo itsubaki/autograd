@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func AddC(c float64, x ...*Variable) *Variable {
 	return (&Function{
@@ -15,20 +15,21 @@ func Add(x ...*Variable) *Variable {
 }
 
 type AddT struct {
-	x0Shape, x1Shape []int
+	x0Shape []int
+	x1Shape []int
 }
 
 func (f *AddT) Forward(x ...*Variable) []*Variable {
 	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
 
-	y := matrix.Add(x[0].Data, x[1].Data)
+	y := tensor.Add(x[0].Data, x[1].Data)
 	return []*Variable{
 		From(y),
 	}
 }
 
 func (f *AddT) Backward(gy ...*Variable) []*Variable {
-	if equal(f.x0Shape, f.x1Shape) {
+	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gy[0],
 			gy[0],
@@ -39,18 +40,4 @@ func (f *AddT) Backward(gy ...*Variable) []*Variable {
 		SumTo(f.x0Shape...)(gy[0]),
 		SumTo(f.x1Shape...)(gy[0]),
 	}
-}
-
-func equal(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
 }

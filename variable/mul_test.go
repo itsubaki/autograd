@@ -50,6 +50,6 @@ func ExampleMul_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 5]([6 6 6 6 6])
-	// variable[1 5]([3 3 3 3 3]) variable(10)
+	// variable[5]([6 6 6 6 6])
+	// variable[5]([3 3 3 3 3]) variable(10)
 }

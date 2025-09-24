@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Clip(min, max float64) func(x ...*Variable) *Variable {
 	return (&Function{
@@ -19,14 +19,14 @@ type ClipT struct {
 func (f *ClipT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := matrix.Clip(x[0].Data, f.Min, f.Max)
+	y := tensor.Clip(x[0].Data, f.Min, f.Max)
 	return []*Variable{
 		From(y),
 	}
 }
 
 func (f *ClipT) Backward(gy ...*Variable) []*Variable {
-	mask := matrix.Mask(f.x.Data, clip(f.Min, f.Max))
+	mask := tensor.Mask(f.x.Data, clip(f.Min, f.Max))
 	return []*Variable{
 		Mul(gy[0], From(mask)), // gy * mask
 	}

@@ -1,10 +1,12 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
+// SoftmaxCrossEntropy computes the softmax cross-entropy loss.
+// It expects `x[0]` to have shape (N, C) and `x[1]`(`t`) to have shape (N,).
 func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &SoftmaxCrossEntropyT{},
@@ -12,70 +14,61 @@ func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 }
 
 type SoftmaxCrossEntropyT struct {
-	x, t *variable.Variable
+	N, C  int
+	x     *variable.Variable
+	label []int
 }
 
 func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x, f.t = x[0], x[1]
+	f.x = x[0]
+	f.N, f.C = x[0].Shape()[0], x[0].Shape()[1] // (N, C)
+	f.label = tensor.Int(x[1].Data).Data        // (N,)
 
-	label := label(x[1])
-	logz := logsumexp(x[0].Data)
-	logp := logp(matrix.Sub(x[0].Data, logz), label)
-	N := x[0].Shape()[0]
+	logz := logsumexp(x[0].Data)                       // (N, 1)
+	logp := logp(tensor.Sub(x[0].Data, logz), f.label) // (N, 1)
+	sum := tensor.Sum(logp).At()                       // scalar
 
-	y := -1.0 / float64(N) * matrix.Sum(logp)
 	return []*variable.Variable{
-		variable.New(y),
+		variable.New(-1.0 / float64(f.N) * sum),
 	}
 }
 
 func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	shape := f.x.Shape()
-	N, C := shape[0], shape[1]
-
-	t := variable.From(onehot(f.t.Data.Row(0), C)) // t = onehot(t, C)
-	y := Softmax(f.x)                              // y = softmax(x)
+	t := variable.From(oneHot(f.label, f.C))
+	y := Softmax(1)(f.x)
+	yt := MulC(1.0/float64(f.N), Sub(y, t)) // (y - t)/N
+	gx := Mul(yt, gy[0])                    // (y - t)/N * gy
 
 	return []*variable.Variable{
-		Mul(Sub(y, t), MulC(1.0/float64(N), gy[0])), // (y - t) * gy / N
+		Reshape(f.x.Shape()...)(gx),
 	}
 }
 
-func logsumexp(x *matrix.Matrix) *matrix.Matrix {
-	max := matrix.MaxAxis1(x)              // max = max(x)
-	expy := matrix.Exp(matrix.Sub(x, max)) // expy = exp(x - max)
-	sumy := matrix.SumAxis1(expy)          // sumy = sum(expy)
-	logsumy := matrix.Log(sumy)            // logsumy = log(sumy)
-	return matrix.Add(max, logsumy)        // logsumexp = max + logsumy
-}
-
-func label(t *variable.Variable) []int {
-	return toInt(t.Data.Data)
-}
-
-func logp(m *matrix.Matrix, label []int) *matrix.Matrix {
-	out := matrix.Zeros(len(label), 1)
+// oneHot converts a slice of integer labels into a one-hot encoded tensor.
+func oneHot(label []int, CNums int) *tensor.Tensor[float64] {
+	out := tensor.Zeros[float64](len(label), CNums)
 	for i, v := range label {
-		out.Set(i, 0, m.At(i, v))
+		out.Set([]int{i, v}, 1.0)
 	}
 
 	return out
 }
 
-func onehot(t []float64, size int) *matrix.Matrix {
-	x := toInt(t)
-	out := matrix.Zeros(len(x), size)
-	for i, v := range x {
-		out.Set(i, v, 1)
-	}
-
-	return out
+// logsumexp computes the log of the sum of exponentials of the input tensor x.
+func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
+	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
+	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max1)
+	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sum1 = sum(expy)
+	logsum1 := tensor.Log(sum1)                   // logsum1 = log(sum1)
+	return tensor.Add(max1, logsum1)              // logsumexp = max1 + logsum1
 }
 
-func toInt(x []float64) []int {
-	out := make([]int, len(x))
-	for i, v := range x {
-		out[i] = int(v)
+// logp extracts the values from x corresponding to the true labels.
+func logp(x *tensor.Tensor[float64], label []int) *tensor.Tensor[float64] {
+	out := tensor.Zeros[float64](len(label), 1)
+	for i, v := range label {
+		out.Set([]int{i, 0}, x.At(i, v))
 	}
 
 	return out

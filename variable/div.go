@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func DivC(c float64, x ...*Variable) *Variable {
 	return (&Function{
@@ -23,7 +23,7 @@ func (f *DivT) Forward(x ...*Variable) []*Variable {
 	f.x0, f.x1 = x[0], x[1]
 	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
 
-	y := matrix.Div(x[0].Data, x[1].Data)
+	y := tensor.Div(x[0].Data, x[1].Data)
 	return []*Variable{
 		From(y),
 	}
@@ -33,7 +33,7 @@ func (f *DivT) Backward(gy ...*Variable) []*Variable {
 	gx0 := Div(gy[0], f.x1)
 	gx1 := Mul(gy[0], Div(Neg(f.x0), Mul(f.x1, f.x1))) // gy * (-x0 / x1^2)
 
-	if equal(f.x0Shape, f.x1Shape) {
+	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,

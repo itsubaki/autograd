@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Pow(p float64) func(x ...*Variable) *Variable {
 	return (&Function{
@@ -18,7 +18,7 @@ type PowT struct {
 func (f *PowT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	y := matrix.Pow(f.P, x[0].Data)
+	y := tensor.Pow(f.P, x[0].Data)
 	return []*Variable{
 		From(y),
 	}

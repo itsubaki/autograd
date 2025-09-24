@@ -130,6 +130,7 @@ func (v *Tensor[T]) Size() int {
 }
 
 // At returns the element at the given index.
+// If no coordinates are given, it returns the first element.
 func (v *Tensor[T]) At(coord ...int) T {
 	return v.Data[Ravel(v, coord...)]
 }
@@ -269,16 +270,16 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 
 // Mean returns the mean of all elements in v.
 // If axes is specified, it reduces along the given axes.
-func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
+func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
 	if ndim == 0 {
 		// scalar
-		return Clone(v)
+		return Float64(Clone(v))
 	}
 
 	if len(axes) == 0 {
 		// mean all
-		return MulC(1/float64(v.Size()), Sum(v))
+		return MulC(1/float64(v.Size()), Float64(Sum(v)))
 	}
 
 	ax, _, err := adjAxes(ndim, axes...)
@@ -293,7 +294,7 @@ func Mean(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	}
 
 	// mean
-	return MulC(1/float64(count), Sum(v, ax...))
+	return MulC(1/float64(count), Float64(Sum(v, ax...)))
 }
 
 // Variance returns a new tensor with the variance of elements in v.
@@ -432,8 +433,18 @@ func Clone[T Number](v *Tensor[T]) *Tensor[T] {
 	return New(v.Shape, data)
 }
 
+// Int returns a new tensor with elements casted to int.
+func Int[T Number](v *Tensor[T]) *Tensor[int] {
+	data := make([]int, len(v.Data))
+	for i, x := range v.Data {
+		data[i] = int(x)
+	}
+
+	return New(v.Shape, data)
+}
+
 // Float64 returns a new tensor with elements casted to float64.
-func Float64(v *Tensor[int]) *Tensor[float64] {
+func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
 	data := make([]float64, len(v.Data))
 	for i, x := range v.Data {
 		data[i] = float64(x)
@@ -1233,6 +1244,33 @@ func Unravel[T Number](v *Tensor[T], index int) []int {
 	}
 
 	return coord
+}
+
+// KeepDims returns a new shape with 1 inserted at the given axes.
+func KeepDims(shape []int, axes []int) []int {
+	ndim := len(shape)
+	for i := range axes {
+		if axes[i] < 0 {
+			axes[i] += ndim
+		}
+	}
+
+	ax := make(map[int]struct{}, len(axes))
+	for _, a := range axes {
+		ax[a] = struct{}{}
+	}
+
+	out := make([]int, len(shape))
+	for i, s := range shape {
+		if _, ok := ax[i]; ok {
+			out[i] = 1
+			continue
+		}
+
+		out[i] = s
+	}
+
+	return out
 }
 
 // rnd returns a pseudo-random number generator.
