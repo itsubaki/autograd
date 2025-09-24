@@ -306,17 +306,9 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	}
 
 	// insert 1 at the given axes
-	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-	for _, ax := range axes {
-		ax, err := adjAxis(ax, ndim)
-		if err != nil {
-			panic(err)
-		}
+	shape := KeepDims(v.Shape, axes)
 
-		shape[ax] = 1
-	}
-
+	// variance
 	mu := Mean(v, axes...)
 	xc := Sub(v, Reshape(mu, shape...))
 	return Mean(Mul(xc, xc), axes...)
@@ -532,6 +524,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	transpose := func(perm ...int) *Tensor[T] {
+		// old stride
 		old := make([]int, ndim)
 		for i := range ndim {
 			old[i] = v.Stride[perm[i]]
@@ -986,11 +979,11 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	}
 
 	// offset
-	offset := func(batch int, shape, stride []int) int {
+	offset := func(k int, shape, stride []int) int {
 		var v int
 		for i := len(shape) - 1; i >= 0; i-- {
-			idx := batch % shape[i]
-			batch /= shape[i]
+			idx := k % shape[i]
+			k /= shape[i]
 
 			v += idx * stride[i]
 		}
