@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -16,8 +16,8 @@ type SigmoidT struct {
 }
 
 func (f *SigmoidT) Forward(x ...*variable.Variable) []*variable.Variable {
-	tanh := matrix.Tanh(matrix.MulC(0.5, x[0].Data)) // tanh(0.5 * x)
-	y := matrix.AddC(0.5, matrix.MulC(0.5, tanh))    // 0.5 + 0.5 * tanh(0.5 * x)
+	tanh := tensor.Tanh(tensor.MulC(0.5, x[0].Data)) // tanh(0.5 * x)
+	y := tensor.AddC(0.5, tensor.MulC(0.5, tanh))    // 0.5 + 0.5 * tanh(0.5 * x)
 
 	f.y = variable.From(y)
 	return []*variable.Variable{

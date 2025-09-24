@@ -8,7 +8,7 @@ import (
 var (
 	_ Activation = F.ReLU
 	_ Activation = F.Sigmoid
-	_ Activation = F.Softmax
+	_ Activation = F.Softmax(1)
 	_ Activation = F.Tanh
 )
 

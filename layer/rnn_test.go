@@ -11,25 +11,25 @@ import (
 func ExampleRNN() {
 	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
-	x := variable.New(1)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.Forward(x)
-	fmt.Printf("%v\n", y[0].Data)
+	fmt.Println(y[0])
 
 	for k, v := range l.Params().Seq2() {
-		fmt.Println(k, v.Data)
+		fmt.Println(k, v)
 	}
 
 	// Output:
-	// [[0.7975914906443963 -0.41681777230979594]]
-	// h2h.w [[0.4006014980172961 -0.4330302800303532] [0.4171185512277987 -0.260091010167568]]
-	// x2h.b [[0 0]]
-	// x2h.w [[1.0919575041640825 -0.4438344619606553]]
+	// variable[1 2]([0.7975914906443963 -0.41681777230979594])
+	// h2h.w w[2 2]([0.4006014980172961 -0.4330302800303532 0.4171185512277987 -0.260091010167568])
+	// x2h.b b[1 2]([0 0])
+	// x2h.w w[1 2]([1.0919575041640825 -0.4438344619606553])
 }
 
 func ExampleRNN_backward() {
 	l := L.RNN(2, L.WithRNNSource(rand.Const()))
 
-	x := variable.New(1)
+	x := variable.New(1.0).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -50,7 +50,7 @@ func ExampleRNN_backward() {
 	// x2h.b variable[1 2]([0.3638478140516499 0.8262629446866991])
 	// x2h.w variable[1 2]([0.3638478140516499 0.8262629446866991])
 	// .
-	// h2h.w variable[2 2]([[0.22839718521198515 0.5180241623919872] [-0.11935935508160048 -0.2707171276318745]])
+	// h2h.w variable[2 2]([0.22839718521198515 0.5180241623919872 -0.11935935508160048 -0.2707171276318745])
 	// x2h.b variable[1 2]([0.5896143925532906 1.4348651282031906])
 	// x2h.w variable[1 2]([0.5896143925532906 1.4348651282031906])
 }
@@ -58,7 +58,7 @@ func ExampleRNN_backward() {
 func ExampleRNN_cleargrads() {
 	l := L.RNN(3)
 
-	x := variable.New(1)
+	x := variable.New(1).Reshape(1, 1)
 	y := l.First(x)
 	y.Backward()
 
@@ -76,7 +76,7 @@ func ExampleRNN_cleargrads() {
 func ExampleRNNT_ResetState() {
 	l := L.RNN(3)
 
-	x := variable.New(1)
+	x := variable.New(1).Reshape(1, 1)
 	l.Forward(x)   // set hidden state
 	l.ResetState() // reset hidden state
 	l.Forward(x)   // h2h is not used
@@ -89,4 +89,33 @@ func ExampleRNNT_ResetState() {
 	// h2h.w w
 	// x2h.b b
 	// x2h.w w
+}
+
+func ExampleRNN_batch() {
+	l := L.RNN(2, L.WithRNNSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := l.Forward(x)
+	y[0].Backward()
+
+	fmt.Println(y[0].Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range l.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 2]
+	// [2 2 2]
+	// h2h.w [2 2]
+	// x2h.b [1 2]
+	// x2h.w [2 2]
 }

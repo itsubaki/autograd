@@ -5,55 +5,71 @@ import (
 	randv2 "math/rand/v2"
 	"sort"
 
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 )
 
 type Variable struct {
 	Name       string
-	Data       *matrix.Matrix
+	Data       *tensor.Tensor[float64]
 	Grad       *Variable
 	Creator    *Function
 	Generation int
 }
 
 func New(v ...float64) *Variable {
-	return &Variable{Data: matrix.New(v)}
+	return &Variable{Data: tensor.New([]int{len(v)}, v)}
 }
 
-func From(v *matrix.Matrix) *Variable {
+func From(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
 func ZeroLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.ZeroLike(v.Data)}
+	return &Variable{Data: tensor.ZeroLike(v.Data)}
 }
 
 func OneLike(v *Variable) *Variable {
-	return &Variable{Data: matrix.OneLike(v.Data)}
+	return &Variable{Data: tensor.OneLike(v.Data)}
 }
 
-func Zeros(shape []int) *Variable {
-	return &Variable{Data: matrix.Zeros(shape[0], shape[1])}
+func Zeros(shape ...int) *Variable {
+	return &Variable{Data: tensor.Zeros[float64](shape...)}
 }
 
 func Rand(shape []int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Rand(shape[0], shape[1], s...)}
+	return &Variable{Data: tensor.Rand(shape, s...)}
 }
 
 func Randn(shape []int, s ...randv2.Source) *Variable {
-	return &Variable{Data: matrix.Randn(shape[0], shape[1], s...)}
+	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
+// At returns the value at the given coordinates.
+// If no coordinates are given, it returns the first element.
 func (v *Variable) At(coord ...int) float64 {
-	return v.Data.At(coord[0], coord[1])
+	return v.Data.At(coord...)
 }
 
+// NumDims returns the number of dimensions of the variable.
+func (v *Variable) NumDims() int {
+	return v.Data.NumDims()
+}
+
+// Size returns the number of elements in the variable.
+func (v *Variable) Size() int {
+	return v.Data.Size()
+}
+
+// Shape returns the shape of the variable.
 func (v *Variable) Shape() []int {
-	return matrix.Shape(v.Data)
+	shape := make([]int, len(v.Data.Shape))
+	copy(shape, v.Data.Shape)
+	return shape
 }
 
+// Reshape changes the shape of the variable.
 func (v *Variable) Reshape(shape ...int) *Variable {
-	v.Data = matrix.Reshape(v.Data, shape...)
+	v.Data = tensor.Reshape(v.Data, shape...)
 	return v
 }
 
@@ -76,12 +92,7 @@ func (v *Variable) UnchainBackward() {
 	}
 
 	fs := append(make([]*Function, 0), v.Creator)
-
-	for {
-		if len(fs) == 0 {
-			break
-		}
-
+	for len(fs) > 0 {
 		// pop
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
@@ -109,12 +120,7 @@ func (v *Variable) Backward(opts ...Opts) {
 
 	seen := make(map[*Function]bool)
 	fs := addFunc(make([]*Function, 0), v.Creator, seen)
-
-	for {
-		if len(fs) == 0 {
-			break
-		}
-
+	for len(fs) > 0 {
 		// pop
 		f := fs[len(fs)-1]
 		fs = fs[:len(fs)-1]
@@ -154,15 +160,21 @@ func (v *Variable) String() string {
 		name = v.Name
 	}
 
-	if v.Data.Rows == 1 && v.Data.Cols == 1 {
-		return fmt.Sprintf("%s(%v)", name, v.At(0, 0))
+	s1 := true
+	for _, s := range v.Shape() {
+		if s == 1 {
+			continue
+		}
+
+		s1 = false
+		break
 	}
 
-	if v.Data.Rows == 1 {
-		return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Row(0))
+	if s1 {
+		return fmt.Sprintf("%s(%v)", name, v.At())
 	}
 
-	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data)
+	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {

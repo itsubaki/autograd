@@ -17,8 +17,8 @@ func ExampleParameters_Params() {
 	}
 
 	// Output:
-	// b[1 2]([3 4])
-	// w[1 2]([1 2])
+	// b[2]([3 4])
+	// w[2]([1 2])
 }
 
 func ExampleParameters_Cleargrads() {
@@ -34,7 +34,7 @@ func ExampleParameters_Cleargrads() {
 	}
 
 	// Output:
-	// w[1 2]([1 2]) <nil>
+	// w[2]([1 2]) <nil>
 }
 
 func ExampleParameters_Seq2_break() {

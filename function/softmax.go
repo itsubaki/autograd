@@ -1,38 +1,42 @@
 package function
 
 import (
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
-func Softmax(x ...*variable.Variable) *variable.Variable {
+func Softmax(axis int) func(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
-		Forwarder: &SoftmaxT{},
-	}).First(x...)
+		Forwarder: &SoftmaxT{
+			Axis: axis,
+		},
+	}).First
 }
 
 type SoftmaxT struct {
-	y *variable.Variable
+	Axis int
+	y    *variable.Variable
 }
 
 func (f *SoftmaxT) Forward(x ...*variable.Variable) []*variable.Variable {
-	max := matrix.MaxAxis1(x[0].Data)              // max(x, axis=1)
-	expy := matrix.Exp(matrix.Sub(x[0].Data, max)) // expy = exp(x - max)
-	sumy := matrix.SumAxis1(expy)                  // sumy = sum(expy, axis=1)
-	y := matrix.Div(expy, sumy)                    // y = expy / sumy
+	max1 := tensor.Expand(tensor.Max(x[0].Data, f.Axis), f.Axis) // max1 = max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x[0].Data, max1))              // expy = exp(x - max1)
+	sum1 := tensor.Expand(tensor.Sum(expy, f.Axis), f.Axis)      // sum1 = sum(expy, axis=1)
+	div := tensor.Div(expy, sum1)                                // y = expy / sum1
 
-	f.y = variable.From(y)
+	f.y = variable.From(div)
 	return []*variable.Variable{
 		f.y,
 	}
 }
 
 func (f *SoftmaxT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gyy := Mul(gy[0], f.y) // gyy = gy * y
-	N := gyy.Shape()[0]
-	sum := SumTo(N, 1)(gyy) // sum = sum(gx, axis=1)
+	shape := tensor.KeepDims(f.y.Shape(), []int{f.Axis})
 
+	gyy := Mul(gy[0], f.y)        // gyy = gy * y
+	sum := SumTo(shape...)(gyy)   // sum = sum(gy, axis=1)
+	gx := Sub(gyy, Mul(f.y, sum)) // gyy - y * sum
 	return []*variable.Variable{
-		Sub(gyy, Mul(f.y, sum)), // gyy - y * sum
+		gx,
 	}
 }

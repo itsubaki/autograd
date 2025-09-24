@@ -1,10 +1,14 @@
 package function
 
-import "github.com/itsubaki/autograd/variable"
+import (
+	"github.com/itsubaki/autograd/tensor"
+	"github.com/itsubaki/autograd/variable"
+)
 
-func SoftmaxSimple(x *variable.Variable) *variable.Variable {
+func SoftmaxSimple(x *variable.Variable, axis int) *variable.Variable {
+	shape := tensor.KeepDims(x.Shape(), []int{axis})
+
 	y := Exp(x)
-	N := x.Shape()[0]
-	sumy := SumTo(N, 1)(y)
+	sumy := SumTo(shape...)(y)
 	return Div(y, sumy)
 }

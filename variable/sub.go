@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 // SubC returns a variable that c - x[0].
 func SubC(c float64, x ...*Variable) *Variable {
@@ -17,13 +17,14 @@ func Sub(x ...*Variable) *Variable {
 }
 
 type SubT struct {
-	x0Shape, x1Shape []int
+	x0Shape []int
+	x1Shape []int
 }
 
 func (f *SubT) Forward(x ...*Variable) []*Variable {
 	f.x0Shape, f.x1Shape = x[0].Shape(), x[1].Shape()
 
-	y := matrix.Sub(x[0].Data, x[1].Data)
+	y := tensor.Sub(x[0].Data, x[1].Data)
 	return []*Variable{
 		From(y),
 	}
@@ -33,7 +34,7 @@ func (f *SubT) Backward(gy ...*Variable) []*Variable {
 	gx0 := gy[0]
 	gx1 := Neg(gy[0]) // -1.0 * gy
 
-	if equal(f.x0Shape, f.x1Shape) {
+	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,

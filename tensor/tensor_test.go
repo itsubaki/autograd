@@ -186,6 +186,25 @@ func ExampleClone() {
 	// [10 2 3 4]
 }
 
+func ExampleInt() {
+	v := tensor.New([]int{2, 2}, []float64{
+		1.5, 2.5,
+		3.5, 4.5,
+	})
+
+	w := tensor.Int(v)
+
+	fmt.Printf("%T\n", w.Data)
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// []int
+	// [1 2]
+	// [3 4]
+}
+
 func ExampleFloat64() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
@@ -551,7 +570,7 @@ func ExampleMin() {
 }
 
 func ExampleMean() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
@@ -876,6 +895,17 @@ func ExampleTril() {
 	// [7 8 9]
 }
 
+func ExampleKeepDims() {
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{1}))
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{-2}))
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{0, -1}))
+
+	// Output:
+	// [2 1 4]
+	// [2 1 4]
+	// [1 3 1]
+}
+
 func ExampleRand_nil() {
 	v := tensor.Rand([]int{2, 3}, nil)
 	fmt.Println(v.Shape)
@@ -1126,6 +1156,51 @@ func TestSum(t *testing.T) {
 			want: tensor.New([]int{2}, []int{
 				3,
 				7,
+			}),
+		},
+		{
+			// axis 1, 2
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{1, 2},
+			want: tensor.New([]int{2}, []int{
+				10,
+				26,
+			}),
+		},
+		{
+			// axis 0,1
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 1},
+			want: tensor.New([]int{2}, []int{
+				16,
+				20,
+			}),
+		},
+		{
+			// axis 0,2
+			v: tensor.New([]int{2, 2, 2}, []int{
+				1, 2,
+				3, 4,
+
+				5, 6,
+				7, 8,
+			}),
+			axes: []int{0, 2},
+			want: tensor.New([]int{2}, []int{
+				14,
+				22,
 			}),
 		},
 	}

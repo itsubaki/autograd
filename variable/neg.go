@@ -1,6 +1,6 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
 func Neg(x ...*Variable) *Variable {
 	return (&Function{
@@ -11,7 +11,7 @@ func Neg(x ...*Variable) *Variable {
 type NegT struct{}
 
 func (f *NegT) Forward(x ...*Variable) []*Variable {
-	y := matrix.MulC(-1.0, x[0].Data)
+	y := tensor.MulC(-1.0, x[0].Data)
 	return []*Variable{
 		From(y),
 	}

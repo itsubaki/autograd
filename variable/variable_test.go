@@ -12,28 +12,16 @@ func ExampleVariable() {
 	fmt.Println(v)
 
 	// Output:
-	// variable[1 4]([1 2 3 4])
+	// variable[4]([1 2 3 4])
 }
 
-func ExampleVariable_Name() {
+func ExampleVariable_name() {
 	v := variable.New(1, 2, 3, 4)
 	v.Name = "v"
 	fmt.Println(v)
 
 	// Output:
-	// v[1 4]([1 2 3 4])
-}
-
-func ExampleVariable_Name_matrix() {
-	v := variable.New(
-		1, 2, 3,
-		4, 5, 6,
-	).Reshape(2, 3)
-
-	fmt.Println(v)
-
-	// Output:
-	// variable[2 3]([[1 2 3] [4 5 6]])
+	// v[4]([1 2 3 4])
 }
 
 func ExampleZeroLike() {
@@ -41,7 +29,7 @@ func ExampleZeroLike() {
 	fmt.Println(variable.ZeroLike(v))
 
 	// Output:
-	// variable[1 4]([0 0 0 0])
+	// variable[4]([0 0 0 0])
 }
 
 func ExampleOneLike() {
@@ -49,14 +37,14 @@ func ExampleOneLike() {
 	fmt.Println(variable.OneLike(v))
 
 	// Output:
-	// variable[1 4]([1 1 1 1])
+	// variable[4]([1 1 1 1])
 }
 
 func ExampleZeros() {
-	fmt.Println(variable.Zeros([]int{2, 3}))
+	fmt.Println(variable.Zeros(2, 3))
 
 	// Output:
-	// variable[2 3]([[0 0 0] [0 0 0]])
+	// variable[2 3]([0 0 0 0 0 0])
 }
 
 func ExampleRand() {
@@ -83,6 +71,42 @@ func ExampleRandn() {
 	// Output:
 	// [0.5665360716030388 -0.6123972949371448 0.5898947122637695]
 	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
+}
+
+func ExampleVariable_NumDims() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(x.NumDims())
+
+	// Output:
+	// 2
+}
+
+func ExampleVariable_Size() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(x.Size())
+
+	// Output:
+	// 6
+}
+
+func ExampleVariable_Reshape() {
+	v := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(v)
+
+	// Output:
+	// variable[2 3]([1 2 3 4 5 6])
 }
 
 func ExampleVariable_Unchain() {

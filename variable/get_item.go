@@ -1,35 +1,33 @@
 package variable
 
-import "github.com/itsubaki/autograd/matrix"
+import "github.com/itsubaki/autograd/tensor"
 
-func GetItem(slices []int) func(x ...*Variable) *Variable {
+func GetItem(indices []int, axis int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &GetItemT{
-			Slices: slices,
+			Indices: indices,
+			Axis:    axis,
 		},
 	}).First
 }
 
 type GetItemT struct {
-	Slices []int
-	xShape []int
+	Indices []int
+	Axis    int
+	xShape  []int
 }
 
 func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
-	y := make([][]float64, len(f.Slices))
-	for i, idx := range f.Slices {
-		y[i] = x[0].Data.Row(idx)
-	}
-
+	y := tensor.Take(x[0].Data, f.Indices, f.Axis)
 	return []*Variable{
-		From(matrix.New(y...)),
+		From(y),
 	}
 }
 
 func (f *GetItemT) Backward(gy ...*Variable) []*Variable {
 	return []*Variable{
-		GetItemGrad(f.Slices, f.xShape)(gy...),
+		GetItemGrad(f.Indices, f.xShape, f.Axis)(gy...),
 	}
 }

@@ -5,7 +5,7 @@ import (
 	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
-	"github.com/itsubaki/autograd/matrix"
+	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -19,19 +19,19 @@ func WithSource(s randv2.Source) OptionFunc {
 
 func WithInSize(inSize int) OptionFunc {
 	return func(l *LinearT) {
-		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
+		l.Add("w", initw(inSize, l.outSize, l.s))
 	}
 }
 
 func WithNoBias() OptionFunc {
 	return func(l *LinearT) {
-		l.Parameters.Delete("b")
+		l.Delete("b")
 	}
 }
 
 func Linear(outSize int, opts ...OptionFunc) *LinearT {
 	p := make(Parameters)
-	p.Add("b", variable.Zeros([]int{1, outSize}))
+	p.Add("b", variable.Zeros(1, outSize))
 
 	l := &LinearT{
 		outSize:    outSize,
@@ -57,8 +57,8 @@ func (l *LinearT) First(x ...*variable.Variable) *variable.Variable {
 
 func (l *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	if _, ok := l.Parameters["w"]; !ok {
-		inSize := x[0].Shape()[1]
-		l.Parameters.Add("w", initw(inSize, l.outSize, l.s))
+		inSize := last(x[0].Shape())
+		l.Add("w", initw(inSize, l.outSize, l.s))
 	}
 
 	return []*variable.Variable{
@@ -76,7 +76,11 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 }
 
 func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
-	w := matrix.Randn(inSize, outSize, s)
+	w := tensor.Randn([]int{inSize, outSize}, s)
 	xavier := 1.0 / math.Sqrt(float64(inSize))
-	return variable.From(matrix.MulC(xavier, w))
+	return variable.From(tensor.MulC(xavier, w))
+}
+
+func last(shape []int) int {
+	return shape[len(shape)-1]
 }

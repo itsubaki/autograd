@@ -10,7 +10,7 @@ func LinearSimple(x, w *variable.Variable, b ...*variable.Variable) *variable.Va
 
 	y := Add(t, b[0])
 
-	// `t` is not used in backprop for `matmul` and `add`.
+	// `t` is not used in backprop for `MatMul` and `Add`.
 	// Clear to save memory.
 	t.Data = nil
 	return y

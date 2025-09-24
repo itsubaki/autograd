@@ -121,7 +121,7 @@ func main() {
 			}
 		}
 
-		log.Printf("%3d: %f\n", i, loss.At(0, 0)/float64(count))
+		log.Printf("%3d: %f\n", i, loss.At()/float64(count))
 	}
 	log.Printf("elapsed=%v\n", time.Since(now))
 
@@ -137,9 +137,10 @@ func main() {
 		defer variable.Nograd().End()
 		m.ResetState()
 
-		for i, x := range xs {
-			y := m.Forward(variable.New(x))
-			ys[i] = y.At(0, 0)
+		for i, v := range xs {
+			x := variable.New(v).Reshape(1, 1)
+			y := m.Forward(x)
+			ys[i] = y.At()
 		}
 	}()
 

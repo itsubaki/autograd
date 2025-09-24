@@ -44,6 +44,6 @@ func ExampleSub_broadcast() {
 	fmt.Println(a.Grad, b.Grad)
 
 	// Output:
-	// variable[1 5]([0 1 2 3 4])
-	// variable[1 5]([1 1 1 1 1]) variable(-5)
+	// variable[5]([0 1 2 3 4])
+	// variable[5]([1 1 1 1 1]) variable(-5)
 }

@@ -23,9 +23,13 @@ func ExampleLSTM() {
 func ExampleLSTM_backward() {
 	m := model.NewLSTM(1, 1, model.WithLSTMSource(rand.Const()))
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	y := m.Forward(x)
 	y.Backward()
+
 	y = m.Forward(x)
 	y.Backward()
 
@@ -43,13 +47,13 @@ func ExampleLSTM_backward() {
 	// h2o.w variable(-0.017558407475346018)
 	// h2u.w variable(0.0016808382857761302)
 	// x2f.b variable(0.013515028138341746)
-	// x2f.w variable[2 1]([[0.013515028138341746] [0.027030056276683492]])
+	// x2f.w variable[2 1]([0.013515028138341746 0.027030056276683492])
 	// x2i.b variable(0.04252623292012907)
-	// x2i.w variable[2 1]([[0.04252623292012907] [0.08505246584025813]])
+	// x2i.w variable[2 1]([0.04252623292012907 0.08505246584025813])
 	// x2o.b variable(0.05279536845172966)
-	// x2o.w variable[2 1]([[0.05279536845172966] [0.10559073690345933]])
+	// x2o.w variable[2 1]([0.05279536845172966 0.10559073690345933])
 	// x2u.b variable(-0.00757230286787535)
-	// x2u.w variable[2 1]([[-0.00757230286787535] [-0.0151446057357507]])
+	// x2u.w variable[2 1]([-0.00757230286787535 -0.0151446057357507])
 	// *layer.LinearT
 	// b variable(2)
 	// w variable(-1.1705639065492832)
@@ -58,7 +62,10 @@ func ExampleLSTM_backward() {
 func ExampleLSTM_ResetState() {
 	m := model.NewLSTM(1, 1)
 
-	x := variable.New(1, 2)
+	x := variable.New(
+		1, 2,
+	).Reshape(1, 2)
+
 	m.Forward(x)
 	m.ResetState()
 	m.Forward(x)
@@ -87,9 +94,11 @@ func ExampleLSTM_ResetState() {
 func ExampleLSTM_Params() {
 	m := model.NewLSTM(100, 1)
 
-	x := variable.New(1, 2, 3)
-	m.Forward(x)
+	x := variable.New(
+		1, 2, 3,
+	).Reshape(1, 3)
 
+	m.Forward(x)
 	for k, v := range m.Params().Seq2() {
 		fmt.Println(k, v.Shape())
 	}
@@ -109,4 +118,45 @@ func ExampleLSTM_Params() {
 	// 0.x2u.w [3 100]
 	// 1.b [1 1]
 	// 1.w [100 1]
+}
+
+func ExampleLSTM_batch() {
+	m := model.NewLSTM(5, 1, model.WithLSTMSource(rand.Const()))
+
+	x := variable.New(
+		1, 2,
+		3, 4,
+
+		5, 6,
+		7, 8,
+	).Reshape(2, 2, 2)
+
+	y := m.Forward(x)
+	y.Backward()
+	m.Cleargrads()
+
+	fmt.Println(y.Shape())
+	fmt.Println(x.Grad.Shape())
+
+	for k, v := range m.Params().Seq2() {
+		fmt.Println(k, v.Shape())
+	}
+
+	// Output:
+	// [2 2 1]
+	// [2 2 2]
+	// 0.h2f.w [5 5]
+	// 0.h2i.w [5 5]
+	// 0.h2o.w [5 5]
+	// 0.h2u.w [5 5]
+	// 0.x2f.b [1 5]
+	// 0.x2f.w [2 5]
+	// 0.x2i.b [1 5]
+	// 0.x2i.w [2 5]
+	// 0.x2o.b [1 5]
+	// 0.x2o.w [2 5]
+	// 0.x2u.b [1 5]
+	// 0.x2u.w [2 5]
+	// 1.b [1 1]
+	// 1.w [5 1]
 }
