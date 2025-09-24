@@ -137,8 +137,9 @@ func main() {
 		defer variable.Nograd().End()
 		m.ResetState()
 
-		for i, x := range xs {
-			y := m.Forward(variable.New(x))
+		for i, v := range xs {
+			x := variable.New(v).Reshape(1, 1)
+			y := m.Forward(x)
 			ys[i] = y.At()
 		}
 	}()
