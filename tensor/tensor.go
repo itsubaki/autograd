@@ -1246,6 +1246,33 @@ func Unravel[T Number](v *Tensor[T], index int) []int {
 	return coord
 }
 
+// KeepDims returns a new shape with 1 inserted at the given axes.
+func KeepDims(shape []int, axes []int) []int {
+	ndim := len(shape)
+	for i := range axes {
+		if axes[i] < 0 {
+			axes[i] += ndim
+		}
+	}
+
+	ax := make(map[int]struct{}, len(axes))
+	for _, a := range axes {
+		ax[a] = struct{}{}
+	}
+
+	out := make([]int, len(shape))
+	for i, s := range shape {
+		if _, ok := ax[i]; ok {
+			out[i] = 1
+			continue
+		}
+
+		out[i] = s
+	}
+
+	return out
+}
+
 // rnd returns a pseudo-random number generator.
 func rnd(s ...randv2.Source) *randv2.Rand {
 	if len(s) == 0 || s[0] == nil {

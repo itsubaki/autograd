@@ -31,7 +31,7 @@ func ExampleSoftmaxCrossEntropy() {
 	gx := x.Grad
 	x.Cleargrad()
 	gx.Backward(variable.Opts{CreateGraph: true})
-	fmt.Println(F.Clip(0, 1)(x.Grad))
+	fmt.Println(F.Clip(0, 1)(x.Grad)) // -0 to 0
 
 	// Output:
 	// variable(2.069494302297095)

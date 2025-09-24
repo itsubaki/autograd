@@ -895,6 +895,17 @@ func ExampleTril() {
 	// [7 8 9]
 }
 
+func ExampleKeepDims() {
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{1}))
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{-2}))
+	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{0, -1}))
+
+	// Output:
+	// [2 1 4]
+	// [2 1 4]
+	// [1 3 1]
+}
+
 func ExampleRand_nil() {
 	v := tensor.Rand([]int{2, 3}, nil)
 	fmt.Println(v.Shape)
