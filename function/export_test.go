@@ -1,6 +1,7 @@
 package function
 
 var (
-	Logp = logp
-	Relu = relu
+	OneHot = oneHot
+	Logp   = logp
+	Relu   = relu
 )
