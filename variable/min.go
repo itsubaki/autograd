@@ -33,7 +33,7 @@ func (f *MinT) Backward(gy ...*Variable) []*Variable {
 	}
 
 	// shape=[2, 3, 4], axes=[1] -> [2, 1, 4]
-	shape := keepDims(f.x.Shape(), f.Axes)
+	shape := tensor.KeepDims(f.x.Shape(), f.Axes)
 
 	// mask
 	y := tensor.Reshape(f.y.Data, shape...)

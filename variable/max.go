@@ -2,7 +2,6 @@ package variable
 
 import (
 	"math"
-	"slices"
 
 	"github.com/itsubaki/autograd/tensor"
 )
@@ -38,7 +37,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	}
 
 	// shape=[2, 3, 4], axes=[1] -> [2, 1, 4]
-	shape := keepDims(f.x.Shape(), f.Axes)
+	shape := tensor.KeepDims(f.x.Shape(), f.Axes)
 
 	// mask
 	y := tensor.Reshape(f.y.Data, shape...)
@@ -59,25 +58,4 @@ func IsClose(a, b float64) float64 {
 	}
 
 	return 0
-}
-
-func keepDims(shape []int, axis []int) []int {
-	ndim := len(shape)
-	for i := range axis {
-		if axis[i] < 0 {
-			axis[i] += ndim
-		}
-	}
-
-	out := make([]int, len(shape))
-	for i, s := range shape {
-		if slices.Contains(axis, i) {
-			out[i] = 1
-			continue
-		}
-
-		out[i] = s
-	}
-
-	return out
 }

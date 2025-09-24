@@ -32,7 +32,7 @@ func (f *SumT) Backward(gy ...*Variable) []*Variable {
 	}
 
 	// shape=[2, 3, 4], axes=[1] -> [2, 1, 4]
-	shape := keepDims(f.xShape, f.Axes)
+	shape := tensor.KeepDims(f.xShape, f.Axes)
 
 	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
