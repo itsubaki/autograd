@@ -72,17 +72,16 @@ func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 		s = step[0]
 	}
 
-	if s > 0 {
-		var data []T
-		for i := start; i < stop; i += s {
-			data = append(data, i)
+	cond := func() func(i T) bool {
+		if s > 0 {
+			return func(i T) bool { return i < stop }
 		}
 
-		return New([]int{len(data)}, data)
-	}
+		return func(i T) bool { return i > stop }
+	}()
 
 	var data []T
-	for i := start; i > stop; i += s {
+	for i := start; cond(i); i += s {
 		data = append(data, i)
 	}
 
