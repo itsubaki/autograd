@@ -446,6 +446,24 @@ func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
 
 // Reshape returns a new tensor with the same data as v with the given shape.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
+	idx, prod := -1, 1
+	for i, s := range shape {
+		if s == -1 && idx != -1 {
+			panic("duplicate -1 in shape")
+		}
+
+		if s == -1 {
+			idx = i
+			continue
+		}
+
+		prod *= s
+	}
+
+	if idx != -1 {
+		shape[idx] = v.Size() / prod
+	}
+
 	if size(shape) != v.Size() {
 		panic("invalid shape")
 	}
