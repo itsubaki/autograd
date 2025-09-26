@@ -136,7 +136,9 @@ for i := range epochs {
 ```go
 x := variable.New(1.0)
 y := F.Sin(x)
-y.Backward(variable.Opts{CreateGraph: true})
+y.Backward(variable.Opts{
+	CreateGraph: true,
+})
 
 fmt.Println(y)
 fmt.Println(x.Grad)

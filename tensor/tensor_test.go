@@ -956,25 +956,6 @@ func ExampleLinspace_invalid() {
 	// n is less than 2
 }
 
-func ExampleReshape_invalid() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println(r)
-			return
-		}
-
-		panic("unexpected panic for index")
-	}()
-
-	v := tensor.New([]int{2, 2}, []int{1, 2, 3, 4})
-	_ = tensor.Reshape(v, 10, 10)
-
-	panic("unreachable")
-
-	// Output:
-	// invalid shape
-}
-
 func ExampleMatMul_invalid() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1074,6 +1055,60 @@ func TestArange_f64(t *testing.T) {
 	for _, c := range cases {
 		got := tensor.Arange(c.start, c.stop, c.step)
 		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
+		}
+	}
+}
+
+func TestReshape(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		shape []int
+		want  *tensor.Tensor[int]
+	}{
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			shape: []int{3, 2},
+			want: tensor.New([]int{3, 2}, []int{
+				1, 2,
+				3, 4,
+				5, 6,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
+			shape: []int{6},
+			want: tensor.New([]int{6}, []int{
+				1, 2, 3, 4, 5, 6,
+			}),
+		},
+		{
+			v: tensor.New([]int{2, 2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+
+				7, 8, 9,
+				10, 11, 12,
+			}),
+			shape: []int{-1, 3},
+			want: tensor.New([]int{4, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+				10, 11, 12,
+			}),
+		},
+	}
+
+	for _, c := range cases {
+		got := tensor.Reshape(c.v, c.shape...)
+		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -3401,6 +3436,40 @@ func TestShapeEqual(t *testing.T) {
 		if got != c.want {
 			t.Errorf("a=%v, b=%v, got=%v, want=%v", c.a, c.b, got, c.want)
 		}
+	}
+}
+
+func TestReshape_invalid(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		shape []int
+	}{
+		{
+			v: tensor.New([]int{2, 2}, []int{
+				1, 2,
+				3, 4,
+			}),
+			shape: []int{10, 10},
+		},
+		{
+			v:     tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			shape: []int{-1, -1},
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for shape %v", c)
+			}()
+
+			_ = tensor.Reshape(c.v, c.shape...)
+			t.Fail()
+		}()
 	}
 }
 
