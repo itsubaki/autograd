@@ -13,12 +13,21 @@
 ### Backward
 
 ```go
-x := variable.New(1.0)
-y := F.Sin(x)
-y.Backward()
+import (
+	"fmt"
+	
+	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/variable"
+)
 
-fmt.Println(y)
-fmt.Println(x.Grad)
+func main() {
+	x := variable.New(1.0)
+	y := F.Sin(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+}
 
 // Output:
 // variable(0.8414709848078965)
