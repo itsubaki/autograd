@@ -51,6 +51,6 @@ func ExampleAdam_hook() {
 	fmt.Println(p)
 
 	// Output:
-	// variable(1.0990000003162277)
-	// variable(1.1980000005398905)
+	// variable(0.9990000002874797)
+	// variable(0.997998680251141)
 }
