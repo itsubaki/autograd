@@ -14,6 +14,7 @@ func WithRNNSource(s randv2.Source) RNNOptionFunc {
 		l.s = s
 	}
 }
+
 func RNN(hiddenSize int, opts ...RNNOptionFunc) *RNNT {
 	rnn := &RNNT{
 		Layers: make(Layers),
