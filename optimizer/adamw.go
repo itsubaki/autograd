@@ -7,16 +7,17 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-type Adam struct {
-	Alpha  float64
-	Beta1  float64
-	Beta2  float64
-	Hook   []Hook
-	iter   int
-	ms, vs map[*variable.Variable]*tensor.Tensor[float64]
+type AdamW struct {
+	Alpha       float64
+	Beta1       float64
+	Beta2       float64
+	WeightDecay float64
+	Hook        []Hook
+	iter        int
+	ms, vs      map[*variable.Variable]*tensor.Tensor[float64]
 }
 
-func (o *Adam) Update(model Model) {
+func (o *AdamW) Update(model Model) {
 	params := Params(model, o.Hook)
 
 	if len(o.ms) == 0 {
@@ -47,7 +48,10 @@ func (o *Adam) Update(model Model) {
 			return lr * m / (math.Sqrt(v) + 1e-8)
 		})
 
-		// param = param - (lr * m / (sqrt(v) + 1e-8))
-		p.Data = tensor.Sub(p.Data, update)
+		decay := tensor.F(p.Data, func(w float64) float64 {
+			return lr * o.WeightDecay * w
+		})
+
+		p.Data = tensor.Sub(p.Data, tensor.Add(update, decay))
 	}
 }
