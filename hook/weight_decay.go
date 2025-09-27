@@ -8,7 +8,7 @@ import (
 func WeightDecay(lambda float64) func(params []layer.Parameter) {
 	return func(params []layer.Parameter) {
 		for _, p := range params {
-			p.Data = tensor.F2(p.Data, p.Grad.Data, decay(lambda))
+			p.Grad.Data = tensor.F2(p.Grad.Data, p.Data, decay(lambda))
 		}
 	}
 }
