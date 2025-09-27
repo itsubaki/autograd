@@ -14,7 +14,7 @@ func ExampleWeightDecay() {
 	h := hook.WeightDecay(0.1)
 	h([]*variable.Variable{p})
 
-	fmt.Println(p)
+	fmt.Println(p.Grad)
 
 	// Output:
 	// variable(1.1)

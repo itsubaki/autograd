@@ -51,5 +51,5 @@ func ExampleSGD_hook() {
 	fmt.Println(p)
 
 	// Output:
-	// variable(1)
+	// variable(0.89)
 }
