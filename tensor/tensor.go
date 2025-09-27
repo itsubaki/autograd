@@ -1418,5 +1418,5 @@ func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
 
 // isClose returns true if a and b are close enough.
 func isClose(a, b float64, atol, rtol float64) bool {
-	return math.Abs(a-b) <= atol+rtol*math.Abs(b)
+	return math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b))
 }
