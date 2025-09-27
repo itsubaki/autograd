@@ -74,7 +74,7 @@ func ExampleMax_axis1() {
 	// variable[2 3]([0 0 1 0 1 0])
 }
 
-func ExampleMax_axis21() {
+func ExampleMax_axis21n() {
 	x := variable.New(
 		1, 2, 3,
 		4, 10, 6,
