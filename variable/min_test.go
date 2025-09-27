@@ -74,7 +74,7 @@ func ExampleMin_axis1() {
 	// variable[2 3]([1 0 0 0 1 0])
 }
 
-func ExampleMin_axis21() {
+func ExampleMin_axis21n() {
 	x := variable.New(
 		1, 2, 3,
 		4, -5, 6,

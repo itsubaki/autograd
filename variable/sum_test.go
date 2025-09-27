@@ -71,7 +71,7 @@ func ExampleSum_axis1() {
 	// variable[2 3]([1 1 1 1 1 1])
 }
 
-func ExampleSum_axis21() {
+func ExampleSum_axis21n() {
 	x := variable.New(
 		1, 2, 3,
 		4, 5, 6,
