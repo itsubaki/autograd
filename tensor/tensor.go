@@ -304,12 +304,15 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 		return New(nil, []float64{0})
 	}
 
-	// insert 1 at the given axes
-	shape := KeepDims(v.Shape, axes)
-
 	// variance
 	mu := Mean(v, axes...)
-	xc := Sub(v, Reshape(mu, shape...))
+	if len(axes) > 0 {
+		// insert 1 at the given axes
+		shape := KeepDims(v.Shape, axes)
+		mu = Reshape(mu, shape...)
+	}
+
+	xc := Sub(v, mu)
 	return Mean(Mul(xc, xc), axes...)
 }
 
