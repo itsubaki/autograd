@@ -33,4 +33,5 @@ var (
 	Concat          = variable.Concat
 	Split           = variable.Split
 	Mean            = variable.Mean
+	Variance        = variable.Variance
 )

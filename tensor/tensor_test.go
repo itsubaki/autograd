@@ -1371,6 +1371,17 @@ func TestMean(t *testing.T) {
 			}),
 		},
 		{
+			// all
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{},
+			want: tensor.New(nil, []float64{
+				2.5,
+			}),
+		},
+		{
 			// axis 0
 			v: tensor.New([]int{2, 2}, []float64{
 				1, 2,
@@ -1434,6 +1445,17 @@ func TestVariance(t *testing.T) {
 				3, 4,
 			}),
 			axes: []int{0, 1},
+			want: tensor.New(nil, []float64{
+				1.25,
+			}),
+		},
+		{
+			// all
+			v: tensor.New([]int{2, 2}, []float64{
+				1, 2,
+				3, 4,
+			}),
+			axes: []int{},
 			want: tensor.New(nil, []float64{
 				1.25,
 			}),
