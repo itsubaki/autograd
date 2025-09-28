@@ -30,4 +30,6 @@ var (
 	Min             = variable.Min
 	Clip            = variable.Clip
 	GetItem         = variable.GetItem
+	Concat          = variable.Concat
+	Split           = variable.Split
 )

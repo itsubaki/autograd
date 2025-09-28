@@ -41,7 +41,7 @@ func ExamplePow_double() {
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		gx := x.Grad
 		x.Cleargrad()
 		gx.Backward(variable.Opts{CreateGraph: true})
