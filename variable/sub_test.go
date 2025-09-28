@@ -48,7 +48,8 @@ func ExampleSub_broadcast() {
 
 	// Output:
 	// variable[5]([0 1 2 3 4])
-	// variable[5]([1 1 1 1 1]) variable(-5)
+	// variable[5]([1 1 1 1 1])
+	// variable(-5)
 }
 
 func ExampleSub_double() {
