@@ -833,49 +833,32 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	return out
 }
 
-// Split returns a new tensors by splitting v into n tensors along the given axis.
-func Split[T Number](v *Tensor[T], n, axis int) []*Tensor[T] {
-	if n < 1 {
-		panic("n is less than 1")
-	}
-
+// Split returns a list of tensors by splitting v into parts with the given size along the given axis.
+func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 	ndim := v.NumDims()
-	if ndim == 0 {
-		panic("tensor is a scalar")
-	}
-
 	ax, err := adjAxis(axis, ndim)
 	if err != nil {
 		panic(err)
 	}
 
-	if v.Shape[ax]%n != 0 {
-		panic(fmt.Sprintf("shape %v is not divisible by n=%d along axis=%d", v.Shape, n, ax))
-	}
-
-	// new shape
-	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-
-	part := v.Shape[ax] / n
-	shape[ax] = part
-
-	// out tensors
-	out := make([]*Tensor[T], n)
-	for i := range n {
+	out := make([]*Tensor[T], len(size))
+	var start int
+	for i, s := range size {
+		// out tensor
+		shape := make([]int, ndim)
+		copy(shape, v.Shape)
+		shape[ax] = s
 		out[i] = Zeros[T](shape...)
-	}
 
-	// split
-	for i := range v.Data {
-		coord := Unravel(v, i)
-		idx := coord[ax] / part
+		// copy
+		for j := range out[i].Data {
+			coord := Unravel(out[i], j)
+			coord[ax] += start
+			idx := Ravel(v, coord...)
+			out[i].Data[j] = v.Data[idx]
+		}
 
-		coord[ax] = coord[ax] % part
-		j := Ravel(out[idx], coord...)
-
-		// set
-		out[idx].Data[j] = v.Data[i]
+		start += s
 	}
 
 	return out
