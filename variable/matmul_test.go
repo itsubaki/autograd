@@ -31,6 +31,40 @@ func ExampleMatMul() {
 	// variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
 }
 
+func ExampleMatMul_double() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	w := variable.New(
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+	).Reshape(3, 4)
+
+	y := variable.MatMul(x, w)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(x.Grad)
+	fmt.Println(w.Grad)
+
+	gx := x.Grad
+	gw := w.Grad
+	x.Cleargrad()
+	w.Cleargrad()
+
+	gx.Backward()
+	gw.Backward()
+	fmt.Println(x.Grad)
+	fmt.Println(w.Grad)
+
+	// Output:
+	// variable[2 3]([10 26 42 10 26 42])
+	// variable[3 4]([5 5 5 5 7 7 7 7 9 9 9 9])
+	// variable[2 3]([4 4 4 4 4 4])
+	// variable[3 4]([2 2 2 2 2 2 2 2 2 2 2 2])
+}
+
 func TestMatMul(t *testing.T) {
 	cases := []struct {
 		x, w *variable.Variable

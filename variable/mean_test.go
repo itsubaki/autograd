@@ -86,7 +86,7 @@ func ExampleMean_double() {
 
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
+	gx.Backward()
 	fmt.Println(x.Grad)
 
 	// Output:

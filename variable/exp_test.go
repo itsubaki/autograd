@@ -33,9 +33,9 @@ func ExampleExp() {
 
 func ExampleExp_double() {
 	x := variable.New(2.0)
+
 	y := variable.Exp(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 

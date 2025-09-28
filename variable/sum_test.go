@@ -87,3 +87,22 @@ func ExampleSum_axis21n() {
 	// variable(21)
 	// variable[2 3]([1 1 1 1 1 1])
 }
+
+func ExampleSum_double() {
+	x := variable.New(1, 2, 3, 4, 5, 6)
+
+	y := variable.Sum()(x)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable(21)
+	// variable[6]([1 1 1 1 1 1])
+	// <nil>
+}

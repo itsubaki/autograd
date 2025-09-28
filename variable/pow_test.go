@@ -35,9 +35,9 @@ func ExamplePow() {
 
 func ExamplePow_double() {
 	x := variable.New(2.0)
+
 	y := variable.Pow(3.0)(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
