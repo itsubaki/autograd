@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// DivC returns c / x
 func DivC(c float64, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &DivT{},
