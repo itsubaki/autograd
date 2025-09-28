@@ -286,14 +286,14 @@ func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 		panic(err)
 	}
 
-	// count
-	count := 1
+	// size
+	size := 1
 	for _, a := range ax {
-		count = count * v.Shape[a]
+		size = size * v.Shape[a]
 	}
 
 	// mean
-	return MulC(1/float64(count), Float64(Sum(v, ax...)))
+	return MulC(1/float64(size), Float64(Sum(v, ax...)))
 }
 
 // Variance returns a new tensor with the variance of elements in v.
@@ -311,9 +311,9 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	}
 
 	shape := KeepDims(v.Shape, axes)
-	mu := Reshape(Mean(v, axes...), shape...) // mean
-	xc := Sub(v, mu)                          // x - mean
-	return Mean(Mul(xc, xc), axes...)         // mean((x - mean)**2)
+	mu := Mean(v, axes...)              // mean
+	xc := Sub(v, Reshape(mu, shape...)) // x - mean
+	return Mean(Mul(xc, xc), axes...)   // mean((x - mean)**2)
 }
 
 // Std returns a new tensor with the standard deviation of elements in v.

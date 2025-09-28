@@ -26,28 +26,27 @@ func (f *VarianceT) Forward(x ...*Variable) []*Variable {
 
 func (f *VarianceT) Backward(gy ...*Variable) []*Variable {
 	if len(f.Axes) == 0 {
-		mu := Mean(f.Axes...)(f.x)       // mean(x)
-		xc := Sub(f.x, mu)               // x - mean(x)
-		count := f.x.Data.Size()         // N
-		gx := MulC(2/float64(count), xc) // 2/N * (x - mean(x))
+		mu := Mean(f.Axes...)(f.x)      // mean(x)
+		xc := Sub(f.x, mu)              // x - mean(x)
+		size := f.x.Data.Size()         // N
+		gx := MulC(2/float64(size), xc) // 2/N * (x - mean(x))
 		return []*Variable{
 			Mul(gy[0], gx),
 		}
 	}
 
-	// count
+	// size
 	shape := f.x.Shape()
-	count := 1
+	size := 1
 	for _, ax := range f.Axes {
-		count *= shape[ax]
+		size *= shape[ax]
 	}
 
 	// mu = mean(x, axes)
 	reshape := tensor.KeepDims(shape, f.Axes)
-	mu := Mean(f.Axes...)(f.x)       // mean(x, axes)
-	mu = Reshape(reshape...)(mu)     // reshape
-	xc := Sub(f.x, mu)               // x - mean(x, axes)
-	gx := MulC(2/float64(count), xc) // 2/N * (x - mean(x, axes))
+	mu := Mean(f.Axes...)(f.x)              // mean(x, axes)
+	xc := Sub(f.x, Reshape(reshape...)(mu)) // x - mean(x, axes)
+	gx := MulC(2/float64(size), xc)         // 2/N * (x - mean(x, axes))
 
 	gy0 := Reshape(reshape...)(gy[0])
 	bgy := BroadcastTo(shape...)(gy0)

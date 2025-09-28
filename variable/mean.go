@@ -24,20 +24,26 @@ func (f *MeanT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *MeanT) Backward(gy ...*Variable) []*Variable {
-	shape := f.x.Shape()
-
-	// count
-	count := f.x.Data.Size()
-	if len(f.Axes) > 0 {
-		count = 1
-		for _, ax := range f.Axes {
-			count *= shape[ax]
+	if len(f.Axes) == 0 {
+		size := f.x.Data.Size()
+		bgy := BroadcastTo(f.x.Shape()...)(gy...)
+		return []*Variable{
+			MulC(1/float64(size), bgy),
 		}
 	}
 
-	// gx = 1/count * gy
-	bgy := BroadcastTo(shape...)(gy...)
+	// size
+	shape := f.x.Shape()
+	size := 1
+	for _, ax := range f.Axes {
+		size *= shape[ax]
+	}
+
+	// gx = 1/N * gy
+	reshape := tensor.KeepDims(shape, f.Axes)
+	gy0 := Reshape(reshape...)(gy[0])
+	bgy := BroadcastTo(shape...)(gy0)
 	return []*Variable{
-		MulC(1/float64(count), bgy),
+		MulC(1/float64(size), bgy),
 	}
 }
