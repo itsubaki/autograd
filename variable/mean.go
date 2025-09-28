@@ -12,15 +12,14 @@ func Mean(axes ...int) func(x ...*Variable) *Variable {
 
 type MeanT struct {
 	Axes []int
-	x, y *Variable
+	x    *Variable
 }
 
 func (f *MeanT) Forward(x ...*Variable) []*Variable {
 	f.x = x[0]
 
-	f.y = From(tensor.Mean(x[0].Data, f.Axes...))
 	return []*Variable{
-		f.y,
+		From(tensor.Mean(x[0].Data, f.Axes...)),
 	}
 }
 
