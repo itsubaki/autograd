@@ -841,6 +841,15 @@ func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 		panic(err)
 	}
 
+	var sum int
+	for _, s := range size {
+		sum += s
+	}
+
+	if sum != v.Shape[ax] {
+		panic("sum of size is not equal to shape at axis")
+	}
+
 	out := make([]*Tensor[T], len(size))
 	var start int
 	for i, s := range size {
