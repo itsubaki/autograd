@@ -36,10 +36,9 @@ func (f *MeanT) Backward(gy ...*Variable) []*Variable {
 		}
 	}
 
-	// gx = 1/count
+	// gx = 1/count * gy
 	bgy := BroadcastTo(shape...)(gy...)
-	gx := MulC(1/float64(count), bgy)
 	return []*Variable{
-		gx,
+		MulC(1/float64(count), bgy),
 	}
 }
