@@ -73,3 +73,26 @@ func ExampleVariance_axis1() {
 	// variable[2]([6 6])
 	// variable[2 3]([-2 0 2 -2 0 2])
 }
+
+func ExampleVariance_double() {
+	x := variable.New(
+		-3, 0, 3,
+		-3, 0, 3,
+	).Reshape(2, 3)
+
+	y := variable.Variance(1)(x)
+	y.Backward(variable.Opts{CreateGraph: true})
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(x.Grad) // NOTE: zeros..., why?
+
+	// Output:
+	// variable[2]([6 6])
+	// variable[2 3]([-2 0 2 -2 0 2])
+	// variable[2 3]([0 0 0 0 0 0])
+}
