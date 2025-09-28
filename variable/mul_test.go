@@ -85,3 +85,23 @@ func ExampleMul_double() {
 	// variable(1)
 	// variable(1)
 }
+
+func ExampleMulC_double() {
+	b := variable.New(2.0)
+	y := variable.MulC(3.0, b)
+
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(b.Grad)
+
+	gb := b.Grad
+	b.Cleargrad()
+
+	gb.Backward()
+	fmt.Println(b.Grad)
+
+	// Output:
+	// variable(6)
+	// variable(3)
+	// <nil>
+}
