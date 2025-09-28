@@ -88,7 +88,7 @@ func ExampleVariance_double() {
 	gx := x.Grad
 	x.Cleargrad()
 	gx.Backward()
-	fmt.Println(x.Grad)
+	fmt.Println(x.Grad) // double backprop of Sub is zero
 
 	// Output:
 	// variable[2]([6 6])
