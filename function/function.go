@@ -32,4 +32,6 @@ var (
 	GetItem         = variable.GetItem
 	Concat          = variable.Concat
 	Split           = variable.Split
+	Mean            = variable.Mean
+	Variance        = variable.Variance
 )
