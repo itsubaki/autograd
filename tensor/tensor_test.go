@@ -824,7 +824,7 @@ func ExampleSplit() {
 		5, 6, 7, 8,
 	})
 
-	w := tensor.Split(v, 2, 0)
+	w := tensor.Split(v, []int{1, 1}, 0)
 	fmt.Println(len(w), w[0].Shape, w[1].Shape)
 
 	for _, row := range w[0].Seq2() {
@@ -2941,7 +2941,7 @@ func TestStack(t *testing.T) {
 func TestSplit(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
-		n    int
+		size []int
 		axis int
 		want []*tensor.Tensor[int]
 	}{
@@ -2953,7 +2953,7 @@ func TestSplit(t *testing.T) {
 				7, 8, 9,
 				10, 11, 12,
 			}),
-			n:    2,
+			size: []int{2, 2},
 			axis: 0,
 			want: []*tensor.Tensor[int]{
 				tensor.New([]int{2, 3}, []int{
@@ -2972,7 +2972,7 @@ func TestSplit(t *testing.T) {
 				1, 2, 3, 4,
 				5, 6, 7, 8,
 			}),
-			n:    2,
+			size: []int{2, 2},
 			axis: 1,
 			want: []*tensor.Tensor[int]{
 				tensor.New([]int{2, 2}, []int{
@@ -2994,7 +2994,7 @@ func TestSplit(t *testing.T) {
 				7, 8, 9,
 				10, 11, 12,
 			}),
-			n:    2,
+			size: []int{1, 1},
 			axis: 0,
 			want: []*tensor.Tensor[int]{
 				tensor.New([]int{1, 2, 3}, []int{
@@ -3010,15 +3010,15 @@ func TestSplit(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Split(c.v, c.n, c.axis)
+		got := tensor.Split(c.v, c.size, c.axis)
 		if len(got) != len(c.want) {
-			t.Errorf("n=%v, axis=%v, got len=%v, want len=%v", c.n, c.axis, len(got), len(c.want))
+			t.Errorf("size=%v, axis=%v, got len=%v, want len=%v", c.size, c.axis, len(got), len(c.want))
 			continue
 		}
 
 		for i := range got {
 			if !tensor.EqualAll(got[i], c.want[i]) {
-				t.Errorf("n=%v, axis=%v, got=%v(%v), want=%v(%v)", c.n, c.axis, got[i].Data, got[i].Shape, c.want[i].Data, c.want[i].Shape)
+				t.Errorf("size=%v, axis=%v, got=%v(%v), want=%v(%v)", c.size, c.axis, got[i].Data, got[i].Shape, c.want[i].Data, c.want[i].Shape)
 			}
 		}
 	}
@@ -3968,31 +3968,13 @@ func TestStack_invalid(t *testing.T) {
 func TestSplit_invalid(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
-		n    int
+		size []int
 		axis int
 	}{
 		{
-			// n is less than 1
-			v:    tensor.Zeros[int](2, 3),
-			n:    0,
-			axis: 0,
-		},
-		{
-			// scalar
-			v:    tensor.New(nil, []int{42}),
-			n:    2,
-			axis: 0,
-		},
-		{
-			// not divisible
-			v:    tensor.Zeros[int](2, 3),
-			n:    4,
-			axis: 0,
-		},
-		{
 			// axis out of range
 			v:    tensor.Zeros[int](2, 3),
-			n:    2,
+			size: []int{3, 3},
 			axis: 10,
 		},
 	}
@@ -4004,10 +3986,10 @@ func TestSplit_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for n=%d and axis %d", c.n, c.axis)
+				t.Errorf("unexpected panic for size=%d and axis %d", c.size, c.axis)
 			}()
 
-			_ = tensor.Split(c.v, c.n, c.axis)
+			_ = tensor.Split(c.v, c.size, c.axis)
 			t.Fail()
 		}()
 	}
