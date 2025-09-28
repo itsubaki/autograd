@@ -2946,7 +2946,7 @@ func TestSplit(t *testing.T) {
 		want []*tensor.Tensor[int]
 	}{
 		{
-			// axis 0
+			// axis 0 even
 			v: tensor.New([]int{4, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
@@ -2961,6 +2961,27 @@ func TestSplit(t *testing.T) {
 					4, 5, 6,
 				}),
 				tensor.New([]int{2, 3}, []int{
+					7, 8, 9,
+					10, 11, 12,
+				}),
+			},
+		},
+		{
+			// axis 0
+			v: tensor.New([]int{4, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+				7, 8, 9,
+				10, 11, 12,
+			}),
+			size: []int{1, 3},
+			axis: 0,
+			want: []*tensor.Tensor[int]{
+				tensor.New([]int{1, 3}, []int{
+					1, 2, 3,
+				}),
+				tensor.New([]int{3, 3}, []int{
+					4, 5, 6,
 					7, 8, 9,
 					10, 11, 12,
 				}),
