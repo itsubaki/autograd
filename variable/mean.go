@@ -26,7 +26,7 @@ func (f *MeanT) Forward(x ...*Variable) []*Variable {
 func (f *MeanT) Backward(gy ...*Variable) []*Variable {
 	if len(f.Axes) == 0 {
 		size := f.x.Data.Size()
-		bgy := BroadcastTo(f.x.Shape()...)(gy...)
+		bgy := BroadcastTo(f.x.Shape()...)(gy[0])
 		return []*Variable{
 			MulC(1/float64(size), bgy),
 		}
