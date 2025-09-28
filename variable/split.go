@@ -16,26 +16,26 @@ func Split(size []int, axis int) func(x ...*Variable) []*Variable {
 type SplitT struct {
 	Size []int
 	Axis int
-	ys   []*Variable
+	y    []*Variable
 }
 
 func (f *SplitT) Forward(x ...*Variable) []*Variable {
 	// split
 	y := tensor.Split(x[0].Data, f.Size, f.Axis)
 
-	f.ys = make([]*Variable, len(y))
+	f.y = make([]*Variable, len(y))
 	for i, v := range y {
-		f.ys[i] = From(v)
+		f.y[i] = From(v)
 	}
 
-	return f.ys
+	return f.y
 }
 
 func (f *SplitT) Backward(gy ...*Variable) []*Variable {
 	list := make([]*Variable, len(f.Size))
 	for i := range f.Size {
 		if gy[i] == nil {
-			list[i] = ZeroLike(f.ys[i])
+			list[i] = ZeroLike(f.y[i])
 			continue
 		}
 
