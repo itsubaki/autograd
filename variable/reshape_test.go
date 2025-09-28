@@ -27,3 +27,30 @@ func ExampleReshape() {
 	// variable[2 3]([1 1 1 1 1 1])
 	// variable[1 6]([1 1 1 1 1 1])
 }
+
+func ExampleReshape_double() {
+	// p282
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	y := variable.Reshape(1, 6)(x)
+	y.Backward(variable.Opts{CreateGraph: true, RetainGrad: true})
+	fmt.Println(x)
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+	fmt.Println(y.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[2 3]([1 2 3 4 5 6])
+	// variable[1 6]([1 2 3 4 5 6])
+	// variable[2 3]([1 1 1 1 1 1])
+	// variable[1 6]([1 1 1 1 1 1])
+	// <nil>
+}

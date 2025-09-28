@@ -13,11 +13,13 @@ func ExampleSub() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
 
 	// Output:
 	// variable(1)
-	// variable(1) variable(-1)
+	// variable(1)
+	// variable(-1)
 }
 
 func ExampleSubC() {
@@ -41,9 +43,38 @@ func ExampleSub_broadcast() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
 
 	// Output:
 	// variable[5]([0 1 2 3 4])
 	// variable[5]([1 1 1 1 1]) variable(-5)
+}
+
+func ExampleSub_double() {
+	a := variable.New(3.0)
+	b := variable.New(2.0)
+
+	y := variable.Sub(a, b)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
+
+	ga := a.Grad
+	gb := b.Grad
+	a.Cleargrad()
+	b.Cleargrad()
+
+	ga.Backward()
+	gb.Backward()
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
+
+	// Output:
+	// variable(1)
+	// variable(1)
+	// variable(-1)
+	// <nil>
+	// <nil>
 }

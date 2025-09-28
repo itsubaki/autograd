@@ -69,14 +69,13 @@ func ExampleConcat_double() {
 	axis := 1
 	z := variable.Concat(axis)(x, y)
 	z.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(z)
 	fmt.Println(x.Grad)
 	fmt.Println(y.Grad)
 
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
+	gx.Backward()
 	fmt.Println(x.Grad)
 
 	// Output:

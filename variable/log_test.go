@@ -33,9 +33,9 @@ func ExampleLog() {
 
 func ExampleLog_double() {
 	x := variable.New(2)
+
 	y := variable.Log(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 

@@ -82,14 +82,13 @@ func ExampleVariance_double() {
 
 	y := variable.Variance(1)(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
-	fmt.Println(x.Grad) // NOTE: zeros..., why?
+	gx.Backward()
+	fmt.Println(x.Grad)
 
 	// Output:
 	// variable[2]([6 6])

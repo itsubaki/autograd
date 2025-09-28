@@ -39,9 +39,9 @@ func ExampleCos() {
 
 func ExampleCos_double() {
 	x := variable.New(1.0)
+
 	y := variable.Cos(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(y)
 	fmt.Println(x.Grad)
 

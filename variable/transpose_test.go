@@ -26,6 +26,29 @@ func ExampleTranspose() {
 	// variable[2 3]([1 1 1 1 1 1])
 }
 
+func ExampleTranspose_double() {
+	// p286
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	y := variable.Transpose(-1, -2)(x)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[3 2]([1 4 2 5 3 6])
+	// variable[2 3]([1 1 1 1 1 1])
+	// <nil>
+}
+
 func TestTranspose(t *testing.T) {
 	cases := []struct {
 		x    *variable.Variable

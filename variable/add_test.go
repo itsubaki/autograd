@@ -58,9 +58,40 @@ func ExampleAdd_broadcast() {
 	y.Backward()
 
 	fmt.Println(y)
-	fmt.Println(a.Grad, b.Grad)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
 
 	// Output:
 	// variable[3]([11 12 13])
-	// variable[3]([1 1 1]) variable(3)
+	// variable[3]([1 1 1])
+	// variable(3)
+}
+
+func ExampleAdd_double() {
+	a := variable.New(1, 2, 3)
+	b := variable.New(10)
+
+	y := variable.Add(a, b)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
+
+	ga := a.Grad
+	gb := b.Grad
+	a.Cleargrad()
+	b.Cleargrad()
+
+	ga.Backward()
+	gb.Backward()
+
+	fmt.Println(a.Grad)
+	fmt.Println(b.Grad)
+
+	// Output:
+	// variable[3]([11 12 13])
+	// variable[3]([1 1 1])
+	// variable(3)
+	// <nil>
+	// <nil>
 }

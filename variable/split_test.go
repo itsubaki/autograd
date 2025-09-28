@@ -103,12 +103,12 @@ func ExampleSplit_double() {
 
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true, RetainGrad: true})
+	gx.Backward()
 	fmt.Println(gx.Grad)
 
 	// Output:
 	// variable[1 3]([1 2 3])
 	// variable[2 3]([4 5 6 7 8 9])
 	// variable[3 3]([1 1 1 0 0 0 0 0 0])
-	// variable[3 3]([1 1 1 1 1 1 1 1 1])
+	// <nil>
 }
