@@ -50,7 +50,8 @@ func (f *VarianceT) Backward(gy ...*Variable) []*Variable {
 	gx := MulC(2/float64(count), xc) // 2/N * (x - mean(x, axes))
 
 	gy0 := Reshape(reshape...)(gy[0])
+	bgy := BroadcastTo(shape...)(gy0)
 	return []*Variable{
-		Mul(BroadcastTo(shape...)(gy0), gx),
+		Mul(bgy, gx),
 	}
 }
