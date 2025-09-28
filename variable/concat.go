@@ -29,13 +29,5 @@ func (f *ConcatT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *ConcatT) Backward(gy ...*Variable) []*Variable {
-	// NOTE: can't double backprop
-	sp := tensor.Split(gy[0].Data, f.size, f.Axis)
-
-	gx := make([]*Variable, len(sp))
-	for i, v := range sp {
-		gx[i] = From(v)
-	}
-
-	return gx
+	return Split(f.size, f.Axis)(gy[0])
 }
