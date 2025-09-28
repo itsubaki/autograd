@@ -3974,8 +3974,14 @@ func TestSplit_invalid(t *testing.T) {
 		{
 			// axis out of range
 			v:    tensor.Zeros[int](2, 3),
-			size: []int{3, 3},
+			size: []int{1, 1},
 			axis: 10,
+		},
+		{
+			// axis out of range
+			v:    tensor.Zeros[int](2, 3),
+			size: []int{10, 10},
+			axis: 0,
 		},
 	}
 
