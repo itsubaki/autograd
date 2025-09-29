@@ -59,3 +59,25 @@ func Example_softmax1d() {
 	// variable[3]([0.09003057317038046 0.24472847105479767 0.6652409557748219])
 	// variable[3]([0 0 0])
 }
+
+func ExampleSoftmaxSimple_double() {
+	x := variable.New(
+		1, 2, 3,
+		4, 4, 8,
+	).Reshape(2, 3)
+
+	y := F.SoftmaxSimple(x, 1)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[2 3]([0.09003057317038046 0.24472847105479767 0.6652409557748219 0.017668422014048047 0.017668422014048047 0.9646631559719039])
+	// variable[2 3]([0 0 0 0 0 0])
+	// variable[2 3]([3.7723738417192525e-17 1.0254375264099683e-16 2.787428194260209e-16 0 0 0])
+}
