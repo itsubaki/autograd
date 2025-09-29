@@ -25,11 +25,28 @@ func ExampleSigmoid() {
 
 func ExampleSigmoid_backward() {
 	x := variable.New(-4, 2, 0, 2, 4)
+
 	y := F.Sigmoid(x)
 	y.Backward()
-
 	fmt.Println(x.Grad)
 
 	// Output:
 	// variable[5]([0.017662706213291107 0.10499358540350653 0.25 0.10499358540350653 0.017662706213291107])
+}
+
+func ExampleSigmoid_double() {
+	x := variable.New(-4, 2, 0, 2, 4)
+
+	y := F.Sigmoid(x)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[5]([0.017662706213291107 0.10499358540350653 0.25 0.10499358540350653 0.017662706213291107])
+	// variable[5]([0.01702733592838912 -0.07996250105615307 0 -0.07996250105615307 -0.01702733592838912])
 }

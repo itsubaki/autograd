@@ -28,6 +28,7 @@ func ExampleDropoutSimple() {
 
 func ExampleDropoutSimple_backward() {
 	x := variable.New(0.1, 0.2, 0.3, 0.4, 0.5)
+
 	y := F.DropoutSimple(0.5, rand.Const())(x)
 	y.Backward()
 
@@ -37,4 +38,24 @@ func ExampleDropoutSimple_backward() {
 	// Output:
 	// variable[5]([0.2 0.4 0 0 0])
 	// variable[5]([2 2 0 0 0])
+}
+
+func ExampleDropoutSimple_double() {
+	x := variable.New(1, 1, 1, 1, 1)
+
+	y := F.DropoutSimple(0.5, rand.Const())(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[5]([2 2 0 0 0])
+	// variable[5]([2 2 0 0 0])
+	// <nil>
 }

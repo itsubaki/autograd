@@ -44,17 +44,20 @@ func ExampleMeanSquaredErrorSimple_double() {
 
 	y := F.MeanSquaredErrorSimple(x0, x1)
 	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
 
 	gx0 := x0.Grad
+	gx1 := x1.Grad
 	x0.Cleargrad()
-	gx0.Backward(variable.Opts{CreateGraph: true})
+	x1.Cleargrad()
 
-	fmt.Println(y)
+	gx0.Backward()
+	gx1.Backward()
 	fmt.Println(x0.Grad)
 	fmt.Println(x1.Grad)
 
 	// Output:
 	// variable(4)
-	// variable[2 4]([0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25])
-	// variable[2 4]([0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25])
+	// variable[2 4]([0 0 0 0 0 0 0 0])
+	// variable[2 4]([0 0 0 0 0 0 0 0])
 }

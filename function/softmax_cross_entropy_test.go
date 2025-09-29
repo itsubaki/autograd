@@ -27,17 +27,10 @@ func ExampleSoftmaxCrossEntropy() {
 		fmt.Printf("%.8f\n", row)
 	}
 
-	// double
-	gx := x.Grad
-	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
-	fmt.Println(F.Clip(0, 1)(x.Grad)) // -0 to 0
-
 	// Output:
 	// variable(2.069494302297095)
 	// [0.04916165 0.04676401 -0.41894615 0.04448330 0.04676401 0.04916165 0.04448330 0.04916165 0.04448330 0.04448330]
 	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
-	// variable[2 10]([0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
 }
 
 func ExampleOneHot() {
@@ -69,4 +62,36 @@ func ExampleLogp() {
 	// [1]
 	// [7]
 	// [14]
+}
+
+func ExampleSoftmaxCrossEntropy_double() {
+	x := variable.New(
+		0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0,
+		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
+	).Reshape(2, 10)
+
+	t := variable.New(
+		2,
+		2,
+	).Reshape(2, 1)
+
+	y := F.SoftmaxCrossEntropy(x, t)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+
+	for _, row := range x.Grad.Data.Seq2() {
+		fmt.Printf("%.8f\n", row)
+	}
+
+	// double
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(F.Clip(0, 1)(x.Grad)) // NOTE: zeros..., why?
+
+	// Output:
+	// variable(2.069494302297095)
+	// [0.04916165 0.04676401 -0.41894615 0.04448330 0.04676401 0.04916165 0.04448330 0.04916165 0.04448330 0.04448330]
+	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
+	// variable[2 10]([0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
 }
