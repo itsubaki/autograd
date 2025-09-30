@@ -9,9 +9,9 @@ import (
 func Example_tanh() {
 	// p249
 	x := variable.New(1.0)
+
 	y := variable.Tanh(x)
 	y.Backward(variable.Opts{CreateGraph: true})
-
 	fmt.Println(x.Grad)
 
 	gx := x.Grad
