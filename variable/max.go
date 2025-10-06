@@ -1,10 +1,6 @@
 package variable
 
-import (
-	"math"
-
-	"github.com/itsubaki/autograd/tensor"
-)
+import "github.com/itsubaki/autograd/tensor"
 
 func Max(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
@@ -30,7 +26,7 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	if len(f.Axes) == 0 {
-		mask := tensor.F2(f.x.Data, f.y.Data, IsClose)
+		mask := isClose(f.x.Data, f.y.Data)
 		return []*Variable{
 			Mul(gy[0], From(mask)),
 		}
@@ -41,7 +37,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 
 	// mask
 	y := tensor.Reshape(f.y.Data, shape...)
-	mask := tensor.F2(f.x.Data, y, IsClose)
+	mask := isClose(f.x.Data, y)
 
 	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
@@ -51,11 +47,6 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	}
 }
 
-func IsClose(a, b float64) float64 {
-	atol, rtol := 1e-08, 1e-05
-	if math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b)) {
-		return 1
-	}
-
-	return 0
+func isClose(a, b *tensor.Tensor[float64]) *tensor.Tensor[float64] {
+	return tensor.Float64(tensor.IsClose(a, b, 1e-8, 1e-5))
 }
