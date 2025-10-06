@@ -17,6 +17,14 @@ type Adam struct {
 }
 
 func (o *Adam) Update(model Model) {
+	o.update(model, func(lr float64, data, ms, vs *tensor.Tensor[float64]) *tensor.Tensor[float64] {
+		return tensor.F2(ms, vs, func(m, v float64) float64 {
+			return lr * m / (math.Sqrt(v) + 1e-8)
+		})
+	})
+}
+
+func (o *Adam) update(model Model, f func(lr float64, data, ms, vs *tensor.Tensor[float64]) *tensor.Tensor[float64]) {
 	params := Params(model, o.Hook)
 
 	if len(o.ms) == 0 {
@@ -43,9 +51,8 @@ func (o *Adam) Update(model Model) {
 			return v + (1-o.Beta2)*(grad*grad-v)
 		})
 
-		update := tensor.F2(o.ms[p], o.vs[p], func(m, v float64) float64 {
-			return lr * m / (math.Sqrt(v) + 1e-8)
-		})
+		// update function
+		update := f(lr, p.Data, o.ms[p], o.vs[p])
 
 		// param = param - (lr * m / (sqrt(v) + 1e-8))
 		p.Data = tensor.Sub(p.Data, update)

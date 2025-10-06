@@ -13,9 +13,11 @@ func ExampleAdamW() {
 	m := &TestModel{P: p}
 
 	o := optimizer.AdamW{
-		Alpha:       0.001,
-		Beta1:       0.9,
-		Beta2:       0.999,
+		Adam: optimizer.Adam{
+			Alpha: 0.001,
+			Beta1: 0.9,
+			Beta2: 0.999,
+		},
 		WeightDecay: 0.1,
 	}
 
