@@ -814,7 +814,7 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 		panic(err)
 	}
 
-	// out
+	// out tensor
 	shape := make([]int, ndim+1)
 	copy(shape[:ax], v[0].Shape[:ax])
 	shape[ax] = len(v)
@@ -1133,9 +1133,11 @@ func IsCloseAll(v, w *Tensor[float64], atol, rtol float64) bool {
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
+	coords := Coordinates(v.Shape)
+
 	out := ZeroLike(v)
-	for i := range v.Data {
-		out.Data[i] = f(v.Data[i])
+	for _, coord := range coords {
+		out.Set(coord, f(v.At(coord...)))
 	}
 
 	return out
@@ -1145,10 +1147,11 @@ func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 // v and w are broadcasted to a common shape.
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
+	coords := Coordinates(a.Shape)
 
 	out := Zeros[U](a.Shape...)
-	for i := range a.Data {
-		out.Data[i] = f(a.Data[i], b.Data[i])
+	for _, coord := range coords {
+		out.Set(coord, f(a.At(coord...), b.At(coord...)))
 	}
 
 	return out
@@ -1196,7 +1199,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 		pos++
 	}
 
-	// output
+	// out tensor
 	out := Full(shape, acc)
 	for x := range v.Data {
 		i, remain := 0, x
@@ -1418,4 +1421,35 @@ func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
 // isClose returns true if a and b are close enough.
 func isClose(a, b float64, atol, rtol float64) bool {
 	return math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b))
+}
+
+// Coordinates returns all possible coordinates for the given shape.
+func Coordinates(shape []int) [][]int {
+	numDims := len(shape)
+	if numDims == 0 {
+		return [][]int{{}}
+	}
+
+	total := 1
+	for _, size := range shape {
+		total *= size
+	}
+
+	result, current := make([][]int, 0, total), make([]int, numDims)
+	for range total {
+		coord := make([]int, numDims)
+		copy(coord, current)
+		result = append(result, coord)
+
+		for d := numDims - 1; d > -1; d-- {
+			current[d]++
+			if current[d] < shape[d] {
+				break
+			}
+
+			current[d] = 0
+		}
+	}
+
+	return result
 }
