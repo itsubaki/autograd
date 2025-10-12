@@ -990,6 +990,21 @@ func ExampleMatMul_invalid() {
 	// shapes [2 2 2] and [2 3 2] are not aligned for matmul
 }
 
+func ExampleCoordinates() {
+	v := tensor.Coordinates([]int{2, 3})
+	for _, coord := range v {
+		fmt.Println(coord)
+	}
+
+	// Output:
+	// [0 0]
+	// [0 1]
+	// [0 2]
+	// [1 0]
+	// [1 1]
+	// [1 2]
+}
+
 func TestArange(t *testing.T) {
 	cases := []struct {
 		start, stop, step int
