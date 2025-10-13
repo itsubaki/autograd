@@ -158,12 +158,12 @@ func TestTranspose(t *testing.T) {
 
 	for _, c := range cases {
 		y := variable.Transpose(c.axes...)(c.x)
-		if !tensor.IsCloseAll(y.Data, c.y.Data, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(y.Data, c.y.Data) {
 			t.Errorf("got=%v, want=%v", y.Data, c.y.Data)
 		}
 
 		y.Backward()
-		if !tensor.IsCloseAll(c.x.Grad.Data, c.gx.Data, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(c.x.Grad.Data, c.gx.Data) {
 			t.Errorf("got=%v, want=%v", c.x.Grad.Data, c.gx.Data)
 		}
 	}
