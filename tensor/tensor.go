@@ -316,8 +316,8 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Mean(Mul(xc, xc), axes...)   // mean((x - mean)**2)
 }
 
-// Std returns a new tensor with the standard deviation of elements in v.
-func Std(v *Tensor[float64], axes ...int) *Tensor[float64] {
+// StdDev returns a new tensor with the standard deviation of elements in v.
+func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Sqrt(Variance(v, axes...))
 }
 
@@ -359,9 +359,9 @@ func Equal(v, w *Tensor[int]) *Tensor[int] {
 }
 
 // IsClose returns a new tensor with elements that are 1 if v and w are close enough and 0 otherwise.
-func IsClose(v, w *Tensor[float64], atol, rtol float64) *Tensor[int] {
+func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 	return F2(v, w, func(a, b float64) int {
-		if isClose(a, b, atol, rtol) {
+		if isClose(a, b, tol...) {
 			return 1
 		}
 
@@ -1116,14 +1116,14 @@ func EqualAll(v, w *Tensor[int]) bool {
 }
 
 // IsCloseAll returns true if the two tensors are close enough.
-func IsCloseAll(v, w *Tensor[float64], atol, rtol float64) bool {
+func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
 	if !ShapeEqual(v.Shape, w.Shape) {
 		return false
 	}
 
 	for i := range v.Data {
 		a, b := v.Data[i], w.Data[i]
-		if !isClose(a, b, atol, rtol) {
+		if !isClose(a, b, tol...) {
 			return false
 		}
 	}
@@ -1419,7 +1419,19 @@ func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
 }
 
 // isClose returns true if a and b are close enough.
-func isClose(a, b float64, atol, rtol float64) bool {
+func isClose(a, b float64, tol ...float64) bool {
+	atol, rtol := func() (float64, float64) {
+		if len(tol) == 0 {
+			return 1e-8, 1e-5
+		}
+
+		if len(tol) == 1 {
+			return tol[0], tol[0]
+		}
+
+		return tol[0], tol[1]
+	}()
+
 	return math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b))
 }
 

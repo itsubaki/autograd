@@ -938,6 +938,41 @@ func ExampleRandn_seed() {
 	// [-0.3678 1.0920 -0.4438]
 }
 
+func ExampleIsClose() {
+	x := tensor.New([]int{2, 2}, []float64{
+		1.0, 2.0,
+		3.0, 4.0,
+	})
+	y := tensor.New([]int{2, 2}, []float64{
+		1.0, 2.0,
+		3.0, 5.0,
+	})
+
+	fmt.Println(tensor.IsCloseAll(x, x))
+	fmt.Println(tensor.IsCloseAll(x, y, 0.0))
+	fmt.Println(tensor.IsCloseAll(x, y, 0.0, 1.0))
+
+	// Output:
+	// true
+	// false
+	// true
+}
+
+func ExampleCoordinates() {
+	v := tensor.Coordinates([]int{2, 3})
+	for _, coord := range v {
+		fmt.Println(coord)
+	}
+
+	// Output:
+	// [0 0]
+	// [0 1]
+	// [0 2]
+	// [1 0]
+	// [1 1]
+	// [1 2]
+}
+
 func ExampleLinspace_invalid() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -988,21 +1023,6 @@ func ExampleMatMul_invalid() {
 
 	// Output:
 	// shapes [2 2 2] and [2 3 2] are not aligned for matmul
-}
-
-func ExampleCoordinates() {
-	v := tensor.Coordinates([]int{2, 3})
-	for _, coord := range v {
-		fmt.Println(coord)
-	}
-
-	// Output:
-	// [0 0]
-	// [0 1]
-	// [0 2]
-	// [1 0]
-	// [1 1]
-	// [1 2]
 }
 
 func TestArange(t *testing.T) {
@@ -1069,7 +1089,7 @@ func TestArange_f64(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Arange(c.start, c.stop, c.step)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -1306,7 +1326,7 @@ func TestMax(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Max(c.v, c.axes...)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.want.Data, c.want.Shape)
 		}
 	}
@@ -1356,7 +1376,7 @@ func TestMin(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Min(c.v, c.axes...)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -1435,7 +1455,7 @@ func TestMean(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Mean(c.v, c.axes...)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -1584,13 +1604,13 @@ func TestVariance(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Variance(c.v, c.axes...)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
 }
 
-func TestStd(t *testing.T) {
+func TestStdDev(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[float64]
 		axes []int
@@ -1678,8 +1698,8 @@ func TestStd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Std(c.v, c.axes...)
-		if !tensor.IsCloseAll(got, c.want, 1e-8, 1e-5) {
+		got := tensor.StdDev(c.v, c.axes...)
+		if !tensor.IsCloseAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
 	}
@@ -2030,7 +2050,7 @@ func TestIsClose(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.IsClose(c.v, c.w, 1e-8, 1e-5)
+		got := tensor.IsClose(c.v, c.w)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
@@ -2095,7 +2115,7 @@ func TestIsCloseAll(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.IsCloseAll(c.v, c.w, 1e-8, 1e-5)
+		got := tensor.IsCloseAll(c.v, c.w)
 		if got != c.want {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}

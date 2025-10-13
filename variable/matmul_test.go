@@ -205,16 +205,16 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		y := variable.MatMul(c.x, c.w)
-		if !tensor.IsCloseAll(y.Data, c.y.Data, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(y.Data, c.y.Data) {
 			t.Errorf("got=%v, want=%v", y, c.y)
 		}
 
 		y.Backward()
-		if !tensor.IsCloseAll(c.x.Grad.Data, c.gx.Data, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(c.x.Grad.Data, c.gx.Data) {
 			t.Errorf("got=%v, want=%v", c.x.Grad, c.gx)
 		}
 
-		if !tensor.IsCloseAll(c.w.Grad.Data, c.gw.Data, 1e-8, 1e-5) {
+		if !tensor.IsCloseAll(c.w.Grad.Data, c.gw.Data) {
 			t.Errorf("got=%v, want=%v", c.w.Grad, c.gw)
 		}
 	}
