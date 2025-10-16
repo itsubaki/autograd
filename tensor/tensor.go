@@ -30,6 +30,11 @@ func New[T Number](shape []int, data []T) *Tensor[T] {
 	}
 }
 
+// Scalar returns a new tensor with a single element.
+func Scalar[T Number](v T) *Tensor[T] {
+	return New(nil, []T{v})
+}
+
 // Full returns a new tensor with elements that are all the given value.
 func Full[T Number](shape []int, value T) *Tensor[T] {
 	return F(Zeros[T](shape...), func(_ T) T { return value })
@@ -148,7 +153,6 @@ func (v *Tensor[T]) AddAt(coord []int, value T) {
 func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		// scalar
 		return func(yield func(int, []T) bool) {
 			yield(0, v.Data)
 		}
@@ -272,7 +276,6 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		// scalar
 		return Float64(Clone(v))
 	}
 
@@ -300,8 +303,7 @@ func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		// scalar
-		return New(nil, []float64{0})
+		return Scalar(0.0)
 	}
 
 	if len(axes) == 0 {
@@ -367,57 +369,6 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 
 		return 0
 	})
-}
-
-// Argmax returns the indices of the maximum values along the given axis.
-func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
-	ndim := v.NumDims()
-	ax, err := adjAxis(axis, ndim)
-	if err != nil {
-		panic(err)
-	}
-
-	// NOTE: Consider Transpose implementation.
-	// NOTE: Consider a view implementation for the Transpose.
-
-	// out tensor
-	shape := make([]int, 0, ndim-1)
-	for i, s := range v.Shape {
-		if i == ax {
-			continue
-		}
-
-		shape = append(shape, s)
-	}
-	out := Zeros[int](shape...)
-
-	for i := range out.Data {
-		coord := Unravel(out, i)
-
-		vcoord := make([]int, ndim)
-		var idx int
-		for j := range ndim {
-			if j == ax {
-				continue
-			}
-
-			vcoord[j] = coord[idx]
-			idx++
-		}
-
-		// find max
-		maxVal, maxIdx := v.At(vcoord...), 0
-		for j := 1; j < v.Shape[ax]; j++ {
-			vcoord[ax] = j
-			if val := v.At(vcoord...); val > maxVal {
-				maxVal, maxIdx = val, j
-			}
-		}
-
-		out.Data[i] = maxIdx
-	}
-
-	return out
 }
 
 // Clone returns a copy of the tensor.
@@ -533,68 +484,6 @@ func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
 	}
 
 	return out
-}
-
-// Transpose returns a new tensor with the axes transposed.
-func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
-	ndim := v.NumDims()
-	if ndim == 0 {
-		// scalar
-		return Clone(v)
-	}
-
-	transpose := func(perm ...int) *Tensor[T] {
-		// out tensor
-		shape, stride := make([]int, ndim), make([]int, ndim)
-		for i, a := range perm {
-			shape[i], stride[i] = v.Shape[a], v.Stride[a]
-		}
-		out := Zeros[T](shape...)
-
-		// permute
-		idx := make([]int, ndim)
-		for i := range v.Data {
-			var k int
-			for j := range ndim {
-				k += idx[j] * stride[j]
-			}
-
-			out.Data[i] = v.Data[k]
-
-			// increment idx
-			for j := ndim - 1; j >= 0; j-- {
-				idx[j]++
-				if idx[j] < shape[j] {
-					break
-				}
-
-				idx[j] = 0
-			}
-		}
-
-		return out
-	}
-
-	if len(axes) == 0 {
-		// reverse
-		perm := make([]int, ndim)
-		for i := range ndim {
-			perm[i] = (ndim - 1) - i
-		}
-
-		return transpose(perm...)
-	}
-
-	if len(axes) != ndim {
-		panic(fmt.Sprintf("axes length=%v are not equal to ndim=%v", len(axes), ndim))
-	}
-
-	perm, _, err := adjAxes(ndim, axes...)
-	if err != nil {
-		panic(err)
-	}
-
-	return transpose(perm...)
 }
 
 // Flip returns a new tensor with the elements reversed along the given axes.
@@ -888,7 +777,6 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 
 	ndim := v.NumDims()
 	if ndim == 0 {
-		// scalar
 		data := make([]T, n)
 		for i := range n {
 			data[i] = v.Data[0]
@@ -926,7 +814,6 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 
 	ndim := v.NumDims()
 	if ndim == 0 {
-		// scalar
 		data := make([]T, n)
 		for i := range n {
 			data[i] = v.Data[0]
@@ -961,7 +848,6 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim < 2 {
-		// scalar or 1 dim
 		return Clone(v)
 	}
 
@@ -1085,6 +971,190 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return o
 }
 
+// Argmax returns the indices of the maximum values along the given axis.
+func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
+	ndim := v.NumDims()
+	ax, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
+	}
+
+	// NOTE: Consider Transpose implementation.
+	// NOTE: Consider a view implementation for the Transpose.
+
+	// out tensor
+	shape := make([]int, 0, ndim-1)
+	for i, s := range v.Shape {
+		if i == ax {
+			continue
+		}
+
+		shape = append(shape, s)
+	}
+	out := Zeros[int](shape...)
+
+	for i := range out.Data {
+		coord := Unravel(out, i)
+
+		vcoord := make([]int, ndim)
+		var idx int
+		for j := range ndim {
+			if j == ax {
+				continue
+			}
+
+			vcoord[j] = coord[idx]
+			idx++
+		}
+
+		// find max
+		maxVal, maxIdx := v.At(vcoord...), 0
+		for j := 1; j < v.Shape[ax]; j++ {
+			vcoord[ax] = j
+			if val := v.At(vcoord...); val > maxVal {
+				maxVal, maxIdx = val, j
+			}
+		}
+
+		out.Data[i] = maxIdx
+	}
+
+	return out
+}
+
+// Transpose returns a new tensor with the axes transposed.
+func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
+	ndim := v.NumDims()
+	if ndim == 0 {
+		return Clone(v)
+	}
+
+	transpose := func(perm ...int) *Tensor[T] {
+		// out tensor
+		shape := make([]int, ndim)
+		for i, a := range perm {
+			shape[i] = v.Shape[a]
+		}
+		out := Zeros[T](shape...)
+
+		// stride
+		stride := make([]int, ndim)
+		for i, a := range perm {
+			stride[i] = v.Stride[a]
+		}
+
+		// permute
+		idx := make([]int, ndim)
+		for i := range v.Data {
+			var k int
+			for j := range ndim {
+				k += idx[j] * stride[j]
+			}
+
+			out.Data[i] = v.Data[k]
+
+			// increment idx
+			for j := ndim - 1; j >= 0; j-- {
+				idx[j]++
+				if idx[j] < shape[j] {
+					break
+				}
+
+				idx[j] = 0
+			}
+		}
+
+		return out
+	}
+
+	if len(axes) == 0 {
+		// reverse
+		perm := make([]int, ndim)
+		for i := range ndim {
+			perm[i] = (ndim - 1) - i
+		}
+
+		return transpose(perm...)
+	}
+
+	if len(axes) != ndim {
+		panic(fmt.Sprintf("axes length=%v are not equal to ndim=%v", len(axes), ndim))
+	}
+
+	perm, _, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
+	}
+
+	return transpose(perm...)
+}
+
+// Reduce reduces the tensor v to a tensor with fewer dimensions by applying the function f along the given axes.
+func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tensor[T] {
+	if len(axes) == 0 {
+		// reduce all
+		for _, x := range v.Data {
+			acc = f(acc, x)
+		}
+
+		return Scalar(acc)
+	}
+
+	vndim := v.NumDims()
+	_, seen, err := adjAxes(vndim, axes...)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(seen) == vndim {
+		// reduce all
+		for _, x := range v.Data {
+			acc = f(acc, x)
+		}
+
+		return Scalar(acc)
+	}
+
+	// out tensor
+	shape := make([]int, 0, vndim-len(seen))
+	ndim := make([]int, vndim)
+
+	var pos int
+	for i := range vndim {
+		if seen[i] {
+			ndim[i] = -1
+			continue
+		}
+
+		shape = append(shape, v.Shape[i])
+		ndim[i] = pos
+		pos++
+	}
+
+	// out tensor
+	out := Full(shape, acc)
+	for x := range v.Data {
+		i, remain := 0, x
+		for j := range vndim {
+			coord := remain / v.Stride[j]
+			remain = remain % v.Stride[j]
+
+			idx := ndim[j]
+			if idx < 0 {
+				// reduced axis
+				continue
+			}
+
+			i += coord * out.Stride[idx]
+		}
+
+		// set
+		out.Data[i] = f(out.Data[i], v.Data[x])
+	}
+
+	return out
+}
+
 // ShapeEqual returns true if the two shapes are equal.
 func ShapeEqual(a, b []int) bool {
 	if len(a) != len(b) {
@@ -1134,6 +1204,9 @@ func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 	coords := Coordinates(v.Shape)
+	if len(coords) == 0 {
+		return Scalar(f(v.Data[0]))
+	}
 
 	out := ZeroLike(v)
 	for _, coord := range coords {
@@ -1148,76 +1221,13 @@ func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
 	coords := Coordinates(a.Shape)
+	if len(coords) == 0 {
+		return Scalar(f(a.Data[0], b.Data[0]))
+	}
 
 	out := Zeros[U](a.Shape...)
 	for _, coord := range coords {
 		out.Set(coord, f(a.At(coord...), b.At(coord...)))
-	}
-
-	return out
-}
-
-// Reduce reduces the tensor v to a tensor with fewer dimensions by applying the function f along the given axes.
-func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tensor[T] {
-	if len(axes) == 0 {
-		// reduce all
-		for _, x := range v.Data {
-			acc = f(acc, x)
-		}
-
-		return New(nil, []T{acc})
-	}
-
-	vndim := v.NumDims()
-	_, seen, err := adjAxes(vndim, axes...)
-	if err != nil {
-		panic(err)
-	}
-
-	if len(seen) == vndim {
-		// reduce all
-		for _, x := range v.Data {
-			acc = f(acc, x)
-		}
-
-		return New(nil, []T{acc})
-	}
-
-	// out tensor
-	shape := make([]int, 0, vndim-len(seen))
-	ndim := make([]int, vndim)
-
-	var pos int
-	for i := range vndim {
-		if seen[i] {
-			ndim[i] = -1
-			continue
-		}
-
-		shape = append(shape, v.Shape[i])
-		ndim[i] = pos
-		pos++
-	}
-
-	// out tensor
-	out := Full(shape, acc)
-	for x := range v.Data {
-		i, remain := 0, x
-		for j := range vndim {
-			coord := remain / v.Stride[j]
-			remain = remain % v.Stride[j]
-
-			idx := ndim[j]
-			if idx < 0 {
-				// reduced axis
-				continue
-			}
-
-			i += coord * out.Stride[idx]
-		}
-
-		// set
-		out.Data[i] = f(out.Data[i], v.Data[x])
 	}
 
 	return out
@@ -1439,7 +1449,7 @@ func isClose(a, b float64, tol ...float64) bool {
 func Coordinates(shape []int) [][]int {
 	numDims := len(shape)
 	if numDims == 0 {
-		return [][]int{{}}
+		return [][]int{}
 	}
 
 	total := 1
