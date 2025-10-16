@@ -958,6 +958,22 @@ func ExampleIsClose() {
 	// true
 }
 
+func ExampleF2() {
+	x := tensor.Scalar(1.0)
+	y := tensor.Scalar(2.0)
+
+	z := tensor.F2(x, y, func(a, b float64) float64 {
+		return a + b
+	})
+
+	for _, v := range z.Seq2() {
+		fmt.Println(v)
+	}
+
+	// Output:
+	// [3]
+}
+
 func ExampleCoordinates() {
 	v := tensor.Coordinates([]int{2, 3})
 	for _, coord := range v {
