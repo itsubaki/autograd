@@ -398,6 +398,11 @@ func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
 	return New(v.Shape, data)
 }
 
+// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
+func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
+	return Reshape(v, v.Size())
+}
+
 // Reshape returns a new tensor with the same data as v with the given shape.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	idx, prod := -1, 1
@@ -425,65 +430,91 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return New(shape, v.Data)
 }
 
-// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
-func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
-	return Reshape(v, v.Size())
+// Broadcast returns new tensors by broadcasting v and w to a common shape.
+func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
+	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
+	if err != nil {
+		panic(err)
+	}
+
+	return BroadcastTo(v, s0...), BroadcastTo(w, s1...)
 }
 
-// Take returns a new tensor with elements selected from the given indices along the specified axis.
-func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	ax, err := adjAxis(axis, ndim)
-	if err != nil {
-		panic(err)
-	}
-
-	idx, err := adjIndices(indices, v.Shape, ax)
-	if err != nil {
-		panic(err)
-	}
-
-	// out tensor
-	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-	shape[ax] = len(indices)
+// BroadcastTo returns a new tensor with the given shape by broadcasting v to the shape.
+func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	out := Zeros[T](shape...)
+	ndim := out.NumDims()
 
-	// take
+	vndim := v.NumDims()
+	if ndim < vndim {
+		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
+	}
+
+	for i := range vndim {
+		s0, s1 := v.Shape[vndim-1-i], shape[ndim-1-i]
+		if s0 != s1 && s0 != 1 {
+			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.Shape))
+		}
+	}
+
+	diff := ndim - vndim
 	for i := range out.Data {
-		coord := Unravel(out, i)
-		coord[ax] = idx[coord[ax]]
-		out.Data[i] = v.Data[Ravel(v, coord...)]
+		k, remain := 0, i
+		for a := range ndim {
+			coord := remain / out.Stride[a]
+			remain %= out.Stride[a]
+
+			j := a - diff
+			if j < 0 {
+				// implicit leading dimension (=1) in original; always pick index 0
+				continue
+			}
+
+			if v.Shape[j] == 1 {
+				// broadcast dimension -> always 0
+				continue
+			}
+
+			k += coord * v.Stride[j]
+		}
+
+		out.Data[i] = v.Data[k]
 	}
 
 	return out
 }
 
-// ScatterAdd return a new tensor with elements added from w at the given indices along the specified axis.
-func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	ax, err := adjAxis(axis, ndim)
-	if err != nil {
-		panic(err)
+// SumTo returns a new tensor with the given shape by summing v to the shape.
+func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
+	axes := func(a, b []int) []int {
+		if len(a) < len(b) {
+			diff := len(b) - len(a)
+
+			adj := make([]int, len(b))
+			for i := range diff {
+				adj[i] = 1
+			}
+
+			copy(adj[diff:], a)
+			a = adj
+		}
+
+		var axes []int
+		for i := range a {
+			if a[i] == 1 && b[i] > 1 {
+				axes = append(axes, i)
+			}
+		}
+
+		return axes
 	}
 
-	if w.Shape[ax] != len(indices) {
-		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.Shape[ax]))
+	ax := axes(shape, v.Shape)
+	if len(ax) == 0 {
+		return Reshape(v, shape...)
 	}
 
-	idx, err := adjIndices(indices, v.Shape, ax)
-	if err != nil {
-		panic(err)
-	}
-
-	out := Clone(v)
-	for i := range w.Data {
-		coord := Unravel(w, i)
-		coord[ax] = idx[coord[ax]]
-		out.Data[Ravel(out, coord...)] += w.Data[i]
-	}
-
-	return out
+	return Reshape(Sum(v, ax...), shape...)
 }
 
 // Flip returns a new tensor with the elements reversed along the given axes.
@@ -575,91 +606,60 @@ func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	return New(shape, v.Data)
 }
 
-// Broadcast returns new tensors by broadcasting v and w to a common shape.
-func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
-	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
+// Take returns a new tensor with elements selected from the given indices along the specified axis.
+func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	ax, err := adjAxis(axis, ndim)
 	if err != nil {
 		panic(err)
 	}
 
-	return BroadcastTo(v, s0...), BroadcastTo(w, s1...)
-}
+	idx, err := adjIndices(indices, v.Shape, ax)
+	if err != nil {
+		panic(err)
+	}
 
-// BroadcastTo returns a new tensor with the given shape by broadcasting v to the shape.
-func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
+	// out tensor
+	shape := make([]int, ndim)
+	copy(shape, v.Shape)
+	shape[ax] = len(indices)
 	out := Zeros[T](shape...)
-	ndim := out.NumDims()
 
-	vndim := v.NumDims()
-	if ndim < vndim {
-		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
-	}
-
-	for i := range vndim {
-		s0, s1 := v.Shape[vndim-1-i], shape[ndim-1-i]
-		if s0 != s1 && s0 != 1 {
-			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.Shape))
-		}
-	}
-
-	diff := ndim - vndim
+	// take
 	for i := range out.Data {
-		k, remain := 0, i
-		for a := range ndim {
-			coord := remain / out.Stride[a]
-			remain %= out.Stride[a]
-
-			j := a - diff
-			if j < 0 {
-				// implicit leading dimension (=1) in original; always pick index 0
-				continue
-			}
-
-			if v.Shape[j] == 1 {
-				// broadcast dimension -> always 0
-				continue
-			}
-
-			k += coord * v.Stride[j]
-		}
-
-		out.Data[i] = v.Data[k]
+		coord := Unravel(out, i)
+		coord[ax] = idx[coord[ax]]
+		out.Data[i] = v.Data[Ravel(v, coord...)]
 	}
 
 	return out
 }
 
-// SumTo returns a new tensor with the given shape by summing v to the shape.
-func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
-	axes := func(a, b []int) []int {
-		if len(a) < len(b) {
-			diff := len(b) - len(a)
-
-			adj := make([]int, len(b))
-			for i := range diff {
-				adj[i] = 1
-			}
-
-			copy(adj[diff:], a)
-			a = adj
-		}
-
-		var axes []int
-		for i := range a {
-			if a[i] == 1 && b[i] > 1 {
-				axes = append(axes, i)
-			}
-		}
-
-		return axes
+// ScatterAdd return a new tensor with elements added from w at the given indices along the specified axis.
+func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	ax, err := adjAxis(axis, ndim)
+	if err != nil {
+		panic(err)
 	}
 
-	ax := axes(shape, v.Shape)
-	if len(ax) == 0 {
-		return Reshape(v, shape...)
+	if w.Shape[ax] != len(indices) {
+		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.Shape[ax]))
 	}
 
-	return Reshape(Sum(v, ax...), shape...)
+	idx, err := adjIndices(indices, v.Shape, ax)
+	if err != nil {
+		panic(err)
+	}
+
+	out := Clone(v)
+	for i := range w.Data {
+		coord := Unravel(w, i)
+		coord[ax] = idx[coord[ax]]
+		out.Data[Ravel(out, coord...)] += w.Data[i]
+	}
+
+	return out
 }
 
 // Concat concatenates the tensors along the given axis.
@@ -979,40 +979,24 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 		panic(err)
 	}
 
-	// NOTE: Consider Transpose implementation.
-	// NOTE: Consider a view implementation for the Transpose.
+	// axis=1, (2, 3, 4) -> (2, 4, 3)
+	perm := make([]int, ndim)
+	for i := range ndim {
+		perm[i] = i
+	}
+	perm[ax], perm[ndim-1] = perm[ndim-1], perm[ax]
+	vt := Transpose(v, perm...)
 
 	// out tensor
-	shape := make([]int, 0, ndim-1)
-	for i, s := range v.Shape {
-		if i == ax {
-			continue
-		}
-
-		shape = append(shape, s)
-	}
-	out := Zeros[int](shape...)
+	out := Zeros[int](vt.Shape[:ndim-1]...)
+	axSize := vt.Shape[ndim-1]
 
 	for i := range out.Data {
-		coord := Unravel(out, i)
-
-		vcoord := make([]int, ndim)
-		var idx int
-		for j := range ndim {
-			if j == ax {
-				continue
-			}
-
-			vcoord[j] = coord[idx]
-			idx++
-		}
-
-		// find max
-		maxVal, maxIdx := v.At(vcoord...), 0
-		for j := 1; j < v.Shape[ax]; j++ {
-			vcoord[ax] = j
-			if val := v.At(vcoord...); val > maxVal {
-				maxVal, maxIdx = val, j
+		maxIdx, maxVal := 0, vt.Data[i*axSize]
+		for j := 1; j < axSize; j++ {
+			val := vt.Data[i*axSize+j]
+			if val > maxVal {
+				maxIdx, maxVal = j, val
 			}
 		}
 
@@ -1295,6 +1279,37 @@ func KeepDims(shape []int, axes []int) []int {
 	return out
 }
 
+// Coordinates returns all possible coordinates for the given shape.
+func Coordinates(shape []int) [][]int {
+	numDims := len(shape)
+	if numDims == 0 {
+		return [][]int{}
+	}
+
+	total := 1
+	for _, size := range shape {
+		total *= size
+	}
+
+	result, current := make([][]int, 0, total), make([]int, numDims)
+	for range total {
+		coord := make([]int, numDims)
+		copy(coord, current)
+		result = append(result, coord)
+
+		for d := numDims - 1; d > -1; d-- {
+			current[d]++
+			if current[d] < shape[d] {
+				break
+			}
+
+			current[d] = 0
+		}
+	}
+
+	return result
+}
+
 // rnd returns a pseudo-random number generator.
 func rnd(s ...randv2.Source) *randv2.Rand {
 	if len(s) == 0 || s[0] == nil {
@@ -1443,35 +1458,4 @@ func isClose(a, b float64, tol ...float64) bool {
 	}()
 
 	return math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b))
-}
-
-// Coordinates returns all possible coordinates for the given shape.
-func Coordinates(shape []int) [][]int {
-	numDims := len(shape)
-	if numDims == 0 {
-		return [][]int{}
-	}
-
-	total := 1
-	for _, size := range shape {
-		total *= size
-	}
-
-	result, current := make([][]int, 0, total), make([]int, numDims)
-	for range total {
-		coord := make([]int, numDims)
-		copy(coord, current)
-		result = append(result, coord)
-
-		for d := numDims - 1; d > -1; d-- {
-			current[d]++
-			if current[d] < shape[d] {
-				break
-			}
-
-			current[d] = 0
-		}
-	}
-
-	return result
 }
