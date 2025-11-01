@@ -171,83 +171,83 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 	}
 }
 
-// AddC applies c + v for each element in v and returns a new tensor.
+// AddC returns a new tensor with each element in v added to c.
 func AddC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 	return F(v, func(a T) T { return c + a })
 }
 
-// SubC applies c - v for each element in v and returns a new tensor.
+// SubC returns a new tensor with each element in v subtracted from c.
 func SubC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 	return F(v, func(a T) T { return c - a })
 }
 
-// MulC applies c * v for each element in v and returns a new tensor.
+// MulC returns a new tensor with each element in v multiplied by c.
 func MulC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 	return F(v, func(a T) T { return c * a })
 }
 
-// Pow applies v**p for each element in v and returns a new tensor.
+// Pow returns a new tensor with each element in v raised to the power of p.
 func Pow(p float64, v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Pow(a, p) })
 }
 
-// Sqrt applies sqrt(v) for each element in v and returns a new tensor.
+// Sqrt returns a new tensor with the square root of each element in v.
 func Sqrt(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Sqrt(a) })
 }
 
-// Exp applies exp(v) for each element in v and returns a new tensor.
+// Exp returns a new tensor with the exponential of each element in v.
 func Exp(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Exp(a) })
 }
 
-// Log applies log(v) for each element in v and returns a new tensor.
+// Log returns a new tensor with the natural logarithm of each element in v.
 func Log(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Log(a) })
 }
 
-// Sin applies sin(v) for each element in v and returns a new tensor.
+// Sin returns a new tensor with the sine of each element in v.
 func Sin(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Sin(a) })
 }
 
-// Cos applies cos(v) for each element in v and returns a new tensor.
+// Cos returns a new tensor with the cosine of each element in v.
 func Cos(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Cos(a) })
 }
 
-// Tanh applies tanh(v) for each element in v and returns a new tensor.
+// Tanh returns a new tensor with the hyperbolic tangent of each element in v.
 func Tanh(v *Tensor[float64]) *Tensor[float64] {
 	return F(v, func(a float64) float64 { return math.Tanh(a) })
 }
 
-// Add applies v + w for each element in v and returns a new tensor.
+// Add returns a new tensor with elements v + w for each element in v.
 func Add[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return F2(v, w, func(a, b T) T { return a + b })
 }
 
-// Sub applies v - w for each element in v and returns a new tensor.
+// Sub returns a new tensor with elements v - w for each element in v.
 func Sub[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return F2(v, w, func(a, b T) T { return a - b })
 }
 
-// Mul applies v * w for each element in v and returns a new tensor.
+// Mul returns a new tensor with elements v * w for each element in v.
 func Mul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return F2(v, w, func(a, b T) T { return a * b })
 }
 
-// Div applies v / w for each element in v and returns a new tensor.
+// Div returns a new tensor with elements v / w for each element in v.
 func Div[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return F2(v, w, func(a, b T) T { return a / b })
 }
 
-// Sum returns the sum of all elements in v.
+// Sum returns a new tensor with the sum of all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	return Reduce(v, 0, func(acc, x T) T { return acc + x }, axes...)
 }
 
-// Max returns the maximum value among all elements in v.
+// Max returns a new tensor with the maximum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Reduce(v, -math.MaxFloat64, func(acc, x float64) float64 {
@@ -259,7 +259,7 @@ func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	}, axes...)
 }
 
-// Min returns the minimum value among all elements in v.
+// Min returns a new tensor with the minimum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Reduce(v, math.MaxFloat64, func(acc, x float64) float64 {
@@ -271,7 +271,7 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	}, axes...)
 }
 
-// Mean returns the mean of all elements in v.
+// Mean returns a new tensor with the mean of elements in v.
 // If axes is specified, it reduces along the given axes.
 func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
@@ -635,7 +635,7 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 	return out
 }
 
-// ScatterAdd return a new tensor with elements added from w at the given indices along the specified axis.
+// ScatterAdd returns a new tensor with elements added from w at the given indices along the specified axis.
 func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
 	ndim := v.NumDims()
 	ax, err := adjAxis(axis, ndim)
@@ -662,7 +662,7 @@ func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
 	return out
 }
 
-// Concat concatenates the tensors along the given axis.
+// Concat returns a new tensor by concatenating the tensors along the given axis.
 func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	ndim := v[0].NumDims()
 	ax, err := adjAxis(axis, ndim)
