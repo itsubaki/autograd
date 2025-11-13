@@ -458,23 +458,30 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 	diff := ndim - vndim
 	for i := range out.Data {
-		k, remain := 0, i
-		for a := range ndim {
-			coord := remain / out.Stride[a]
-			remain %= out.Stride[a]
+		coord := Unravel(out, i)
 
-			j := a - diff
-			if j < 0 {
-				// implicit leading dimension (=1) in original; always pick index 0
+		var k int
+		for j := range ndim {
+			// Compute the corresponding index in the input array `v` for each output coordinate.
+			//
+			// Since `v` may have fewer dimensions than `out` (due to broadcasting),
+			// we align `v` to the right-hand side of `out`'s shape.
+			// The variable `diff = ndim - vndim` represents this shift.
+			//
+			// For each output dimension `j`:
+			//   - `x := j - diff` maps the output dimension `j` to the corresponding input dimension `x`.
+			//   - If `x < 0`, `v` has no corresponding dimension (implicit leading dimension of size 1).
+			//   - If `v.Shape[x] == 1`, this dimension is broadcasted, so the index in `v` is always 0.
+			//   - Otherwise, the output coordinate contributes to the linear index in `v`.
+			//
+			// This approach allows seamless broadcasting along leading or singleton dimensions
+			// when copying data from `v` into `out`.
+			x := j - diff
+			if x < 0 || v.Shape[x] == 1 {
 				continue
 			}
 
-			if v.Shape[j] == 1 {
-				// broadcast dimension -> always 0
-				continue
-			}
-
-			k += coord * v.Stride[j]
+			k += coord[j] * v.Stride[x]
 		}
 
 		out.Data[i] = v.Data[k]
@@ -1117,6 +1124,16 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 	shape := make([]int, 0, vndim-len(seen))
 	ndim := make([]int, vndim)
 
+	// Example: v.Shape = [2, 3, 4], axes = [1]
+	// seen = [false, true, false]
+	// Loop changes:
+	//   i=0 → seen[0]=false → ndim[0]=0, pos=1
+	//   i=1 → seen[1]=true  → ndim[1]=-1, pos=1
+	//   i=2 → seen[2]=false → ndim[2]=1, pos=2
+	// Result:
+	//   shape = [2, 4]
+	//   ndim  = [0, -1, 1]
+	// -1 indicates a reduced axis, which will be skipped in the later loop
 	var pos int
 	for i := range vndim {
 		if seen[i] {
@@ -1131,23 +1148,22 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 
 	// out tensor
 	out := Full(shape, acc)
-	for x := range v.Data {
-		i, remain := 0, x
-		for j := range vndim {
-			coord := remain / v.Stride[j]
-			remain = remain % v.Stride[j]
+	for i := range v.Data {
+		coord := Unravel(v, i)
 
+		var k int
+		for j := range vndim {
 			idx := ndim[j]
 			if idx < 0 {
 				// reduced axis
 				continue
 			}
 
-			i += coord * out.Stride[idx]
+			k += coord[j] * out.Stride[idx]
 		}
 
 		// set
-		out.Data[i] = f(out.Data[i], v.Data[x])
+		out.Data[k] = f(out.Data[k], v.Data[i])
 	}
 
 	return out
