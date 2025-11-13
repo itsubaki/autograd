@@ -160,7 +160,6 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 
 	size := v.Shape[ndim-1]
 	total := len(v.Data) / size
-
 	return func(yield func(int, []T) bool) {
 		for i := range total {
 			start := i * size
@@ -486,35 +485,33 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 // SumTo returns a new tensor with the given shape by summing v to the shape.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
-	axes := func(a, b []int) []int {
-		if len(a) < len(b) {
-			diff := len(b) - len(a)
+	a, b := shape, v.Shape
+	if len(a) < len(b) {
+		diff := len(b) - len(a)
 
-			adj := make([]int, len(b))
-			for i := range diff {
-				adj[i] = 1
-			}
-
-			copy(adj[diff:], a)
-			a = adj
+		// prepend 1s to a
+		adj := make([]int, len(b))
+		for i := range diff {
+			adj[i] = 1
 		}
 
-		var axes []int
-		for i := range a {
-			if a[i] == 1 && b[i] > 1 {
-				axes = append(axes, i)
-			}
-		}
-
-		return axes
+		// copy a to adj
+		copy(adj[diff:], a)
+		a = adj
 	}
 
-	ax := axes(shape, v.Shape)
-	if len(ax) == 0 {
+	var axes []int
+	for i := range a {
+		if a[i] == 1 && b[i] > 1 {
+			axes = append(axes, i)
+		}
+	}
+
+	if len(axes) == 0 {
 		return Reshape(v, shape...)
 	}
 
-	return Reshape(Sum(v, ax...), shape...)
+	return Reshape(Sum(v, axes...), shape...)
 }
 
 // Flip returns a new tensor with the elements reversed along the given axes.
@@ -535,6 +532,24 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	out := ZeroLike(v)
 	for i := range v.Data {
 		coord := Unravel(v, i)
+
+		// Flip the coordinate along axis 'a'.
+		// This operation reverses the order of elements along that axis.
+		//
+		// For a given dimension of size `n`, the original index `i` is mapped to:
+		//     new_index = n - 1 - i
+		//
+		// Example:
+		//   If the axis length is 5, the indices are [0, 1, 2, 3, 4].
+		//   After flipping:
+		//       0 → 4
+		//       1 → 3
+		//       2 → 2
+		//       3 → 1
+		//       4 → 0
+		//
+		// So when size = 5 and index = 1, the new index becomes 5 - 1 - 1 = 3.
+		// This achieves a mirror-like reflection along the selected axis.
 		for _, a := range ax {
 			coord[a] = v.Shape[a] - 1 - coord[a]
 		}
@@ -607,7 +622,7 @@ func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 }
 
 // Take returns a new tensor with elements selected from the given indices along the specified axis.
-func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
+func Take[T Number](v *Tensor[T], axis int, indices []int) *Tensor[T] {
 	ndim := v.NumDims()
 	ax, err := adjAxis(axis, ndim)
 	if err != nil {
@@ -636,7 +651,7 @@ func Take[T Number](v *Tensor[T], indices []int, axis int) *Tensor[T] {
 }
 
 // ScatterAdd returns a new tensor with elements added from w at the given indices along the specified axis.
-func ScatterAdd[T Number](v, w *Tensor[T], indices []int, axis int) *Tensor[T] {
+func ScatterAdd[T Number](v, w *Tensor[T], axis int, indices []int) *Tensor[T] {
 	ndim := v.NumDims()
 	ax, err := adjAxis(axis, ndim)
 	if err != nil {
@@ -685,7 +700,6 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 		for j := range w.Data {
 			coord := Unravel(w, j)
 			coord[ax] += offset
-
 			out.Data[Ravel(out, coord...)] = w.Data[j]
 		}
 

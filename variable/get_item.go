@@ -20,7 +20,7 @@ type GetItemT struct {
 func (f *GetItemT) Forward(x ...*Variable) []*Variable {
 	f.xShape = x[0].Shape()
 
-	y := tensor.Take(x[0].Data, f.Indices, f.Axis)
+	y := tensor.Take(x[0].Data, f.Axis, f.Indices)
 	return []*Variable{
 		From(y),
 	}

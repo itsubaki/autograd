@@ -242,7 +242,7 @@ func ExampleScatterAdd() {
 		3, 4,
 	})
 
-	z := tensor.ScatterAdd(x, y, []int{0, 2}, 0)
+	z := tensor.ScatterAdd(x, y, 0, []int{0, 2})
 	for _, row := range z.Seq2() {
 		fmt.Println(row)
 	}
@@ -265,7 +265,7 @@ func ExampleScatterAdd_axis1() {
 		3, 6,
 	})
 
-	z := tensor.ScatterAdd(x, y, []int{0, 0}, 1)
+	z := tensor.ScatterAdd(x, y, 1, []int{0, 0})
 	for _, row := range z.Seq2() {
 		fmt.Println(row)
 	}
@@ -319,7 +319,7 @@ func ExampleTake() {
 		30, 31,
 	})
 
-	w := tensor.Take(v, []int{0, 2}, 0)
+	w := tensor.Take(v, 0, []int{0, 2})
 	for _, row := range w.Seq2() {
 		fmt.Println(row)
 	}
@@ -1810,7 +1810,7 @@ func TestTake(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Take(c.v, c.indices, c.axis)
+		got := tensor.Take(c.v, c.axis, c.indices)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
@@ -1962,7 +1962,7 @@ func TestScatterAdd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.ScatterAdd(c.v, c.w, c.indices, c.axis)
+		got := tensor.ScatterAdd(c.v, c.w, c.axis, c.indices)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("got=%v, want=%v", got.Data, c.want.Data)
 		}
@@ -3666,7 +3666,7 @@ func TestTake_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for axis %d and indices %v", c.axis, c.indices)
 			}()
 
-			_ = tensor.Take(c.v, c.indices, c.axis)
+			_ = tensor.Take(c.v, c.axis, c.indices)
 			t.Fail()
 		}()
 	}
@@ -3758,7 +3758,7 @@ func TestScatterAdd_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for axis %d and indices %v", c.axis, c.indices)
 			}()
 
-			_ = tensor.ScatterAdd(c.v, c.w, c.indices, c.axis)
+			_ = tensor.ScatterAdd(c.v, c.w, c.axis, c.indices)
 			t.Fail()
 		}()
 	}
