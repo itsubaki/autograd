@@ -25,6 +25,7 @@ func (f *Function) Forward(x ...*Variable) []*Variable {
 		return y
 	}
 
+	// NOTE: create graph
 	f.Generation = maxgen(x...) //
 	f.setCreator(y)             // set creator and increment generation
 	f.Input, f.Output = x, y    //
