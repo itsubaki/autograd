@@ -126,7 +126,7 @@ func (v *Variable) Backward(opts ...Opts) {
 		fs = fs[:len(fs)-1]
 
 		// gys
-		gys := gys(f.Output)
+		gys := grads(f.Output)
 
 		// backward
 		func() {
@@ -193,7 +193,7 @@ func zip(xs, gxs []*Variable) ([]*Variable, []*Variable) {
 	return xs[:n], gxs[:n]
 }
 
-func gys(y []*Variable) []*Variable {
+func grads(y []*Variable) []*Variable {
 	gys := make([]*Variable, len(y))
 	for i := range y {
 		gys[i] = y[i].Grad
