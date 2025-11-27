@@ -1217,14 +1217,9 @@ func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
-	coords := Coordinates(v.Shape)
-	if len(coords) == 0 {
-		return Scalar(f(v.Data[0]))
-	}
-
 	out := ZeroLike(v)
-	for _, coord := range coords {
-		out.Set(coord, f(v.At(coord...)))
+	for i, x := range v.Data {
+		out.Data[i] = f(x)
 	}
 
 	return out
