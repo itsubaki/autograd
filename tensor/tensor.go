@@ -15,6 +15,8 @@ type Number interface {
 	~int | ~float64
 }
 
+// Tensor represents a multi-dimensional array.
+// It uses row-major layout and does NOT support arbitrary strides.
 type Tensor[T Number] struct {
 	Shape  []int
 	Stride []int
@@ -1049,24 +1051,15 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		}
 
 		// permute
-		idx := make([]int, ndim)
-		for i := range v.Data {
+		for i := range out.Data {
+			coord := Unravel(out, i)
+
 			var k int
 			for j := range ndim {
-				k += idx[j] * stride[j]
+				k += coord[j] * stride[j]
 			}
 
 			out.Data[i] = v.Data[k]
-
-			// increment idx
-			for j := ndim - 1; j >= 0; j-- {
-				idx[j]++
-				if idx[j] < shape[j] {
-					break
-				}
-
-				idx[j] = 0
-			}
 		}
 
 		return out
