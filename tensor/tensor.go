@@ -1229,14 +1229,10 @@ func F[T Number](v *Tensor[T], f func(a T) T) *Tensor[T] {
 // v and w are broadcasted to a common shape.
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
-	coords := Coordinates(a.Shape)
-	if len(coords) == 0 {
-		return Scalar(f(a.Data[0], b.Data[0]))
-	}
 
 	out := Zeros[U](a.Shape...)
-	for _, coord := range coords {
-		out.Set(coord, f(a.At(coord...), b.At(coord...)))
+	for i := range a.Data {
+		out.Data[i] = f(a.Data[i], b.Data[i])
 	}
 
 	return out
@@ -1302,37 +1298,6 @@ func KeepDims(shape []int, axes []int) []int {
 	}
 
 	return out
-}
-
-// Coordinates returns all possible coordinates for the given shape.
-func Coordinates(shape []int) [][]int {
-	numDims := len(shape)
-	if numDims == 0 {
-		return [][]int{}
-	}
-
-	total := 1
-	for _, size := range shape {
-		total *= size
-	}
-
-	result, current := make([][]int, 0, total), make([]int, numDims)
-	for range total {
-		coord := make([]int, numDims)
-		copy(coord, current)
-		result = append(result, coord)
-
-		for d := numDims - 1; d > -1; d-- {
-			current[d]++
-			if current[d] < shape[d] {
-				break
-			}
-
-			current[d] = 0
-		}
-	}
-
-	return result
 }
 
 // rnd returns a pseudo-random number generator.

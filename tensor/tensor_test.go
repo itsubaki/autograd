@@ -974,21 +974,6 @@ func ExampleF2() {
 	// [3]
 }
 
-func ExampleCoordinates() {
-	v := tensor.Coordinates([]int{2, 3})
-	for _, coord := range v {
-		fmt.Println(coord)
-	}
-
-	// Output:
-	// [0 0]
-	// [0 1]
-	// [0 2]
-	// [1 0]
-	// [1 1]
-	// [1 2]
-}
-
 func ExampleLinspace_invalid() {
 	defer func() {
 		if r := recover(); r != nil {
