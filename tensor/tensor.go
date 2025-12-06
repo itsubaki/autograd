@@ -463,7 +463,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		coord := Unravel(out, i)
 
 		var k int
-		for j := range ndim {
+		for j, c := range coord {
 			// Compute the corresponding index in the input array `v` for each output coordinate.
 			//
 			// Since `v` may have fewer dimensions than `out` (due to broadcasting),
@@ -483,7 +483,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 				continue
 			}
 
-			k += coord[j] * v.Stride[x]
+			k += c * v.Stride[x]
 		}
 
 		out.Data[i] = v.Data[k]
