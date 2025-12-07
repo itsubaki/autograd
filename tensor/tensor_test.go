@@ -3359,7 +3359,7 @@ func TestTril(t *testing.T) {
 	}
 }
 
-func TestRavel(t *testing.T) {
+func TestIndex(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]
 		coord []int
@@ -3374,14 +3374,14 @@ func TestRavel(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Ravel(c.v, c.coord...)
+		got := tensor.Index(c.v, c.coord...)
 		if got != c.want {
 			t.Errorf("coord=%v, got=%v, want=%v", c.coord, got, c.want)
 		}
 	}
 }
 
-func TestUnravel(t *testing.T) {
+func TestCoord(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]
 		index int
@@ -3399,7 +3399,7 @@ func TestUnravel(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Unravel(c.v, c.index)
+		got := tensor.Coord(c.v, c.index)
 		if !reflect.DeepEqual(got, c.want) {
 			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
 		}
@@ -4134,7 +4134,7 @@ func TestRepeat_invalid(t *testing.T) {
 	}
 }
 
-func TestRavel_invalid(t *testing.T) {
+func TestIndex_invalid(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]
 		coord []int
@@ -4156,7 +4156,7 @@ func TestRavel_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for coord %v", c.coord)
 			}()
 
-			_ = tensor.Ravel(c.v, c.coord...)
+			_ = tensor.Index(c.v, c.coord...)
 			t.Fail()
 		}()
 	}

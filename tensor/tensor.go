@@ -138,17 +138,17 @@ func (v *Tensor[T]) Size() int {
 // At returns the element at the given index.
 // If no coordinates are given, it returns the first element.
 func (v *Tensor[T]) At(coord ...int) T {
-	return v.Data[Ravel(v, coord...)]
+	return v.Data[Index(v, coord...)]
 }
 
 // Set sets the element at the given index to the given value.
 func (v *Tensor[T]) Set(coord []int, value T) {
-	v.Data[Ravel(v, coord...)] = value
+	v.Data[Index(v, coord...)] = value
 }
 
 // AddAt adds the given value to the element at the given index.
 func (v *Tensor[T]) AddAt(coord []int, value T) {
-	v.Data[Ravel(v, coord...)] += value
+	v.Data[Index(v, coord...)] += value
 }
 
 // Seq2 returns a sequence of rows.
@@ -460,7 +460,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 	diff := ndim - vndim
 	for i := range out.Data {
-		coord := Unravel(out, i)
+		coord := Coord(out, i)
 
 		var k int
 		for j, c := range coord {
@@ -540,7 +540,7 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 	out := ZeroLike(v)
 	for i := range v.Data {
-		coord := Unravel(v, i)
+		coord := Coord(v, i)
 
 		// Flip the coordinate along axis 'a'.
 		// This operation reverses the order of elements along that axis.
@@ -563,7 +563,7 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 			coord[a] = v.Shape[a] - 1 - coord[a]
 		}
 
-		out.Data[i] = v.Data[Ravel(v, coord...)]
+		out.Data[i] = v.Data[Index(v, coord...)]
 	}
 
 	return out
@@ -651,9 +651,9 @@ func Take[T Number](v *Tensor[T], axis int, indices []int) *Tensor[T] {
 
 	// take
 	for i := range out.Data {
-		coord := Unravel(out, i)
+		coord := Coord(out, i)
 		coord[ax] = idx[coord[ax]]
-		out.Data[i] = v.Data[Ravel(v, coord...)]
+		out.Data[i] = v.Data[Index(v, coord...)]
 	}
 
 	return out
@@ -678,9 +678,9 @@ func ScatterAdd[T Number](v, w *Tensor[T], axis int, indices []int) *Tensor[T] {
 
 	out := Clone(v)
 	for i := range w.Data {
-		coord := Unravel(w, i)
+		coord := Coord(w, i)
 		coord[ax] = idx[coord[ax]]
-		out.Data[Ravel(out, coord...)] += w.Data[i]
+		out.Data[Index(out, coord...)] += w.Data[i]
 	}
 
 	return out
@@ -707,9 +707,9 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	var offset int
 	for _, w := range v {
 		for j := range w.Data {
-			coord := Unravel(w, j)
+			coord := Coord(w, j)
 			coord[ax] += offset
-			out.Data[Ravel(out, coord...)] = w.Data[j]
+			out.Data[Index(out, coord...)] = w.Data[j]
 		}
 
 		offset += w.Shape[ax]
@@ -736,7 +736,7 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	// stack
 	for i, w := range v {
 		for j := range w.Data {
-			coord := Unravel(w, j)
+			coord := Coord(w, j)
 
 			// insert i at axis
 			ocoord := make([]int, ndim+1)
@@ -745,7 +745,7 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 			copy(ocoord[ax+1:], coord[ax:])
 
 			// set
-			out.Data[Ravel(out, ocoord...)] = w.Data[j]
+			out.Data[Index(out, ocoord...)] = w.Data[j]
 		}
 	}
 
@@ -780,9 +780,9 @@ func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 
 		// copy
 		for j := range out[i].Data {
-			coord := Unravel(out[i], j)
+			coord := Coord(out[i], j)
 			coord[ax] += start
-			idx := Ravel(v, coord...)
+			idx := Index(v, coord...)
 			out[i].Data[j] = v.Data[idx]
 		}
 
@@ -821,9 +821,9 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 
 	// repeat
 	for i := range out.Data {
-		coord := Unravel(out, i)
+		coord := Coord(out, i)
 		coord[ax] = coord[ax] % v.Shape[ax]
-		out.Data[i] = v.Data[Ravel(v, coord...)]
+		out.Data[i] = v.Data[Index(v, coord...)]
 	}
 
 	return out
@@ -856,12 +856,12 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	out := Zeros[T](shape...)
 
 	for i := range out.Data {
-		coord := Unravel(out, i)
+		coord := Coord(out, i)
 		vcoord := make([]int, ndim)
 		copy(vcoord, coord)
 		vcoord[axis] = coord[axis] / n
 
-		out.Data[i] = v.Data[Ravel(v, vcoord...)]
+		out.Data[i] = v.Data[Index(v, vcoord...)]
 	}
 
 	return out
@@ -881,7 +881,7 @@ func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 
 	out := ZeroLike(v)
 	for i := range v.Data {
-		coord := Unravel(v, i)
+		coord := Coord(v, i)
 		if coord[ndim-1] > coord[ndim-2]+kk {
 			continue
 		}
@@ -1052,7 +1052,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 		// permute
 		for i := range out.Data {
-			coord := Unravel(out, i)
+			coord := Coord(out, i)
 
 			var k int
 			for j := range ndim {
@@ -1142,7 +1142,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 	// out tensor
 	out := Full(shape, acc)
 	for i := range v.Data {
-		coord := Unravel(v, i)
+		coord := Coord(v, i)
 
 		var k int
 		for j := range vndim {
@@ -1231,8 +1231,8 @@ func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	return out
 }
 
-// Ravel returns the index in the flat data slice for the given multi-dimensional coordinates.
-func Ravel[T Number](v *Tensor[T], coord ...int) int {
+// Index returns the index in the flat data slice for the given multi-dimensional coordinates.
+func Index[T Number](v *Tensor[T], coord ...int) int {
 	if len(coord) == 0 {
 		return 0
 	}
@@ -1253,8 +1253,8 @@ func Ravel[T Number](v *Tensor[T], coord ...int) int {
 	return idx
 }
 
-// Unravel returns the multi-dimensional coordinates for the given index in the flat data slice.
-func Unravel[T Number](v *Tensor[T], index int) []int {
+// Coord returns the multi-dimensional coordinates for the given index in the flat data slice.
+func Coord[T Number](v *Tensor[T], index int) []int {
 	ndim := v.NumDims()
 
 	coord := make([]int, ndim)
