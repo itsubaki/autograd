@@ -200,7 +200,7 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 		return seq2(v)
 	}
 
-	return seq2(Contiguous(v))
+	return seq2(Clone(v))
 }
 
 // Int returns a new tensor with elements casted to int.
@@ -223,8 +223,8 @@ func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
 	return New(v.Shape, data)
 }
 
-// Contiguous returns a contiguous copy of the tensor.
-func Contiguous[T Number](v *Tensor[T]) *Tensor[T] {
+// Clone returns a contiguous clone of the tensor.
+func Clone[T Number](v *Tensor[T]) *Tensor[T] {
 	out := Zeros[T](v.Shape...)
 	for i := range out.Size() {
 		out.Data[i] = v.At(Coord(out, i)...)
@@ -384,14 +384,14 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		return New(shape, v.Data)
 	}
 
-	return New(shape, Contiguous(v).Data)
+	return New(shape, Clone(v).Data)
 }
 
 // Transpose returns a new tensor with the axes transposed.
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Contiguous(v)
+		return Clone(v)
 	}
 
 	if len(axes) == 0 {
@@ -665,7 +665,7 @@ func ScatterAdd[T Number](v, w *Tensor[T], axis int, indices []int) *Tensor[T] {
 		panic(err)
 	}
 
-	out := Contiguous(v)
+	out := Clone(v)
 	for i := range w.Data {
 		coord := Coord(w, i)
 		coord[ax] = idx[coord[ax]]
@@ -859,7 +859,7 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim < 2 {
-		return Contiguous(v)
+		return Clone(v)
 	}
 
 	var kk int
@@ -1122,7 +1122,7 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Float64(Contiguous(v))
+		return Float64(Clone(v))
 	}
 
 	if len(axes) == 0 {
@@ -1169,8 +1169,8 @@ func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Sqrt(Variance(v, axes...))
 }
 
-// ShapeEqual returns true if the two shapes are equal.
-func ShapeEqual(a, b []int) bool {
+// ArrayEqual returns true if the two shapes are equal.
+func ArrayEqual(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -1186,7 +1186,7 @@ func ShapeEqual(a, b []int) bool {
 
 // EqualAll returns true if the two tensors are equal.
 func EqualAll(v, w *Tensor[int]) bool {
-	if !ShapeEqual(v.Shape, w.Shape) {
+	if !ArrayEqual(v.Shape, w.Shape) {
 		return false
 	}
 
@@ -1201,7 +1201,7 @@ func EqualAll(v, w *Tensor[int]) bool {
 
 // IsCloseAll returns true if the two tensors are close enough.
 func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
-	if !ShapeEqual(v.Shape, w.Shape) {
+	if !ArrayEqual(v.Shape, w.Shape) {
 		return false
 	}
 
