@@ -894,7 +894,7 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 		perm[i] = i
 	}
 	perm[ax], perm[ndim-1] = perm[ndim-1], perm[ax]
-	vt := Transpose(v, perm...) // FIXME:
+	vt := Clone(Transpose(v, perm...)) // TODO: avoid clone
 	axSize := vt.Shape[ndim-1]
 
 	out := Zeros[int](vt.Shape[:ndim-1]...)
