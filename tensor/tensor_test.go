@@ -3,7 +3,6 @@ package tensor_test
 import (
 	"fmt"
 	"math"
-	"reflect"
 	"testing"
 
 	"github.com/itsubaki/autograd/rand"
@@ -26,6 +25,25 @@ func Example() {
 	// Output:
 	// 1.5 2.5 3.5
 	// 4.5 5.5 6.5
+}
+
+func ExampleTensor_Set() {
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+
+	w := tensor.Transpose(v)
+	w.Set([]int{1, 1}, 10)
+
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [1 4]
+	// [2 10]
+	// [3 6]
 }
 
 func ExampleFull() {
@@ -169,13 +187,13 @@ func ExampleFlatten() {
 	// [1 2 3 4]
 }
 
-func ExampleClone() {
+func ExampleContiguous() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
 
-	w := tensor.Clone(v)
+	w := tensor.Contiguous(v)
 	w.Set([]int{0, 0}, 10)
 
 	fmt.Println(w.Shape)
@@ -748,11 +766,23 @@ func ExampleBroadcastTo() {
 
 	w := tensor.BroadcastTo(v, 2, 2, 2)
 	fmt.Println(w.Shape)
+	fmt.Println(w.Stride)
 	fmt.Println(w.Data)
+
+	fmt.Println(w.At(0, 0, 0), w.At(0, 0, 1))
+	fmt.Println(w.At(0, 1, 0), w.At(0, 1, 1))
+
+	fmt.Println(w.At(1, 0, 0), w.At(1, 0, 1))
+	fmt.Println(w.At(1, 1, 0), w.At(1, 1, 1))
 
 	// Output:
 	// [2 2 2]
-	// [1 2 3 4 1 2 3 4]
+	// [0 2 1]
+	// [1 2 3 4]
+	// 1 2
+	// 3 4
+	// 1 2
+	// 3 4
 }
 
 func ExampleSumTo() {
@@ -958,6 +988,21 @@ func ExampleIsClose() {
 	// true
 }
 
+func ExampleIsContiguous() {
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+	fmt.Println(tensor.IsContiguous(v))
+
+	w := tensor.BroadcastTo(v, 2, 2, 3)
+	fmt.Println(tensor.IsContiguous(w))
+
+	// Output:
+	// true
+	// false
+}
+
 func ExampleF2() {
 	x := tensor.Scalar(1.0)
 	y := tensor.Scalar(2.0)
@@ -1138,6 +1183,17 @@ func TestReshape(t *testing.T) {
 				4, 5, 6,
 				7, 8, 9,
 				10, 11, 12,
+			}),
+		},
+		{
+			v: &tensor.Tensor[int]{
+				Shape:  []int{2, 2},
+				Stride: []int{5, 1},
+				Data:   []int{1, 2, 3, 4},
+			},
+			shape: []int{1, 4},
+			want: tensor.New([]int{1, 4}, []int{
+				1, 2, 3, 4,
 			}),
 		},
 	}
@@ -1993,7 +2049,7 @@ func TestTensor_Seq2(t *testing.T) {
 		}
 
 		for i := range c.want {
-			if !reflect.DeepEqual(got[i], c.want[i]) {
+			if !tensor.ShapeEqual(got[i], c.want[i]) {
 				t.Errorf("got=%v, want=%v", got, c.want)
 			}
 		}
@@ -2362,12 +2418,14 @@ func TestTranspose(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axes []int
 		want *tensor.Tensor[int]
+		cont *tensor.Tensor[int]
 	}{
 		{
 			// scalar
 			v:    tensor.New(nil, []int{42}),
 			axes: nil,
 			want: tensor.New(nil, []int{42}),
+			cont: tensor.New(nil, []int{42}),
 		},
 		{
 			// axes 0, 1
@@ -2380,6 +2438,10 @@ func TestTranspose(t *testing.T) {
 				1, 2, 3,
 				4, 5, 6,
 			}),
+			cont: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
 		},
 		{
 			// axes 1, 0
@@ -2388,7 +2450,15 @@ func TestTranspose(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{1, 0},
-			want: tensor.New([]int{3, 2}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{3, 2},
+				Stride: []int{1, 3},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{3, 2}, []int{
 				1, 4,
 				2, 5,
 				3, 6,
@@ -2401,7 +2471,15 @@ func TestTranspose(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{-1, -2},
-			want: tensor.New([]int{3, 2}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{3, 2},
+				Stride: []int{1, 3},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{3, 2}, []int{
 				1, 4,
 				2, 5,
 				3, 6,
@@ -2413,6 +2491,10 @@ func TestTranspose(t *testing.T) {
 		got := tensor.Transpose(c.v, c.axes...)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
+		}
+
+		if !tensor.EqualAll(tensor.Contiguous(got), c.cont) {
+			t.Errorf("axes=%v, got=%v, cont=%v", c.axes, tensor.Contiguous(got).Data, c.cont.Data)
 		}
 	}
 }
@@ -2492,6 +2574,7 @@ func TestSqueeze(t *testing.T) {
 		v    *tensor.Tensor[int]
 		axes []int
 		want *tensor.Tensor[int]
+		cont *tensor.Tensor[int]
 	}{
 		{
 			v: tensor.New([]int{1, 2, 1, 3}, []int{
@@ -2499,7 +2582,15 @@ func TestSqueeze(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{},
-			want: tensor.New([]int{2, 3}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 3},
+				Stride: []int{3, 1},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 			}),
@@ -2511,7 +2602,15 @@ func TestSqueeze(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2, 1, 3}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 1, 3},
+				Stride: []int{3, 3, 1},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{2, 1, 3}, []int{
 				1, 2, 3,
 
 				4, 5, 6,
@@ -2524,7 +2623,15 @@ func TestSqueeze(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{2},
-			want: tensor.New([]int{1, 2, 3}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{1, 2, 3},
+				Stride: []int{6, 3, 1},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{1, 2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 			}),
@@ -2536,7 +2643,15 @@ func TestSqueeze(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{-2},
-			want: tensor.New([]int{1, 2, 3}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{1, 2, 3},
+				Stride: []int{6, 3, 1},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{1, 2, 3}, []int{
 				1, 2, 3,
 				4, 5, 6,
 			}),
@@ -2548,7 +2663,15 @@ func TestSqueeze(t *testing.T) {
 				4, 5, 6,
 			}),
 			axes: []int{-4},
-			want: tensor.New([]int{2, 1, 3}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 1, 3},
+				Stride: []int{3, 3, 1},
+				Data: []int{
+					1, 2, 3,
+					4, 5, 6,
+				},
+			},
+			cont: tensor.New([]int{2, 1, 3}, []int{
 				1, 2, 3,
 
 				4, 5, 6,
@@ -2560,6 +2683,10 @@ func TestSqueeze(t *testing.T) {
 		got := tensor.Squeeze(c.v, c.axes...)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axes=%v, got=%v, want=%v", c.axes, got.Data, c.want.Data)
+		}
+
+		if !tensor.EqualAll(tensor.Contiguous(got), c.cont) {
+			t.Errorf("axes=%v, got=%v, cont=%v", c.axes, tensor.Contiguous(got).Data, c.cont.Data)
 		}
 	}
 }
@@ -2645,12 +2772,18 @@ func TestBroadcastTo(t *testing.T) {
 		v     *tensor.Tensor[int]
 		shape []int
 		want  *tensor.Tensor[int]
+		cont  *tensor.Tensor[int]
 	}{
 		{
 			// scalar
 			v:     tensor.New(nil, []int{42}),
 			shape: []int{2, 2},
-			want: tensor.New([]int{2, 2}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 2},
+				Stride: []int{0, 0},
+				Data:   []int{42},
+			},
+			cont: tensor.New([]int{2, 2}, []int{
 				42, 42,
 				42, 42,
 			}),
@@ -2661,7 +2794,12 @@ func TestBroadcastTo(t *testing.T) {
 				1, 2, 3, 4,
 			}),
 			shape: []int{2, 4},
-			want: tensor.New([]int{2, 4}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 4},
+				Stride: []int{0, 1},
+				Data:   []int{1, 2, 3, 4},
+			},
+			cont: tensor.New([]int{2, 4}, []int{
 				1, 2, 3, 4,
 				1, 2, 3, 4,
 			}),
@@ -2675,7 +2813,17 @@ func TestBroadcastTo(t *testing.T) {
 				4,
 			}),
 			shape: []int{4, 2},
-			want: tensor.New([]int{4, 2}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{4, 2},
+				Stride: []int{1, 0},
+				Data: []int{
+					1,
+					2,
+					3,
+					4,
+				},
+			},
+			cont: tensor.New([]int{4, 2}, []int{
 				1, 1,
 				2, 2,
 				3, 3,
@@ -2693,6 +2841,10 @@ func TestBroadcastTo(t *testing.T) {
 				1, 2, 3,
 				4, 5, 6,
 			}),
+			cont: tensor.New([]int{2, 3}, []int{
+				1, 2, 3,
+				4, 5, 6,
+			}),
 		},
 		{
 			// shape 2, 2, 4
@@ -2700,7 +2852,12 @@ func TestBroadcastTo(t *testing.T) {
 				1, 2, 3, 4,
 			}),
 			shape: []int{2, 2, 4},
-			want: tensor.New([]int{2, 2, 4}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{2, 2, 4},
+				Stride: []int{0, 0, 1},
+				Data:   []int{1, 2, 3, 4},
+			},
+			cont: tensor.New([]int{2, 2, 4}, []int{
 				1, 2, 3, 4,
 				1, 2, 3, 4,
 
@@ -2715,7 +2872,12 @@ func TestBroadcastTo(t *testing.T) {
 				2,
 			}),
 			shape: []int{3, 2, 4},
-			want: tensor.New([]int{3, 2, 4}, []int{
+			want: &tensor.Tensor[int]{
+				Shape:  []int{3, 2, 4},
+				Stride: []int{0, 1, 0},
+				Data:   []int{1, 2},
+			},
+			cont: tensor.New([]int{3, 2, 4}, []int{
 				1, 1, 1, 1,
 				2, 2, 2, 2,
 
@@ -2732,6 +2894,10 @@ func TestBroadcastTo(t *testing.T) {
 		got := tensor.BroadcastTo(c.v, c.shape...)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got.Data, c.want.Data)
+		}
+
+		if !tensor.EqualAll(tensor.Contiguous(got), c.cont) {
+			t.Errorf("shape=%v, got=%v, cont=%v", c.shape, tensor.Contiguous(got).Data, c.cont.Data)
 		}
 	}
 }
@@ -3381,31 +3547,6 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-func TestCoord(t *testing.T) {
-	cases := []struct {
-		v     *tensor.Tensor[int]
-		index int
-		want  []int
-	}{
-		{v: tensor.Zeros[int](), index: 0, want: []int{}},
-		{v: tensor.Zeros[int](5), index: 0, want: []int{0}},
-		{v: tensor.Zeros[int](5), index: 4, want: []int{4}},
-		{v: tensor.Zeros[int](2, 3), index: 0, want: []int{0, 0}},
-		{v: tensor.Zeros[int](2, 3), index: 1, want: []int{0, 1}},
-		{v: tensor.Zeros[int](2, 3), index: 2, want: []int{0, 2}},
-		{v: tensor.Zeros[int](2, 3), index: 3, want: []int{1, 0}},
-		{v: tensor.Zeros[int](2, 3), index: 4, want: []int{1, 1}},
-		{v: tensor.Zeros[int](2, 3), index: 5, want: []int{1, 2}},
-	}
-
-	for _, c := range cases {
-		got := tensor.Coord(c.v, c.index)
-		if !reflect.DeepEqual(got, c.want) {
-			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
-		}
-	}
-}
-
 func TestStride(t *testing.T) {
 	cases := []struct {
 		shape []int
@@ -3420,7 +3561,7 @@ func TestStride(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Stride(c.shape...)
-		if !reflect.DeepEqual(got, c.want) {
+		if !tensor.ShapeEqual(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got, c.want)
 		}
 	}
@@ -3478,11 +3619,11 @@ func TestBroadcastShape(t *testing.T) {
 			t.Errorf("unexpected error for shapes %v and %v: %v", c.s0, c.s1, err)
 		}
 
-		if !reflect.DeepEqual(got0, c.want0) {
+		if !tensor.ShapeEqual(got0, c.want0) {
 			t.Errorf("s0=%v, got0=%v, want0=%v", c.s0, got0, c.want0)
 		}
 
-		if !reflect.DeepEqual(got1, c.want1) {
+		if !tensor.ShapeEqual(got1, c.want1) {
 			t.Errorf("s1=%v, got1=%v, want1=%v", c.s1, got1, c.want1)
 		}
 	}
