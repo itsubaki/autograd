@@ -16,7 +16,7 @@ type Number interface {
 }
 
 // Tensor represents a multi-dimensional array.
-// Column-major order is used for the data layout.
+// Row-major order is used for the storage of elements.
 type Tensor[T Number] struct {
 	Shape  []int
 	Stride []int
