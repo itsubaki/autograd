@@ -172,6 +172,26 @@ func ExampleReshape() {
 	// [1 2 3 4]
 }
 
+func ExampleReshape_notcontiguous() {
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+
+	w := tensor.Transpose(v)
+	w.Set([]int{1, 1}, 10)
+
+	x := tensor.Reshape(w, 1, 6)
+	fmt.Println(x.Shape)
+	fmt.Println(x.Stride)
+	fmt.Println(x.Data)
+
+	// Output:
+	// [1 6]
+	// [6 1]
+	// [1 4 2 10 3 6]
+}
+
 func ExampleFlatten() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
@@ -1183,17 +1203,6 @@ func TestReshape(t *testing.T) {
 				4, 5, 6,
 				7, 8, 9,
 				10, 11, 12,
-			}),
-		},
-		{
-			v: &tensor.Tensor[int]{
-				Shape:  []int{2, 2},
-				Stride: []int{5, 1},
-				Data:   []int{1, 2, 3, 4},
-			},
-			shape: []int{1, 4},
-			want: tensor.New([]int{1, 4}, []int{
-				1, 2, 3, 4,
 			}),
 		},
 	}

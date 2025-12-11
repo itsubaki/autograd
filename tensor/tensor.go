@@ -351,88 +351,6 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 	})
 }
 
-// Sum returns a new tensor with the sum of all elements in v.
-// If axes is specified, it reduces along the given axes.
-func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
-	return Reduce(v, 0, func(acc, x T) T { return acc + x }, axes...)
-}
-
-// Max returns a new tensor with the maximum value among all elements in v.
-// If axes is specified, it reduces along the given axes.
-func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	return Reduce(v, -math.MaxFloat64, func(acc, x float64) float64 {
-		if x > acc {
-			return x
-		}
-
-		return acc
-	}, axes...)
-}
-
-// Min returns a new tensor with the minimum value among all elements in v.
-// If axes is specified, it reduces along the given axes.
-func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	return Reduce(v, math.MaxFloat64, func(acc, x float64) float64 {
-		if x < acc {
-			return x
-		}
-
-		return acc
-	}, axes...)
-}
-
-// Mean returns a new tensor with the mean of elements in v.
-// If axes is specified, it reduces along the given axes.
-func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
-	ndim := v.NumDims()
-	if ndim == 0 {
-		return Float64(Contiguous(v))
-	}
-
-	if len(axes) == 0 {
-		// mean all
-		return MulC(1/float64(v.Size()), Float64(Sum(v)))
-	}
-
-	ax, _, err := adjAxes(ndim, axes...)
-	if err != nil {
-		panic(err)
-	}
-
-	// size
-	size := 1
-	for _, a := range ax {
-		size = size * v.Shape[a]
-	}
-
-	// mean
-	return MulC(1/float64(size), Float64(Sum(v, ax...)))
-}
-
-// Variance returns a new tensor with the variance of elements in v.
-func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	ndim := v.NumDims()
-	if ndim == 0 {
-		return Scalar(0.0)
-	}
-
-	if len(axes) == 0 {
-		mu := Mean(v)            // mean
-		xc := Sub(v, mu)         // x - mean
-		return Mean(Mul(xc, xc)) // mean((x - mean)**2)
-	}
-
-	shape := KeepDims(v.Shape, axes)
-	mu := Mean(v, axes...)              // mean
-	xc := Sub(v, Reshape(mu, shape...)) // x - mean
-	return Mean(Mul(xc, xc), axes...)   // mean((x - mean)**2)
-}
-
-// StdDev returns a new tensor with the standard deviation of elements in v.
-func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	return Sqrt(Variance(v, axes...))
-}
-
 // Flatten returns a new tensor with the same data as v with shape (v.Size(),).
 func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
 	return Reshape(v, v.Size())
@@ -462,7 +380,11 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		panic("invalid shape")
 	}
 
-	return New(shape, v.Data)
+	if IsContiguous(v) {
+		return New(shape, v.Data)
+	}
+
+	return New(shape, Contiguous(v).Data)
 }
 
 // Transpose returns a new tensor with the axes transposed.
@@ -636,13 +558,12 @@ func Take[T Number](v *Tensor[T], axis int, indices []int) *Tensor[T] {
 		panic(err)
 	}
 
-	// out tensor
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[ax] = len(indices)
-	out := Zeros[T](shape...)
 
 	// take
+	out := Zeros[T](shape...)
 	for i := range out.Data {
 		coord := Coord(out, i)
 		coord[ax] = idx[coord[ax]]
@@ -763,17 +684,16 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 		panic(err)
 	}
 
-	// out tensor
 	shape := make([]int, ndim)
 	copy(shape, v[0].Shape)
 	shape[ax] = 0
 	for i := range v {
 		shape[ax] += v[i].Shape[ax]
 	}
-	out := Zeros[T](shape...)
 
 	// concat
 	var offset int
+	out := Zeros[T](shape...)
 	for _, w := range v {
 		for j := range w.Data {
 			coord := Coord(w, j)
@@ -796,14 +716,13 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 		panic(err)
 	}
 
-	// out tensor
 	shape := make([]int, ndim+1)
 	copy(shape[:ax], v[0].Shape[:ax])
 	shape[ax] = len(v)
 	copy(shape[ax+1:], v[0].Shape[ax:])
-	out := Zeros[T](shape...)
 
 	// stack
+	out := Zeros[T](shape...)
 	for i, w := range v {
 		for j := range w.Data {
 			coord := Coord(w, j)
@@ -839,16 +758,15 @@ func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 		panic("sum of size is not equal to shape at axis")
 	}
 
-	out := make([]*Tensor[T], len(size))
 	var start int
+	out := make([]*Tensor[T], len(size))
 	for i, s := range size {
-		// out tensor
 		shape := make([]int, ndim)
 		copy(shape, v.Shape)
 		shape[ax] = s
-		out[i] = Zeros[T](shape...)
 
 		// copy
+		out[i] = Zeros[T](shape...)
 		for j := range out[i].Data {
 			coord := Coord(out[i], j)
 			coord[ax] += start
@@ -883,13 +801,12 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 		panic(err)
 	}
 
-	// out tensor
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[ax] = v.Shape[ax] * n
-	out := Zeros[T](shape...)
 
 	// repeat
+	out := Zeros[T](shape...)
 	for i := range out.Data {
 		coord := Coord(out, i)
 		coord[ax] = coord[ax] % v.Shape[ax]
@@ -924,8 +841,8 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	shape := make([]int, ndim)
 	copy(shape, v.Shape)
 	shape[axis] *= n
-	out := Zeros[T](shape...)
 
+	out := Zeros[T](shape...)
 	for i := range out.Data {
 		coord := Coord(out, i)
 		vcoord := make([]int, ndim)
@@ -977,12 +894,10 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 		perm[i] = i
 	}
 	perm[ax], perm[ndim-1] = perm[ndim-1], perm[ax]
-	vt := Transpose(v, perm...)
-
-	// out tensor
-	out := Zeros[int](vt.Shape[:ndim-1]...)
+	vt := Transpose(v, perm...) // FIXME:
 	axSize := vt.Shape[ndim-1]
 
+	out := Zeros[int](vt.Shape[:ndim-1]...)
 	for i := range out.Data {
 		maxIdx, maxVal := 0, vt.Data[i*axSize]
 		for j := 1; j < axSize; j++ {
@@ -993,81 +908,6 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 		}
 
 		out.Data[i] = maxIdx
-	}
-
-	return out
-}
-
-// Reduce reduces the tensor v to a tensor with fewer dimensions by applying the function f along the given axes.
-func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tensor[T] {
-	if len(axes) == 0 {
-		// reduce all
-		for _, x := range v.Data {
-			acc = f(acc, x)
-		}
-
-		return Scalar(acc)
-	}
-
-	vndim := v.NumDims()
-	_, seen, err := adjAxes(vndim, axes...)
-	if err != nil {
-		panic(err)
-	}
-
-	if len(seen) == vndim {
-		// reduce all
-		for _, x := range v.Data {
-			acc = f(acc, x)
-		}
-
-		return Scalar(acc)
-	}
-
-	// out tensor
-	shape := make([]int, 0, vndim-len(seen))
-	ndim := make([]int, vndim)
-
-	// Example: v.Shape = [2, 3, 4], axes = [1]
-	// seen = [false, true, false]
-	// Loop changes:
-	//   i=0 → seen[0]=false → ndim[0]=0, pos=1
-	//   i=1 → seen[1]=true  → ndim[1]=-1, pos=1
-	//   i=2 → seen[2]=false → ndim[2]=1, pos=2
-	// Result:
-	//   shape = [2, 4]
-	//   ndim  = [0, -1, 1]
-	// -1 indicates a reduced axis, which will be skipped in the later loop
-	var pos int
-	for i := range vndim {
-		if seen[i] {
-			ndim[i] = -1
-			continue
-		}
-
-		shape = append(shape, v.Shape[i])
-		ndim[i] = pos
-		pos++
-	}
-
-	// out tensor
-	out := Full(shape, acc)
-	for i := range v.Data {
-		coord := Coord(v, i)
-
-		var k int
-		for j := range vndim {
-			idx := ndim[j]
-			if idx < 0 {
-				// reduced axis
-				continue
-			}
-
-			k += coord[j] * out.Stride[idx]
-		}
-
-		// set
-		out.Data[k] = f(out.Data[k], v.Data[i])
 	}
 
 	return out
@@ -1097,7 +937,6 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 		return v
 	}
 
-	// out tensor
 	batch := a.Shape[:ndim-2]
 	shape := append(batch, []int{arows, bcols}...)
 	o := Zeros[T](shape...)
@@ -1175,6 +1014,161 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return o
 }
 
+// Reduce reduces the tensor v to a tensor with fewer dimensions by applying the function f along the given axes.
+func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tensor[T] {
+	if len(axes) == 0 {
+		// reduce all
+		for _, x := range v.Data {
+			acc = f(acc, x)
+		}
+
+		return Scalar(acc)
+	}
+
+	vndim := v.NumDims()
+	_, seen, err := adjAxes(vndim, axes...)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(seen) == vndim {
+		// reduce all
+		for _, x := range v.Data {
+			acc = f(acc, x)
+		}
+
+		return Scalar(acc)
+	}
+
+	shape := make([]int, 0, vndim-len(seen))
+	ndim := make([]int, vndim)
+
+	// Example: v.Shape = [2, 3, 4], axes = [1]
+	// seen = [false, true, false]
+	// Loop changes:
+	//   i=0 → seen[0]=false → ndim[0]=0, pos=1
+	//   i=1 → seen[1]=true  → ndim[1]=-1, pos=1
+	//   i=2 → seen[2]=false → ndim[2]=1, pos=2
+	// Result:
+	//   shape = [2, 4]
+	//   ndim  = [0, -1, 1]
+	// -1 indicates a reduced axis, which will be skipped in the later loop
+	var pos int
+	for i := range vndim {
+		if seen[i] {
+			ndim[i] = -1
+			continue
+		}
+
+		shape = append(shape, v.Shape[i])
+		ndim[i] = pos
+		pos++
+	}
+
+	out := Full(shape, acc)
+	for i := range v.Data {
+		coord := Coord(v, i)
+
+		var k int
+		for j := range vndim {
+			idx := ndim[j]
+			if idx < 0 {
+				// reduced axis
+				continue
+			}
+
+			k += coord[j] * out.Stride[idx]
+		}
+
+		// set
+		out.Data[k] = f(out.Data[k], v.Data[i])
+	}
+
+	return out
+}
+
+// Sum returns a new tensor with the sum of all elements in v.
+// If axes is specified, it reduces along the given axes.
+func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
+	return Reduce(v, 0, func(acc, x T) T { return acc + x }, axes...)
+}
+
+// Max returns a new tensor with the maximum value among all elements in v.
+// If axes is specified, it reduces along the given axes.
+func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Reduce(v, -math.MaxFloat64, func(acc, x float64) float64 {
+		if x > acc {
+			return x
+		}
+
+		return acc
+	}, axes...)
+}
+
+// Min returns a new tensor with the minimum value among all elements in v.
+// If axes is specified, it reduces along the given axes.
+func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Reduce(v, math.MaxFloat64, func(acc, x float64) float64 {
+		if x < acc {
+			return x
+		}
+
+		return acc
+	}, axes...)
+}
+
+// Mean returns a new tensor with the mean of elements in v.
+// If axes is specified, it reduces along the given axes.
+func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
+	ndim := v.NumDims()
+	if ndim == 0 {
+		return Float64(Contiguous(v))
+	}
+
+	if len(axes) == 0 {
+		// mean all
+		return MulC(1/float64(v.Size()), Float64(Sum(v)))
+	}
+
+	ax, _, err := adjAxes(ndim, axes...)
+	if err != nil {
+		panic(err)
+	}
+
+	// size
+	size := 1
+	for _, a := range ax {
+		size = size * v.Shape[a]
+	}
+
+	// mean
+	return MulC(1/float64(size), Float64(Sum(v, ax...)))
+}
+
+// Variance returns a new tensor with the variance of elements in v.
+func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	ndim := v.NumDims()
+	if ndim == 0 {
+		return Scalar(0.0)
+	}
+
+	if len(axes) == 0 {
+		mu := Mean(v)            // mean
+		xc := Sub(v, mu)         // x - mean
+		return Mean(Mul(xc, xc)) // mean((x - mean)**2)
+	}
+
+	shape := KeepDims(v.Shape, axes)
+	mu := Mean(v, axes...)              // mean
+	xc := Sub(v, Reshape(mu, shape...)) // x - mean
+	return Mean(Mul(xc, xc), axes...)   // mean((x - mean)**2)
+}
+
+// StdDev returns a new tensor with the standard deviation of elements in v.
+func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
+	return Sqrt(Variance(v, axes...))
+}
+
 // ShapeEqual returns true if the two shapes are equal.
 func ShapeEqual(a, b []int) bool {
 	if len(a) != len(b) {
@@ -1197,9 +1191,7 @@ func EqualAll(v, w *Tensor[int]) bool {
 	}
 
 	for i := range v.Size() {
-		j := Index(v, Coord(v, i)...)
-		k := Index(w, Coord(w, i)...)
-		if v.Data[j] != w.Data[k] {
+		if v.At(Coord(v, i)...) != w.At(Coord(w, i)...) {
 			return false
 		}
 	}
@@ -1214,10 +1206,7 @@ func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
 	}
 
 	for i := range v.Size() {
-		j := Index(v, Coord(v, i)...)
-		k := Index(w, Coord(w, i)...)
-
-		a, b := v.Data[j], w.Data[k]
+		a, b := v.At(Coord(v, i)...), w.At(Coord(w, i)...)
 		if !isClose(a, b, tol...) {
 			return false
 		}
@@ -1262,10 +1251,7 @@ func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	out := Zeros[U](a.Shape...)
 	for i := range out.Size() {
 		coord := Coord(out, i)
-		ak := Index(a, coord...)
-		bk := Index(b, coord...)
-
-		out.Data[i] = f(a.Data[ak], b.Data[bk])
+		out.Data[i] = f(a.At(coord...), b.At(coord...))
 	}
 
 	return out
