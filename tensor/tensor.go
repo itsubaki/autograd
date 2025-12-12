@@ -168,11 +168,19 @@ func (v *Tensor[T]) At(coord ...int) T {
 
 // Set sets the element at the given index to the given value.
 func (v *Tensor[T]) Set(coord []int, value T) {
+	if v.ReadOnly {
+		panic("cannot modify read-only tensor")
+	}
+
 	v.Data[Index(v, coord...)] = value
 }
 
 // AddAt adds the given value to the element at the given index.
 func (v *Tensor[T]) AddAt(coord []int, value T) {
+	if v.ReadOnly {
+		panic("cannot modify read-only tensor")
+	}
+
 	v.Data[Index(v, coord...)] += value
 }
 

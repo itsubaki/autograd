@@ -3886,6 +3886,17 @@ func TestSet_invalid(t *testing.T) {
 			coord: []int{1, 1},
 			value: 42,
 		},
+		{
+			v: tensor.BroadcastTo(tensor.New(
+				[]int{2, 2},
+				[]int{
+					1, 2,
+					3, 4,
+				},
+			), 3, 2, 2),
+			coord: []int{2, 1, 1},
+			value: 42,
+		},
 	}
 
 	for _, c := range cases {
@@ -3919,6 +3930,17 @@ func TestAddAt_invalid(t *testing.T) {
 				},
 			)),
 			coord: []int{1, 1},
+			value: 42,
+		},
+		{
+			v: tensor.BroadcastTo(tensor.New(
+				[]int{2, 2},
+				[]int{
+					1, 2,
+					3, 4,
+				},
+			), 3, 2, 2),
+			coord: []int{2, 1, 1},
 			value: 42,
 		},
 	}
