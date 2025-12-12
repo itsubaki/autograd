@@ -20,9 +20,10 @@ type Number interface {
 // Non-contiguous views (created via Transpose, BroadcastTo, etc.) may share underlying data but have stride patterns that do not follow row-major order.
 // Such operations create views without copying data, so the logical element order may differ from the physical memory layout.
 type Tensor[T Number] struct {
-	Shape  []int
-	Stride []int
-	Data   []T
+	Shape    []int
+	Stride   []int
+	Data     []T
+	ReadOnly bool
 }
 
 // New returns a new tensor with the given shape and data.
@@ -167,22 +168,12 @@ func (v *Tensor[T]) At(coord ...int) T {
 
 // Set sets the element at the given index to the given value.
 func (v *Tensor[T]) Set(coord []int, value T) {
-	if IsContiguous(v) {
-		v.Data[Index(v, coord...)] = value
-		return
-	}
-
-	panic("set value on non-contiguous tensor")
+	v.Data[Index(v, coord...)] = value
 }
 
 // AddAt adds the given value to the element at the given index.
 func (v *Tensor[T]) AddAt(coord []int, value T) {
-	if IsContiguous(v) {
-		v.Data[Index(v, coord...)] += value
-		return
-	}
-
-	panic("add value on non-contiguous tensor")
+	v.Data[Index(v, coord...)] += value
 }
 
 // Seq2 returns a sequence of rows.
@@ -472,9 +463,10 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:  append([]int{}, shape...),
-		Stride: stride,
-		Data:   v.Data,
+		Shape:    append([]int{}, shape...),
+		Stride:   stride,
+		Data:     v.Data,
+		ReadOnly: true,
 	}
 }
 

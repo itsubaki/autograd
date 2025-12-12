@@ -302,10 +302,20 @@ func ExampleReshape() {
 	fmt.Println(w.Data)
 	fmt.Println(tensor.IsContiguous(w))
 
+	w.Set([]int{0, 3}, 10)
+	fmt.Println(w.Shape)
+	fmt.Println(w.Stride)
+	fmt.Println(w.Data)
+	fmt.Println(tensor.IsContiguous(w))
+
 	// Output:
 	// [1 4]
 	// [4 1]
 	// [1 2 3 4]
+	// true
+	// [1 4]
+	// [4 1]
+	// [1 2 3 10]
 	// true
 }
 
@@ -824,7 +834,14 @@ func ExampleTranspose() {
 	fmt.Println(w.Stride)
 	fmt.Println(w.Data)
 	fmt.Println(tensor.IsContiguous(w))
+	fmt.Println()
 
+	for _, row := range w.Seq2() {
+		fmt.Println(row)
+	}
+	fmt.Println()
+
+	w.Set([]int{2, 1}, 10)
 	for _, row := range w.Seq2() {
 		fmt.Println(row)
 	}
@@ -834,9 +851,14 @@ func ExampleTranspose() {
 	// [1 3]
 	// [1 2 3 4 5 6]
 	// false
+	//
 	// [1 4]
 	// [2 5]
 	// [3 6]
+	//
+	// [1 4]
+	// [2 5]
+	// [3 10]
 }
 
 func ExampleTranspose_add() {
