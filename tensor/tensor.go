@@ -1206,8 +1206,8 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return o
 }
 
-// ShapeEqual returns true if the two shapes are equal.
-func ShapeEqual(a, b []int) bool {
+// SliceEqual returns true if the two slices are equal.
+func SliceEqual(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -1223,7 +1223,7 @@ func ShapeEqual(a, b []int) bool {
 
 // EqualAll returns true if the two tensors are equal.
 func EqualAll(v, w *Tensor[int]) bool {
-	if !ShapeEqual(v.Shape, w.Shape) {
+	if !SliceEqual(v.Shape, w.Shape) {
 		return false
 	}
 
@@ -1238,7 +1238,7 @@ func EqualAll(v, w *Tensor[int]) bool {
 
 // IsCloseAll returns true if the two tensors are close enough.
 func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
-	if !ShapeEqual(v.Shape, w.Shape) {
+	if !SliceEqual(v.Shape, w.Shape) {
 		return false
 	}
 

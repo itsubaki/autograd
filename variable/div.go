@@ -34,7 +34,7 @@ func (f *DivT) Backward(gy ...*Variable) []*Variable {
 	gx0 := Div(gy[0], f.x1)
 	gx1 := Mul(gy[0], Div(Neg(f.x0), Mul(f.x1, f.x1))) // gy * (-x0 / x1^2)
 
-	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
+	if tensor.SliceEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gx0,
 			gx1,
