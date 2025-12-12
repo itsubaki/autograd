@@ -298,11 +298,15 @@ func ExampleReshape() {
 
 	w := tensor.Reshape(v, 1, 4)
 	fmt.Println(w.Shape)
+	fmt.Println(w.Stride)
 	fmt.Println(w.Data)
+	fmt.Println(tensor.IsContiguous(w))
 
 	// Output:
 	// [1 4]
+	// [4 1]
 	// [1 2 3 4]
+	// true
 }
 
 func ExampleReshape_notcontiguous() {
@@ -816,11 +820,20 @@ func ExampleTranspose() {
 	})
 
 	w := tensor.Transpose(v)
+	fmt.Println(w.Shape)
+	fmt.Println(w.Stride)
+	fmt.Println(w.Data)
+	fmt.Println(tensor.IsContiguous(w))
+
 	for _, row := range w.Seq2() {
 		fmt.Println(row)
 	}
 
 	// Output:
+	// [3 2]
+	// [1 3]
+	// [1 2 3 4 5 6]
+	// false
 	// [1 4]
 	// [2 5]
 	// [3 6]
