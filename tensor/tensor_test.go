@@ -52,6 +52,88 @@ func BenchmarkTransposeMemCopy(b *testing.B) {
 	}
 }
 
+func Example_view() {
+	x := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+
+	// 1 2
+	// 3 4
+	// 5 6
+	y := tensor.Reshape(x, 3, 2)
+	for i := range x.Data {
+		if &x.Data[i] != &y.Data[i] {
+			panic("reshape is not view")
+		}
+	}
+
+	if y.At(2, 1) != 6 {
+		panic(fmt.Sprintf("reshape value mismatch: got %v want %v", y.At(2, 1), 6))
+	}
+
+	// 1 3 5
+	// 2 4 6
+	z := tensor.Transpose(y)
+	for i := range x.Data {
+		if &x.Data[i] != &y.Data[i] {
+			panic("reshape is not view")
+		}
+	}
+
+	if z.At(1, 2) != 6 {
+		panic(fmt.Sprintf("transpose value mismatch: got %v want %v", z.At(1, 2), 6))
+	}
+
+	// 2 6 10
+	// 4 8 12
+	z2 := tensor.Add(z, z)
+	fmt.Println(z2.Shape)
+	fmt.Println(z2.Stride)
+	fmt.Println(z2.Data)
+
+	// 2 6 10
+	// 4 8 12
+	//
+	// 2 6 10
+	// 4 8 12
+	bz2 := tensor.BroadcastTo(z2, 2, 2, 3)
+	fmt.Println(tensor.IsContiguous(bz2))
+	fmt.Println(bz2.Shape)
+	fmt.Println(bz2.Stride)
+	fmt.Println(bz2.Data)
+	for _, row := range bz2.Seq2() {
+		fmt.Println(row)
+	}
+
+	// contiguous is true after clone
+	cbz2 := tensor.Clone(bz2)
+	fmt.Println(tensor.IsContiguous(cbz2))
+
+	cbz2.Set([]int{1, 0, 2}, 100)
+	for _, row := range cbz2.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [2 3]
+	// [3 1]
+	// [2 6 10 4 8 12]
+	// false
+	// [2 2 3]
+	// [0 3 1]
+	// [2 6 10 4 8 12]
+	// [2 6 10]
+	// [4 8 12]
+	// [2 6 10]
+	// [4 8 12]
+	// true
+	// [2 6 10]
+	// [4 8 12]
+	// [2 6 100]
+	// [4 8 12]
+}
+
 func Example() {
 	v := tensor.Zeros[float64](2, 3)
 
