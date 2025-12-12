@@ -91,6 +91,8 @@ func Example_view() {
 	fmt.Println(z2.Shape)
 	fmt.Println(z2.Stride)
 	fmt.Println(z2.Data)
+	fmt.Println(tensor.IsContiguous(z2))
+	fmt.Println()
 
 	// 2 6 10
 	// 4 8 12
@@ -98,40 +100,45 @@ func Example_view() {
 	// 2 6 10
 	// 4 8 12
 	bz2 := tensor.BroadcastTo(z2, 2, 2, 3)
-	fmt.Println(tensor.IsContiguous(bz2))
 	fmt.Println(bz2.Shape)
 	fmt.Println(bz2.Stride)
 	fmt.Println(bz2.Data)
+	fmt.Println(tensor.IsContiguous(bz2))
 	for _, row := range bz2.Seq2() {
 		fmt.Println(row)
 	}
+	fmt.Println()
 
 	// contiguous is true after clone
 	cbz2 := tensor.Clone(bz2)
+	fmt.Println(cbz2.Shape)
+	fmt.Println(cbz2.Stride)
+	fmt.Println(cbz2.Data)
 	fmt.Println(tensor.IsContiguous(cbz2))
 
 	cbz2.Set([]int{1, 0, 2}, 100)
-	for _, row := range cbz2.Seq2() {
-		fmt.Println(row)
-	}
+	fmt.Println(cbz2.Data)
 
 	// Output:
 	// [2 3]
 	// [3 1]
 	// [2 6 10 4 8 12]
-	// false
+	// true
+	//
 	// [2 2 3]
 	// [0 3 1]
 	// [2 6 10 4 8 12]
+	// false
 	// [2 6 10]
 	// [4 8 12]
 	// [2 6 10]
 	// [4 8 12]
+	//
+	// [2 2 3]
+	// [6 3 1]
+	// [2 6 10 4 8 12 2 6 10 4 8 12]
 	// true
-	// [2 6 10]
-	// [4 8 12]
-	// [2 6 100]
-	// [4 8 12]
+	// [2 6 10 4 8 12 2 6 100 4 8 12]
 }
 
 func Example() {
@@ -159,6 +166,7 @@ func ExampleTensor_Set() {
 	})
 
 	w := tensor.Transpose(v)
+	w = tensor.Contiguous(w)
 	w.Set([]int{1, 1}, 10)
 
 	for _, row := range w.Seq2() {
@@ -304,17 +312,26 @@ func ExampleReshape_notcontiguous() {
 	})
 
 	w := tensor.Transpose(v)
-	w.Set([]int{1, 1}, 10)
+	fmt.Println(w.Shape)
+	fmt.Println(w.Stride)
+	fmt.Println(w.Data)
+	fmt.Println(tensor.IsContiguous(w))
 
 	x := tensor.Reshape(w, 1, 6)
 	fmt.Println(x.Shape)
 	fmt.Println(x.Stride)
 	fmt.Println(x.Data)
+	fmt.Println(tensor.IsContiguous(x))
 
 	// Output:
+	// [3 2]
+	// [1 3]
+	// [1 2 3 4 5 6]
+	// false
 	// [1 6]
 	// [6 1]
-	// [1 4 2 10 3 6]
+	// [1 4 2 5 3 6]
+	// true
 }
 
 func ExampleFlatten() {
@@ -3815,6 +3832,76 @@ func TestArrayEqual(t *testing.T) {
 		if got != c.want {
 			t.Errorf("a=%v, b=%v, got=%v, want=%v", c.a, c.b, got, c.want)
 		}
+	}
+}
+
+func TestSet_invalid(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		coord []int
+		value int
+	}{
+		{
+			v: tensor.Transpose(tensor.New(
+				[]int{2, 2},
+				[]int{
+					1, 2,
+					3, 4,
+				},
+			)),
+			coord: []int{1, 1},
+			value: 42,
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for coord %v", c.coord)
+			}()
+
+			c.v.Set(c.coord, c.value)
+			t.Fail()
+		}()
+	}
+}
+
+func TestAddAt_invalid(t *testing.T) {
+	cases := []struct {
+		v     *tensor.Tensor[int]
+		coord []int
+		value int
+	}{
+		{
+			v: tensor.Transpose(tensor.New(
+				[]int{2, 2},
+				[]int{
+					1, 2,
+					3, 4,
+				},
+			)),
+			coord: []int{1, 1},
+			value: 42,
+		},
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					return
+				}
+
+				t.Errorf("unexpected panic for coord %v", c.coord)
+			}()
+
+			c.v.AddAt(c.coord, c.value)
+			t.Fail()
+		}()
 	}
 }
 

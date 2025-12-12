@@ -175,12 +175,22 @@ func (v *Tensor[T]) At(coord ...int) T {
 
 // Set sets the element at the given index to the given value.
 func (v *Tensor[T]) Set(coord []int, value T) {
-	v.Data[Index(v, coord...)] = value
+	if IsContiguous(v) {
+		v.Data[Index(v, coord...)] = value
+		return
+	}
+
+	panic("set value on non-contiguous tensor")
 }
 
 // AddAt adds the given value to the element at the given index.
 func (v *Tensor[T]) AddAt(coord []int, value T) {
-	v.Data[Index(v, coord...)] += value
+	if IsContiguous(v) {
+		v.Data[Index(v, coord...)] += value
+		return
+	}
+
+	panic("add value on non-contiguous tensor")
 }
 
 // Seq2 returns a sequence of rows.
