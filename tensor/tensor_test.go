@@ -9,6 +9,49 @@ import (
 	"github.com/itsubaki/autograd/tensor"
 )
 
+func BenchmarkTransposeView(b *testing.B) {
+	rows, cols := 1024, 1024
+	data := make([]float64, rows*cols)
+	t := tensor.New([]int{cols, rows}, data)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for range b.N {
+		_ = tensor.Transpose(t, 1, 0)
+	}
+}
+
+func BenchmarkTransposeMemCopy(b *testing.B) {
+	transpose := func(m [][]float64) [][]float64 {
+		rows, cols := len(m), len(m[0])
+
+		dst := make([][]float64, cols)
+		for i := range dst {
+			dst[i] = make([]float64, rows)
+		}
+
+		for i := range cols {
+			for j := range rows {
+				dst[i][j] = m[j][i]
+			}
+		}
+
+		return dst
+	}
+
+	rows, cols := 1024, 1024
+	m := make([][]float64, cols)
+	for i := range cols {
+		m[i] = make([]float64, rows)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for range b.N {
+		_ = transpose(m)
+	}
+}
+
 func Example() {
 	v := tensor.Zeros[float64](2, 3)
 
@@ -3708,6 +3751,10 @@ func TestReshape_invalid(t *testing.T) {
 		{
 			v:     tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
 			shape: []int{-1, -1},
+		},
+		{
+			v:     tensor.New([]int{2, 2}, []int{1, 2, 3, 4}),
+			shape: []int{3, -1},
 		},
 	}
 
