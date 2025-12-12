@@ -17,7 +17,8 @@ type Number interface {
 
 // Tensor represents a multi-dimensional array.
 // Row-major order is used for contiguous tensor storage.
-// Non-contiguous views (created via Transpose, BroadcastTo, ...) may share underlying data with different orderings.
+// Non-contiguous views (created via Transpose, BroadcastTo, etc.) may share underlying data but have stride patterns that do not follow row-major order.
+// Such operations create views without copying data, so the logical element order may differ from the physical memory layout.
 type Tensor[T Number] struct {
 	Shape  []int
 	Stride []int
@@ -955,15 +956,19 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	return out
 }
 
+// ReduceAll reduces the tensor v to a scalar by applying the function f to all elements.
+func ReduceAll[T Number](v *Tensor[T], acc T, f func(a, b T) T) *Tensor[T] {
+	for i := range v.Size() {
+		acc = f(acc, v.At(Coord(v, i)...))
+	}
+
+	return Scalar(acc)
+}
+
 // Reduce reduces the tensor v to a tensor with fewer dimensions by applying the function f along the given axes.
 func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tensor[T] {
 	if len(axes) == 0 {
-		// reduce all
-		for i := range v.Size() {
-			acc = f(acc, v.At(Coord(v, i)...))
-		}
-
-		return Scalar(acc)
+		return ReduceAll(v, acc, f)
 	}
 
 	vndim := v.NumDims()
@@ -973,12 +978,7 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 	}
 
 	if len(seen) == vndim {
-		// reduce all
-		for _, x := range v.Data {
-			acc = f(acc, x)
-		}
-
-		return Scalar(acc)
+		return ReduceAll(v, acc, f)
 	}
 
 	shape := make([]int, 0, vndim-len(seen))
@@ -1282,8 +1282,8 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 	data := make([]U, len(v.Data))
-	for i, x := range v.Data {
-		data[i] = f(x)
+	for i := range v.Size() {
+		data[i] = f(v.At(Coord(v, i)...))
 	}
 
 	return Like(v, data)
