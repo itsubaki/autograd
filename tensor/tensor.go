@@ -74,23 +74,6 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
-// Like returns a new tensor that shares the same shape and stride as v but uses
-// the provided data slice. This effectively creates a tensor "like" v while
-// replacing the underlying data.
-//
-// Note that the stride is copied verbatim from v. If v is non-contiguous,
-// the newly created tensor will also be non-contiguous. In such cases, the
-// length of data may not match the total elements implied by the shape and
-// stride. Supplying a data slice whose length does not align with the shape–stride
-// layout may lead to unexpected or incorrect behavior.
-func Like[T, U Number](v *Tensor[T], data []U) *Tensor[U] {
-	return &Tensor[U]{
-		Shape:  append([]int{}, v.Shape...),
-		Stride: append([]int{}, v.Stride...),
-		Data:   data,
-	}
-}
-
 // Arange returns a new tensor with evenly spaced values within a given interval.
 func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 	var s T = 1
@@ -489,7 +472,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:  shape,
+		Shape:  append([]int{}, shape...),
 		Stride: stride,
 		Data:   v.Data,
 	}
@@ -1294,7 +1277,7 @@ func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 		data[i] = f(v.At(Coord(v, i)...))
 	}
 
-	return Like(v, data)
+	return New(v.Shape, data)
 }
 
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
