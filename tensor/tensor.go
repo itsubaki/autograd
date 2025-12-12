@@ -74,7 +74,15 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
-// Like returns a new tensor with the same shape and stride as v and the given data.
+// Like returns a new tensor that shares the same shape and stride as v but uses
+// the provided data slice. This effectively creates a tensor "like" v while
+// replacing the underlying data.
+//
+// Note that the stride is copied verbatim from v. If v is non-contiguous,
+// the newly created tensor will also be non-contiguous. In such cases, the
+// length of data may not match the total elements implied by the shape and
+// stride. Supplying a data slice whose length does not align with the shape–stride
+// layout may lead to unexpected or incorrect behavior.
 func Like[T, U Number](v *Tensor[T], data []U) *Tensor[U] {
 	return &Tensor[U]{
 		Shape:  append([]int{}, v.Shape...),
@@ -1281,7 +1289,7 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
-	data := make([]U, len(v.Data))
+	data := make([]U, v.Size())
 	for i := range v.Size() {
 		data[i] = f(v.At(Coord(v, i)...))
 	}

@@ -1192,7 +1192,6 @@ func ExampleLinspace_invalid() {
 	}()
 
 	_ = tensor.Linspace(0, 1, 1)
-
 	panic("unreachable")
 
 	// Output:
@@ -3865,7 +3864,7 @@ func TestSet_invalid(t *testing.T) {
 			}()
 
 			c.v.Set(c.coord, c.value)
-			t.Fail()
+			panic("unreachable")
 		}()
 	}
 }
@@ -3900,7 +3899,7 @@ func TestAddAt_invalid(t *testing.T) {
 			}()
 
 			c.v.AddAt(c.coord, c.value)
-			t.Fail()
+			panic("unreachable")
 		}()
 	}
 }
