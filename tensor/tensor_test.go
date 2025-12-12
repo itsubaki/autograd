@@ -2199,7 +2199,7 @@ func TestTensor_Seq2(t *testing.T) {
 		}
 
 		for i := range c.want {
-			if !tensor.ArrayEqual(got[i], c.want[i]) {
+			if !tensor.ShapeEqual(got[i], c.want[i]) {
 				t.Errorf("got=%v, want=%v", got, c.want)
 			}
 		}
@@ -3716,7 +3716,7 @@ func TestCoord(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Coord(c.v, c.index)
-		if !tensor.ArrayEqual(got, c.want) {
+		if !tensor.ShapeEqual(got, c.want) {
 			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
 		}
 	}
@@ -3736,7 +3736,7 @@ func TestStride(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.Stride(c.shape...)
-		if !tensor.ArrayEqual(got, c.want) {
+		if !tensor.ShapeEqual(got, c.want) {
 			t.Errorf("shape=%v, got=%v, want=%v", c.shape, got, c.want)
 		}
 	}
@@ -3794,11 +3794,11 @@ func TestBroadcastShape(t *testing.T) {
 			t.Errorf("unexpected error for shapes %v and %v: %v", c.s0, c.s1, err)
 		}
 
-		if !tensor.ArrayEqual(got0, c.want0) {
+		if !tensor.ShapeEqual(got0, c.want0) {
 			t.Errorf("s0=%v, got0=%v, want0=%v", c.s0, got0, c.want0)
 		}
 
-		if !tensor.ArrayEqual(got1, c.want1) {
+		if !tensor.ShapeEqual(got1, c.want1) {
 			t.Errorf("s1=%v, got1=%v, want1=%v", c.s1, got1, c.want1)
 		}
 	}
@@ -3827,7 +3827,7 @@ func TestArrayEqual(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.ArrayEqual(c.a, c.b)
+		got := tensor.ShapeEqual(c.a, c.b)
 		if got != c.want {
 			t.Errorf("a=%v, b=%v, got=%v, want=%v", c.a, c.b, got, c.want)
 		}
