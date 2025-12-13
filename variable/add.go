@@ -29,7 +29,7 @@ func (f *AddT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *AddT) Backward(gy ...*Variable) []*Variable {
-	if tensor.ShapeEqual(f.x0Shape, f.x1Shape) {
+	if tensor.SliceEqual(f.x0Shape, f.x1Shape) {
 		return []*Variable{
 			gy[0],
 			gy[0],

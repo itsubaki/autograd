@@ -174,7 +174,7 @@ func (v *Variable) String() string {
 		return fmt.Sprintf("%s(%v)", name, v.At())
 	}
 
-	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), v.Data.Data)
+	return fmt.Sprintf("%s%v(%v)", name, v.Shape(), tensor.Clone(v.Data).Data)
 }
 
 func addFunc(fs []*Function, f *Function, seen map[*Function]bool) []*Function {
