@@ -361,7 +361,7 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 
 // Flatten returns a new tensor with the same data as v with shape (v.Size(),).
 func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
-	return Reshape(v, -1)
+	return Clone(Reshape(v, -1))
 }
 
 // Reshape returns a new tensor with the same data as v with the given shape.
