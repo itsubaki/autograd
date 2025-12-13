@@ -458,8 +458,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 		s0, s1 := v.Shape[x], shape[i]
 		if s0 != s1 && s0 != 1 {
-			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v",
-				shape, v.Shape))
+			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.Shape))
 		}
 
 		if s0 == 1 {
