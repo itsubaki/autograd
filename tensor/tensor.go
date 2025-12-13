@@ -400,7 +400,7 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Contiguous(v)
+		return Clone(v)
 	}
 
 	if len(axes) == 0 {
