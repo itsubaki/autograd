@@ -955,6 +955,27 @@ func ExampleMatMul() {
 	// [139 154]
 }
 
+func ExampleMatMul_view() {
+	x := tensor.New([]int{1, 3}, []int{
+		1, 2, 3,
+	})
+	y := tensor.New([]int{3, 2}, []int{
+		7, 8,
+		9, 10,
+		11, 12,
+	})
+
+	xb := tensor.BroadcastTo(x, 2, 3)
+	z := tensor.MatMul(xb, y)
+	for _, row := range z.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [58 64]
+	// [58 64]
+}
+
 func ExampleBroadcastTo() {
 	v := tensor.New([]int{1, 2, 2}, []float64{
 		1, 2,
