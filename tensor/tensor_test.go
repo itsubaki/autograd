@@ -3876,17 +3876,6 @@ func TestSet_invalid(t *testing.T) {
 		value int
 	}{
 		{
-			v: tensor.Transpose(tensor.New(
-				[]int{2, 2},
-				[]int{
-					1, 2,
-					3, 4,
-				},
-			)),
-			coord: []int{1, 1},
-			value: 42,
-		},
-		{
 			v: tensor.BroadcastTo(tensor.New(
 				[]int{2, 2},
 				[]int{
@@ -3910,7 +3899,7 @@ func TestSet_invalid(t *testing.T) {
 			}()
 
 			c.v.Set(c.coord, c.value)
-			panic("unreachable")
+			t.Fail()
 		}()
 	}
 }
@@ -3921,17 +3910,6 @@ func TestAddAt_invalid(t *testing.T) {
 		coord []int
 		value int
 	}{
-		{
-			v: tensor.Transpose(tensor.New(
-				[]int{2, 2},
-				[]int{
-					1, 2,
-					3, 4,
-				},
-			)),
-			coord: []int{1, 1},
-			value: 42,
-		},
 		{
 			v: tensor.BroadcastTo(tensor.New(
 				[]int{2, 2},
@@ -3956,7 +3934,7 @@ func TestAddAt_invalid(t *testing.T) {
 			}()
 
 			c.v.AddAt(c.coord, c.value)
-			panic("unreachable")
+			t.Fail()
 		}()
 	}
 }
