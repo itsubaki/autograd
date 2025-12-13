@@ -75,6 +75,15 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
+// Like returns a new tensor with the same shape and stride as v and the given data.
+func Like[T, U Number](v *Tensor[T], data []U) *Tensor[U] {
+	return &Tensor[U]{
+		Shape:  append([]int{}, v.Shape...),
+		Stride: append([]int{}, v.Stride...),
+		Data:   data,
+	}
+}
+
 // Arange returns a new tensor with evenly spaced values within a given interval.
 func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 	var s T = 1
@@ -359,12 +368,20 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 	})
 }
 
-// Flatten returns a new tensor with the same data as v with shape (v.Size(),).
+// Ravel returns a new tensor containing the same elements as v.
+// Ravel returns a view of v when possible; otherwise, it returns a clone.
+func Ravel[T Number](v *Tensor[T]) *Tensor[T] {
+	return Reshape(v, -1)
+}
+
+// Flatten returns a new tensor containing the same elements as v.
+// Flatten returns a clone of v.
 func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
-	return Clone(Reshape(v, -1))
+	return Clone(Ravel(v))
 }
 
 // Reshape returns a new tensor with the same data as v with the given shape.
+// Reshape returns a view of v when possible; otherwise, it returns a clone.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	idx, prod := -1, 1
 	for i, s := range shape {
@@ -397,10 +414,11 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 }
 
 // Transpose returns a new tensor with the axes transposed.
+// Transpose returns a view of v.
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Clone(v)
+		return Like(v, v.Data)
 	}
 
 	if len(axes) == 0 {
@@ -431,6 +449,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 }
 
 // Broadcast returns new tensors by broadcasting v and w to a common shape.
+// Broadcast returns views of v and w.
 func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
 	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
 	if err != nil {
@@ -478,6 +497,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 }
 
 // SumTo returns a new tensor with the given shape by summing v to the shape.
+// SumTo returns a view of v when possible; otherwise, it returns a clone.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	a, b := shape, v.Shape
 	if len(a) < len(b) {
@@ -506,6 +526,82 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	}
 
 	return Reshape(Sum(v, axes...), shape...)
+}
+
+// Squeeze returns a new tensor with the given axes removed.
+// If axes is empty, all axes with size 1 are removed.
+// Squeeze returns a view of v.
+func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
+	seen, ndim := make(map[int]bool), v.NumDims()
+	if len(axes) > 0 {
+		for _, a := range axes {
+			ax, err := adjAxis(a, ndim)
+			if err != nil {
+				panic(err)
+			}
+
+			if v.Shape[ax] != 1 {
+				panic(fmt.Sprintf("axis=%v is not 1 (shape %v)", ax, v.Shape))
+			}
+
+			seen[ax] = true
+		}
+	}
+
+	var shape, stride []int
+	for i, s := range v.Shape {
+		if len(axes) == 0 && s == 1 {
+			continue
+		}
+
+		if seen[i] {
+			continue
+		}
+
+		shape = append(shape, s)
+		stride = append(stride, v.Stride[i])
+	}
+
+	return &Tensor[T]{
+		Shape:  shape,
+		Stride: stride,
+		Data:   v.Data,
+	}
+}
+
+// Expand returns a new tensor with a new axis inserted at the given position.
+// Expand returns a view of v.
+func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
+	ndim := v.NumDims()
+	ax, err := adjAxis(axis, ndim+1)
+	if err != nil {
+		panic(err)
+	}
+
+	shape := make([]int, 0, ndim+1)
+	stride := make([]int, 0, ndim+1)
+
+	// head
+	for i := range ax {
+		shape = append(shape, v.Shape[i])
+		stride = append(stride, v.Stride[i])
+	}
+
+	// insert 1 at axis
+	shape = append(shape, 1)
+	stride = append(stride, 0)
+
+	// tail
+	for i := ax; i < ndim; i++ {
+		shape = append(shape, v.Shape[i])
+		stride = append(stride, v.Stride[i])
+	}
+
+	return &Tensor[T]{
+		Shape:  shape,
+		Stride: stride,
+		Data:   v.Data,
+	}
 }
 
 // ScatterAdd returns a new tensor with elements added from w at the given indices along the specified axis.
@@ -569,80 +665,6 @@ func Take[T Number](v *Tensor[T], axis int, indices []int) *Tensor[T] {
 	}
 
 	return out
-}
-
-// Squeeze returns a new tensor with the given axes removed.
-// If axes is empty, all axes with size 1 are removed.
-func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
-	seen, ndim := make(map[int]bool), v.NumDims()
-	if len(axes) > 0 {
-		for _, a := range axes {
-			ax, err := adjAxis(a, ndim)
-			if err != nil {
-				panic(err)
-			}
-
-			if v.Shape[ax] != 1 {
-				panic(fmt.Sprintf("axis=%v is not 1 (shape %v)", ax, v.Shape))
-			}
-
-			seen[ax] = true
-		}
-	}
-
-	var shape, stride []int
-	for i, s := range v.Shape {
-		if len(axes) == 0 && s == 1 {
-			continue
-		}
-
-		if seen[i] {
-			continue
-		}
-
-		shape = append(shape, s)
-		stride = append(stride, v.Stride[i])
-	}
-
-	return &Tensor[T]{
-		Shape:  shape,
-		Stride: stride,
-		Data:   v.Data,
-	}
-}
-
-// Expand returns a new tensor with a new axis inserted at the given position.
-func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
-	ndim := v.NumDims()
-	ax, err := adjAxis(axis, ndim+1)
-	if err != nil {
-		panic(err)
-	}
-
-	shape := make([]int, 0, ndim+1)
-	stride := make([]int, 0, ndim+1)
-
-	// head
-	for i := range ax {
-		shape = append(shape, v.Shape[i])
-		stride = append(stride, v.Stride[i])
-	}
-
-	// insert 1 at axis
-	shape = append(shape, 1)
-	stride = append(stride, 0)
-
-	// tail
-	for i := ax; i < ndim; i++ {
-		shape = append(shape, v.Shape[i])
-		stride = append(stride, v.Stride[i])
-	}
-
-	return &Tensor[T]{
-		Shape:  shape,
-		Stride: stride,
-		Data:   v.Data,
-	}
 }
 
 // Concat returns a new tensor by concatenating the tensors along the given axis.
@@ -1270,13 +1292,15 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 }
 
 // F applies the function f to each element of the tensor v and returns a new tensor.
+// The returned tensor has the same shape and layout as v.
+// In particular, if v is non-contiguous, the result is also non-contiguous.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
-	data := make([]U, v.Size())
-	for i := range v.Size() {
-		data[i] = f(v.At(Coord(v, i)...))
+	data := make([]U, len(v.Data))
+	for i := range data {
+		data[i] = f(v.Data[i])
 	}
 
-	return New(v.Shape, data)
+	return Like(v, data)
 }
 
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
