@@ -77,7 +77,7 @@ func Example_view() {
 	z := tensor.Transpose(y)
 	for i := range x.Data {
 		if &x.Data[i] != &y.Data[i] {
-			panic("reshape is not view")
+			panic("transpose is not view")
 		}
 	}
 
