@@ -225,10 +225,10 @@ func ExampleReshape() {
 		}
 	}
 
-	for _, coord := range [][]int{
+	for _, indices := range [][]int{
 		{0, 0}, {0, 1}, {0, 2}, {0, 3},
 	} {
-		fmt.Println(w.At(coord...))
+		fmt.Println(w.At(indices...))
 	}
 
 	// Output:
@@ -3688,29 +3688,29 @@ func TestTril(t *testing.T) {
 	}
 }
 
-func TestIndex(t *testing.T) {
+func TestFlatIndex(t *testing.T) {
 	cases := []struct {
-		v     *tensor.Tensor[int]
-		coord []int
-		want  int
+		v       *tensor.Tensor[int]
+		indices []int
+		want    int
 	}{
-		{v: tensor.Zeros[int](2, 3), coord: []int{0, 0}, want: 0},
-		{v: tensor.Zeros[int](2, 3), coord: []int{0, 1}, want: 1},
-		{v: tensor.Zeros[int](2, 3), coord: []int{0, 2}, want: 2},
-		{v: tensor.Zeros[int](2, 3), coord: []int{1, 0}, want: 3},
-		{v: tensor.Zeros[int](2, 3), coord: []int{1, 1}, want: 4},
-		{v: tensor.Zeros[int](2, 3), coord: []int{1, 2}, want: 5},
+		{v: tensor.Zeros[int](2, 3), indices: []int{0, 0}, want: 0},
+		{v: tensor.Zeros[int](2, 3), indices: []int{0, 1}, want: 1},
+		{v: tensor.Zeros[int](2, 3), indices: []int{0, 2}, want: 2},
+		{v: tensor.Zeros[int](2, 3), indices: []int{1, 0}, want: 3},
+		{v: tensor.Zeros[int](2, 3), indices: []int{1, 1}, want: 4},
+		{v: tensor.Zeros[int](2, 3), indices: []int{1, 2}, want: 5},
 	}
 
 	for _, c := range cases {
-		got := tensor.Index(c.v, c.coord...)
+		got := tensor.FlatIndex(c.v, c.indices...)
 		if got != c.want {
-			t.Errorf("coord=%v, got=%v, want=%v", c.coord, got, c.want)
+			t.Errorf("indices=%v, got=%v, want=%v", c.indices, got, c.want)
 		}
 	}
 }
 
-func TestCoord(t *testing.T) {
+func TestUnravelIndex(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]
 		index int
@@ -3728,7 +3728,7 @@ func TestCoord(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Coord(c.v, c.index)
+		got := tensor.UnravelIndex(c.v, c.index)
 		if !tensor.SliceEqual(got, c.want) {
 			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
 		}
@@ -3849,9 +3849,9 @@ func TestArrayEqual(t *testing.T) {
 
 func TestSet_invalid(t *testing.T) {
 	cases := []struct {
-		v     *tensor.Tensor[int]
-		coord []int
-		value int
+		v       *tensor.Tensor[int]
+		indices []int
+		value   int
 	}{
 		{
 			v: tensor.BroadcastTo(tensor.New(
@@ -3861,8 +3861,8 @@ func TestSet_invalid(t *testing.T) {
 					3, 4,
 				},
 			), 3, 2, 2),
-			coord: []int{2, 1, 1},
-			value: 42,
+			indices: []int{2, 1, 1},
+			value:   42,
 		},
 	}
 
@@ -3873,10 +3873,10 @@ func TestSet_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for coord %v", c.coord)
+				t.Errorf("unexpected panic for indices %v", c.indices)
 			}()
 
-			c.v.Set(c.coord, c.value)
+			c.v.Set(c.indices, c.value)
 			t.Fail()
 		}()
 	}
@@ -3884,9 +3884,9 @@ func TestSet_invalid(t *testing.T) {
 
 func TestAddAt_invalid(t *testing.T) {
 	cases := []struct {
-		v     *tensor.Tensor[int]
-		coord []int
-		value int
+		v       *tensor.Tensor[int]
+		indices []int
+		value   int
 	}{
 		{
 			v: tensor.BroadcastTo(tensor.New(
@@ -3896,8 +3896,8 @@ func TestAddAt_invalid(t *testing.T) {
 					3, 4,
 				},
 			), 3, 2, 2),
-			coord: []int{2, 1, 1},
-			value: 42,
+			indices: []int{2, 1, 1},
+			value:   42,
 		},
 	}
 
@@ -3908,10 +3908,10 @@ func TestAddAt_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for coord %v", c.coord)
+				t.Errorf("unexpected panic for indices %v", c.indices)
 			}()
 
-			c.v.AddAt(c.coord, c.value)
+			c.v.AddAt(c.indices, c.value)
 			t.Fail()
 		}()
 	}
@@ -4537,16 +4537,16 @@ func TestRepeat_invalid(t *testing.T) {
 	}
 }
 
-func TestIndex_invalid(t *testing.T) {
+func TestFlatIndex_invalid(t *testing.T) {
 	cases := []struct {
-		v     *tensor.Tensor[int]
-		coord []int
+		v       *tensor.Tensor[int]
+		indices []int
 	}{
-		{v: tensor.Zeros[int](2, 3), coord: []int{1}},
-		{v: tensor.Zeros[int](2, 3), coord: []int{2, 3, 4}},
-		{v: tensor.Zeros[int](2, 3), coord: []int{-1, 0}},
-		{v: tensor.Zeros[int](2, 3), coord: []int{2, 0}},
-		{v: tensor.Zeros[int](2, 3), coord: []int{0, 3}},
+		{v: tensor.Zeros[int](2, 3), indices: []int{1}},
+		{v: tensor.Zeros[int](2, 3), indices: []int{2, 3, 4}},
+		{v: tensor.Zeros[int](2, 3), indices: []int{-1, 0}},
+		{v: tensor.Zeros[int](2, 3), indices: []int{2, 0}},
+		{v: tensor.Zeros[int](2, 3), indices: []int{0, 3}},
 	}
 
 	for _, c := range cases {
@@ -4556,10 +4556,10 @@ func TestIndex_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for coord %v", c.coord)
+				t.Errorf("unexpected panic for indices %v", c.indices)
 			}()
 
-			_ = tensor.Index(c.v, c.coord...)
+			_ = tensor.FlatIndex(c.v, c.indices...)
 			t.Fail()
 		}()
 	}
@@ -4567,11 +4567,11 @@ func TestIndex_invalid(t *testing.T) {
 
 func TestReduce_invalid(t *testing.T) {
 	cases := []struct {
-		v     *tensor.Tensor[int]
-		coord []int
+		v       *tensor.Tensor[int]
+		indices []int
 	}{
-		{v: tensor.Zeros[int](1, 4), coord: []int{10}},
-		{v: tensor.Zeros[int](1, 4), coord: []int{0, 0}},
+		{v: tensor.Zeros[int](1, 4), indices: []int{10}},
+		{v: tensor.Zeros[int](1, 4), indices: []int{0, 0}},
 	}
 
 	for _, c := range cases {
@@ -4581,10 +4581,10 @@ func TestReduce_invalid(t *testing.T) {
 					return
 				}
 
-				t.Errorf("unexpected panic for coord %v", c.coord)
+				t.Errorf("unexpected panic for indices %v", c.indices)
 			}()
 
-			_ = tensor.Reduce(c.v, 0, func(a, b int) int { return a + b }, c.coord...)
+			_ = tensor.Reduce(c.v, 0, func(a, b int) int { return a + b }, c.indices...)
 			t.Fail()
 		}()
 	}

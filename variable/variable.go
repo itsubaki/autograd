@@ -44,10 +44,10 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
-// At returns the value at the given coordinates.
-// If no coordinates are given, it returns the first element.
-func (v *Variable) At(coord ...int) float64 {
-	return v.Data.At(coord...)
+// At returns the value at the given indices.
+// If no indices are given, it returns the first element.
+func (v *Variable) At(indices ...int) float64 {
+	return v.Data.At(indices...)
 }
 
 // NumDims returns the number of dimensions of the variable.
