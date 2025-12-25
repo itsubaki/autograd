@@ -1398,12 +1398,12 @@ func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 
 	shape := make([]int, maxLen)
 	for i := range maxLen {
-		d1, d2 := s0[i], s1[i]
+		d0, d1 := s0[i], s1[i]
 		switch {
-		case d1 == d2, d2 == 1:
+		case d0 == d1, d1 == 1:
+			shape[i] = d0
+		case d0 == 1:
 			shape[i] = d1
-		case d1 == 1:
-			shape[i] = d2
 		default:
 			return nil, nil, fmt.Errorf("shapes %v and %v are not compatible", s0, s1)
 		}
