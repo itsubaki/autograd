@@ -1113,7 +1113,7 @@ func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Sqrt(Variance(v, axes...))
 }
 
-// MatMul returns the matrix multiplication of v and w.
+// MatMul returns the matrix product of v and w.
 func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	a, b := Broadcast(v, w, 2)
 	ndim := a.NumDims()
