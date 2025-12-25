@@ -75,15 +75,6 @@ func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return F(ZeroLike(v), func(_ T) T { return 1 })
 }
 
-// Like returns a new tensor with the same shape and stride as v and the given data.
-func Like[T, U Number](v *Tensor[T], data []U) *Tensor[U] {
-	return &Tensor[U]{
-		Shape:  append([]int{}, v.Shape...),
-		Stride: append([]int{}, v.Stride...),
-		Data:   data,
-	}
-}
-
 // Arange returns a new tensor with evenly spaced values within a given interval.
 func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 	var s T = 1
@@ -413,12 +404,12 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	return New(shape, Contiguous(v).Data)
 }
 
-// Transpose returns a new tensor with the axes transposed.
-// Transpose returns a view of v.
+// Transpose returns a view of v with its axes permuted.
+// For a scalar tensor (ndim == 0), Transpose returns v itself.
 func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Like(v, v.Data)
+		return v
 	}
 
 	if len(axes) == 0 {
@@ -448,8 +439,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 }
 
-// Broadcast returns new tensors by broadcasting v and w to a common shape.
-// Broadcast returns views of v and w.
+// Broadcast returns views of v and w broadcasted to a common shape.
 func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
 	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
 	if err != nil {
@@ -459,7 +449,7 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 	return BroadcastTo(v, s0...), BroadcastTo(w, s1...)
 }
 
-// BroadcastTo returns a new tensor with the given shape by broadcasting v to the shape.
+// BroadcastTo returns a view of v broadcasted to the given shape.
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	ndim, vndim := len(shape), v.NumDims()
 	if ndim < vndim {
@@ -528,9 +518,8 @@ func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	return Reshape(Sum(v, axes...), shape...)
 }
 
-// Squeeze returns a new tensor with the given axes removed.
+// Squeeze returns a view of v with dimensions of size 1 removed.
 // If axes is empty, all axes with size 1 are removed.
-// Squeeze returns a view of v.
 func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	seen, ndim := make(map[int]bool), v.NumDims()
 	if len(axes) > 0 {
@@ -569,8 +558,7 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 }
 
-// Expand returns a new tensor with a new axis inserted at the given position.
-// Expand returns a view of v.
+// Expand returns a view of v with a new dimension of size 1 inserted at the specified axis.
 func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	ndim := v.NumDims()
 	ax, err := adjAxis(axis, ndim+1)
@@ -1290,16 +1278,15 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 	return true
 }
 
-// F applies the function f to each element of the tensor v and returns a new tensor.
-// The returned tensor has the same shape and layout as v.
-// In particular, if v is non-contiguous, the result is also non-contiguous.
+// F applies the function f to each element of v and returns a new tensor.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
-	data := make([]U, len(v.Data))
-	for i := range data {
-		data[i] = f(v.Data[i])
+	out := Zeros[U](v.Shape...)
+	for i := range out.Size() {
+		oidx := UnravelIndex(out, i)
+		out.Set(oidx, f(v.At(oidx...)))
 	}
 
-	return Like(v, data)
+	return out
 }
 
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
