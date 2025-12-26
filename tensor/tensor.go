@@ -359,20 +359,26 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 	})
 }
 
-// Ravel returns a new tensor containing the same elements as v.
-// Ravel returns a view of v when possible; otherwise, it returns a clone.
+// Ravel returns a 1-dimensional tensor containing the same elements as v.
+// Ravel returns a view of v when the underlying data is already contiguous
+// and the reshape can be performed without copying. Otherwise, it returns
+// a new contiguous tensor with copied data.
 func Ravel[T Number](v *Tensor[T]) *Tensor[T] {
 	return Reshape(v, -1)
 }
 
-// Flatten returns a new tensor containing the same elements as v.
-// Flatten returns a clone of v.
+// Flatten returns a new 1-dimensional tensor containing the same elements as v.
+// Flatten always returns a contiguous tensor with copied data, even if v
+// is already contiguous. Flatten never returns a view.
 func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
 	return Clone(Ravel(v))
 }
 
-// Reshape returns a new tensor with the same data as v with the given shape.
-// Reshape returns a view of v when possible; otherwise, it returns a clone.
+// Reshape returns a view of v when the reshape can be performed by modifying
+// only the shape and stride. Otherwise, it returns a new contiguous tensor
+// with copied data.
+// At most one dimension in shape may be -1, in which case its size is inferred
+// from the total number of elements.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	idx, prod := -1, 1
 	for i, s := range shape {
@@ -486,8 +492,8 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	}
 }
 
-// SumTo returns a new tensor with the given shape by summing v to the shape.
-// SumTo returns a view of v when possible; otherwise, it returns a clone.
+// SumTo returns a tensor with the given shape by summing v over broadcasted axes.
+// SumTo returns a view of v when no reduction is required; otherwise, it returns a new tensor with computed data.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	a, b := shape, v.Shape
 	if len(a) < len(b) {
