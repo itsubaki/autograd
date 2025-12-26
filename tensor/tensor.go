@@ -430,17 +430,18 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		panic(err)
 	}
 
-	// permute shape and stride
-	shape := make([]int, ndim)
-	stride := make([]int, ndim)
-	for i := range ndim {
-		shape[i] = v.Shape[perm[i]]
-		stride[i] = v.Stride[perm[i]]
+	transpose := func(perm, s []int) []int {
+		out := make([]int, len(s))
+		for i := range s {
+			out[i] = s[perm[i]]
+		}
+
+		return out
 	}
 
 	return &Tensor[T]{
-		Shape:  shape,
-		Stride: stride,
+		Shape:  transpose(perm, v.Shape),
+		Stride: transpose(perm, v.Stride),
 		Data:   v.Data,
 	}
 }
