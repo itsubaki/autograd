@@ -155,7 +155,9 @@ fmt.Println(x.Grad)
 for range 5 {
 	gx := x.Grad
 	x.Cleargrad()
-	gx.Backward(variable.Opts{CreateGraph: true})
+	gx.Backward(variable.Opts{
+		CreateGraph: true,
+	})
 
 	fmt.Println(x.Grad)
 }
