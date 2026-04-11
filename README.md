@@ -207,8 +207,3 @@ dot sample.dot -T png -o sample.png
 ```
 
 <img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh3.png" height="240px">
-
-## Links
-
-- [oreilly-japan/deep-learning-from-scratch-3](https://github.com/oreilly-japan/deep-learning-from-scratch-3)
-- [oreilly-japan/deep-learning-from-scratch-3/tree/tanh](https://github.com/oreilly-japan/deep-learning-from-scratch-3/tree/tanh)
