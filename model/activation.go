@@ -12,4 +12,5 @@ var (
 	_ Activation = F.Tanh
 )
 
+// Activation represents an activation function used in a model.
 type Activation func(x ...*variable.Variable) *variable.Variable

@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Pow returns a function that raises x[0] to the given power.
 func Pow(p float64) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &PowT{
@@ -10,6 +11,7 @@ func Pow(p float64) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// PowT is the differentiable power operation.
 type PowT struct {
 	P float64
 	x *Variable

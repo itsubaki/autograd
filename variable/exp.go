@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Exp applies the exponential function.
 func Exp(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &ExpT{},
 	}).First(x...)
 }
 
+// ExpT is the differentiable exponential operation.
 type ExpT struct {
 	y *Variable
 }

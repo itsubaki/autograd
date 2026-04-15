@@ -7,14 +7,17 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// LSTMOptionFunc configures an LSTMT layer.
 type LSTMOptionFunc func(*LSTMT)
 
+// WithLSTMSource sets the random source used to initialize the layer.
 func WithLSTMSource(s randv2.Source) LSTMOptionFunc {
 	return func(l *LSTMT) {
 		l.s = s
 	}
 }
 
+// LSTM returns a new LSTM layer.
 func LSTM(hiddenSize int, opts ...LSTMOptionFunc) *LSTMT {
 	lstm := &LSTMT{
 		Layers: make(Layers),
@@ -36,21 +39,25 @@ func LSTM(hiddenSize int, opts ...LSTMOptionFunc) *LSTMT {
 	return lstm
 }
 
+// LSTMT is an LSTM layer with persistent hidden and cell states.
 type LSTMT struct {
 	h, c *variable.Variable
 	s    randv2.Source
 	Layers
 }
 
+// ResetState clears the hidden and cell states.
 func (l *LSTMT) ResetState() {
 	l.h = nil
 	l.c = nil
 }
 
+// First applies the layer and returns the first output.
 func (l *LSTMT) First(x ...*variable.Variable) *variable.Variable {
 	return l.Forward(x...)[0]
 }
 
+// Forward applies the layer to x.
 func (l *LSTMT) Forward(x ...*variable.Variable) []*variable.Variable {
 	var f, i, o, u *variable.Variable
 	if l.h == nil {

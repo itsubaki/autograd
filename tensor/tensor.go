@@ -11,6 +11,7 @@ import (
 	"github.com/itsubaki/autograd/rand"
 )
 
+// Number is the set of numeric types supported by Tensor.
 type Number interface {
 	~int | ~float64
 }
@@ -45,12 +46,12 @@ func Full[T Number](shape []int, value T) *Tensor[T] {
 	return F(Zeros[T](shape...), func(_ T) T { return value })
 }
 
-// Rand returns a new tensor with elements that pseudo-random number in the half-open interval [0.0,1.0).
+// Rand returns a new tensor with pseudo-random values in the half-open interval [0.0, 1.0).
 func Rand(shape []int, s ...randv2.Source) *Tensor[float64] {
 	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).Float64() })
 }
 
-// Randn returns a new tensor with elements that normally distributed float64 in the range [-math.MaxFloat64, +math.MaxFloat64] with standard normal distribution.
+// Randn returns a new tensor with float64 values drawn from the standard normal distribution.
 func Randn(shape []int, s ...randv2.Source) *Tensor[float64] {
 	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).NormFloat64() })
 }
@@ -231,12 +232,12 @@ func Contiguous[T Number](v *Tensor[T]) *Tensor[T] {
 	return Clone(v)
 }
 
-// Int returns a new tensor with elements casted to int.
+// Int returns a new tensor with elements cast to int.
 func Int[T Number](v *Tensor[T]) *Tensor[int] {
 	return F(v, func(a T) int { return int(a) })
 }
 
-// Float64 returns a new tensor with elements casted to float64.
+// Float64 returns a new tensor with elements cast to float64.
 func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
 	return F(v, func(a T) float64 { return float64(a) })
 }
@@ -306,7 +307,7 @@ func Clip[T Number](v *Tensor[T], min, max T) *Tensor[T] {
 	})
 }
 
-// Mask returns a new tensor with elements that 1 if f() is true and 0 otherwise.
+// Mask returns a new tensor whose elements are 1 where f returns true and 0 otherwise.
 func Mask[T Number](v *Tensor[T], f func(x T) bool) *Tensor[T] {
 	return F(v, func(x T) T {
 		if f(x) {
@@ -360,7 +361,7 @@ func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
 }
 
 // Ravel returns a 1-dimensional tensor containing the same elements as v.
-// Ravel returns a view of v when the underlying data is already contiguous
+// It returns a view of v when the underlying data is already contiguous
 // and the reshape can be performed without copying. Otherwise, it returns
 // a new contiguous tensor with copied data.
 func Ravel[T Number](v *Tensor[T]) *Tensor[T] {
@@ -446,7 +447,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 }
 
-// Broadcast returns views of v and w broadcasted to a common shape.
+// Broadcast returns views of v and w broadcast to a common shape.
 func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
 	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
 	if err != nil {
@@ -456,7 +457,7 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 	return BroadcastTo(v, s0...), BroadcastTo(w, s1...)
 }
 
-// BroadcastTo returns a view of v broadcasted to the given shape.
+// BroadcastTo returns a view of v broadcast to the given shape.
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	ndim, vndim := len(shape), v.NumDims()
 	if ndim < vndim {
@@ -493,7 +494,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	}
 }
 
-// SumTo returns a tensor with the given shape by summing v over broadcasted axes.
+// SumTo returns a tensor with the given shape by summing v over broadcast axes.
 // SumTo returns a view of v when no reduction is required; otherwise, it returns a new tensor with computed data.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
 	a, b := shape, v.Shape
@@ -1297,7 +1298,7 @@ func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 }
 
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
-// v and w are broadcasted to a common shape.
+// v and w are broadcast to a common shape.
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	a, b := Broadcast(v, w)
 
@@ -1359,7 +1360,7 @@ func rnd(s ...randv2.Source) *randv2.Rand {
 	return randv2.New(s[0])
 }
 
-// broadcast returns the broadcasted shape of s0 and s1.
+// broadcast returns the broadcast shape of s0 and s1.
 func broadcast(s0, s1 []int, keepLast ...int) ([]int, []int, error) {
 	pad := func(shape []int, length int) []int {
 		diff := length - len(shape)

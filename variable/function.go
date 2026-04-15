@@ -2,23 +2,25 @@ package variable
 
 import "fmt"
 
+// Forwarder is the interface implemented by differentiable operations.
 type Forwarder interface {
 	Forward(x ...*Variable) []*Variable
 	Backward(gy ...*Variable) []*Variable
 }
 
+// Function represents a differentiable operation in the computation graph.
 type Function struct {
 	Input, Output []*Variable
 	Generation    int
 	Forwarder
 }
 
-// First applies the function and returns the first output
+// First applies the function and returns the first output.
 func (f *Function) First(x ...*Variable) *Variable {
 	return f.Forward(x...)[0]
 }
 
-// Forward applies the function
+// Forward applies the function.
 func (f *Function) Forward(x ...*Variable) []*Variable {
 	y := f.Forwarder.Forward(x...)
 	if !Config.EnableBackprop {
@@ -32,6 +34,7 @@ func (f *Function) Forward(x ...*Variable) []*Variable {
 	return y
 }
 
+// String returns a string representation of the function.
 func (f Function) String() string {
 	return fmt.Sprintf("%T%v", f.Forwarder, f.Input)
 }

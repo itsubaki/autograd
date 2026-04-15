@@ -8,6 +8,7 @@ import (
 	"github.com/itsubaki/autograd/tensor"
 )
 
+// Variable represents a value in the computation graph.
 type Variable struct {
 	Name       string
 	Data       *tensor.Tensor[float64]
@@ -16,30 +17,37 @@ type Variable struct {
 	Generation int
 }
 
+// New returns a new variable from the given values.
 func New(v ...float64) *Variable {
 	return &Variable{Data: tensor.New([]int{len(v)}, v)}
 }
 
+// From returns a new variable backed by the given tensor.
 func From(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
+// ZeroLike returns a new zero-filled variable with the same shape as v.
 func ZeroLike(v *Variable) *Variable {
 	return &Variable{Data: tensor.ZeroLike(v.Data)}
 }
 
+// OneLike returns a new one-filled variable with the same shape as v.
 func OneLike(v *Variable) *Variable {
 	return &Variable{Data: tensor.OneLike(v.Data)}
 }
 
+// Zeros returns a new zero-filled variable with the given shape.
 func Zeros(shape ...int) *Variable {
 	return &Variable{Data: tensor.Zeros[float64](shape...)}
 }
 
+// Rand returns a new variable with pseudo-random values in [0.0, 1.0).
 func Rand(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Rand(shape, s...)}
 }
 
+// Randn returns a new variable with values drawn from the standard normal distribution.
 func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Randn(shape, s...)}
 }
@@ -73,19 +81,23 @@ func (v *Variable) Reshape(shape ...int) *Variable {
 	return v
 }
 
+// Cleargrad clears the gradient of the variable.
 func (v *Variable) Cleargrad() {
 	v.Grad = nil
 }
 
+// SetCreator sets the function that created the variable.
 func (v *Variable) SetCreator(f *Function) {
 	v.Creator = f
 	v.Generation = f.Generation + 1
 }
 
+// Unchain detaches the variable from its creator.
 func (v *Variable) Unchain() {
 	v.Creator = nil
 }
 
+// UnchainBackward detaches the variable and its ancestors from the graph.
 func (v *Variable) UnchainBackward() {
 	if v.Creator == nil {
 		return
@@ -109,6 +121,7 @@ func (v *Variable) UnchainBackward() {
 	}
 }
 
+// Backward performs backpropagation starting from the variable.
 func (v *Variable) Backward(opts ...Opts) {
 	if v.Grad == nil {
 		v.Grad = OneLike(v)
@@ -154,6 +167,7 @@ func (v *Variable) Backward(opts ...Opts) {
 	}
 }
 
+// String returns a string representation of the variable.
 func (v *Variable) String() string {
 	name := "variable"
 	if v.Name != "" {

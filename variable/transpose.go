@@ -22,6 +22,7 @@ func TransposeMatMul(ndim int) func(x ...*Variable) *Variable {
 	return Transpose(axes...)
 }
 
+// Transpose returns a function that transposes x[0] using the given axes.
 func Transpose(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &TransposeT{
@@ -30,6 +31,7 @@ func Transpose(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// TransposeT is the differentiable transpose operation.
 type TransposeT struct {
 	Axes []int
 	ndim int

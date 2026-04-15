@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// MatMul returns a variable representing the matrix product of x[0] and x[1].
 func MatMul(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &MatMulT{},
 	}).First(x...)
 }
 
+// MatMulT is the differentiable matrix multiplication operation.
 type MatMulT struct {
 	x, w *Variable
 }

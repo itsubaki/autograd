@@ -6,13 +6,14 @@ import (
 )
 
 // SoftmaxCrossEntropy computes the softmax cross-entropy loss.
-// It expects `x[0]` to have shape (N, C) and `x[1]`(`t`) to have shape (N,).
+// It expects x[0] to have shape (N, C) and x[1] (t) to have shape (N,).
 func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &SoftmaxCrossEntropyT{},
 	}).First(x...)
 }
 
+// SoftmaxCrossEntropyT is the differentiable softmax cross-entropy operation.
 type SoftmaxCrossEntropyT struct {
 	N, C  int
 	x     *variable.Variable
@@ -54,7 +55,7 @@ func oneHot(label []int, CNums int) *tensor.Tensor[float64] {
 	return out
 }
 
-// logsumexp computes the log of the sum of exponentials of the input tensor x.
+// logsumexp computes log(sum(exp(x))) for the input tensor x.
 func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
 	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)

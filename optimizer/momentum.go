@@ -5,6 +5,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Momentum is an optimizer that uses momentum-based gradient descent.
 type Momentum struct {
 	LearningRate float64
 	Momentum     float64

@@ -6,6 +6,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Func represents a function used for numerical differentiation.
 type Func func(x ...*variable.Variable) *variable.Variable
 
 var (
@@ -39,6 +40,7 @@ var (
 	_ Func = F.SoftmaxCrossEntropy
 )
 
+// Diff computes the numerical derivative of f at x using central differences.
 func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
 	if len(h) == 0 {
 		h = append(h, 1e-4)

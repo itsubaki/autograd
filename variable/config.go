@@ -10,10 +10,12 @@ var Config = config{
 	Train:          true,
 }
 
+// Span represents a temporary configuration scope.
 type Span struct {
 	End func()
 }
 
+// Nograd disables backpropagation until End is called.
 func Nograd() *Span {
 	Config.EnableBackprop = false
 	return &Span{
@@ -23,6 +25,7 @@ func Nograd() *Span {
 	}
 }
 
+// TestMode disables training mode until End is called.
 func TestMode() *Span {
 	Config.Train = false
 	return &Span{

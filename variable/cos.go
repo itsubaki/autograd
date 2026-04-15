@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Cos applies the cosine function.
 func Cos(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &CosT{},
 	}).First(x...)
 }
 
+// CosT is the differentiable cosine operation.
 type CosT struct {
 	x *Variable
 }

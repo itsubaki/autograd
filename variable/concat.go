@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Concat returns a function that concatenates variables along the given axis.
 func Concat(axis int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &ConcatT{
@@ -10,6 +11,7 @@ func Concat(axis int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// ConcatT is the differentiable concatenation operation.
 type ConcatT struct {
 	Axis int
 	size []int

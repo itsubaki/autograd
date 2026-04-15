@@ -7,6 +7,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Adam is an optimizer that uses the Adam algorithm.
 type Adam struct {
 	Alpha  float64
 	Beta1  float64
@@ -16,6 +17,7 @@ type Adam struct {
 	ms, vs map[*variable.Variable]*tensor.Tensor[float64]
 }
 
+// Update updates the parameters of the model.
 func (o *Adam) Update(model Model) {
 	o.update(model, func(lr float64, data, ms, vs *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 		return tensor.F2(ms, vs, func(m, v float64) float64 {

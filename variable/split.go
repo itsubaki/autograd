@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Split returns a function that splits x[0] along the given axis.
 func Split(size []int, axis int) func(x ...*Variable) []*Variable {
 	return (&Function{
 		Forwarder: &SplitT{
@@ -11,6 +12,7 @@ func Split(size []int, axis int) func(x ...*Variable) []*Variable {
 	}).Forward
 }
 
+// SplitT is the differentiable split operation.
 type SplitT struct {
 	Size []int
 	Axis int

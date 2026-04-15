@@ -7,6 +7,8 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// DropoutSimple returns a function that applies dropout during training
+// by composing primitive operations such as Rand, Mask, Mul, and MulC.
 func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variable) *variable.Variable {
 	return func(x ...*variable.Variable) *variable.Variable {
 		if !variable.Config.Train {

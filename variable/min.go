@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Min returns a function that computes the minimum of x[0] along the given axes.
 func Min(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &MinT{
@@ -10,6 +11,7 @@ func Min(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// MinT is the differentiable min operation.
 type MinT struct {
 	Axes []int
 	x, y *Variable

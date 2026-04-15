@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Tanh applies the hyperbolic tangent function.
 func Tanh(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &TanhT{},
 	}).First(x...)
 }
 
+// TanhT is the differentiable hyperbolic tangent operation.
 type TanhT struct {
 	y *Variable
 }

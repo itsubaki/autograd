@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Sin applies the sine function.
 func Sin(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SinT{},
 	}).First(x...)
 }
 
+// SinT is the differentiable sine operation.
 type SinT struct {
 	x *Variable
 }

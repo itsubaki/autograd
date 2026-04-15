@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Sum returns a function that sums x[0] along the given axes.
 func Sum(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SumT{
@@ -10,6 +11,7 @@ func Sum(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// SumT is the differentiable sum operation.
 type SumT struct {
 	Axes   []int
 	xShape []int

@@ -5,12 +5,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// MeanSquaredError computes the mean squared error loss.
 func MeanSquaredError(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &MeanSquaredErrorT{},
 	}).First(x...)
 }
 
+// MeanSquaredErrorT is the differentiable mean squared error operation.
 type MeanSquaredErrorT struct {
 	x0, x1 *variable.Variable
 }

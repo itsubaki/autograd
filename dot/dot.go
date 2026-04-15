@@ -13,10 +13,12 @@ const (
 	arrow  = "\"%p\" -> \"%p\""
 )
 
+// Opts configures DOT graph generation.
 type Opts struct {
 	Verbose bool
 }
 
+// Var returns the DOT representation of a variable node.
 func Var(v *variable.Variable, opts ...Opts) string {
 	if len(opts) > 0 && opts[0].Verbose {
 		return fmt.Sprintf(varfmt, v, v)
@@ -25,6 +27,7 @@ func Var(v *variable.Variable, opts ...Opts) string {
 	return fmt.Sprintf(varfmt, v, v.Name)
 }
 
+// Func returns the DOT representation of a function node and its edges.
 func Func(f *variable.Function) []string {
 	s := f.String()
 	begin, end := strings.Index(s, "."), strings.Index(s, "T[")
@@ -41,6 +44,7 @@ func Func(f *variable.Function) []string {
 	return out
 }
 
+// Graph returns a DOT graph for the computation graph rooted at v.
 func Graph(v *variable.Variable, opts ...Opts) []string {
 	seen := make(map[*variable.Function]bool)
 	fs := addFunc(make([]*variable.Function, 0), v.Creator, seen)

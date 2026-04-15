@@ -2,14 +2,17 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// MulC returns a variable representing c * x[0].
 func MulC(c float64, x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MulT{}}).First(New(c), x[0])
 }
 
+// Mul returns a variable representing x[0] * x[1].
 func Mul(x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MulT{}}).First(x...)
 }
 
+// MulT is the differentiable multiplication operation.
 type MulT struct {
 	x0, x1           *Variable
 	x0Shape, x1Shape []int

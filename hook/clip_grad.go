@@ -7,6 +7,7 @@ import (
 	"github.com/itsubaki/autograd/tensor"
 )
 
+// ClipGrad returns a hook that clips the global gradient norm to max.
 func ClipGrad(max float64) func(params []layer.Parameter) {
 	return func(params []layer.Parameter) {
 		var total float64

@@ -5,12 +5,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Sigmoid applies the sigmoid function.
 func Sigmoid(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &SigmoidT{},
 	}).First(x...)
 }
 
+// SigmoidT is the differentiable sigmoid operation.
 type SigmoidT struct {
 	y *variable.Variable
 }

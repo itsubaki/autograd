@@ -15,7 +15,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-// pi returns a slice of float64 in [0, c*PI].
+// pi returns a slice of float64 values in [0, c*PI].
 func pi(c float64, N int) []float64 {
 	xs := make([]float64, N)
 	for i := range N {

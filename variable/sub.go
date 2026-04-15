@@ -2,20 +2,21 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
-// SubC returns a variable that c - x[0].
+// SubC returns a variable representing c - x[0].
 func SubC(c float64, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SubT{},
 	}).First(New(c), x[0])
 }
 
-// Sub returns a variable that x[0] - x[1].
+// Sub returns a variable representing x[0] - x[1].
 func Sub(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SubT{},
 	}).First(x...)
 }
 
+// SubT is the differentiable subtraction operation.
 type SubT struct {
 	x0Shape []int
 	x1Shape []int
