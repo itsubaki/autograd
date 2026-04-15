@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// SumTo returns a function that reduces x[0] to the given shape.
 func SumTo(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SumToT{
@@ -10,6 +11,7 @@ func SumTo(shape ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// SumToT is the differentiable SumTo operation.
 type SumToT struct {
 	Shape  []int
 	xShape []int

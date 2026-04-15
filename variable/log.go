@@ -2,12 +2,14 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Log applies the natural logarithm.
 func Log(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &LogT{},
 	}).First(x...)
 }
 
+// LogT is the differentiable logarithm operation.
 type LogT struct {
 	x *Variable
 }

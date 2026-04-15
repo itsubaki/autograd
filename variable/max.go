@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Max returns a function that computes the maximum of x[0] along the given axes.
 func Max(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &MaxT{
@@ -10,6 +11,7 @@ func Max(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// MaxT is the differentiable max operation.
 type MaxT struct {
 	Axes []int
 	x, y *Variable

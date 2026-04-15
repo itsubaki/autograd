@@ -7,12 +7,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// ReLU applies the rectified linear unit function.
 func ReLU(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &ReLUT{},
 	}).First(x...)
 }
 
+// ReLUT is the differentiable ReLU operation.
 type ReLUT struct {
 	x *variable.Variable
 }

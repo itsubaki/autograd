@@ -13,6 +13,7 @@ var (
 	_ Layer = (*L.LSTMT)(nil)
 )
 
+// Layer is the interface implemented by trainable model layers.
 type Layer interface {
 	First(x ...*variable.Variable) *variable.Variable
 	Forward(x ...*variable.Variable) []*variable.Variable
@@ -20,10 +21,12 @@ type Layer interface {
 	Cleargrads()
 }
 
+// Model represents a stack of layers.
 type Model struct {
 	Layers []Layer
 }
 
+// Params returns all parameters in the model keyed by layer index and parameter name.
 func (m Model) Params() L.Parameters {
 	params := make(L.Parameters, 0)
 	for i, l := range m.Layers {
@@ -35,6 +38,7 @@ func (m Model) Params() L.Parameters {
 	return params
 }
 
+// Cleargrads clears the gradients of all model parameters.
 func (m *Model) Cleargrads() {
 	for _, l := range m.Layers {
 		l.Cleargrads()

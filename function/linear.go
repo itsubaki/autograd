@@ -5,12 +5,14 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Linear applies a linear transformation.
 func Linear(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &LinearT{},
 	}).First(x...)
 }
 
+// LinearT is the differentiable linear transformation.
 type LinearT struct {
 	x, w, b *variable.Variable
 }

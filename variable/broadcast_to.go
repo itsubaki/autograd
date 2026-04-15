@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// BroadcastTo returns a function that broadcasts x[0] to the given shape.
 func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &BroadcastToT{
@@ -10,6 +11,7 @@ func BroadcastTo(shape ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// BroadcastToT is the differentiable BroadcastTo operation.
 type BroadcastToT struct {
 	Shape  []int
 	xShape []int

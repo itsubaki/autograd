@@ -5,6 +5,7 @@ import (
 	"github.com/itsubaki/autograd/tensor"
 )
 
+// WeightDecay returns a hook that adds L2 weight decay to gradients.
 func WeightDecay(lambda float64) func(params []layer.Parameter) {
 	return func(params []layer.Parameter) {
 		for _, p := range params {

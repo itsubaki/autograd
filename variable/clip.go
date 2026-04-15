@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Clip returns a function that clips x[0] to the interval [min, max].
 func Clip(min, max float64) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &ClipT{
@@ -11,6 +12,7 @@ func Clip(min, max float64) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// ClipT is the differentiable clipping operation.
 type ClipT struct {
 	Min, Max float64
 	x        *Variable

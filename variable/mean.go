@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Mean returns a function that computes the mean of x[0] along the given axes.
 func Mean(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &MeanT{
@@ -10,6 +11,7 @@ func Mean(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// MeanT is the differentiable mean operation.
 type MeanT struct {
 	Axes []int
 	x    *Variable

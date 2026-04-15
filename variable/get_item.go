@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// GetItem returns a function that selects items from x[0] along the given axis.
 func GetItem(indices []int, axis int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &GetItemT{
@@ -11,6 +12,7 @@ func GetItem(indices []int, axis int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// GetItemT is the differentiable indexing operation.
 type GetItemT struct {
 	Indices []int
 	Axis    int

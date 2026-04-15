@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Variance returns a function that computes the variance of x[0] along the given axes.
 func Variance(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &VarianceT{
@@ -10,6 +11,7 @@ func Variance(axes ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// VarianceT is the differentiable variance operation.
 type VarianceT struct {
 	Axes []int
 	x    *Variable

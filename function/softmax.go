@@ -5,6 +5,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// Softmax returns a function that applies softmax along the given axis.
 func Softmax(axis int) func(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &SoftmaxT{
@@ -13,6 +14,7 @@ func Softmax(axis int) func(x ...*variable.Variable) *variable.Variable {
 	}).First
 }
 
+// SoftmaxT is the differentiable softmax operation.
 type SoftmaxT struct {
 	Axis int
 	y    *variable.Variable

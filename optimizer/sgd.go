@@ -2,7 +2,7 @@ package optimizer
 
 import "github.com/itsubaki/autograd/tensor"
 
-// SGD is an optimizer that the Stochastic Gradient Descent algorithm.
+// SGD is an optimizer that uses the stochastic gradient descent algorithm.
 type SGD struct {
 	LearningRate float64
 	Hook         []Hook

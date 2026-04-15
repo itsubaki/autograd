@@ -2,19 +2,21 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
-// DivC returns c / x
+// DivC returns a variable representing c / x[0].
 func DivC(c float64, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &DivT{},
 	}).First(New(c), x[0])
 }
 
+// Div returns a variable representing x[0] / x[1].
 func Div(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &DivT{},
 	}).First(x...)
 }
 
+// DivT is the differentiable division operation.
 type DivT struct {
 	x0, x1           *Variable
 	x0Shape, x1Shape []int

@@ -2,18 +2,21 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// AddC returns a variable representing c + x[0].
 func AddC(c float64, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &AddT{},
 	}).First(New(c), x[0])
 }
 
+// Add returns a variable representing x[0] + x[1].
 func Add(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &AddT{},
 	}).First(x...)
 }
 
+// AddT is the differentiable addition operation.
 type AddT struct {
 	x0Shape []int
 	x1Shape []int

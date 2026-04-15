@@ -2,6 +2,7 @@ package function
 
 import "github.com/itsubaki/autograd/variable"
 
+// LinearSimple applies a linear transformation using the simple helper API.
 func LinearSimple(x, w *variable.Variable, b ...*variable.Variable) *variable.Variable {
 	t := MatMul(x, w)
 	if len(b) == 0 {

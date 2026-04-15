@@ -2,6 +2,7 @@ package variable
 
 import "github.com/itsubaki/autograd/tensor"
 
+// Reshape returns a function that reshapes x[0].
 func Reshape(shape ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &ReshapeT{
@@ -10,6 +11,7 @@ func Reshape(shape ...int) func(x ...*Variable) *Variable {
 	}).First
 }
 
+// ReshapeT is the differentiable reshape operation.
 type ReshapeT struct {
 	Shape  []int
 	xShape []int
