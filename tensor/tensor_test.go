@@ -4440,8 +4440,9 @@ func TestStack_invalid(t *testing.T) {
 					1, 2, 3,
 					4, 5, 6,
 				}),
-				tensor.New([]int{1, 3}, []int{
+				tensor.New([]int{2, 3}, []int{
 					7, 8, 9,
+					10, 11, 12,
 				}),
 			},
 			axis: 3,
