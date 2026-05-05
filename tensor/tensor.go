@@ -19,7 +19,8 @@ type Number interface {
 // Tensor represents a multi-dimensional array.
 // Row-major order is used for contiguous tensor storage.
 // Non-contiguous views (created via Transpose, BroadcastTo, etc.) may share underlying data but have stride patterns that do not follow row-major order.
-// Such operations create views without copying data, so the logical element order may differ from the physical memory layout.
+// Such operations may create views without copying data, so the logical element order may differ from the physical memory layout.
+// ReadOnly is set on views when writes could alias the same underlying element through multiple logical indices.
 type Tensor[T Number] struct {
 	Shape    []int
 	Stride   []int
@@ -379,9 +380,10 @@ func Flatten[T Number](v *Tensor[T]) *Tensor[T] {
 	return Clone(Ravel(v))
 }
 
-// Reshape returns a view of v when the reshape can be performed by modifying
-// only the shape and stride. Otherwise, it returns a new contiguous tensor
-// with copied data.
+// Reshape returns a tensor with the requested shape and the same logical elements as v.
+// It first makes v contiguous. If v is already contiguous, the result shares the
+// same underlying data as v; otherwise, it uses copied contiguous data.
+// The returned tensor preserves the mutability of the contiguous source it uses.
 // At most one dimension in shape may be -1, in which case its size is inferred
 // from the total number of elements.
 func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
@@ -466,6 +468,8 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 }
 
 // BroadcastTo returns a view of v broadcast to the given shape.
+// The returned view is marked read-only only when broadcasting would cause
+// multiple logical indices to alias the same underlying element.
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	ndim, vndim := len(shape), v.NumDims()
 	if ndim < vndim {
