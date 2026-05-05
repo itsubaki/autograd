@@ -3083,23 +3083,42 @@ func TestBroadcastTo(t *testing.T) {
 }
 
 func TestBroadcastTo_writable(t *testing.T) {
-	v := tensor.New([]int{2, 3}, []int{
-		1, 2, 3,
-		4, 5, 6,
-	})
-
-	w := tensor.BroadcastTo(v, 2, 3)
-	if w.ReadOnly {
-		t.Fatal("same-shape broadcast should preserve writability")
+	cases := []struct {
+		name    string
+		shape   []int
+		indices []int
+	}{
+		{
+			name:    "same shape",
+			shape:   []int{2, 3},
+			indices: []int{0, 0},
+		},
+		{
+			name:    "prepend size 1 axis",
+			shape:   []int{1, 2, 3},
+			indices: []int{0, 0, 0},
+		},
 	}
 
-	w.Set([]int{0, 0}, 9)
-	if v.At(0, 0) != 9 {
-		t.Fatalf("got=%v, want=%v", v.At(0, 0), 9)
-	}
+	for _, c := range cases {
+		v := tensor.New([]int{2, 3}, []int{
+			1, 2, 3,
+			4, 5, 6,
+		})
 
-	if &v.Data[0] != &w.Data[0] {
-		t.Fatal("same-shape broadcast should remain a view")
+		w := tensor.BroadcastTo(v, c.shape...)
+		if w.ReadOnly {
+			t.Fatalf("%s: broadcast should preserve writability", c.name)
+		}
+
+		w.Set(c.indices, 9)
+		if v.At(0, 0) != 9 {
+			t.Fatalf("%s: got=%v, want=%v", c.name, v.At(0, 0), 9)
+		}
+
+		if &v.Data[0] != &w.Data[0] {
+			t.Fatalf("%s: broadcast should remain a view", c.name)
+		}
 	}
 }
 

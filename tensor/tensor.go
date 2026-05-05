@@ -478,7 +478,9 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		x := i - diff
 		if x < 0 {
 			stride[i] = 0
-			readOnly = true
+			if shape[i] > 1 {
+				readOnly = true
+			}
 			continue
 		}
 
@@ -489,7 +491,9 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 		if s0 == 1 {
 			stride[i] = 0
-			readOnly = true
+			if s1 > 1 {
+				readOnly = true
+			}
 			continue
 		}
 
