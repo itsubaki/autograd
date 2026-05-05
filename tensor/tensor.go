@@ -83,6 +83,10 @@ func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 		s = step[0]
 	}
 
+	if s == 0 {
+		panic("step is zero")
+	}
+
 	cond := func() func(i T) bool {
 		if s > 0 {
 			return func(i T) bool { return i < stop }
@@ -408,7 +412,10 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		panic("invalid shape")
 	}
 
-	return New(shape, Contiguous(v).Data)
+	cont := Contiguous(v)
+	out := New(shape, cont.Data)
+	out.ReadOnly = cont.ReadOnly
+	return out
 }
 
 // Transpose returns a view of v with its axes permuted.
@@ -441,9 +448,10 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:  transpose(perm, v.Shape),
-		Stride: transpose(perm, v.Stride),
-		Data:   v.Data,
+		Shape:    transpose(perm, v.Shape),
+		Stride:   transpose(perm, v.Stride),
+		Data:     v.Data,
+		ReadOnly: v.ReadOnly,
 	}
 }
 
@@ -560,9 +568,10 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:  shape,
-		Stride: stride,
-		Data:   v.Data,
+		Shape:    shape,
+		Stride:   stride,
+		Data:     v.Data,
+		ReadOnly: v.ReadOnly,
 	}
 }
 
@@ -594,9 +603,10 @@ func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:  shape,
-		Stride: stride,
-		Data:   v.Data,
+		Shape:    shape,
+		Stride:   stride,
+		Data:     v.Data,
+		ReadOnly: v.ReadOnly,
 	}
 }
 
@@ -681,6 +691,16 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	copy(shape, v[0].Shape)
 	shape[ax] = 0
 	for i := range v {
+		for j := range ndim {
+			if j == ax {
+				continue
+			}
+
+			if v[i].Shape[j] != v[0].Shape[j] {
+				panic("tensors have incompatible shapes")
+			}
+		}
+
 		shape[ax] += v[i].Shape[ax]
 	}
 
@@ -707,6 +727,12 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 // Stack returns a new tensor by stacking the tensors along the given axis.
 func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	ndim := v[0].NumDims()
+	for i := 1; i < len(v); i++ {
+		if !SliceEqual(v[0].Shape, v[i].Shape) {
+			panic("tensors have incompatible shapes")
+		}
+	}
+
 	ax, err := adjAxis(axis, ndim+1)
 	if err != nil {
 		panic(err)
@@ -1327,14 +1353,13 @@ func UnravelIndex[T Number](v *Tensor[T], index int) []int {
 // KeepDims returns a new shape with 1 inserted at the given axes.
 func KeepDims(shape []int, axes []int) []int {
 	ndim := len(shape)
-	for i := range axes {
-		if axes[i] < 0 {
-			axes[i] += ndim
-		}
-	}
 
 	ax := make(map[int]struct{}, len(axes))
 	for _, a := range axes {
+		if a < 0 {
+			a += ndim
+		}
+
 		ax[a] = struct{}{}
 	}
 

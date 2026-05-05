@@ -1194,6 +1194,23 @@ func ExampleF2() {
 	// [3]
 }
 
+func ExampleArange_invalid() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			return
+		}
+
+		panic("unexpected panic for index")
+	}()
+
+	_ = tensor.Arange(0, 10, 0)
+	panic("unreachable")
+
+	// Output:
+	// step is zero
+}
+
 func ExampleLinspace_invalid() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4428,6 +4445,19 @@ func TestStack_invalid(t *testing.T) {
 				}),
 			},
 			axis: 3,
+		},
+		{
+			// shape mismatch
+			x: []*tensor.Tensor[int]{
+				tensor.New([]int{2, 3}, []int{
+					1, 2, 3,
+					4, 5, 6,
+				}),
+				tensor.New([]int{1, 3}, []int{
+					7, 8, 9,
+				}),
+			},
+			axis: 0,
 		},
 	}
 
