@@ -3082,6 +3082,27 @@ func TestBroadcastTo(t *testing.T) {
 	}
 }
 
+func TestBroadcastTo_writable(t *testing.T) {
+	v := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+
+	w := tensor.BroadcastTo(v, 2, 3)
+	if w.ReadOnly {
+		t.Fatal("same-shape broadcast should preserve writability")
+	}
+
+	w.Set([]int{0, 0}, 9)
+	if v.At(0, 0) != 9 {
+		t.Fatalf("got=%v, want=%v", v.At(0, 0), 9)
+	}
+
+	if &v.Data[0] != &w.Data[0] {
+		t.Fatal("same-shape broadcast should remain a view")
+	}
+}
+
 func TestSumTo(t *testing.T) {
 	cases := []struct {
 		v     *tensor.Tensor[int]

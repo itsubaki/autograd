@@ -472,12 +472,13 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
 	}
 
-	diff := ndim - vndim
+	diff, readOnly := ndim-vndim, v.ReadOnly
 	stride := make([]int, ndim)
 	for i := range ndim {
 		x := i - diff
 		if x < 0 {
 			stride[i] = 0
+			readOnly = true
 			continue
 		}
 
@@ -488,6 +489,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 
 		if s0 == 1 {
 			stride[i] = 0
+			readOnly = true
 			continue
 		}
 
@@ -498,7 +500,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		Shape:    append([]int{}, shape...),
 		Stride:   stride,
 		Data:     v.Data,
-		ReadOnly: true,
+		ReadOnly: readOnly,
 	}
 }
 
