@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// RandRead is a variable that can be overridden.
 var RandRead = rand.Read
 
 // Must returns a or panics if err is non-nil.
