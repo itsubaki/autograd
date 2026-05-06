@@ -89,6 +89,7 @@ func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	return variable.From(tensor.MulC(xavier, w))
 }
 
+// last returns the last element of a slice of integers.
 func last(shape []int) int {
 	return shape[len(shape)-1]
 }

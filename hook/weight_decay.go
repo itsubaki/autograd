@@ -14,6 +14,7 @@ func WeightDecay(lambda float64) func(params []layer.Parameter) {
 	}
 }
 
+// decay returns a function that adds lambda times b to a.
 func decay(lambda float64) func(a, b float64) float64 {
 	return func(a, b float64) float64 { return a + lambda*b }
 }

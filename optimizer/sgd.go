@@ -17,6 +17,7 @@ func (o *SGD) Update(model Model) {
 	}
 }
 
+// sgd returns a function that computes the SGD update for a given parameter value a and gradient b using the specified learning rate lr.
 func sgd(lr float64) func(a, b float64) float64 {
 	return func(a, b float64) float64 { return a - lr*b }
 }

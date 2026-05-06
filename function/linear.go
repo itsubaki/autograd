@@ -17,6 +17,7 @@ type LinearT struct {
 	x, w, b *variable.Variable
 }
 
+// Forward computes the linear transformation of x and w, and adds bias b if it exists.
 func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x, f.w = x[0], x[1]
 
@@ -35,6 +36,7 @@ func (f *LinearT) Forward(x ...*variable.Variable) []*variable.Variable {
 	}
 }
 
+// Backward computes the gradients of the input variables x, w, and b (if it exists) with respect to the output gradient gy.
 func (f *LinearT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	gx := MatMul(gy[0], TransposeMatMul(f.w.NumDims())(f.w)) // gy * w.T
 	gw := MatMul(TransposeMatMul(f.x.NumDims())(f.x), gy[0]) // x.T * gy

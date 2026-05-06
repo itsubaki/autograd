@@ -32,6 +32,7 @@ func (o *Momentum) Update(model Model) {
 	}
 }
 
+// momentum returns a function that computes the momentum update for a given velocity v and gradient grad.
 func momentum(momentum, lr float64) func(v, grad float64) float64 {
 	return func(v, grad float64) float64 { return momentum*v - lr*grad }
 }

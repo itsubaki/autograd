@@ -52,6 +52,7 @@ func (f *TransposeT) Backward(gy ...*Variable) []*Variable {
 	}
 }
 
+// invperm returns the inverse permutation of the given axes for a tensor with ndim dimensions.
 func invperm(ndim int, axes ...int) []int {
 	out := make([]int, ndim)
 	for i, a := range axes {

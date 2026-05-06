@@ -26,6 +26,7 @@ func (o *Adam) Update(model Model) {
 	})
 }
 
+// update performs the Adam update on the model parameters using the provided function f to compute the update step.
 func (o *Adam) update(model Model, f func(lr float64, data, ms, vs *tensor.Tensor[float64]) *tensor.Tensor[float64]) {
 	params := Params(model, o.Hook)
 

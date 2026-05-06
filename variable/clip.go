@@ -34,6 +34,7 @@ func (f *ClipT) Backward(gy ...*Variable) []*Variable {
 	}
 }
 
+// clip returns a function that checks if a value v is within the interval [min, max].
 func clip(min, max float64) func(v float64) bool {
 	return func(v float64) bool {
 		return min <= v && v <= max

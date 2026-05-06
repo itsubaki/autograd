@@ -70,6 +70,7 @@ func Graph(v *variable.Variable, opts ...Opts) []string {
 	return out
 }
 
+// addFunc adds a function to the list if it hasn't been seen before.
 func addFunc(fs []*variable.Function, f *variable.Function, seen map[*variable.Function]bool) []*variable.Function {
 	if _, ok := seen[f]; ok {
 		return fs

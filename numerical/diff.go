@@ -52,10 +52,12 @@ func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
 	return &variable.Variable{Data: df}
 }
 
+// diff returns the numerical derivative of a and b using central differences.
 func diff(h float64) func(a, b float64) float64 {
 	return func(a, b float64) float64 { return (a - b) / (2 * h) }
 }
 
+// xh applies a function f to each element of x with a given step size h.
 func xh(x []*variable.Variable, h float64, f func(c float64, v *tensor.Tensor[float64]) *tensor.Tensor[float64]) []*variable.Variable {
 	x0 := make([]*variable.Variable, len(x))
 	for i := range x {

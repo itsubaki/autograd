@@ -25,12 +25,14 @@ func pi(c float64, N int) []float64 {
 	return xs
 }
 
+// Sequence is a dataset of N-1 pairs of (data, label).
 type Sequence struct {
 	N     int
 	Data  []float64
 	Label []float64
 }
 
+// NewCurve returns a Sequence of N-1 pairs of (data, label) with added noise.
 func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
 	y := make([]float64, N)
 	for i, x := range pi(2, N) {
@@ -44,6 +46,7 @@ func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
 	}
 }
 
+// DataLoader is an iterator that yields batches of data and label from a Sequence.
 type DataLoader struct {
 	BatchSize int
 	N         int
@@ -52,6 +55,7 @@ type DataLoader struct {
 	iter      int
 }
 
+// Next returns true if there are more batches to yield, and resets the iterator if it reaches the end.
 func (l *DataLoader) Next() bool {
 	next := (l.iter+1)*l.BatchSize < l.N
 	if !next {
@@ -61,6 +65,7 @@ func (l *DataLoader) Next() bool {
 	return next
 }
 
+// Batch returns a batch of data and label as variable.Variable, and increments the iterator.
 func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	begin, end := l.iter*l.BatchSize, (l.iter+1)*l.BatchSize
 	x, y := l.Data[begin:end], l.Label[begin:end]
@@ -68,6 +73,7 @@ func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 	return variable.New(x...).Reshape(len(x), 1), variable.New(y...).Reshape(len(y), 1)
 }
 
+// Seq2 returns an iterator that yields batches of data and label as variable.Variable.
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {
 	return func(yield func(*variable.Variable, *variable.Variable) bool) {
 		for l.Next() {
