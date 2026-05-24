@@ -219,6 +219,11 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 // Clone returns a contiguous clone of the tensor.
 func Clone[T Number](v *Tensor[T]) *Tensor[T] {
 	out := Zeros[T](v.Shape...)
+	if IsContiguous(v) {
+		copy(out.Data, v.Data)
+		return out
+	}
+
 	for i := range out.Size() {
 		out.Data[i] = v.At(UnravelIndex(out, i)...)
 	}
