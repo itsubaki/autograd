@@ -1214,7 +1214,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	//   Some workers may finish earlier and stay idle while others process the extra rows.
 	//   Ceiling division helps distribute the workload more evenly.
 	//
-	workers := runtime.NumCPU()
+	workers := min(runtime.NumCPU(), arows)
 	chunk := (arows + workers - 1) / workers
 
 	// batch matmul
