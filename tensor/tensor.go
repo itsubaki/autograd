@@ -1330,6 +1330,14 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 // F applies the function f to each element of v and returns a new tensor.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 	out := Zeros[U](v.Shape...)
+	if IsContiguous(v) {
+		for i, x := range v.Data {
+			out.Data[i] = f(x)
+		}
+
+		return out
+	}
+
 	for i := range out.Size() {
 		oidx := UnravelIndex(out, i)
 		out.Set(oidx, f(v.At(oidx...)))
@@ -1341,8 +1349,16 @@ func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
 // v and w are broadcast to a common shape.
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
-	a, b := Broadcast(v, w)
+	if SliceEqual(v.Shape, w.Shape) && IsContiguous(v) && IsContiguous(w) {
+		out := Zeros[U](v.Shape...)
+		for i := range v.Data {
+			out.Data[i] = f(v.Data[i], w.Data[i])
+		}
 
+		return out
+	}
+
+	a, b := Broadcast(v, w)
 	out := Zeros[U](a.Shape...)
 	for i := range out.Size() {
 		oidx := UnravelIndex(out, i)

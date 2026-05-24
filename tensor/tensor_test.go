@@ -339,6 +339,26 @@ func ExampleFloat64() {
 	// []float64
 }
 
+func ExampleF() {
+	v := tensor.New([]int{2, 2}, []int{
+		1, 2,
+		3, 4,
+	})
+
+	w := tensor.Transpose(v)
+	w2 := tensor.F(w, func(x int) int {
+		return x * x
+	})
+
+	for _, row := range w2.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [1 9]
+	// [4 16]
+}
+
 func ExampleTensor_AddAt() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
