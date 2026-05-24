@@ -15,12 +15,11 @@ type Momentum struct {
 
 // Update updates the parameters of the model.
 func (o *Momentum) Update(model Model) {
-	params := Params(model, o.Hook)
-
 	if len(o.vs) == 0 {
 		o.vs = make(map[*variable.Variable]*tensor.Tensor[float64])
 	}
 
+	params := Params(model, o.Hook)
 	for _, p := range params {
 		if _, ok := o.vs[p]; !ok {
 			o.vs[p] = tensor.ZeroLike(p.Data)

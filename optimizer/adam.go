@@ -28,8 +28,6 @@ func (o *Adam) Update(model Model) {
 
 // update performs the Adam update on the model parameters using the provided function f to compute the update step.
 func (o *Adam) update(model Model, f func(lr float64, data, ms, vs *tensor.Tensor[float64]) *tensor.Tensor[float64]) {
-	params := Params(model, o.Hook)
-
 	if len(o.ms) == 0 {
 		o.ms = make(map[*variable.Variable]*tensor.Tensor[float64])
 		o.vs = make(map[*variable.Variable]*tensor.Tensor[float64])
@@ -40,6 +38,7 @@ func (o *Adam) update(model Model, f func(lr float64, data, ms, vs *tensor.Tenso
 	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.iter))
 	lr := o.Alpha * math.Sqrt(fix2) / fix1
 
+	params := Params(model, o.Hook)
 	for _, p := range params {
 		if _, ok := o.ms[p]; !ok {
 			o.ms[p] = tensor.ZeroLike(p.Data)
