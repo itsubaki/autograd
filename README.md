@@ -206,3 +206,8 @@ dot sample.dot -T png -o sample.png
 ```
 
 <img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh3.png" height="240px">
+
+## References
+
+- [ゼロから作るDeep Learning ❸](https://www.oreilly.co.jp/books/9784873119069/)
+- [oreilly-japan/deep-learning-from-scratch-3](https://github.com/oreilly-japan/deep-learning-from-scratch-3)
