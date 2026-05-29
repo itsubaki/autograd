@@ -417,21 +417,24 @@ func Reshape[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 		prod *= s
 	}
 
+	newShape := make([]int, len(shape))
+	copy(newShape, shape)
+
 	s := v.Size()
 	if idx != -1 {
 		if s%prod != 0 {
 			panic("shape with -1 is not divisible")
 		}
 
-		shape[idx] = s / prod
+		newShape[idx] = s / prod
 	}
 
-	if size(shape) != s {
+	if size(newShape) != s {
 		panic("invalid shape")
 	}
 
 	cont := Contiguous(v)
-	out := New(shape, cont.Data)
+	out := New(newShape, cont.Data)
 	out.ReadOnly = cont.ReadOnly
 	return out
 }
