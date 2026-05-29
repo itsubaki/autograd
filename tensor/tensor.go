@@ -328,6 +328,17 @@ func Mask[T Number](v *Tensor[T], f func(x T) bool) *Tensor[T] {
 	})
 }
 
+// MaskFill returns a new tensor with elements in v replaced by value where f returns true.
+func MaskFill[T Number](v, mask *Tensor[T], f func(x, m T) bool, value T) *Tensor[T] {
+	return F2(v, mask, func(x, m T) T {
+		if f(x, m) {
+			return value
+		}
+
+		return x
+	})
+}
+
 // Add returns a new tensor with elements v + w for each element in v.
 func Add[T Number](v, w *Tensor[T]) *Tensor[T] {
 	return F2(v, w, func(a, b T) T { return a + b })
