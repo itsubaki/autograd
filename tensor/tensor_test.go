@@ -1120,6 +1120,28 @@ func ExampleTril() {
 	// [7 8 9]
 }
 
+func ExampleMaskFill() {
+	v := tensor.New([]int{3, 3}, []float64{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9,
+	})
+
+	w := tensor.Tril(v)
+	filled := tensor.MaskFill(v, w, func(x, m float64) bool {
+		return m == 0
+	}, math.Inf(-1))
+
+	for _, row := range filled.Seq2() {
+		fmt.Printf("%.1f\n", row)
+	}
+
+	// Output:
+	// [1.0 -Inf -Inf]
+	// [4.0 5.0 -Inf]
+	// [7.0 8.0 9.0]
+}
+
 func ExampleKeepDims() {
 	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{1}))
 	fmt.Println(tensor.KeepDims([]int{2, 3, 4}, []int{-2}))
