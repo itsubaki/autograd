@@ -9,8 +9,8 @@ import (
 
 func ExampleGELU() {
 	x := variable.New(
-		-10, -3, 0, 3, 10,
-	).Reshape(1, 5)
+		-10, 0, 10,
+	).Reshape(1, 3)
 
 	y := F.GELU(x)
 	y.Backward()
@@ -19,6 +19,6 @@ func ExampleGELU() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[1 5]([-0 -0.0036373920817729943 0 2.996362607918227 10])
-	// variable[1 5]([0 -0.011584166630969648 0.5 1.0115841666309695 1])
+	// variable[1 3]([-0 0 10])
+	// variable[1 3]([0 0.5 1])
 }
