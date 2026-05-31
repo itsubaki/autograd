@@ -47,6 +47,13 @@ func ExampleZeros() {
 	// variable[2 3]([0 0 0 0 0 0])
 }
 
+func ExampleOnes() {
+	fmt.Println(variable.Ones(2, 3))
+
+	// Output:
+	// variable[2 3]([1 1 1 1 1 1])
+}
+
 func ExampleRand() {
 	s := rand.Const()
 	v := variable.Rand([]int{2, 3}, s)
