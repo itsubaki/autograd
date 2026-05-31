@@ -42,6 +42,11 @@ func Zeros(shape ...int) *Variable {
 	return &Variable{Data: tensor.Zeros[float64](shape...)}
 }
 
+// Ones returns a new one-filled variable with the given shape.
+func Ones(shape ...int) *Variable {
+	return &Variable{Data: tensor.Ones[float64](shape...)}
+}
+
 // Rand returns a new variable with pseudo-random values in [0.0, 1.0).
 func Rand(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Rand(shape, s...)}
