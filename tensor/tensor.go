@@ -49,12 +49,23 @@ func Full[T Number](shape []int, value T) *Tensor[T] {
 
 // Rand returns a new tensor with pseudo-random values in the half-open interval [0.0, 1.0).
 func Rand(shape []int, s ...randv2.Source) *Tensor[float64] {
-	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).Float64() })
+	r := rnd(s...)
+	f := func(_ float64) float64 { return r.Float64() }
+	return F(Zeros[float64](shape...), f)
 }
 
 // Randn returns a new tensor with float64 values drawn from the standard normal distribution.
 func Randn(shape []int, s ...randv2.Source) *Tensor[float64] {
-	return F(Zeros[float64](shape...), func(_ float64) float64 { return rnd(s...).NormFloat64() })
+	r := rnd(s...)
+	f := func(_ float64) float64 { return r.NormFloat64() }
+	return F(Zeros[float64](shape...), f)
+}
+
+// Normal returns a new tensor with float64 values drawn from the normal distribution with the given mean and standard deviation.
+func Normal(shape []int, mean, stddev float64, s ...randv2.Source) *Tensor[float64] {
+	r := rnd(s...)
+	f := func(_ float64) float64 { return mean + stddev*r.NormFloat64() }
+	return F(Zeros[float64](shape...), f)
 }
 
 // Zeros returns a new tensor with elements that are all zero.

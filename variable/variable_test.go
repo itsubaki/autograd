@@ -80,6 +80,19 @@ func ExampleRandn() {
 	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
 }
 
+func ExampleNormal() {
+	s := rand.Const()
+	v := variable.Normal([]int{2, 3}, 0, 1, s)
+
+	for _, row := range v.Data.Seq2() {
+		fmt.Println(row)
+	}
+
+	// Output:
+	// [0.5665360716030388 -0.6123972949371448 0.5898947122637695]
+	// [-0.3678242340302933 1.0919575041640825 -0.4438344619606553]
+}
+
 func ExampleVariable_NumDims() {
 	x := variable.New(
 		1, 2, 3,

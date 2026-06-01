@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
@@ -42,9 +43,6 @@ type MLP struct {
 func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
 	mlp := &MLP{
 		Activation: F.Sigmoid,
-		Model: Model{
-			Layers: make([]Layer, len(outSize)),
-		},
 	}
 
 	for _, opt := range opts {
@@ -52,7 +50,7 @@ func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
 	}
 
 	for i := range outSize {
-		mlp.Layers[i] = L.Linear(outSize[i], L.WithSource(mlp.s))
+		mlp.Add(fmt.Sprintf("linear[%d]", i), L.Linear(outSize[i], L.WithSource(mlp.s)))
 	}
 
 	return mlp

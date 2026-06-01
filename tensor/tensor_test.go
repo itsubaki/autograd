@@ -157,6 +157,14 @@ func ExampleRandn() {
 	// [2 3]
 }
 
+func ExampleNormal() {
+	v := tensor.Normal([]int{2, 3}, 0, 1)
+	fmt.Println(v.Shape)
+
+	// Output:
+	// [2 3]
+}
+
 func ExampleArange() {
 	v := tensor.Arange(-5, 5)
 	fmt.Println(v.Shape)

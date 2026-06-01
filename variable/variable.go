@@ -57,6 +57,11 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Randn(shape, s...)}
 }
 
+// Normal returns a new variable with values drawn from the normal distribution with the given mean and standard deviation.
+func Normal(shape []int, mean, stddev float64, s ...randv2.Source) *Variable {
+	return &Variable{Data: tensor.Normal(shape, mean, stddev, s...)}
+}
+
 // At returns the value at the given indices.
 // If no indices are given, it returns the first element.
 func (v *Variable) At(indices ...int) float64 {

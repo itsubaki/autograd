@@ -25,27 +25,19 @@ type LSTM struct {
 
 // NewLSTM returns a new LSTM model.
 func NewLSTM(hiddenSize, outSize int, opts ...LSTMOptionFunc) *LSTM {
-	lstm := &LSTM{
-		Model: Model{
-			Layers: make([]Layer, 0),
-		},
-	}
-
+	lstm := &LSTM{}
 	for _, opt := range opts {
 		opt(lstm)
 	}
 
-	lstm.Layers = append(lstm.Layers, []Layer{
-		L.LSTM(hiddenSize, L.WithLSTMSource(lstm.s)),
-		L.Linear(outSize, L.WithSource(lstm.s)),
-	}...)
-
+	lstm.Add("lstm", L.LSTM(hiddenSize, L.WithLSTMSource(lstm.s)))
+	lstm.Add("linear", L.Linear(outSize, L.WithSource(lstm.s)))
 	return lstm
 }
 
 // ResetState clears the hidden and cell states of the LSTM layer.
 func (m *LSTM) ResetState() {
-	m.Layers[0].(*L.LSTMT).ResetState()
+	m.L["lstm"].(*L.LSTMT).ResetState()
 }
 
 // Forward applies the model to x and returns the output.

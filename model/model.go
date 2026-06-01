@@ -24,10 +24,24 @@ type Layer interface {
 // Model represents a stack of layers.
 type Model struct {
 	Layers []Layer
+	L      map[string]Layer
+}
+
+func (m *Model) Add(name string, layer Layer) {
+	if m.Layers == nil {
+		m.Layers = make([]Layer, 0)
+	}
+
+	if m.L == nil {
+		m.L = make(map[string]Layer)
+	}
+
+	m.Layers = append(m.Layers, layer)
+	m.L[name] = layer
 }
 
 // Params returns all parameters in the model keyed by layer index and parameter name.
-func (m Model) Params() L.Parameters {
+func (m *Model) Params() L.Parameters {
 	params := make(L.Parameters, 0)
 	for i, l := range m.Layers {
 		for k, p := range l.Params() {
