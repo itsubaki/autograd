@@ -75,20 +75,20 @@ func ExampleLSTM_ResetState() {
 	}
 
 	// Output:
-	// 0.h2f.w <nil>
-	// 0.h2i.w <nil>
-	// 0.h2o.w <nil>
-	// 0.h2u.w <nil>
-	// 0.x2f.b <nil>
-	// 0.x2f.w <nil>
-	// 0.x2i.b <nil>
-	// 0.x2i.w <nil>
-	// 0.x2o.b <nil>
-	// 0.x2o.w <nil>
-	// 0.x2u.b <nil>
-	// 0.x2u.w <nil>
-	// 1.b <nil>
-	// 1.w <nil>
+	// linear.b <nil>
+	// linear.w <nil>
+	// lstm.h2f.w <nil>
+	// lstm.h2i.w <nil>
+	// lstm.h2o.w <nil>
+	// lstm.h2u.w <nil>
+	// lstm.x2f.b <nil>
+	// lstm.x2f.w <nil>
+	// lstm.x2i.b <nil>
+	// lstm.x2i.w <nil>
+	// lstm.x2o.b <nil>
+	// lstm.x2o.w <nil>
+	// lstm.x2u.b <nil>
+	// lstm.x2u.w <nil>
 }
 
 func ExampleLSTM_Params() {
@@ -104,20 +104,20 @@ func ExampleLSTM_Params() {
 	}
 
 	// Output:
-	// 0.h2f.w [100 100]
-	// 0.h2i.w [100 100]
-	// 0.h2o.w [100 100]
-	// 0.h2u.w [100 100]
-	// 0.x2f.b [1 100]
-	// 0.x2f.w [3 100]
-	// 0.x2i.b [1 100]
-	// 0.x2i.w [3 100]
-	// 0.x2o.b [1 100]
-	// 0.x2o.w [3 100]
-	// 0.x2u.b [1 100]
-	// 0.x2u.w [3 100]
-	// 1.b [1 1]
-	// 1.w [100 1]
+	// linear.b [1 1]
+	// linear.w [100 1]
+	// lstm.h2f.w [100 100]
+	// lstm.h2i.w [100 100]
+	// lstm.h2o.w [100 100]
+	// lstm.h2u.w [100 100]
+	// lstm.x2f.b [1 100]
+	// lstm.x2f.w [3 100]
+	// lstm.x2i.b [1 100]
+	// lstm.x2i.w [3 100]
+	// lstm.x2o.b [1 100]
+	// lstm.x2o.w [3 100]
+	// lstm.x2u.b [1 100]
+	// lstm.x2u.w [3 100]
 }
 
 func ExampleLSTM_batch() {
@@ -145,18 +145,18 @@ func ExampleLSTM_batch() {
 	// Output:
 	// [2 2 1]
 	// [2 2 2]
-	// 0.h2f.w [5 5]
-	// 0.h2i.w [5 5]
-	// 0.h2o.w [5 5]
-	// 0.h2u.w [5 5]
-	// 0.x2f.b [1 5]
-	// 0.x2f.w [2 5]
-	// 0.x2i.b [1 5]
-	// 0.x2i.w [2 5]
-	// 0.x2o.b [1 5]
-	// 0.x2o.w [2 5]
-	// 0.x2u.b [1 5]
-	// 0.x2u.w [2 5]
-	// 1.b [1 1]
-	// 1.w [5 1]
+	// linear.b [1 1]
+	// linear.w [5 1]
+	// lstm.h2f.w [5 5]
+	// lstm.h2i.w [5 5]
+	// lstm.h2o.w [5 5]
+	// lstm.h2u.w [5 5]
+	// lstm.x2f.b [1 5]
+	// lstm.x2f.w [2 5]
+	// lstm.x2i.b [1 5]
+	// lstm.x2i.w [2 5]
+	// lstm.x2o.b [1 5]
+	// lstm.x2o.w [2 5]
+	// lstm.x2u.b [1 5]
+	// lstm.x2u.w [2 5]
 }

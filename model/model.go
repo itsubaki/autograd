@@ -43,9 +43,9 @@ func (m *Model) Add(name string, layer Layer) {
 // Params returns all parameters in the model keyed by layer index and parameter name.
 func (m *Model) Params() L.Parameters {
 	params := make(L.Parameters, 0)
-	for i, l := range m.Layers {
-		for k, p := range l.Params() {
-			params[fmt.Sprintf("%d.%s", i, k)] = p
+	for name, layer := range m.L {
+		for k, p := range layer.Params() {
+			params[fmt.Sprintf("%s.%s", name, k)] = p
 		}
 	}
 
