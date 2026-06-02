@@ -117,6 +117,18 @@ func ExampleVariable_Size() {
 	// 6
 }
 
+func ExampleVariable_Stride() {
+	x := variable.New(
+		1, 2, 3,
+		4, 5, 6,
+	).Reshape(2, 3)
+
+	fmt.Println(x.Stride())
+
+	// Output:
+	// [3 1]
+}
+
 func ExampleVariable_Reshape() {
 	v := variable.New(
 		1, 2, 3,

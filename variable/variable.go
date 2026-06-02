@@ -85,6 +85,13 @@ func (v *Variable) Shape() []int {
 	return shape
 }
 
+// Stride returns the stride of the variable.
+func (v *Variable) Stride() []int {
+	stride := make([]int, len(v.Data.Stride))
+	copy(stride, v.Data.Stride)
+	return stride
+}
+
 // Reshape changes the shape of the variable.
 func (v *Variable) Reshape(shape ...int) *Variable {
 	v.Data = tensor.Reshape(v.Data, shape...)
