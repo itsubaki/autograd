@@ -5,6 +5,9 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
+// MaskFill returns a function that fills elements of x with the given value v where the corresponding elements of mask are 0.
+// This is typically used for attention masking in Transformer models,
+// e.g. filling masked positions with a large negative value before softmax.
 func MaskFill(mask *tensor.Tensor[float64], v float64) func(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &MaskFillT{
@@ -20,7 +23,7 @@ type MaskFillT struct {
 }
 
 func (f *MaskFillT) Forward(x ...*variable.Variable) []*variable.Variable {
-	filled := tensor.MaskFill(x[0].Data, f.mask, func(x, m float64) bool {
+	filled := tensor.MaskFill(x[0].Data, f.mask, func(_, m float64) bool {
 		return m == 0
 	}, f.fill)
 
