@@ -74,8 +74,17 @@ func (v *Variable) NumDims() int {
 }
 
 // Size returns the number of elements in the variable.
-func (v *Variable) Size() int {
-	return v.Data.Size()
+func (v *Variable) Size(axis ...int) int {
+	if len(axis) == 0 {
+		return v.Data.Size()
+	}
+
+	ax := axis[0]
+	if ax < 0 {
+		ax += v.NumDims()
+	}
+
+	return v.Data.Shape[ax]
 }
 
 // Shape returns the shape of the variable.
