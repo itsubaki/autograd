@@ -8,7 +8,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func ExampleSoftmaxCrossEntropy() {
+func ExampleCrossEntropy() {
 	x := variable.New(
 		0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0,
 		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
@@ -19,7 +19,7 @@ func ExampleSoftmaxCrossEntropy() {
 		2,
 	).Reshape(2, 1)
 
-	y := F.SoftmaxCrossEntropy(x, t)
+	y := F.CrossEntropy(x, t)
 	y.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(y)
 
@@ -64,7 +64,7 @@ func ExampleLogp() {
 	// [14]
 }
 
-func ExampleSoftmaxCrossEntropy_double() {
+func ExampleCrossEntropy_double() {
 	x := variable.New(
 		0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0,
 		0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0,
@@ -75,7 +75,7 @@ func ExampleSoftmaxCrossEntropy_double() {
 		2,
 	).Reshape(2, 1)
 
-	y := F.SoftmaxCrossEntropy(x, t)
+	y := F.CrossEntropy(x, t)
 	y.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(y)
 

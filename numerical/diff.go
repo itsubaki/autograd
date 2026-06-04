@@ -37,7 +37,7 @@ var (
 	_ Func = F.MeanSquaredError
 	_ Func = F.GetItem([]int{0, 0, 1}, 0)
 	_ Func = F.Softmax(1)
-	_ Func = F.SoftmaxCrossEntropy
+	_ Func = F.CrossEntropy
 )
 
 // Diff computes the numerical derivative of f at x using central differences.

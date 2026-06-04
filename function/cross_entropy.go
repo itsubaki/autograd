@@ -5,22 +5,22 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-// SoftmaxCrossEntropy computes the softmax cross-entropy loss.
+// CrossEntropy computes the softmax cross-entropy loss.
 // It expects x[0] to have shape (N, C) and x[1] (t) to have shape (N,).
-func SoftmaxCrossEntropy(x ...*variable.Variable) *variable.Variable {
+func CrossEntropy(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
-		Forwarder: &SoftmaxCrossEntropyT{},
+		Forwarder: &CrossEntropyT{},
 	}).First(x...)
 }
 
-// SoftmaxCrossEntropyT is the differentiable softmax cross-entropy operation.
-type SoftmaxCrossEntropyT struct {
+// CrossEntropyT is the differentiable softmax cross-entropy operation.
+type CrossEntropyT struct {
 	N, C  int
 	x     *variable.Variable
 	label []int
 }
 
-func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
+func (f *CrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
 	f.N, f.C = x[0].Shape()[0], x[0].Shape()[1] // (N, C)
 	f.label = tensor.Int(x[1].Data).Data        // (N,)
@@ -34,7 +34,7 @@ func (f *SoftmaxCrossEntropyT) Forward(x ...*variable.Variable) []*variable.Vari
 	}
 }
 
-func (f *SoftmaxCrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
+func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	t := variable.From(oneHot(f.label, f.C))
 	y := Softmax(1)(f.x)
 	yt := MulC(1.0/float64(f.N), Sub(y, t)) // (y - t)/N
