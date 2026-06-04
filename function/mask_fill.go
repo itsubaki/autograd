@@ -33,8 +33,7 @@ func (f *MaskFillT) Forward(x ...*variable.Variable) []*variable.Variable {
 }
 
 func (f *MaskFillT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	gx := tensor.Mul(gy[0].Data, f.mask)
 	return []*variable.Variable{
-		variable.From(gx),
+		Mul(gy[0], variable.From(f.mask)),
 	}
 }
