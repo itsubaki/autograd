@@ -22,3 +22,25 @@ func ExampleGELU() {
 	// variable[1 3]([-0 0 10])
 	// variable[1 3]([0 0.5 1])
 }
+
+func ExampleGELU_double() {
+	x := variable.New(
+		-10, 0, 10,
+	).Reshape(1, 3)
+
+	y := F.GELU(x)
+	y.Backward(variable.Opts{CreateGraph: true})
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	gx := x.Grad
+	x.Cleargrad()
+	gx.Backward()
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable[1 3]([-0 0 10])
+	// variable[1 3]([0 0.5 1])
+	// variable[1 3]([0 0.7978845608028654 0])
+}
