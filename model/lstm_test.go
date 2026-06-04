@@ -11,13 +11,13 @@ import (
 func ExampleLSTM() {
 	m := model.NewLSTM(2, 3)
 
-	for _, l := range m.Layers {
-		fmt.Printf("%T\n", l)
+	for _, name := range m.Layers {
+		fmt.Printf("%s %T\n", name, m.L[name])
 	}
 
 	// Output:
-	// *layer.LSTMT
-	// *layer.LinearT
+	// lstm *layer.LSTMT
+	// linear *layer.LinearT
 }
 
 func ExampleLSTM_backward() {
@@ -33,30 +33,27 @@ func ExampleLSTM_backward() {
 	y = m.Forward(x)
 	y.Backward()
 
-	for _, l := range m.Layers {
-		fmt.Printf("%T\n", l)
-		for k, v := range l.Params().Seq2() {
-			fmt.Println(k, v.Grad)
+	for _, name := range m.Layers {
+		for k, v := range m.L[name].Params().Seq2() {
+			fmt.Printf("%s.%s %v\n", name, k, v.Grad)
 		}
 	}
 
 	// Output:
-	// *layer.LSTMT
-	// h2f.w variable(-0.007097596643213066)
-	// h2i.w variable(-0.0062508612982463485)
-	// h2o.w variable(-0.017558407475346018)
-	// h2u.w variable(0.0016808382857761302)
-	// x2f.b variable(0.013515028138341746)
-	// x2f.w variable[2 1]([0.013515028138341746 0.027030056276683492])
-	// x2i.b variable(0.04252623292012907)
-	// x2i.w variable[2 1]([0.04252623292012907 0.08505246584025813])
-	// x2o.b variable(0.05279536845172966)
-	// x2o.w variable[2 1]([0.05279536845172966 0.10559073690345933])
-	// x2u.b variable(-0.00757230286787535)
-	// x2u.w variable[2 1]([-0.00757230286787535 -0.0151446057357507])
-	// *layer.LinearT
-	// b variable(2)
-	// w variable(-1.1705639065492832)
+	// lstm.h2f.w variable(-0.007097596643213066)
+	// lstm.h2i.w variable(-0.0062508612982463485)
+	// lstm.h2o.w variable(-0.017558407475346018)
+	// lstm.h2u.w variable(0.0016808382857761302)
+	// lstm.x2f.b variable(0.013515028138341746)
+	// lstm.x2f.w variable[2 1]([0.013515028138341746 0.027030056276683492])
+	// lstm.x2i.b variable(0.04252623292012907)
+	// lstm.x2i.w variable[2 1]([0.04252623292012907 0.08505246584025813])
+	// lstm.x2o.b variable(0.05279536845172966)
+	// lstm.x2o.w variable[2 1]([0.05279536845172966 0.10559073690345933])
+	// lstm.x2u.b variable(-0.00757230286787535)
+	// lstm.x2u.w variable[2 1]([-0.00757230286787535 -0.0151446057357507])
+	// linear.b variable(2)
+	// linear.w variable(-1.1705639065492832)
 }
 
 func ExampleLSTM_ResetState() {

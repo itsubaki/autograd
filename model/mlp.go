@@ -59,9 +59,9 @@ func NewMLP(outSize []int, opts ...MLPOptionFunc) *MLP {
 // Forward applies the model to x and returns the output.
 func (m *MLP) Forward(x *variable.Variable) *variable.Variable {
 	last := len(m.Layers) - 1
-	for _, l := range m.Layers[:last] {
-		x = m.Activation(l.First(x))
+	for _, name := range m.Layers[:last] {
+		x = m.Activation(m.L[name].First(x))
 	}
 
-	return m.Layers[last].First(x)
+	return m.L[m.Layers[last]].First(x)
 }

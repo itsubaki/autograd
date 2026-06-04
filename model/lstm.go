@@ -42,8 +42,8 @@ func (m *LSTM) ResetState() {
 
 // Forward applies the model to x and returns the output.
 func (m *LSTM) Forward(x *variable.Variable) *variable.Variable {
-	for _, l := range m.Layers {
-		x = l.First(x)
+	for _, name := range m.Layers {
+		x = m.L[name].First(x)
 	}
 
 	return x

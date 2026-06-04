@@ -23,20 +23,20 @@ type Layer interface {
 
 // Model represents a stack of layers.
 type Model struct {
-	Layers []Layer
+	Layers []string
 	L      map[string]Layer
 }
 
 func (m *Model) Add(name string, layer Layer) {
 	if m.Layers == nil {
-		m.Layers = make([]Layer, 0)
+		m.Layers = make([]string, 0)
 	}
 
 	if m.L == nil {
 		m.L = make(map[string]Layer)
 	}
 
-	m.Layers = append(m.Layers, layer)
+	m.Layers = append(m.Layers, name)
 	m.L[name] = layer
 }
 
@@ -54,7 +54,7 @@ func (m *Model) Params() L.Parameters {
 
 // Cleargrads clears the gradients of all model parameters.
 func (m *Model) Cleargrads() {
-	for _, l := range m.Layers {
+	for _, l := range m.L {
 		l.Cleargrads()
 	}
 }

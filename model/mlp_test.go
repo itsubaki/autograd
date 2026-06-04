@@ -12,14 +12,14 @@ import (
 func ExampleMLP() {
 	m := model.NewMLP([]int{1, 2, 3})
 
-	for _, l := range m.Layers {
-		fmt.Printf("%T\n", l)
+	for _, name := range m.Layers {
+		fmt.Printf("%s %T\n", name, m.L[name])
 	}
 
 	// Output:
-	// *layer.LinearT
-	// *layer.LinearT
-	// *layer.LinearT
+	// linear[0] *layer.LinearT
+	// linear[1] *layer.LinearT
+	// linear[2] *layer.LinearT
 }
 
 func ExampleMLP_backward() {
