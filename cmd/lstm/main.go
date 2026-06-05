@@ -57,7 +57,7 @@ type DataLoader struct {
 
 // Next returns true if there are more batches to yield, and resets the iterator if it reaches the end.
 func (l *DataLoader) Next() bool {
-	next := (l.iter+1)*l.BatchSize < l.N
+	next := (l.iter+1)*l.BatchSize <= l.N
 	if !next {
 		l.iter = 0
 	}
@@ -75,6 +75,7 @@ func (l *DataLoader) Batch() (*variable.Variable, *variable.Variable) {
 
 // Seq2 returns an iterator that yields batches of data and label as variable.Variable.
 func (l *DataLoader) Seq2() iter.Seq2[*variable.Variable, *variable.Variable] {
+	l.iter = 0
 	return func(yield func(*variable.Variable, *variable.Variable) bool) {
 		for l.Next() {
 			x, t := l.Batch()
