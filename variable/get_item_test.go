@@ -13,7 +13,7 @@ func ExampleGetItem() {
 		4, 5, 6,
 	).Reshape(2, 3)
 
-	y := variable.GetItem([]int{1}, 0)(x)
+	y := variable.GetItem(0, []int{1})(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -31,7 +31,7 @@ func ExampleGetItem_indices() {
 		4, 5, 6,
 	).Reshape(2, 3)
 
-	y := variable.GetItem([]int{0, 0, 1}, 0)(x)
+	y := variable.GetItem(0, []int{0, 0, 1})(x)
 	y.Backward()
 
 	fmt.Println(y)
@@ -48,7 +48,7 @@ func ExampleGetItem_double() {
 		4, 5, 6,
 	).Reshape(2, 3)
 
-	y := variable.GetItem([]int{1}, 0)(x)
+	y := variable.GetItem(0, []int{1})(x)
 	y.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(y)
 	fmt.Println(x.Grad)

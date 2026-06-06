@@ -3,21 +3,21 @@ package variable
 import "github.com/itsubaki/autograd/tensor"
 
 // GetItemGrad returns a function that scatters gradients back to the original shape.
-func GetItemGrad(indices, shape []int, axis int) func(x ...*Variable) *Variable {
+func GetItemGrad(axis int, indices, shape []int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &GetItemGradT{
+			Axis:    axis,
 			Indices: indices,
 			Shape:   shape,
-			Axis:    axis,
 		},
 	}).First
 }
 
 // GetItemGradT is the differentiable gradient operation for GetItem.
 type GetItemGradT struct {
+	Axis    int
 	Indices []int
 	Shape   []int
-	Axis    int
 }
 
 func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
@@ -31,6 +31,6 @@ func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 
 func (f *GetItemGradT) Backward(ggx ...*Variable) []*Variable {
 	return []*Variable{
-		GetItem(f.Indices, f.Axis)(ggx...),
+		GetItem(f.Axis, f.Indices)(ggx...),
 	}
 }

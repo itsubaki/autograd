@@ -13,7 +13,7 @@ func ExampleGetItemGrad() {
 		1, 1, 1,
 	).Reshape(3, 3)
 
-	y := variable.GetItemGrad([]int{0, 0, 1}, []int{2, 3}, 0)(gy)
+	y := variable.GetItemGrad(0, []int{0, 0, 1}, []int{2, 3})(gy)
 	y.Backward()
 
 	fmt.Println(y)
@@ -31,7 +31,7 @@ func ExampleGetItemGrad_double() {
 		1, 1, 1,
 	).Reshape(3, 3)
 
-	y := variable.GetItemGrad([]int{0, 0, 1}, []int{2, 3}, 0)(gy)
+	y := variable.GetItemGrad(0, []int{0, 0, 1}, []int{2, 3})(gy)
 	y.Backward(variable.Opts{CreateGraph: true})
 	fmt.Println(y)
 	fmt.Println(gy.Grad)
