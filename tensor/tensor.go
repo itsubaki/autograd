@@ -1246,6 +1246,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	//
 	workers := min(runtime.NumCPU(), arows)
 	chunk := (arows + workers - 1) / workers
+	blockSize := 32
 
 	// batch matmul
 	var wg sync.WaitGroup
@@ -1264,19 +1265,31 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 				offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
 
 				// matmul
-				for i := start; i < end; i++ {
-					ai := offseta + i*a.Stride[ndim-2]
-					oi := offseto + i*o.Stride[ndim-2]
+				for ii := start; ii < end; ii += blockSize {
+					iEnd := min(ii+blockSize, end)
 
-					for k := range acols {
-						aik := a.Data[ai+k*a.Stride[ndim-1]]
-						bk := offsetb + k*b.Stride[ndim-2]
+					for kk := 0; kk < acols; kk += blockSize {
+						kEnd := min(kk+blockSize, acols)
 
-						for j := range bcols {
-							bkj := b.Data[bk+j*b.Stride[ndim-1]]
-							oij := oi + j*o.Stride[ndim-1]
+						for jj := 0; jj < bcols; jj += blockSize {
+							jEnd := min(jj+blockSize, bcols)
 
-							o.Data[oij] += aik * bkj
+							for i := ii; i < iEnd; i++ {
+								ai := offseta + i*a.Stride[ndim-2]
+								oi := offseto + i*o.Stride[ndim-2]
+
+								for k := kk; k < kEnd; k++ {
+									aik := a.Data[ai+k*a.Stride[ndim-1]]
+									bk := offsetb + k*b.Stride[ndim-2]
+
+									for j := jj; j < jEnd; j++ {
+										bkj := b.Data[bk+j*b.Stride[ndim-1]]
+										oij := oi + j*o.Stride[ndim-1]
+
+										o.Data[oij] += aik * bkj
+									}
+								}
+							}
 						}
 					}
 				}
