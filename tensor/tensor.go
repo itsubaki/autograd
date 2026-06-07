@@ -1278,16 +1278,17 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 								ai := offseta + i*a.Stride[ndim-2]
 								oi := offseto + i*o.Stride[ndim-2]
 
-								for k := kk; k < kEnd; k++ {
-									aik := a.Data[ai+k*a.Stride[ndim-1]]
-									bk := offsetb + k*b.Stride[ndim-2]
+								for j := jj; j < jEnd; j++ {
+									oij := oi + j*o.Stride[ndim-1]
 
-									for j := jj; j < jEnd; j++ {
-										bkj := b.Data[bk+j*b.Stride[ndim-1]]
-										oij := oi + j*o.Stride[ndim-1]
-
-										o.Data[oij] += aik * bkj
+									sum := o.Data[oij]
+									for k := kk; k < kEnd; k++ {
+										aik := a.Data[ai+k*a.Stride[ndim-1]]
+										bk := offsetb + k*b.Stride[ndim-2]
+										sum += aik * b.Data[bk+j*b.Stride[ndim-1]]
 									}
+
+									o.Data[oij] = sum
 								}
 							}
 						}
