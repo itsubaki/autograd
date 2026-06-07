@@ -1246,7 +1246,7 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	//
 	workers := min(runtime.NumCPU(), arows)
 	chunk := (arows + workers - 1) / workers
-	blockSize := 32
+	blockSize := 64
 
 	// batch matmul
 	var wg sync.WaitGroup
