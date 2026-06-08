@@ -13,11 +13,9 @@ func ExampleAdamW() {
 	m := &TestModel{P: p}
 
 	o := optimizer.AdamW{
-		Adam: optimizer.Adam{
-			Alpha: 0.001,
-			Beta1: 0.9,
-			Beta2: 0.999,
-		},
+		Alpha:       0.001,
+		Beta1:       0.9,
+		Beta2:       0.999,
 		WeightDecay: 0.1,
 	}
 
@@ -28,6 +26,6 @@ func ExampleAdamW() {
 	fmt.Println(p)
 
 	// Output:
-	// variable(0.998968377539626)
-	// variable(0.9979448703665578)
+	// variable(0.9989684091623926)
+	// variable(0.9979449255202475)
 }
