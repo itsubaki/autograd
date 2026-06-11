@@ -1136,9 +1136,8 @@ func ExampleMaskFill() {
 	})
 
 	w := tensor.Tril(v)
-	filled := tensor.MaskFill(v, w, func(x, m float64) bool {
-		return m == 0
-	}, math.Inf(-1))
+	cond := func(m float64) bool { return m == 0 }
+	filled := tensor.MaskFill(v, w, cond, math.Inf(-1))
 
 	for _, row := range filled.Seq2() {
 		fmt.Printf("%.1f\n", row)

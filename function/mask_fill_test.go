@@ -11,7 +11,7 @@ import (
 
 func ExampleMaskFill() {
 	mask := tensor.Tril(tensor.Ones[float64](3, 3))
-	f := F.MaskFill(mask, math.Inf(-1))
+	f := F.MaskFill(mask, func(m float64) bool { return m == 0 }, math.Inf(-1))
 
 	x := variable.New(
 		1, 2, 3,
@@ -32,7 +32,7 @@ func ExampleMaskFill() {
 
 func ExampleMaskFill_double() {
 	mask := tensor.Tril(tensor.Ones[float64](3, 3))
-	f := F.MaskFill(mask, math.Inf(-1))
+	f := F.MaskFill(mask, func(m float64) bool { return m == 0 }, math.Inf(-1))
 
 	x := variable.New(
 		1, 2, 3,
