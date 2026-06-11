@@ -1215,37 +1215,31 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	shape := append(batch, []int{arows, bcols}...)
 	o := Zeros[T](shape...)
 
-	// Determine the number of rows each goroutine will handle.
-	// We use "ceiling division" to make sure all rows are covered,
-	// even if rows is not divisible by workers.
+	batchSize := size(batch)
+	batchOffsetA := make([]int, batchSize)
+	batchOffsetB := make([]int, batchSize)
+	batchOffsetO := make([]int, batchSize)
+	for batchIdx := range batchSize {
+		batchOffsetA[batchIdx] = offset(batchIdx, batch, a.Stride[:ndim-2])
+		batchOffsetB[batchIdx] = offset(batchIdx, batch, b.Stride[:ndim-2])
+		batchOffsetO[batchIdx] = offset(batchIdx, batch, o.Stride[:ndim-2])
+	}
+
+	// Determine the number of batch elements each goroutine will handle.
+	// We use ceiling division to ensure all batch elements are assigned.
 	//
 	// Example:
-	//   rows = 10, workers = 3
-	//   chunk = (10 + 3 - 1) / 3 = 12 / 3 = 4
-	//   Goroutine row ranges:
-	//     Worker 0: rows 0, 1, 2, 3
-	//     Worker 1: rows 4, 5, 6, 7
-	//     Worker 2: rows 8, 9
-	//   Notice that the last worker handles the remaining 2 rows.
+	//   batchSize = 10, workers = 3
+	//   chunk = (10 + 3 - 1) / 3 = 4
 	//
-	// If we simply divided by workers using integer division (rows / workers),
-	// the rows might not be distributed evenly.
+	//   Worker 0: batch indices 0, 1, 2, 3
+	//   Worker 1: batch indices 4, 5, 6, 7
+	//   Worker 2: batch indices 8, 9
 	//
-	// Example:
-	//   rows = 10, workers = 3
-	//   chunk: 10 / 3 = 3
-	//     Worker 0: rows 0, 1, 2
-	//     Worker 1: rows 3, 4, 5
-	//     Worker 2: rows 6, 7, 8
-	//     Row 9 would be left unassigned.
-	//
-	// Note:
-	//   If there is a remainder, the workload balance among workers is uneven.
-	//   Some workers may finish earlier and stay idle while others process the extra rows.
-	//   Ceiling division helps distribute the workload more evenly.
-	//
-	workers := min(runtime.NumCPU(), arows)
-	chunk := (arows + workers - 1) / workers
+	// The last worker may handle fewer batch elements when batchSize is
+	// not evenly divisible by workers.
+	workers := min(runtime.NumCPU(), batchSize)
+	chunk := (batchSize + workers - 1) / workers
 
 	// batch matmul
 	var wg sync.WaitGroup
@@ -1253,18 +1247,19 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 		wg.Add(1)
 
 		start := w * chunk
-		end := min(start+chunk, arows)
+		end := min(start+chunk, batchSize)
+
 		go func(start, end int) {
 			defer wg.Done()
 
 			// batch
-			for batchIdx := range size(batch) {
-				offseta := offset(batchIdx, batch, a.Stride[:ndim-2])
-				offsetb := offset(batchIdx, batch, b.Stride[:ndim-2])
-				offseto := offset(batchIdx, batch, o.Stride[:ndim-2])
+			for batchIdx := start; batchIdx < end; batchIdx++ {
+				offseta := batchOffsetA[batchIdx]
+				offsetb := batchOffsetB[batchIdx]
+				offseto := batchOffsetO[batchIdx]
 
 				// matmul
-				for i := start; i < end; i++ {
+				for i := range arows {
 					ai := offseta + i*a.Stride[ndim-2]
 					oi := offseto + i*o.Stride[ndim-2]
 
