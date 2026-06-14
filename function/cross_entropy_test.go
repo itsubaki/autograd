@@ -33,8 +33,33 @@ func ExampleCrossEntropy() {
 	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
 }
 
+func ExampleCrossEntropy_ignore() {
+	x := variable.New(
+		-100, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, -100,
+		-100, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, -100,
+	).Reshape(2, 10)
+
+	t := variable.New(
+		2,
+		2,
+	).Reshape(2, 1)
+
+	y := F.CrossEntropy(x, t)
+	y.Backward(variable.Opts{CreateGraph: true})
+	fmt.Println(y)
+
+	for _, row := range x.Grad.Data.Seq2() {
+		fmt.Printf("%.8f\n", row)
+	}
+
+	// Output:
+	// variable(1.8621134995501027)
+	// [0.00000000 0.05754082 -0.40026720 0.05473452 0.05754082 0.06049100 0.05473452 0.06049100 0.05473452 0.00000000]
+	// [0.00000000 0.05754082 -0.43950900 0.05473452 0.05754082 0.06049100 0.05473452 0.09973280 0.05473452 0.00000000]
+}
+
 func ExampleOneHot() {
-	v := F.OneHot([]int{0, 2, 2, 1}, 3)
+	v := F.OneHot([]int{0, 2, 2, 1}, 3, -100)
 
 	for _, row := range v.Seq2() {
 		fmt.Println(row)
@@ -54,7 +79,7 @@ func ExampleLogp() {
 		11, 12, 13, 14, 15,
 	})
 
-	for _, v := range F.Logp(x, []int{0, 1, 3}).Seq2() {
+	for _, v := range F.Logp(x, []int{0, 1, 3}, -100).Seq2() {
 		fmt.Println(v)
 	}
 
