@@ -54,10 +54,10 @@ func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable 
 
 	t := variable.From(oneHot(f.label, f.C, f.ignoreIndex)) // (N, C)
 	y := Softmax(1)(f.x)                                    // (N, C)
-
-	diff := Sub(y, t)                // (y-t)
-	yt := MulC(1.0/float64(N), diff) // (y-t)/N
-	gx := Mul(yt, gy[0])             // (y-t)/N * gy
+	mask := ignoreMask(f.label, f.C, f.ignoreIndex)         // (N, C)
+	diff := Mul(Sub(y, t), mask)                            // (y-t) * mask
+	yt := MulC(1.0/float64(N), diff)                        // (y-t) * mask/N
+	gx := Mul(yt, gy[0])                                    // (y-t) * mask/N * gy
 	return []*variable.Variable{
 		Reshape(f.x.Shape()...)(gx),
 	}
@@ -112,4 +112,19 @@ func count(label []int, ignoreIndex int) int {
 	}
 
 	return n
+}
+
+func ignoreMask(label []int, C, ignoreIndex int) *variable.Variable {
+	mask := tensor.Ones[float64](len(label), C)
+	for i, v := range label {
+		if v != ignoreIndex {
+			continue
+		}
+
+		for j := range C {
+			mask.Set([]int{i, j}, 0.0)
+		}
+	}
+
+	return variable.From(mask)
 }

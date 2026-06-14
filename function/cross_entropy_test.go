@@ -35,27 +35,24 @@ func ExampleCrossEntropy() {
 
 func ExampleCrossEntropy_ignore() {
 	x := variable.New(
-		-100, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, -100,
-		-100, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, -100,
-	).Reshape(2, 10)
+		1.0, 2.0, 3.0,
+		4.0, 5.0, 6.0,
+	).Reshape(2, 3)
 
 	t := variable.New(
 		2,
-		2,
+		-100,
 	).Reshape(2, 1)
 
 	y := F.CrossEntropy(x, t)
-	y.Backward(variable.Opts{CreateGraph: true})
-	fmt.Println(y)
+	y.Backward()
 
-	for _, row := range x.Grad.Data.Seq2() {
-		fmt.Printf("%.8f\n", row)
-	}
+	fmt.Println(y)
+	fmt.Println(x.Grad)
 
 	// Output:
-	// variable(1.8621134995501027)
-	// [0.00000000 0.05754082 -0.40026720 0.05473452 0.05754082 0.06049100 0.05473452 0.06049100 0.05473452 0.00000000]
-	// [0.00000000 0.05754082 -0.43950900 0.05473452 0.05754082 0.06049100 0.05473452 0.09973280 0.05473452 0.00000000]
+	// variable(0.4076059644443806)
+	// variable[2 3]([0.09003057317038046 0.24472847105479764 -0.3347590442251782 0 0 0])
 }
 
 func ExampleOneHot() {
