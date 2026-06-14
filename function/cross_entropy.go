@@ -45,7 +45,7 @@ func (f *CrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
 func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	if f.N == 0 {
 		return []*variable.Variable{
-			variable.New(0.0).Reshape(f.x.Shape()...),
+			variable.Zeros(f.x.Shape()...),
 		}
 	}
 

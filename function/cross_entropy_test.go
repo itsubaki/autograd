@@ -33,28 +33,6 @@ func ExampleCrossEntropy() {
 	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
 }
 
-func ExampleCrossEntropy_ignore() {
-	x := variable.New(
-		1.0, 2.0, 3.0,
-		4.0, 5.0, 6.0,
-	).Reshape(2, 3)
-
-	t := variable.New(
-		2,
-		-100,
-	).Reshape(2, 1)
-
-	y := F.CrossEntropy(x, t)
-	y.Backward()
-
-	fmt.Println(y)
-	fmt.Println(x.Grad)
-
-	// Output:
-	// variable(0.4076059644443806)
-	// variable[2 3]([0.09003057317038046 0.24472847105479764 -0.3347590442251782 0 0 0])
-}
-
 func ExampleOneHot() {
 	v := F.OneHot([]int{0, 2, 2, 1}, 3, -100)
 
@@ -116,4 +94,48 @@ func ExampleCrossEntropy_double() {
 	// [0.04916165 0.04676401 -0.41894615 0.04448330 0.04676401 0.04916165 0.04448330 0.04916165 0.04448330 0.04448330]
 	// [0.04916165 0.04676401 -0.45083835 0.04448330 0.04676401 0.04916165 0.04448330 0.08105385 0.04448330 0.04448330]
 	// variable[2 10]([0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
+}
+
+func ExampleCrossEntropy_ignore() {
+	x := variable.New(
+		1.0, 2.0, 3.0,
+		4.0, 5.0, 6.0,
+	).Reshape(2, 3)
+
+	t := variable.New(
+		2,
+		-100,
+	).Reshape(2, 1)
+
+	y := F.CrossEntropy(x, t)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable(0.4076059644443806)
+	// variable[2 3]([0.09003057317038046 0.24472847105479764 -0.3347590442251782 0 0 0])
+}
+
+func ExampleCrossEntropy_ignoreAll() {
+	x := variable.New(
+		1.0, 2.0, 3.0,
+		4.0, 5.0, 6.0,
+	).Reshape(2, 3)
+
+	t := variable.New(
+		-100,
+		-100,
+	).Reshape(2, 1)
+
+	y := F.CrossEntropy(x, t)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable(0)
+	// variable[2 3]([0 0 0 0 0 0])
 }
