@@ -24,29 +24,26 @@ type CrossEntropyT struct {
 }
 
 func (f *CrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
-	f.x = x[0]
-	f.N, f.C = x[0].Shape()[0], x[0].Shape()[1] // (N, C)
-	f.label = tensor.Int(x[1].Data).Data        // (N,)
-
-	logz := logsumexp(x[0].Data)                                      // (N, 1)
-	logp := logp(tensor.Sub(x[0].Data, logz), f.label, f.ignoreIndex) // (N, 1)
-	sum := tensor.Sum(logp).At()                                      // scalar
-
-	N := count(f.label, f.ignoreIndex)
-	if N == 0 {
+	f.x, f.C = x[0], x[0].Shape()[1]     // (N, C)
+	f.label = tensor.Int(x[1].Data).Data // (N,)
+	f.N = count(f.label, f.ignoreIndex)
+	if f.N == 0 {
 		return []*variable.Variable{
 			variable.New(0.0),
 		}
 	}
 
+	logz := logsumexp(x[0].Data)                                      // (N, 1)
+	logp := logp(tensor.Sub(x[0].Data, logz), f.label, f.ignoreIndex) // (N, 1)
+	sum := tensor.Sum(logp).At()                                      // scalar
+
 	return []*variable.Variable{
-		variable.New(-1.0 / float64(N) * sum),
+		variable.New(-1.0 / float64(f.N) * sum),
 	}
 }
 
 func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable {
-	N := count(f.label, f.ignoreIndex)
-	if N == 0 {
+	if f.N == 0 {
 		return []*variable.Variable{
 			variable.New(0.0).Reshape(f.x.Shape()...),
 		}
@@ -56,7 +53,7 @@ func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable 
 	y := Softmax(1)(f.x)                                    // (N, C)
 	mask := ignoreMask(f.label, f.C, f.ignoreIndex)         // (N, C)
 	diff := Mul(Sub(y, t), mask)                            // (y-t) * mask
-	yt := MulC(1.0/float64(N), diff)                        // (y-t) * mask/N
+	yt := MulC(1.0/float64(f.N), diff)                      // (y-t) * mask/N
 	gx := Mul(yt, gy[0])                                    // (y-t) * mask/N * gy
 	return []*variable.Variable{
 		Reshape(f.x.Shape()...)(gx),
