@@ -77,11 +77,11 @@ func oneHot(label []int, CNums int, ignoreIndex int) *tensor.Tensor[float64] {
 // logsumexp computes log(sum(exp(x))) for the input tensor x.
 func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
-	max1 := tensor.Expand(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
-	expy := tensor.Exp(tensor.Sub(x, max1))       // expy = exp(x - max1)
-	sum1 := tensor.Expand(tensor.Sum(expy, 1), 1) // sum1 = sum(expy)
-	logsum1 := tensor.Log(sum1)                   // logsum1 = log(sum1)
-	return tensor.Add(max1, logsum1)              // logsumexp = max1 + logsum1
+	max1 := tensor.Unsqueeze(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
+	expy := tensor.Exp(tensor.Sub(x, max1))          // expy = exp(x - max1)
+	sum1 := tensor.Unsqueeze(tensor.Sum(expy, 1), 1) // sum1 = sum(expy)
+	logsum1 := tensor.Log(sum1)                      // logsum1 = log(sum1)
+	return tensor.Add(max1, logsum1)                 // logsumexp = max1 + logsum1
 }
 
 // logp extracts the values from x corresponding to the true labels.

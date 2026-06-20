@@ -898,13 +898,13 @@ func ExampleSqueeze() {
 	// [1 2 3 4 5 6]
 }
 
-func ExampleExpand() {
+func ExampleUnsqueeze() {
 	v := tensor.New([]int{2, 1, 3}, []int{
 		1, 2, 3,
 		4, 5, 6,
 	})
 
-	w := tensor.Expand(v, 0)
+	w := tensor.Unsqueeze(v, 0)
 	fmt.Println(w.Shape)
 	fmt.Println(w.Data)
 
@@ -2920,7 +2920,7 @@ func TestSqueeze(t *testing.T) {
 	}
 }
 
-func TestExpand(t *testing.T) {
+func TestUnsqueeze(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
 		axis int
@@ -2989,7 +2989,7 @@ func TestExpand(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := tensor.Expand(c.v, c.axis)
+		got := tensor.Unsqueeze(c.v, c.axis)
 		if !tensor.EqualAll(got, c.want) {
 			t.Errorf("axis=%v, got=%v, want=%v", c.axis, got.Data, c.want.Data)
 		}
@@ -4399,7 +4399,7 @@ func TestBroadcastTo_invalid(t *testing.T) {
 	}
 }
 
-func TestExpand_invalid(t *testing.T) {
+func TestUnsqueeze_invalid(t *testing.T) {
 	cases := []struct {
 		v    *tensor.Tensor[int]
 		axis int
@@ -4418,7 +4418,7 @@ func TestExpand_invalid(t *testing.T) {
 				t.Errorf("unexpected panic for axis %v", c.axis)
 			}()
 
-			_ = tensor.Expand(c.v, c.axis)
+			_ = tensor.Unsqueeze(c.v, c.axis)
 			t.Fail()
 		}()
 	}

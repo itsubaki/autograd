@@ -615,8 +615,8 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 }
 
-// Expand returns a view of v with a new dimension of size 1 inserted at the specified axis.
-func Expand[T Number](v *Tensor[T], axis int) *Tensor[T] {
+// Unsqueeze returns a view of v with a new dimension of size 1 inserted at the specified axis.
+func Unsqueeze[T Number](v *Tensor[T], axis int) *Tensor[T] {
 	ndim := v.NumDims()
 	ax, err := adjAxis(axis, ndim+1)
 	if err != nil {
