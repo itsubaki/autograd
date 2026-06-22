@@ -32,6 +32,8 @@ var (
 	GetItem         = variable.GetItem
 	Concat          = variable.Concat
 	Split           = variable.Split
+	Squeeze         = variable.Squeeze
+	Unsqueeze       = variable.Unsqueeze
 	Mean            = variable.Mean
 	Variance        = variable.Variance
 )
