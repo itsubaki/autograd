@@ -16,7 +16,7 @@ func ExampleClip() {
 
 	// Output:
 	// variable[8]([0 0 0 1 2 4 5 5])
-	// variable[8]([0 0 1 1 1 1 0 0])
+	// variable[8]([0 0 0 1 1 1 0 0])
 }
 
 func ExampleClip_double() {
@@ -34,6 +34,6 @@ func ExampleClip_double() {
 
 	// Output:
 	// variable[8]([0 0 0 1 2 4 5 5])
-	// variable[8]([0 0 1 1 1 1 0 0])
+	// variable[8]([0 0 0 1 1 1 0 0])
 	// <nil>
 }
