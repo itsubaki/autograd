@@ -1190,6 +1190,7 @@ func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 // MatMul returns the matrix product of v and w.
 func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	a, b := Broadcast(v, w, 2)
+	a, b = Contiguous(a), Contiguous(b)
 	ndim := a.NumDims()
 
 	arows, acols := a.Shape[ndim-2], a.Shape[ndim-1]
@@ -1198,80 +1199,45 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.Shape, w.Shape))
 	}
 
-	// offset
-	offset := func(k int, shape, stride []int) int {
-		var v int
-		for i := len(shape) - 1; i >= 0; i-- {
-			idx := k % shape[i]
-			k /= shape[i]
+	// stride
+	aBatchStride := arows * acols
+	bBatchStride := brows * bcols
+	oBatchStride := arows * bcols
 
-			v += idx * stride[i]
-		}
-
-		return v
-	}
-
+	// batch
 	batch := a.Shape[:ndim-2]
-	shape := append(batch, []int{arows, bcols}...)
+	shape := append(batch, arows, bcols)
 	o := Zeros[T](shape...)
 
 	batchSize := size(batch)
-	batchOffsetA := make([]int, batchSize)
-	batchOffsetB := make([]int, batchSize)
-	batchOffsetO := make([]int, batchSize)
-	for batchIdx := range batchSize {
-		batchOffsetA[batchIdx] = offset(batchIdx, batch, a.Stride[:ndim-2])
-		batchOffsetB[batchIdx] = offset(batchIdx, batch, b.Stride[:ndim-2])
-		batchOffsetO[batchIdx] = offset(batchIdx, batch, o.Stride[:ndim-2])
-	}
-
-	// Determine the number of batch elements each goroutine will handle.
-	// We use ceiling division to ensure all batch elements are assigned.
-	//
-	// Example:
-	//   batchSize = 10, workers = 3
-	//   chunk = (10 + 3 - 1) / 3 = 4
-	//
-	//   Worker 0: batch indices 0, 1, 2, 3
-	//   Worker 1: batch indices 4, 5, 6, 7
-	//   Worker 2: batch indices 8, 9
-	//
-	// The last worker may handle fewer batch elements when batchSize is
-	// not evenly divisible by workers.
 	workers := min(runtime.NumCPU(), batchSize)
 	chunk := (batchSize + workers - 1) / workers
 
-	// batch matmul
+	// parallelize
 	var wg sync.WaitGroup
-	for w := range workers {
-		wg.Add(1)
-
-		start := w * chunk
+	for worker := range workers {
+		start := worker * chunk
 		end := min(start+chunk, batchSize)
 
+		wg.Add(1)
 		go func(start, end int) {
 			defer wg.Done()
 
-			// batch
-			for batchIdx := start; batchIdx < end; batchIdx++ {
-				offseta := batchOffsetA[batchIdx]
-				offsetb := batchOffsetB[batchIdx]
-				offseto := batchOffsetO[batchIdx]
+			for batch := start; batch < end; batch++ {
+				baseA := batch * aBatchStride
+				baseB := batch * bBatchStride
+				baseO := batch * oBatchStride
 
-				// matmul
 				for i := range arows {
-					ai := offseta + i*a.Stride[ndim-2]
-					oi := offseto + i*o.Stride[ndim-2]
+					ai := baseA + i*acols
+					oi := baseO + i*bcols
 
 					for k := range acols {
-						aik := a.Data[ai+k*a.Stride[ndim-1]]
-						bk := offsetb + k*b.Stride[ndim-2]
+						aik := a.Data[ai+k]
+						bk := baseB + k*bcols
 
 						for j := range bcols {
-							bkj := b.Data[bk+j*b.Stride[ndim-1]]
-							oij := oi + j*o.Stride[ndim-1]
-
-							o.Data[oij] += aik * bkj
+							o.Data[oi+j] += aik * b.Data[bk+j]
 						}
 					}
 				}
