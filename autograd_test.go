@@ -428,9 +428,9 @@ func Example_linearRegression() {
 	fmt.Println(loss)
 
 	// Output:
-	// w(2.185928791917266)
-	// b(5.354857189898866)
-	// loss(0.07384886041118585)
+	// w(2.1859287919172674)
+	// b(5.3548571898988655)
+	// loss(0.07384886041118591)
 }
 
 func Example_mlp() {

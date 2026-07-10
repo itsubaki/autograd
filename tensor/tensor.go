@@ -1188,7 +1188,7 @@ func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 }
 
 // MatMul returns the matrix product of v and w.
-func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
+func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	a, b := Broadcast(v, w, 2)
 	a, b = Contiguous(a), Contiguous(b)
 	ndim := a.NumDims()
@@ -1200,14 +1200,14 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 	}
 
 	// stride
-	aBatchStride := arows * acols
-	bBatchStride := brows * bcols
-	oBatchStride := arows * bcols
+	aStride := arows * acols
+	bStride := brows * bcols
+	oStride := arows * bcols
 
 	// batch
 	batch := a.Shape[:ndim-2]
 	shape := append(batch, arows, bcols)
-	o := Zeros[T](shape...)
+	o := Zeros[float64](shape...)
 
 	batchSize := size(batch)
 	workers := min(runtime.NumCPU(), batchSize)
@@ -1224,23 +1224,18 @@ func MatMul[T Number](v, w *Tensor[T]) *Tensor[T] {
 			defer wg.Done()
 
 			for batch := start; batch < end; batch++ {
-				baseA := batch * aBatchStride
-				baseB := batch * bBatchStride
-				baseO := batch * oBatchStride
+				baseA := batch * aStride
+				baseB := batch * bStride
+				baseO := batch * oStride
 
-				for i := range arows {
-					ai := baseA + i*acols
-					oi := baseO + i*bcols
-
-					for k := range acols {
-						aik := a.Data[ai+k]
-						bk := baseB + k*bcols
-
-						for j := range bcols {
-							o.Data[oi+j] += aik * b.Data[bk+j]
-						}
-					}
-				}
+				matmul(
+					a.Data[baseA:baseA+aStride],
+					b.Data[baseB:baseB+bStride],
+					o.Data[baseO:baseO+oStride],
+					arows,
+					acols,
+					bcols,
+				)
 			}
 		}(start, end)
 	}
