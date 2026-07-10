@@ -13,7 +13,10 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [ubuntu-latest]
+        platform:
+          - ubuntu-latest
+          - macos-13
+          - macos-14
 
     runs-on: ${{ matrix.platform }}
 
