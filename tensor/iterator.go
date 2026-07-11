@@ -22,8 +22,12 @@ func NewIterator(layouts ...Layout) *Iterator {
 	ndim := layouts[0].NumDims()
 
 	strides := make([][]int, len(layouts))
-	for i, t := range layouts {
-		strides[i] = append([]int{}, t.Stride()...)
+	for i, layout := range layouts {
+		if !SliceEqual(layout.Shape(), shape) {
+			panic("layouts have incompatible shapes")
+		}
+
+		strides[i] = append([]int{}, layout.Stride()...)
 	}
 
 	return &Iterator{
