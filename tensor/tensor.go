@@ -22,8 +22,8 @@ type Number interface {
 // Such operations may create views without copying data, so the logical element order may differ from the physical memory layout.
 // ReadOnly is set on views when writes could alias the same underlying element through multiple logical indices.
 type Tensor[T Number] struct {
-	Shape    []int
-	Stride   []int
+	shape    []int
+	stride   []int
 	Data     []T
 	ReadOnly bool
 }
@@ -31,8 +31,8 @@ type Tensor[T Number] struct {
 // New returns a new tensor with the given shape and data.
 func New[T Number](shape []int, data []T) *Tensor[T] {
 	return &Tensor[T]{
-		Shape:  append([]int{}, shape...),
-		Stride: stride(shape...),
+		shape:  append([]int{}, shape...),
+		stride: stride(shape...),
 		Data:   data,
 	}
 }
@@ -80,7 +80,7 @@ func Ones[T Number](shape ...int) *Tensor[T] {
 
 // ZeroLike returns a new tensor with the same shape as v and elements that are all zero.
 func ZeroLike[T Number](v *Tensor[T]) *Tensor[T] {
-	return Zeros[T](v.Shape...)
+	return Zeros[T](v.shape...)
 }
 
 // OneLike returns a new tensor with the same shape as v and elements that are all one.
@@ -151,17 +151,17 @@ func FlatIndex[T Number](v *Tensor[T], indices ...int) int {
 		return 0
 	}
 
-	if len(indices) != len(v.Shape) {
-		panic(fmt.Sprintf("indices length=%v are not equal to ndim=%v", len(indices), len(v.Shape)))
+	if len(indices) != v.NumDims() {
+		panic(fmt.Sprintf("indices length=%v are not equal to ndim=%v", len(indices), v.NumDims()))
 	}
 
 	var idx int
 	for i, c := range indices {
-		if c < 0 || c >= v.Shape[i] {
-			panic(fmt.Sprintf("indices=%v out of range for axis=%v (shape=%v)", c, i, v.Shape))
+		if c < 0 || c >= v.shape[i] {
+			panic(fmt.Sprintf("indices=%v out of range for axis=%v (shape=%v)", c, i, v.shape))
 		}
 
-		idx += c * v.Stride[i]
+		idx += c * v.stride[i]
 	}
 
 	return idx
@@ -169,12 +169,22 @@ func FlatIndex[T Number](v *Tensor[T], indices ...int) int {
 
 // NumDims returns the number of dimensions of the tensor.
 func (v *Tensor[T]) NumDims() int {
-	return len(v.Shape)
+	return len(v.shape)
 }
 
 // Size returns the number of elements in the tensor.
 func (v *Tensor[T]) Size() int {
-	return size(v.Shape)
+	return size(v.shape)
+}
+
+// Shape returns a copy of the shape of the tensor.
+func (v *Tensor[T]) Shape() []int {
+	return append([]int{}, v.shape...)
+}
+
+// Stride returns a copy of the stride of the tensor.
+func (v *Tensor[T]) Stride() []int {
+	return append([]int{}, v.stride...)
 }
 
 // At returns the element at the given index.
@@ -212,7 +222,7 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 	}
 
 	seq2 := func(v *Tensor[T]) func(yield func(int, []T) bool) {
-		size := v.Shape[ndim-1]
+		size := v.shape[ndim-1]
 		total := v.Size() / size
 		return func(yield func(int, []T) bool) {
 			for i := range total {
@@ -229,14 +239,15 @@ func (v *Tensor[T]) Seq2() iter.Seq2[int, []T] {
 
 // Clone returns a contiguous clone of the tensor.
 func Clone[T Number](v *Tensor[T]) *Tensor[T] {
-	out := Zeros[T](v.Shape...)
+	out := Zeros[T](v.shape...)
 	if IsContiguous(v) {
 		copy(out.Data, v.Data)
 		return out
 	}
 
-	for i := range out.Size() {
-		out.Data[i] = v.At(UnravelIndex(out, i)...)
+	it := NewIterator(out, v)
+	for it.Next() {
+		out.Data[it.Offset(0)] = v.Data[it.Offset(1)]
 	}
 
 	return out
@@ -480,8 +491,8 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	return &Tensor[T]{
-		Shape:    transpose(perm, v.Shape),
-		Stride:   transpose(perm, v.Stride),
+		shape:    transpose(perm, v.shape),
+		stride:   transpose(perm, v.stride),
 		Data:     v.Data,
 		ReadOnly: v.ReadOnly,
 	}
@@ -489,7 +500,7 @@ func Transpose[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 // Broadcast returns views of v and w broadcast to a common shape.
 func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[T]) {
-	s0, s1, err := broadcast(v.Shape, w.Shape, keepLast...)
+	s0, s1, err := broadcast(v.shape, w.shape, keepLast...)
 	if err != nil {
 		panic(err)
 	}
@@ -503,7 +514,7 @@ func Broadcast[T Number](v, w *Tensor[T], keepLast ...int) (*Tensor[T], *Tensor[
 func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 	ndim, vndim := len(shape), v.NumDims()
 	if ndim < vndim {
-		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.Shape))
+		panic(fmt.Sprintf("shape %v is smaller than tensor shape %v", shape, v.shape))
 	}
 
 	diff, readOnly := ndim-vndim, v.ReadOnly
@@ -518,9 +529,9 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 			continue
 		}
 
-		s0, s1 := v.Shape[x], shape[i]
+		s0, s1 := v.shape[x], shape[i]
 		if s0 != s1 && s0 != 1 {
-			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.Shape))
+			panic(fmt.Sprintf("shape %v is not compatible with tensor shape %v", shape, v.shape))
 		}
 
 		if s0 == 1 {
@@ -531,12 +542,12 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 			continue
 		}
 
-		stride[i] = v.Stride[x]
+		stride[i] = v.stride[x]
 	}
 
 	return &Tensor[T]{
-		Shape:    append([]int{}, shape...),
-		Stride:   stride,
+		shape:    append([]int{}, shape...),
+		stride:   stride,
 		Data:     v.Data,
 		ReadOnly: readOnly,
 	}
@@ -545,7 +556,7 @@ func BroadcastTo[T Number](v *Tensor[T], shape ...int) *Tensor[T] {
 // SumTo returns a tensor with the given shape by summing v over broadcast axes.
 // SumTo returns a view of v when no reduction is required; otherwise, it returns a new tensor with computed data.
 func SumTo[N Number](v *Tensor[N], shape ...int) *Tensor[N] {
-	a, b := shape, v.Shape
+	a, b := shape, v.shape
 	if len(a) < len(b) {
 		diff := len(b) - len(a)
 
@@ -585,8 +596,8 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 				panic(err)
 			}
 
-			if v.Shape[ax] != 1 {
-				panic(fmt.Sprintf("axis=%v is not 1 (shape %v)", ax, v.Shape))
+			if v.shape[ax] != 1 {
+				panic(fmt.Sprintf("axis=%v is not 1 (shape %v)", ax, v.shape))
 			}
 
 			seen[ax] = true
@@ -594,7 +605,7 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	var shape, stride []int
-	for i, s := range v.Shape {
+	for i, s := range v.shape {
 		if len(axes) == 0 && s == 1 {
 			continue
 		}
@@ -604,12 +615,12 @@ func Squeeze[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		}
 
 		shape = append(shape, s)
-		stride = append(stride, v.Stride[i])
+		stride = append(stride, v.stride[i])
 	}
 
 	return &Tensor[T]{
-		Shape:    shape,
-		Stride:   stride,
+		shape:    shape,
+		stride:   stride,
 		Data:     v.Data,
 		ReadOnly: v.ReadOnly,
 	}
@@ -628,8 +639,8 @@ func Unsqueeze[T Number](v *Tensor[T], axis int) *Tensor[T] {
 
 	// head
 	for i := range ax {
-		shape = append(shape, v.Shape[i])
-		stride = append(stride, v.Stride[i])
+		shape = append(shape, v.shape[i])
+		stride = append(stride, v.stride[i])
 	}
 
 	// insert 1 at axis
@@ -638,13 +649,13 @@ func Unsqueeze[T Number](v *Tensor[T], axis int) *Tensor[T] {
 
 	// tail
 	for i := ax; i < ndim; i++ {
-		shape = append(shape, v.Shape[i])
-		stride = append(stride, v.Stride[i])
+		shape = append(shape, v.shape[i])
+		stride = append(stride, v.stride[i])
 	}
 
 	return &Tensor[T]{
-		Shape:    shape,
-		Stride:   stride,
+		shape:    shape,
+		stride:   stride,
 		Data:     v.Data,
 		ReadOnly: v.ReadOnly,
 	}
@@ -658,24 +669,23 @@ func ScatterAdd[T Number](v, w *Tensor[T], axis int, indices []int) *Tensor[T] {
 		panic(err)
 	}
 
-	if w.Shape[ax] != len(indices) {
-		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.Shape[ax]))
+	if w.shape[ax] != len(indices) {
+		panic(fmt.Sprintf("indices length=%v are not equal to shape[%d]=%d", len(indices), ax, w.shape[ax]))
 	}
 
-	idx, err := adjIndices(indices, v.Shape, ax)
+	idx, err := adjIndices(indices, v.shape, ax)
 	if err != nil {
 		panic(err)
 	}
 
 	out := Clone(v)
-	for i := range w.Size() {
-		widx := UnravelIndex(w, i)
+	it := NewIterator(w)
+	for it.Next() {
+		coord := it.Coord()
+		oidx := append([]int{}, coord...)
+		oidx[ax] = idx[coord[ax]]
 
-		oidx := make([]int, ndim)
-		copy(oidx, widx)
-		oidx[ax] = idx[widx[ax]]
-
-		out.AddAt(oidx, w.At(widx...))
+		out.AddAt(oidx, w.Data[it.Offset(0)])
 	}
 
 	return out
@@ -689,25 +699,24 @@ func Take[T Number](v *Tensor[T], axis int, indices []int) *Tensor[T] {
 		panic(err)
 	}
 
-	idx, err := adjIndices(indices, v.Shape, ax)
+	idx, err := adjIndices(indices, v.shape, ax)
 	if err != nil {
 		panic(err)
 	}
 
 	shape := make([]int, ndim)
-	copy(shape, v.Shape)
+	copy(shape, v.shape)
 	shape[ax] = len(indices)
 
 	// take
 	out := Zeros[T](shape...)
-	for i := range out.Size() {
-		oidx := UnravelIndex(out, i)
+	it := NewIterator(out)
+	for it.Next() {
+		coord := it.Coord()
+		vidx := append([]int{}, coord...)
+		vidx[ax] = idx[coord[ax]]
 
-		vidx := make([]int, ndim)
-		copy(vidx, oidx)
-		vidx[ax] = idx[oidx[ax]]
-
-		out.Set(oidx, v.At(vidx...))
+		out.Data[it.Offset(0)] = v.At(vidx...)
 	}
 
 	return out
@@ -728,7 +737,7 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	}
 
 	shape := make([]int, ndim)
-	copy(shape, v[0].Shape)
+	copy(shape, v[0].shape)
 	shape[ax] = 0
 	for i := range v {
 		for j := range ndim {
@@ -736,29 +745,28 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 				continue
 			}
 
-			if v[i].Shape[j] != v[0].Shape[j] {
+			if v[i].shape[j] != v[0].shape[j] {
 				panic("tensors have incompatible shapes")
 			}
 		}
 
-		shape[ax] += v[i].Shape[ax]
+		shape[ax] += v[i].shape[ax]
 	}
 
 	// concat
 	var offset int
 	out := Zeros[T](shape...)
 	for _, w := range v {
-		for j := range w.Size() {
-			widx := UnravelIndex(w, j)
-
-			oidx := make([]int, ndim)
-			copy(oidx, widx)
+		it := NewIterator(w)
+		for it.Next() {
+			coord := it.Coord()
+			oidx := append([]int{}, coord...)
 			oidx[ax] += offset
 
-			out.Set(oidx, w.At(widx...))
+			out.Set(oidx, w.Data[it.Offset(0)])
 		}
 
-		offset += w.Shape[ax]
+		offset += w.shape[ax]
 	}
 
 	return out
@@ -768,7 +776,7 @@ func Concat[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	ndim := v[0].NumDims()
 	for i := 1; i < len(v); i++ {
-		if !SliceEqual(v[0].Shape, v[i].Shape) {
+		if !SliceEqual(v[0].shape, v[i].shape) {
 			panic("tensors have incompatible shapes")
 		}
 	}
@@ -779,23 +787,22 @@ func Stack[T Number](v []*Tensor[T], axis int) *Tensor[T] {
 	}
 
 	shape := make([]int, ndim+1)
-	copy(shape[:ax], v[0].Shape[:ax])
+	copy(shape[:ax], v[0].shape[:ax])
 	shape[ax] = len(v)
-	copy(shape[ax+1:], v[0].Shape[ax:])
+	copy(shape[ax+1:], v[0].shape[ax:])
 
 	// stack
 	out := Zeros[T](shape...)
 	for i, w := range v {
-		for j := range w.Size() {
-			widx := UnravelIndex(w, j)
-
-			// insert i at axis
+		it := NewIterator(w)
+		for it.Next() {
+			coord := it.Coord()
 			oidx := make([]int, ndim+1)
-			copy(oidx[:ax], widx[:ax])
+			copy(oidx[:ax], coord[:ax])
 			oidx[ax] = i
-			copy(oidx[ax+1:], widx[ax:])
+			copy(oidx[ax+1:], coord[ax:])
 
-			out.Set(oidx, w.At(widx...))
+			out.Set(oidx, w.Data[it.Offset(0)])
 		}
 	}
 
@@ -815,7 +822,7 @@ func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 		sum += s
 	}
 
-	if sum != v.Shape[ax] {
+	if sum != v.shape[ax] {
 		panic("sum of size is not equal to shape at axis")
 	}
 
@@ -823,19 +830,18 @@ func Split[T Number](v *Tensor[T], size []int, axis int) []*Tensor[T] {
 	out := make([]*Tensor[T], len(size))
 	for i, s := range size {
 		shape := make([]int, ndim)
-		copy(shape, v.Shape)
+		copy(shape, v.shape)
 		shape[ax] = s
 
 		// copy
 		out[i] = Zeros[T](shape...)
-		for j := range out[i].Size() {
-			oidx := UnravelIndex(out[i], j)
-
-			vidx := make([]int, ndim)
-			copy(vidx, oidx)
+		it := NewIterator(out[i])
+		for it.Next() {
+			coord := it.Coord()
+			vidx := append([]int{}, coord...)
 			vidx[ax] += start
 
-			out[i].Set(oidx, v.At(vidx...))
+			out[i].Data[it.Offset(0)] = v.At(vidx...)
 		}
 
 		start += s
@@ -860,33 +866,15 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 	}
 
 	out := ZeroLike(v)
-	for i := range v.Size() {
-		vidx := UnravelIndex(v, i)
-
-		// Flip the indices along axis 'a'.
-		// This operation reverses the order of elements along that axis.
-		//
-		// For a given dimension of size `n`, the original index `i` is mapped to:
-		//     new_index = n - 1 - i
-		//
-		// Example:
-		//   If the axis length is 5, the indices are [0, 1, 2, 3, 4].
-		//   After flipping:
-		//       0 → 4
-		//       1 → 3
-		//       2 → 2
-		//       3 → 1
-		//       4 → 0
-		//
-		// So when size = 5 and index = 1, the new index becomes 5 - 1 - 1 = 3.
-		// This achieves a mirror-like reflection along the selected axis.
-		oidx := make([]int, ndim)
-		copy(oidx, vidx)
+	it := NewIterator(v, out)
+	for it.Next() {
+		coord := it.Coord()
+		oidx := append([]int{}, coord...)
 		for _, a := range ax {
-			oidx[a] = v.Shape[a] - 1 - oidx[a]
+			oidx[a] = v.shape[a] - 1 - oidx[a]
 		}
 
-		out.Set(vidx, v.At(oidx...))
+		out.Data[it.Offset(1)] = v.At(oidx...)
 	}
 
 	return out
@@ -914,19 +902,18 @@ func Tile[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	}
 
 	shape := make([]int, ndim)
-	copy(shape, v.Shape)
-	shape[ax] = v.Shape[ax] * n
+	copy(shape, v.shape)
+	shape[ax] = v.shape[ax] * n
 
 	// repeat
 	out := Zeros[T](shape...)
-	for i := range out.Size() {
-		oidx := UnravelIndex(out, i)
+	it := NewIterator(out)
+	for it.Next() {
+		coord := it.Coord()
+		vidx := append([]int{}, coord...)
+		vidx[ax] %= v.shape[ax]
 
-		vidx := make([]int, ndim)
-		copy(vidx, oidx)
-		vidx[ax] = vidx[ax] % v.Shape[ax]
-
-		out.Set(oidx, v.At(vidx...))
+		out.Data[it.Offset(0)] = v.At(vidx...)
 	}
 
 	return out
@@ -954,18 +941,17 @@ func Repeat[T Number](v *Tensor[T], n, axis int) *Tensor[T] {
 	}
 
 	shape := make([]int, ndim)
-	copy(shape, v.Shape)
+	copy(shape, v.shape)
 	shape[axis] *= n
 
 	out := Zeros[T](shape...)
-	for i := range out.Size() {
-		oidx := UnravelIndex(out, i)
+	it := NewIterator(out)
+	for it.Next() {
+		coord := it.Coord()
+		vidx := append([]int{}, coord...)
+		vidx[axis] /= n
 
-		vidx := make([]int, ndim)
-		copy(vidx, oidx)
-		vidx[axis] = oidx[axis] / n
-
-		out.Set(oidx, v.At(vidx...))
+		out.Data[it.Offset(0)] = v.At(vidx...)
 	}
 
 	return out
@@ -984,13 +970,14 @@ func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 	}
 
 	out := ZeroLike(v)
-	for i := range v.Size() {
-		vidx := UnravelIndex(v, i)
-		if vidx[ndim-1] > vidx[ndim-2]+kk {
+	it := NewIterator(v, out)
+	for it.Next() {
+		coord := it.Coord()
+		if coord[ndim-1] > coord[ndim-2]+kk {
 			continue
 		}
 
-		out.Set(vidx, v.At(vidx...))
+		out.Data[it.Offset(1)] = v.Data[it.Offset(0)]
 	}
 
 	return out
@@ -1011,9 +998,9 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 	}
 	perm[ax], perm[ndim-1] = perm[ndim-1], perm[ax]
 	vt := Contiguous(Transpose(v, perm...))
-	axSize := vt.Shape[ndim-1]
+	axSize := vt.shape[ndim-1]
 
-	out := Zeros[int](vt.Shape[:ndim-1]...)
+	out := Zeros[int](vt.shape[:ndim-1]...)
 	for i := range out.Size() {
 		maxIdx, maxVal := 0, vt.Data[i*axSize]
 		for j := 1; j < axSize; j++ {
@@ -1031,8 +1018,9 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 
 // ReduceAll reduces the tensor v to a scalar by applying the function f to all elements.
 func ReduceAll[T Number](v *Tensor[T], acc T, f func(a, b T) T) *Tensor[T] {
-	for i := range v.Size() {
-		acc = f(acc, v.At(UnravelIndex(v, i)...))
+	it := NewIterator(v)
+	for it.Next() {
+		acc = f(acc, v.Data[it.Offset(0)])
 	}
 
 	return Scalar(acc)
@@ -1074,28 +1062,27 @@ func Reduce[T Number](v *Tensor[T], acc T, f func(a, b T) T, axes ...int) *Tenso
 			continue
 		}
 
-		shape = append(shape, v.Shape[i])
+		shape = append(shape, v.shape[i])
 		ndim[i] = pos
 		pos++
 	}
 
 	out := Full(shape, acc)
-	for i := range v.Size() {
-		vidx := UnravelIndex(v, i)
+	it := NewIterator(v)
+	for it.Next() {
+		coord := it.Coord()
 
 		var k int
 		for j := range vndim {
 			idx := ndim[j]
 			if idx < 0 {
-				// reduced axis
 				continue
 			}
 
-			k += vidx[j] * out.Stride[idx]
+			k += coord[j] * out.stride[idx]
 		}
 
-		// set
-		out.Data[k] = f(out.Data[k], v.At(vidx...))
+		out.Data[k] = f(out.Data[k], v.Data[it.Offset(0)])
 	}
 
 	return out
@@ -1154,7 +1141,7 @@ func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	// size
 	size := 1
 	for _, a := range ax {
-		size = size * v.Shape[a]
+		size = size * v.shape[a]
 	}
 
 	// mean
@@ -1175,7 +1162,7 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 		return Mean(xc2)   // mean((x - mean)**2)
 	}
 
-	shape := KeepDims(v.Shape, axes)
+	shape := KeepDims(v.shape, axes)
 	mu := Reshape(Mean(v, axes...), shape...) // mean
 	xc := Sub(v, mu)                          // x - mean
 	xc2 := Mul(xc, xc)                        // (x - mean)**2
@@ -1193,10 +1180,10 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	a, b = Contiguous(a), Contiguous(b)
 	ndim := a.NumDims()
 
-	arows, acols := a.Shape[ndim-2], a.Shape[ndim-1]
-	brows, bcols := b.Shape[ndim-2], b.Shape[ndim-1]
+	arows, acols := a.shape[ndim-2], a.shape[ndim-1]
+	brows, bcols := b.shape[ndim-2], b.shape[ndim-1]
 	if acols != brows {
-		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.Shape, w.Shape))
+		panic(fmt.Sprintf("shapes %v and %v are not aligned for matmul", v.shape, w.shape))
 	}
 
 	// stride
@@ -1205,7 +1192,7 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	oStride := arows * bcols
 
 	// batch
-	batch := a.Shape[:ndim-2]
+	batch := a.Shape()[:ndim-2]
 	shape := append(batch, arows, bcols)
 	o := Zeros[float64](shape...)
 
@@ -1261,12 +1248,16 @@ func SliceEqual(a, b []int) bool {
 
 // EqualAll returns true if the two tensors are equal.
 func EqualAll(v, w *Tensor[int]) bool {
-	if !SliceEqual(v.Shape, w.Shape) {
+	if !SliceEqual(v.shape, w.shape) {
 		return false
 	}
 
-	for i := range v.Size() {
-		if v.At(UnravelIndex(v, i)...) != w.At(UnravelIndex(w, i)...) {
+	it := NewIterator(v, w)
+	for it.Next() {
+		a := v.Data[it.Offset(0)]
+		b := w.Data[it.Offset(1)]
+
+		if a != b {
 			return false
 		}
 	}
@@ -1276,12 +1267,15 @@ func EqualAll(v, w *Tensor[int]) bool {
 
 // IsCloseAll returns true if the two tensors are close enough.
 func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
-	if !SliceEqual(v.Shape, w.Shape) {
+	if !SliceEqual(v.shape, w.shape) {
 		return false
 	}
 
-	for i := range v.Size() {
-		a, b := v.At(UnravelIndex(v, i)...), w.At(UnravelIndex(w, i)...)
+	it := NewIterator(v, w)
+	for it.Next() {
+		a := v.Data[it.Offset(0)]
+		b := w.Data[it.Offset(1)]
+
 		if !isClose(a, b, tol...) {
 			return false
 		}
@@ -1294,15 +1288,15 @@ func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
 func IsContiguous[T Number](v *Tensor[T]) bool {
 	size := 1
 	for i := v.NumDims() - 1; i >= 0; i-- {
-		if v.Shape[i] == 1 {
+		if v.shape[i] == 1 {
 			continue
 		}
 
-		if v.Stride[i] != size {
+		if v.stride[i] != size {
 			return false
 		}
 
-		size *= v.Shape[i]
+		size *= v.shape[i]
 	}
 
 	return true
@@ -1310,7 +1304,7 @@ func IsContiguous[T Number](v *Tensor[T]) bool {
 
 // F applies the function f to each element of v and returns a new tensor.
 func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
-	out := Zeros[U](v.Shape...)
+	out := Zeros[U](v.shape...)
 	if IsContiguous(v) {
 		for i, x := range v.Data {
 			out.Data[i] = f(x)
@@ -1319,9 +1313,12 @@ func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 		return out
 	}
 
-	for i := range out.Size() {
-		oidx := UnravelIndex(out, i)
-		out.Set(oidx, f(v.At(oidx...)))
+	it := NewIterator(v, out)
+	for it.Next() {
+		iv := it.Offset(0)
+		io := it.Offset(1)
+
+		out.Data[io] = f(v.Data[iv])
 	}
 
 	return out
@@ -1330,8 +1327,8 @@ func F[T, U Number](v *Tensor[T], f func(a T) U) *Tensor[U] {
 // F2 applies the function f to each element of the tensors v and w and returns a new tensor.
 // v and w are broadcast to a common shape.
 func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
-	if SliceEqual(v.Shape, w.Shape) && IsContiguous(v) && IsContiguous(w) {
-		out := Zeros[U](v.Shape...)
+	if SliceEqual(v.shape, w.shape) && IsContiguous(v) && IsContiguous(w) {
+		out := Zeros[U](v.shape...)
 		for i := range v.Data {
 			out.Data[i] = f(v.Data[i], w.Data[i])
 		}
@@ -1340,23 +1337,15 @@ func F2[T, U Number](v, w *Tensor[T], f func(a, b T) U) *Tensor[U] {
 	}
 
 	a, b := Broadcast(v, w)
-	out := Zeros[U](a.Shape...)
-	for i := range out.Size() {
-		oidx := UnravelIndex(out, i)
-		out.Set(oidx, f(a.At(oidx...), b.At(oidx...)))
-	}
+	out := Zeros[U](a.shape...)
 
-	return out
-}
+	it := NewIterator(a, b, out)
+	for it.Next() {
+		ia := it.Offset(0)
+		ib := it.Offset(1)
+		io := it.Offset(2)
 
-// UnravelIndex returns the multi-dimensional indices for the given logical index (0 to v.Size()-1) in the tensor.
-func UnravelIndex[T Number](v *Tensor[T], index int) []int {
-	ndim := v.NumDims()
-
-	out := make([]int, ndim)
-	for i := ndim - 1; i >= 0; i-- {
-		out[i] = index % v.Shape[i]
-		index /= v.Shape[i]
+		out.Data[io] = f(a.Data[ia], b.Data[ib])
 	}
 
 	return out
