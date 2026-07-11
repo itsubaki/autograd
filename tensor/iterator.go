@@ -73,3 +73,7 @@ func (it *Iterator) Next() bool {
 func (it *Iterator) Offset(i int) int {
 	return it.offsets[i]
 }
+
+func (it *Iterator) Coord() []int {
+	return it.coord
+}

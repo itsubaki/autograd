@@ -2,6 +2,7 @@ package tensor_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/itsubaki/autograd/tensor"
 )
@@ -86,4 +87,30 @@ func ExampleIterator_done() {
 	// true
 	// false
 	// false
+}
+
+func TestIterator_shape(t *testing.T) {
+	a := tensor.New([]int{2, 3}, []int{
+		1, 2, 3,
+		4, 5, 6,
+	})
+
+	b := tensor.New([]int{2, 3}, []int{
+		10, 20, 30,
+		40, 50, 60,
+	})
+
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				return
+			}
+
+			t.Errorf("unexpected panic for shape %v and %v", a.Shape(), b.Shape())
+		}()
+
+		a = tensor.Transpose(a)
+		_ = tensor.NewIterator(a, b)
+		t.Fail()
+	}()
 }

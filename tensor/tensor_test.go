@@ -3762,31 +3762,6 @@ func TestFlatIndex(t *testing.T) {
 	}
 }
 
-func TestUnravelIndex(t *testing.T) {
-	cases := []struct {
-		v     *tensor.Tensor[int]
-		index int
-		want  []int
-	}{
-		{v: tensor.Zeros[int](), index: 0, want: []int{}},
-		{v: tensor.Zeros[int](5), index: 0, want: []int{0}},
-		{v: tensor.Zeros[int](5), index: 4, want: []int{4}},
-		{v: tensor.Zeros[int](2, 3), index: 0, want: []int{0, 0}},
-		{v: tensor.Zeros[int](2, 3), index: 1, want: []int{0, 1}},
-		{v: tensor.Zeros[int](2, 3), index: 2, want: []int{0, 2}},
-		{v: tensor.Zeros[int](2, 3), index: 3, want: []int{1, 0}},
-		{v: tensor.Zeros[int](2, 3), index: 4, want: []int{1, 1}},
-		{v: tensor.Zeros[int](2, 3), index: 5, want: []int{1, 2}},
-	}
-
-	for _, c := range cases {
-		got := tensor.UnravelIndex(c.v, c.index)
-		if !tensor.SliceEqual(got, c.want) {
-			t.Errorf("index=%v, got=%v, want=%v", c.index, got, c.want)
-		}
-	}
-}
-
 func TestStride(t *testing.T) {
 	cases := []struct {
 		shape []int
