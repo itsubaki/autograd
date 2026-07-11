@@ -67,3 +67,23 @@ func ExampleIterator_broadcast() {
 	// 1 : 2
 	// 2 : 3
 }
+
+func ExampleIterator_done() {
+	a := tensor.New([]int{1, 3}, []int{
+		1, 2, 3,
+	})
+
+	it := tensor.NewIterator(a)
+	fmt.Println(it.Next())
+	fmt.Println(it.Next())
+	fmt.Println(it.Next())
+	fmt.Println(it.Next())
+	fmt.Println(it.Next())
+
+	// Output:
+	// true
+	// true
+	// true
+	// false
+	// false
+}
