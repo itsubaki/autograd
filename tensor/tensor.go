@@ -1190,7 +1190,7 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	oStride := arows * bcols
 
 	// batch
-	batch := a.Shape()[:ndim-2]
+	batch := a.Shape[:ndim-2]
 	shape := append(batch, arows, bcols)
 	o := Zeros[float64](shape...)
 

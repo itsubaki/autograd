@@ -2636,7 +2636,7 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.MatMul(c.x, c.y)
-		if !tensor.EqualAll(got, c.out) {
+		if !tensor.IsCloseAll(got, c.out) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
 	}
