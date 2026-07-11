@@ -43,7 +43,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 
 	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
-	bgy := BroadcastTo(mask.Shape()...)(gy0)
+	bgy := BroadcastTo(mask.Shape...)(gy0)
 	return []*Variable{
 		Mul(bgy, From(mask)),
 	}

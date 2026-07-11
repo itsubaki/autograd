@@ -2,10 +2,9 @@ package tensor
 
 import "slices"
 
-type Layout interface {
-	NumDims() int
-	Shape() []int
-	Stride() []int
+type Layout struct {
+	Shape  []int
+	Stride []int
 }
 
 type Iterator struct {
@@ -17,17 +16,17 @@ type Iterator struct {
 	done    bool
 }
 
-func NewIterator(layouts ...Layout) *Iterator {
-	shape := append([]int{}, layouts[0].Shape()...)
-	ndim := layouts[0].NumDims()
+func NewIterator(layouts ...*Layout) *Iterator {
+	shape := append([]int{}, layouts[0].Shape...)
+	ndim := len(layouts[0].Shape)
 
 	strides := make([][]int, len(layouts))
 	for i, layout := range layouts {
-		if !SliceEqual(layout.Shape(), shape) {
+		if !SliceEqual(layout.Shape, shape) {
 			panic("layouts have incompatible shapes")
 		}
 
-		strides[i] = append([]int{}, layout.Stride()...)
+		strides[i] = append([]int{}, layout.Stride...)
 	}
 
 	return &Iterator{
