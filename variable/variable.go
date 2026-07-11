@@ -84,20 +84,20 @@ func (v *Variable) Size(axis ...int) int {
 		ax += v.NumDims()
 	}
 
-	return v.Data.Shape()[ax]
+	return v.Data.Shape[ax]
 }
 
 // Shape returns the shape of the variable.
 func (v *Variable) Shape() []int {
-	shape := make([]int, len(v.Data.Shape()))
-	copy(shape, v.Data.Shape())
+	shape := make([]int, len(v.Data.Shape))
+	copy(shape, v.Data.Shape)
 	return shape
 }
 
 // Stride returns the stride of the variable.
 func (v *Variable) Stride() []int {
-	stride := make([]int, len(v.Data.Stride()))
-	copy(stride, v.Data.Stride())
+	stride := make([]int, len(v.Data.Stride))
+	copy(stride, v.Data.Stride)
 	return stride
 }
 

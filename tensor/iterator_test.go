@@ -21,7 +21,7 @@ func ExampleIterator() {
 	a = tensor.Transpose(a)
 	b = tensor.Transpose(b)
 
-	it := tensor.NewIterator(a, b)
+	it := tensor.NewIterator(a.Layout(), b.Layout())
 	for it.Next() {
 		ia, ib := it.Offset(0), it.Offset(1)
 		fmt.Println(ia, ib, ":", a.Data[ia], b.Data[ib])
@@ -38,7 +38,7 @@ func ExampleIterator() {
 
 func ExampleIterator_scalar() {
 	a := tensor.Scalar(1.0)
-	it := tensor.NewIterator(a)
+	it := tensor.NewIterator(a.Layout())
 	for it.Next() {
 		ia := it.Offset(0)
 		fmt.Println(ia, ":", a.Data[ia])
@@ -54,7 +54,7 @@ func ExampleIterator_broadcast() {
 	})
 	a = tensor.BroadcastTo(a, 2, 3)
 
-	it := tensor.NewIterator(a)
+	it := tensor.NewIterator(a.Layout())
 	for it.Next() {
 		i := it.Offset(0)
 		fmt.Println(i, ":", a.Data[i])
@@ -74,7 +74,7 @@ func ExampleIterator_done() {
 		1, 2, 3,
 	})
 
-	it := tensor.NewIterator(a)
+	it := tensor.NewIterator(a.Layout())
 	fmt.Println(it.Next())
 	fmt.Println(it.Next())
 	fmt.Println(it.Next())
@@ -106,11 +106,11 @@ func TestIterator_shape(t *testing.T) {
 				return
 			}
 
-			t.Errorf("unexpected panic for shape %v and %v", a.Shape(), b.Shape())
+			t.Errorf("unexpected panic for shape %v and %v", a.Shape, b.Shape)
 		}()
 
 		a = tensor.Transpose(a)
-		_ = tensor.NewIterator(a, b)
+		_ = tensor.NewIterator(a.Layout(), b.Layout())
 		t.Fail()
 	}()
 }
