@@ -2,6 +2,12 @@ package tensor
 
 import "slices"
 
+type Layout interface {
+	NumDims() int
+	Shape() []int
+	Stride() []int
+}
+
 type Iterator struct {
 	shape   []int
 	coord   []int
@@ -11,19 +17,19 @@ type Iterator struct {
 	done    bool
 }
 
-func NewIterator[T Number](tensors ...*Tensor[T]) *Iterator {
-	shape := append([]int{}, tensors[0].Shape...)
-	ndim := tensors[0].NumDims()
+func NewIterator(layouts ...Layout) *Iterator {
+	shape := append([]int{}, layouts[0].Shape()...)
+	ndim := layouts[0].NumDims()
 
-	strides := make([][]int, len(tensors))
-	for i, t := range tensors {
-		strides[i] = append([]int{}, t.Stride...)
+	strides := make([][]int, len(layouts))
+	for i, t := range layouts {
+		strides[i] = append([]int{}, t.Stride()...)
 	}
 
 	return &Iterator{
 		shape:   shape,
 		coord:   make([]int, ndim),
-		offsets: make([]int, len(tensors)),
+		offsets: make([]int, len(layouts)),
 		strides: strides,
 		done:    slices.Contains(shape, 0),
 	}
