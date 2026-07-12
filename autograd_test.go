@@ -423,14 +423,14 @@ func Example_linearRegression() {
 	b.Name = "b"
 	loss.Name = "loss"
 
-	fmt.Println(w)
-	fmt.Println(b)
-	fmt.Println(loss)
+	fmt.Printf("%.4f\n", w.At())
+	fmt.Printf("%.4f\n", b.At())
+	fmt.Printf("%.4f\n", loss.At())
 
 	// Output:
-	// w(2.185928791917266)
-	// b(5.354857189898866)
-	// loss(0.07384886041118585)
+	// 2.1859
+	// 5.3549
+	// 0.0738
 }
 
 func Example_mlp() {

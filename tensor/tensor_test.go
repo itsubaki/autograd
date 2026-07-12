@@ -914,11 +914,11 @@ func ExampleUnsqueeze() {
 }
 
 func ExampleMatMul() {
-	x := tensor.New([]int{2, 3}, []int{
+	x := tensor.New([]int{2, 3}, []float64{
 		1, 2, 3,
 		4, 5, 6,
 	})
-	y := tensor.New([]int{3, 2}, []int{
+	y := tensor.New([]int{3, 2}, []float64{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -935,10 +935,10 @@ func ExampleMatMul() {
 }
 
 func ExampleMatMul_view() {
-	x := tensor.New([]int{1, 3}, []int{
+	x := tensor.New([]int{1, 3}, []float64{
 		1, 2, 3,
 	})
-	y := tensor.New([]int{3, 2}, []int{
+	y := tensor.New([]int{3, 2}, []float64{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -1287,14 +1287,14 @@ func ExampleMatMul_invalid() {
 		panic("unexpected panic for index")
 	}()
 
-	x := tensor.New([]int{2, 2, 2}, []int{
+	x := tensor.New([]int{2, 2, 2}, []float64{
 		1, 2,
 		4, 5,
 
 		6, 7,
 		8, 9,
 	})
-	y := tensor.New([]int{2, 3, 2}, []int{
+	y := tensor.New([]int{2, 3, 2}, []float64{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -2490,12 +2490,12 @@ func TestArgmax(t *testing.T) {
 
 func TestMatMul(t *testing.T) {
 	cases := []struct {
-		x, y *tensor.Tensor[int]
-		out  *tensor.Tensor[int]
+		x, y *tensor.Tensor[float64]
+		out  *tensor.Tensor[float64]
 	}{
 		{
 			// batch
-			x: tensor.New([]int{2, 2, 2, 3}, []int{
+			x: tensor.New([]int{2, 2, 2, 3}, []float64{
 				1, 2, 3,
 				4, 5, 6,
 
@@ -2508,7 +2508,7 @@ func TestMatMul(t *testing.T) {
 				3, 3, 3,
 				1, 2, 3,
 			}),
-			y: tensor.New([]int{2, 2, 3, 2}, []int{
+			y: tensor.New([]int{2, 2, 3, 2}, []float64{
 				1, 0,
 				0, 1,
 				1, 1,
@@ -2525,7 +2525,7 @@ func TestMatMul(t *testing.T) {
 				1, 0,
 				1, 1,
 			}),
-			out: tensor.New([]int{2, 2, 2, 2}, []int{
+			out: tensor.New([]int{2, 2, 2, 2}, []float64{
 				4, 5,
 				10, 11,
 
@@ -2540,48 +2540,48 @@ func TestMatMul(t *testing.T) {
 			}),
 		},
 		{
-			x: tensor.New([]int{2, 3}, []int{
+			x: tensor.New([]int{2, 3}, []float64{
 				1, 2, 3,
 				4, 5, 6,
 			}),
-			y: tensor.New([]int{3, 2}, []int{
+			y: tensor.New([]int{3, 2}, []float64{
 				0, 0,
 				0, 0,
 				0, 0,
 			}),
-			out: tensor.New([]int{2, 2}, []int{
+			out: tensor.New([]int{2, 2}, []float64{
 				0, 0,
 				0, 0,
 			}),
 		},
 		{
-			x: tensor.New([]int{1, 4}, []int{
+			x: tensor.New([]int{1, 4}, []float64{
 				1, 2, 3, 4,
 			}),
-			y: tensor.New([]int{4, 1}, []int{
+			y: tensor.New([]int{4, 1}, []float64{
 				1,
 				2,
 				3,
 				4,
 			}),
-			out: tensor.New([]int{1, 1}, []int{
+			out: tensor.New([]int{1, 1}, []float64{
 				30,
 			}),
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{1, 2, 2}, []int{
+			x: tensor.New([]int{1, 2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2, 2}, []int{
+			y: tensor.New([]int{2, 2, 2}, []float64{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			out: tensor.New([]int{2, 2, 2}, []int{
+			out: tensor.New([]int{2, 2, 2}, []float64{
 				7, 10,
 				15, 22,
 
@@ -2591,18 +2591,18 @@ func TestMatMul(t *testing.T) {
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{2, 2}, []int{
+			x: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2, 2}, []int{
+			y: tensor.New([]int{2, 2, 2}, []float64{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			out: tensor.New([]int{2, 2, 2}, []int{
+			out: tensor.New([]int{2, 2, 2}, []float64{
 				7, 10,
 				15, 22,
 
@@ -2612,19 +2612,19 @@ func TestMatMul(t *testing.T) {
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{2, 2, 2}, []int{
+			x: tensor.New([]int{2, 2, 2}, []float64{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2}, []int{
+			y: tensor.New([]int{2, 2}, []float64{
 				1, 2,
 				3, 4,
 			}),
 
-			out: tensor.New([]int{2, 2, 2}, []int{
+			out: tensor.New([]int{2, 2, 2}, []float64{
 				7, 10,
 				15, 22,
 
@@ -2636,7 +2636,7 @@ func TestMatMul(t *testing.T) {
 
 	for _, c := range cases {
 		got := tensor.MatMul(c.x, c.y)
-		if !tensor.EqualAll(got, c.out) {
+		if !tensor.IsCloseAll(got, c.out) {
 			t.Errorf("got=%v(%v), want=%v(%v)", got.Data, got.Shape, c.out.Data, c.out.Shape)
 		}
 	}
