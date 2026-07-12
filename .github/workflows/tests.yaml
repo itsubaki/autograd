@@ -13,7 +13,7 @@ jobs:
   test:
     strategy:
       matrix:
-      platform:
+        platform:
           - ubuntu-latest
           - macos-latest
 
