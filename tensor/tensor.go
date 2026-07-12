@@ -1194,14 +1194,27 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	shape := append(batch, arows, bcols)
 	o := Zeros[float64](shape...)
 
+	// Determine the number of batch elements each goroutine will handle.
+	// We use ceiling division to ensure all batch elements are assigned.
+	//
+	// Example:
+	//   batchSize = 10, workers = 3
+	//   chunk = (10 + 3 - 1) / 3 = 4
+	//
+	//   Worker 0: batch indices 0, 1, 2, 3
+	//   Worker 1: batch indices 4, 5, 6, 7
+	//   Worker 2: batch indices 8, 9
+	//
+	// The last worker may handle fewer batch elements when batchSize is
+	// not evenly divisible by workers.
 	batchSize := size(batch)
 	workers := min(runtime.NumCPU(), batchSize)
 	chunk := (batchSize + workers - 1) / workers
 
 	// parallelize
 	var wg sync.WaitGroup
-	for worker := range workers {
-		start := worker * chunk
+	for w := range workers {
+		start := w * chunk
 		end := min(start+chunk, batchSize)
 
 		wg.Add(1)
@@ -1213,6 +1226,7 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 				baseB := batch * bStride
 				baseO := batch * oStride
 
+				// 2d
 				matmul(
 					a.Data[baseA:baseA+aStride],
 					b.Data[baseB:baseB+bStride],
