@@ -1,3 +1,5 @@
+//go:build !darwin
+
 package tensor
 
 func matmul(a, b, o []float64, m, k, n int) {
