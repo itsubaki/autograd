@@ -2,7 +2,6 @@ package optimizer
 
 import (
 	"github.com/itsubaki/autograd/tensor"
-	"github.com/itsubaki/autograd/variable"
 )
 
 // Momentum is an optimizer that uses momentum-based gradient descent.
@@ -10,24 +9,24 @@ type Momentum struct {
 	LearningRate float64
 	Momentum     float64
 	Hook         []Hook
-	vs           map[*variable.Variable]*tensor.Tensor[float64]
+	Vs           map[string]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.
 func (o *Momentum) Update(model Model) {
-	if len(o.vs) == 0 {
-		o.vs = make(map[*variable.Variable]*tensor.Tensor[float64])
+	if len(o.Vs) == 0 {
+		o.Vs = make(map[string]*tensor.Tensor[float64])
 	}
 
 	params := Params(model, o.Hook)
 	for _, p := range params {
-		if _, ok := o.vs[p]; !ok {
-			o.vs[p] = tensor.ZeroLike(p.Data)
+		if _, ok := o.Vs[p.Name]; !ok {
+			o.Vs[p.Name] = tensor.ZeroLike(p.Data)
 		}
 
 		// param = param + (momentum * v - lr * grad)
-		o.vs[p] = tensor.F2(o.vs[p], p.Grad.Data, momentum(o.Momentum, o.LearningRate))
-		p.Data = tensor.Add(p.Data, o.vs[p])
+		o.Vs[p.Name] = tensor.F2(o.Vs[p.Name], p.Grad.Data, momentum(o.Momentum, o.LearningRate))
+		p.Data = tensor.Add(p.Data, o.Vs[p.Name])
 	}
 }
 
