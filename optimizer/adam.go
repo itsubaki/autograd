@@ -9,12 +9,13 @@ import (
 
 // Adam is an optimizer that uses the Adam algorithm.
 type Adam struct {
-	Alpha  float64
-	Beta1  float64
-	Beta2  float64
-	Hook   []Hook
-	iter   int
-	ms, vs map[*variable.Variable]*tensor.Tensor[float64]
+	Alpha float64
+	Beta1 float64
+	Beta2 float64
+	Hook  []Hook
+	iter  int
+	ms    map[*variable.Variable]*tensor.Tensor[float64]
+	vs    map[*variable.Variable]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.

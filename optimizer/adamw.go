@@ -15,7 +15,8 @@ type AdamW struct {
 	WeightDecay float64
 	Hook        []Hook
 	iter        int
-	ms, vs      map[*variable.Variable]*tensor.Tensor[float64]
+	ms          map[*variable.Variable]*tensor.Tensor[float64]
+	vs          map[*variable.Variable]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.
