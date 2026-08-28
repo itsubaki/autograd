@@ -45,7 +45,8 @@ func (m *Model) Params() L.Parameters {
 	params := make(L.Parameters, 0)
 	for name, layer := range m.L {
 		for k, p := range layer.Params() {
-			params[fmt.Sprintf("%s.%s", name, k)] = p
+			p.Name = fmt.Sprintf("%s.%s", name, k)
+			params[p.Name] = p
 		}
 	}
 

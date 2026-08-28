@@ -23,7 +23,8 @@ func (l Layers) Params() Parameters {
 	params := make(Parameters)
 	for k := range l {
 		for _, p := range l[k].Params() {
-			params[k+"."+p.Name] = p
+			p.Name = k + "." + p.Name
+			params[p.Name] = p
 		}
 	}
 
