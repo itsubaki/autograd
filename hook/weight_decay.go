@@ -6,8 +6,8 @@ import (
 )
 
 // WeightDecay returns a hook that adds L2 weight decay to gradients.
-func WeightDecay(lambda float64) func(params []layer.Parameter) {
-	return func(params []layer.Parameter) {
+func WeightDecay(lambda float64) func(params layer.Parameters) {
+	return func(params layer.Parameters) {
 		for _, p := range params {
 			p.Grad.Data = tensor.F2(p.Grad.Data, p.Data, decay(lambda))
 		}

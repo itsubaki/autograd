@@ -4,7 +4,6 @@ import (
 	"math"
 
 	"github.com/itsubaki/autograd/tensor"
-	"github.com/itsubaki/autograd/variable"
 )
 
 // AdamW is an Adam optimizer with decoupled weight decay.
@@ -14,39 +13,39 @@ type AdamW struct {
 	Beta2       float64
 	WeightDecay float64
 	Hook        []Hook
-	iter        int
-	ms          map[*variable.Variable]*tensor.Tensor[float64]
-	vs          map[*variable.Variable]*tensor.Tensor[float64]
+	Iter        int
+	Ms          map[string]*tensor.Tensor[float64]
+	Vs          map[string]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.
 func (o *AdamW) Update(model Model) {
-	if len(o.ms) == 0 {
-		o.ms = make(map[*variable.Variable]*tensor.Tensor[float64])
-		o.vs = make(map[*variable.Variable]*tensor.Tensor[float64])
+	if len(o.Ms) == 0 {
+		o.Ms = make(map[string]*tensor.Tensor[float64])
+		o.Vs = make(map[string]*tensor.Tensor[float64])
 	}
 
-	o.iter++
-	fix1 := 1.0 - math.Pow(o.Beta1, float64(o.iter))
-	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.iter))
+	o.Iter++
+	fix1 := 1.0 - math.Pow(o.Beta1, float64(o.Iter))
+	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.Iter))
 	lr := o.Alpha * math.Sqrt(fix2) / fix1
 
 	params := Params(model, o.Hook)
-	for _, p := range params {
-		if _, ok := o.ms[p]; !ok {
-			o.ms[p] = tensor.ZeroLike(p.Data)
-			o.vs[p] = tensor.ZeroLike(p.Data)
+	for name, p := range params {
+		if _, ok := o.Ms[name]; !ok {
+			o.Ms[name] = tensor.ZeroLike(p.Data)
+			o.Vs[name] = tensor.ZeroLike(p.Data)
 		}
 
-		o.ms[p] = tensor.F2(o.ms[p], p.Grad.Data, func(m, g float64) float64 {
+		o.Ms[name] = tensor.F2(o.Ms[name], p.Grad.Data, func(m, g float64) float64 {
 			return m + (1-o.Beta1)*(g-m)
 		})
 
-		o.vs[p] = tensor.F2(o.vs[p], p.Grad.Data, func(v, g float64) float64 {
+		o.Vs[name] = tensor.F2(o.Vs[name], p.Grad.Data, func(v, g float64) float64 {
 			return v + (1-o.Beta2)*(g*g-v)
 		})
 
-		step := tensor.F2(o.ms[p], o.vs[p], func(m, v float64) float64 {
+		step := tensor.F2(o.Ms[name], o.Vs[name], func(m, v float64) float64 {
 			return lr * m / (math.Sqrt(v) + 1e-8)
 		})
 

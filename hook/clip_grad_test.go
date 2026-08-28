@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/itsubaki/autograd/hook"
+	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -12,7 +13,7 @@ func ExampleClipGrad() {
 	p.Grad = variable.New(1, 2, 3, 4)
 
 	h := hook.ClipGrad(1.0)
-	h([]*variable.Variable{p})
+	h(layer.Parameters{"p": p})
 
 	fmt.Println(p.Grad)
 
@@ -25,7 +26,7 @@ func ExampleClipGrad_noclip() {
 	p.Grad = variable.New(0.1, 0.2, 0.3, 0.4)
 
 	h := hook.ClipGrad(1.0)
-	h([]*variable.Variable{p})
+	h(layer.Parameters{"p": p})
 
 	fmt.Println(p.Grad)
 

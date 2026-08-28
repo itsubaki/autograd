@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/itsubaki/autograd/hook"
+	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -12,7 +13,7 @@ func ExampleWeightDecay() {
 	p.Grad = variable.New(1.0)
 
 	h := hook.WeightDecay(0.1)
-	h([]*variable.Variable{p})
+	h(layer.Parameters{"p": p})
 
 	fmt.Println(p.Grad)
 
