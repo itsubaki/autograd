@@ -23,7 +23,6 @@ type GetItemGradT struct {
 func (f *GetItemGradT) Forward(gy ...*Variable) []*Variable {
 	z := tensor.Zeros[float64](f.Shape...)
 	gx := tensor.ScatterAdd(z, gy[0].Data, f.Axis, f.Indices)
-
 	return []*Variable{
 		From(gx),
 	}
