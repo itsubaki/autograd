@@ -4,20 +4,9 @@ import (
 	"fmt"
 
 	"github.com/itsubaki/autograd/hook"
-	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
 )
-
-type TestModel struct {
-	P layer.Parameter
-}
-
-func (m *TestModel) Params() layer.Parameters {
-	return map[string]layer.Parameter{
-		"p": m.P,
-	}
-}
 
 func ExampleSGD() {
 	p := variable.New(1.0)
