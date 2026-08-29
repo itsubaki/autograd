@@ -8,8 +8,8 @@ import (
 )
 
 // ClipGrad returns a hook that clips the global gradient norm to max.
-func ClipGrad(max float64) func(params []layer.Parameter) {
-	return func(params []layer.Parameter) {
+func ClipGrad(max float64) func(params layer.Parameters) {
+	return func(params layer.Parameters) {
 		var total float64
 		for _, p := range params {
 			total += tensor.Sum(tensor.Pow(2, p.Grad.Data)).At()
