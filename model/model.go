@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	L "github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/variable"
 )
@@ -36,6 +34,10 @@ func (m *Model) Add(name string, layer Layer) {
 		m.L = make(map[string]Layer)
 	}
 
+	if _, ok := m.L[name]; ok {
+		panic("duplicate layer name: " + name)
+	}
+
 	m.Layers = append(m.Layers, name)
 	m.L[name] = layer
 }
@@ -43,9 +45,9 @@ func (m *Model) Add(name string, layer Layer) {
 // Params returns all parameters in the model keyed by layer index and parameter name.
 func (m *Model) Params() L.Parameters {
 	params := make(L.Parameters, 0)
-	for name, layer := range m.L {
-		for k, p := range layer.Params() {
-			params[fmt.Sprintf("%s.%s", name, k)] = p
+	for k, layer := range m.L {
+		for name, p := range layer.Params() {
+			params[k+"."+name] = p
 		}
 	}
 
