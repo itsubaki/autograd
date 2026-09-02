@@ -29,7 +29,7 @@ func ExampleSinT() {
 
 	fmt.Println(x)
 	fmt.Println(f.Forward(x))
-	fmt.Println(f.Backward(variable.OneLike(x)))
+	fmt.Println(f.Backward(variable.OnesLike(x)))
 
 	// Output:
 	// variable(0.7853981633974483)

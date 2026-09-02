@@ -27,14 +27,14 @@ func From(v *tensor.Tensor[float64]) *Variable {
 	return &Variable{Data: v}
 }
 
-// ZeroLike returns a new zero-filled variable with the same shape as v.
-func ZeroLike(v *Variable) *Variable {
-	return &Variable{Data: tensor.ZeroLike(v.Data)}
+// ZerosLike returns a new zero-filled variable with the same shape as v.
+func ZerosLike(v *Variable) *Variable {
+	return &Variable{Data: tensor.ZerosLike(v.Data)}
 }
 
-// OneLike returns a new one-filled variable with the same shape as v.
-func OneLike(v *Variable) *Variable {
-	return &Variable{Data: tensor.OneLike(v.Data)}
+// OnesLike returns a new one-filled variable with the same shape as v.
+func OnesLike(v *Variable) *Variable {
+	return &Variable{Data: tensor.OnesLike(v.Data)}
 }
 
 // Zeros returns a new zero-filled variable with the given shape.
@@ -150,7 +150,7 @@ func (v *Variable) UnchainBackward() {
 // Backward performs backpropagation starting from the variable.
 func (v *Variable) Backward(opts ...Opts) {
 	if v.Grad == nil {
-		v.Grad = OneLike(v)
+		v.Grad = OnesLike(v)
 	}
 
 	if v.Creator == nil {

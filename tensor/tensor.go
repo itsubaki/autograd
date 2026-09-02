@@ -78,14 +78,14 @@ func Ones[T Number](shape ...int) *Tensor[T] {
 	return F(Zeros[T](shape...), func(_ T) T { return 1 })
 }
 
-// ZeroLike returns a new tensor with the same shape as v and elements that are all zero.
-func ZeroLike[T Number](v *Tensor[T]) *Tensor[T] {
+// ZerosLike returns a new tensor with the same shape as v and elements that are all zero.
+func ZerosLike[T Number](v *Tensor[T]) *Tensor[T] {
 	return Zeros[T](v.Shape...)
 }
 
-// OneLike returns a new tensor with the same shape as v and elements that are all one.
-func OneLike[T Number](v *Tensor[T]) *Tensor[T] {
-	return F(ZeroLike(v), func(_ T) T { return 1 })
+// OnesLike returns a new tensor with the same shape as v and elements that are all one.
+func OnesLike[T Number](v *Tensor[T]) *Tensor[T] {
+	return F(ZerosLike(v), func(_ T) T { return 1 })
 }
 
 // Arange returns a new tensor with evenly spaced values within a given interval.
@@ -863,7 +863,7 @@ func Flip[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 		panic(err)
 	}
 
-	out := ZeroLike(v)
+	out := ZerosLike(v)
 	it := NewIterator(v.Layout(), out.Layout())
 	for it.Next() {
 		coord := it.Coord()
@@ -967,7 +967,7 @@ func Tril[T Number](v *Tensor[T], k ...int) *Tensor[T] {
 		kk = k[0]
 	}
 
-	out := ZeroLike(v)
+	out := ZerosLike(v)
 	it := NewIterator(v.Layout(), out.Layout())
 	for it.Next() {
 		coord := it.Coord()

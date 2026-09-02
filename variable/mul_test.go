@@ -14,7 +14,7 @@ func ExampleMulT() {
 	fmt.Println(a)
 	fmt.Println(b)
 	fmt.Println(f.Forward(a, b))
-	fmt.Println(f.Backward(variable.OneLike(a), variable.OneLike(b)))
+	fmt.Println(f.Backward(variable.OnesLike(a), variable.OnesLike(b)))
 
 	// Output:
 	// variable(3)

@@ -35,7 +35,7 @@ func (f *SplitT) Backward(gy ...*Variable) []*Variable {
 	list := make([]*Variable, len(f.Size))
 	for i := range f.Size {
 		if gy[i] == nil {
-			list[i] = ZeroLike(f.y[i])
+			list[i] = ZerosLike(f.y[i])
 			continue
 		}
 

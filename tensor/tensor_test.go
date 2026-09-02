@@ -112,13 +112,13 @@ func ExampleOnes() {
 	// [1 1 1]
 }
 
-func ExampleZeroLike() {
+func ExampleZerosLike() {
 	v := tensor.New([]int{2, 3}, []int{
 		1, 2, 3,
 		4, 5, 6,
 	})
 
-	w := tensor.ZeroLike(v)
+	w := tensor.ZerosLike(v)
 	for _, row := range w.Seq2() {
 		fmt.Println(row)
 	}
@@ -128,10 +128,10 @@ func ExampleZeroLike() {
 	// [0 0 0]
 }
 
-func ExampleOneLike() {
+func ExampleOnesLike() {
 	v := tensor.Zeros[int](2, 3)
 
-	w := tensor.OneLike(v)
+	w := tensor.OnesLike(v)
 	for _, row := range w.Seq2() {
 		fmt.Println(row)
 	}

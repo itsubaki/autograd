@@ -24,17 +24,17 @@ func ExampleVariable_name() {
 	// v[4]([1 2 3 4])
 }
 
-func ExampleZeroLike() {
+func ExampleZerosLike() {
 	v := variable.New(1, 2, 3, 4)
-	fmt.Println(variable.ZeroLike(v))
+	fmt.Println(variable.ZerosLike(v))
 
 	// Output:
 	// variable[4]([0 0 0 0])
 }
 
-func ExampleOneLike() {
+func ExampleOnesLike() {
 	v := variable.New(1, 2, 3, 4)
-	fmt.Println(variable.OneLike(v))
+	fmt.Println(variable.OnesLike(v))
 
 	// Output:
 	// variable[4]([1 1 1 1])

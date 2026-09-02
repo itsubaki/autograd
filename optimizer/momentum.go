@@ -21,7 +21,7 @@ func (o *Momentum) Update(model Model) {
 	params := Params(model, o.Hook)
 	for name, p := range params {
 		if _, ok := o.Vs[name]; !ok {
-			o.Vs[name] = tensor.ZeroLike(p.Data)
+			o.Vs[name] = tensor.ZerosLike(p.Data)
 		}
 
 		// param = param + (momentum * v - lr * grad)

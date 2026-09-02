@@ -32,8 +32,8 @@ func (o *Adam) Update(model Model) {
 	params := Params(model, o.Hook)
 	for name, p := range params {
 		if _, ok := o.Ms[name]; !ok {
-			o.Ms[name] = tensor.ZeroLike(p.Data)
-			o.Vs[name] = tensor.ZeroLike(p.Data)
+			o.Ms[name] = tensor.ZerosLike(p.Data)
+			o.Vs[name] = tensor.ZerosLike(p.Data)
 		}
 
 		o.Ms[name] = tensor.F2(o.Ms[name], p.Grad.Data, func(m, grad float64) float64 {
