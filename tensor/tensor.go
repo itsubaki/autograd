@@ -1172,6 +1172,48 @@ func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
 	return Sqrt(Variance(v, axes...))
 }
 
+// Minimum returns a new tensor with the element-wise minimum of v and w, along with a mask indicating which elements came from v.
+func Minimum[T, U Number](v, w *Tensor[T]) (*Tensor[T], *Tensor[U]) {
+	if SliceEqual(v.Shape, w.Shape) && IsContiguous(v) && IsContiguous(w) {
+		y := Zeros[T](v.Shape...)
+		mask := Zeros[U](v.Shape...)
+
+		for i := range v.Data {
+			if v.Data[i] <= w.Data[i] {
+				y.Data[i] = v.Data[i]
+				mask.Data[i] = 1
+				continue
+			}
+
+			y.Data[i] = w.Data[i]
+		}
+
+		return y, mask
+	}
+
+	a, b := Broadcast(v, w)
+	y := Zeros[T](a.Shape...)
+	mask := Zeros[U](a.Shape...)
+
+	it := NewIterator(a.Layout(), b.Layout(), y.Layout(), mask.Layout())
+	for it.Next() {
+		ia := it.Offset(0)
+		ib := it.Offset(1)
+		iy := it.Offset(2)
+		im := it.Offset(3)
+
+		if a.Data[ia] <= b.Data[ib] {
+			y.Data[iy] = a.Data[ia]
+			mask.Data[im] = 1
+			continue
+		}
+
+		y.Data[iy] = b.Data[ib]
+	}
+
+	return y, mask
+}
+
 // MatMul returns the matrix product of v and w.
 func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	a, b := Broadcast(v, w, 2)
