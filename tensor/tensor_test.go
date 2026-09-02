@@ -4684,3 +4684,42 @@ func TestReduce_invalid(t *testing.T) {
 		}()
 	}
 }
+
+func TestMinimum(t *testing.T) {
+	cases := []struct {
+		v, w *tensor.Tensor[int]
+		y    *tensor.Tensor[int]
+		mask *tensor.Tensor[float64]
+	}{
+		{
+			v:    tensor.New([]int{2, 2}, []int{1, 5, 3, 2}),
+			w:    tensor.New([]int{2, 2}, []int{2, 4, 3, 8}),
+			y:    tensor.New([]int{2, 2}, []int{1, 4, 3, 2}),
+			mask: tensor.New([]int{2, 2}, []float64{1, 0, 1, 1}),
+		},
+		{
+			v:    tensor.New([]int{2, 2}, []int{1, 5, 3, 2}),
+			w:    tensor.New([]int{2}, []int{2, 4}),
+			y:    tensor.New([]int{2, 2}, []int{1, 4, 2, 2}),
+			mask: tensor.New([]int{2, 2}, []float64{1, 0, 0, 1}),
+		},
+		{
+			v:    tensor.New([]int{3}, []int{1, 2, 3}),
+			w:    tensor.New([]int{3}, []int{1, 1, 3}),
+			y:    tensor.New([]int{3}, []int{1, 1, 3}),
+			mask: tensor.New([]int{3}, []float64{1, 0, 1}),
+		},
+	}
+
+	for _, c := range cases {
+		y, mask := tensor.Minimum[int, float64](c.v, c.w)
+
+		if !tensor.EqualAll(y, c.y) {
+			t.Errorf("y = %v, want %v", y, c.y)
+		}
+
+		if !tensor.IsCloseAll(mask, c.mask) {
+			t.Errorf("mask = %v, want %v", mask, c.mask)
+		}
+	}
+}
