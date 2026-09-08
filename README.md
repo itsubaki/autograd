@@ -2,7 +2,6 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/autograd)](https://pkg.go.dev/github.com/itsubaki/autograd)
 [![tests](https://github.com/itsubaki/autograd/workflows/tests/badge.svg)](https://github.com/itsubaki/autograd/actions)
-[![codecov](https://codecov.io/gh/itsubaki/autograd/graph/badge.svg?token=loXkcn2w9W)](https://codecov.io/gh/itsubaki/autograd)
 
 An automatic differentiation library in Go.
 
