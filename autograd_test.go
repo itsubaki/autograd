@@ -25,7 +25,7 @@ func Example() {
 
 func Example_numericalDiff() {
 	// p23
-	v := []*variable.Variable{variable.New(0.5)}
+	v := variable.New(0.5)
 	f := func(x ...*variable.Variable) *variable.Variable {
 		A := F.Square
 		B := F.Exp
