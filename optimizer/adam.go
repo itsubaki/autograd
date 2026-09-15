@@ -3,6 +3,7 @@ package optimizer
 import (
 	"math"
 
+	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/tensor"
 )
 
@@ -11,14 +12,13 @@ type Adam struct {
 	Alpha float64
 	Beta1 float64
 	Beta2 float64
-	Hook  []Hook
 	Iter  int
 	Ms    map[string]*tensor.Tensor[float64]
 	Vs    map[string]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.
-func (o *Adam) Update(model Model) {
+func (o *Adam) Update(params layer.Parameters) {
 	if len(o.Ms) == 0 {
 		o.Ms = make(map[string]*tensor.Tensor[float64])
 		o.Vs = make(map[string]*tensor.Tensor[float64])
@@ -29,8 +29,11 @@ func (o *Adam) Update(model Model) {
 	fix2 := 1.0 - math.Pow(o.Beta2, float64(o.Iter))
 	lr := o.Alpha * math.Sqrt(fix2) / fix1
 
-	params := Params(model, o.Hook)
 	for name, p := range params {
+		if p.Grad == nil {
+			continue
+		}
+
 		if _, ok := o.Ms[name]; !ok {
 			o.Ms[name] = tensor.ZerosLike(p.Data)
 			o.Vs[name] = tensor.ZerosLike(p.Data)

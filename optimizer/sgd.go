@@ -1,17 +1,22 @@
 package optimizer
 
-import "github.com/itsubaki/autograd/tensor"
+import (
+	"github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/tensor"
+)
 
 // SGD is an optimizer that uses the stochastic gradient descent algorithm.
 type SGD struct {
 	LearningRate float64
-	Hook         []Hook
 }
 
 // Update updates the parameters of the model.
-func (o *SGD) Update(model Model) {
-	params := Params(model, o.Hook)
+func (o *SGD) Update(params layer.Parameters) {
 	for _, p := range params {
+		if p.Grad == nil {
+			continue
+		}
+
 		p.Data = tensor.F2(p.Data, p.Grad.Data, sgd(o.LearningRate))
 	}
 }

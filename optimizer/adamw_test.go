@@ -19,13 +19,30 @@ func ExampleAdamW() {
 		WeightDecay: 0.1,
 	}
 
-	o.Update(m)
-	fmt.Println(p)
-
-	o.Update(m)
-	fmt.Println(p)
+	for range 2 {
+		o.Update(m.Params())
+		fmt.Println(p)
+	}
 
 	// Output:
 	// variable(0.9989684091623926)
 	// variable(0.9979449255202475)
+}
+
+func ExampleAdamW_nograd() {
+	p := variable.New(1.0)
+	m := &TestModel{P: p}
+
+	o := optimizer.AdamW{
+		Alpha:       0.001,
+		Beta1:       0.9,
+		Beta2:       0.999,
+		WeightDecay: 0.1,
+	}
+
+	o.Update(m.Params())
+	fmt.Println(p)
+
+	// Output:
+	// variable(1)
 }

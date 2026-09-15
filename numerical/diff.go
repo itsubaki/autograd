@@ -41,13 +41,13 @@ var (
 )
 
 // Diff computes the numerical derivative of f at x using central differences.
-func Diff(f Func, x []*variable.Variable, h ...float64) *variable.Variable {
+func Diff(f Func, x *variable.Variable, h ...float64) *variable.Variable {
 	if len(h) == 0 {
 		h = append(h, 1e-4)
 	}
 
-	y0 := f(xh(x, h[0], tensor.AddC)...)          // f(x+h)
-	y1 := f(xh(x, -1.0*h[0], tensor.AddC)...)     // f(x-h)
+	y0 := f(xh(x, h[0])...)                       // f(x+h)
+	y1 := f(xh(x, -1.0*h[0])...)                  // f(x-h)
 	df := tensor.F2(y0.Data, y1.Data, diff(h[0])) // (f(x+h) - f(x-h)) / 2h
 	return &variable.Variable{Data: df}
 }
@@ -58,11 +58,8 @@ func diff(h float64) func(a, b float64) float64 {
 }
 
 // xh applies a function f to each element of x with a given step size h.
-func xh(x []*variable.Variable, h float64, f func(c float64, v *tensor.Tensor[float64]) *tensor.Tensor[float64]) []*variable.Variable {
-	x0 := make([]*variable.Variable, len(x))
-	for i := range x {
-		x0[i] = variable.From(f(h, x[i].Data))
+func xh(x *variable.Variable, h float64) []*variable.Variable {
+	return []*variable.Variable{
+		variable.From(tensor.AddC(h, x.Data)),
 	}
-
-	return x0
 }

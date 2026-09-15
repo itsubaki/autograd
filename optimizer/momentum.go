@@ -1,6 +1,7 @@
 package optimizer
 
 import (
+	"github.com/itsubaki/autograd/layer"
 	"github.com/itsubaki/autograd/tensor"
 )
 
@@ -8,18 +9,20 @@ import (
 type Momentum struct {
 	LearningRate float64
 	Momentum     float64
-	Hook         []Hook
 	Vs           map[string]*tensor.Tensor[float64]
 }
 
 // Update updates the parameters of the model.
-func (o *Momentum) Update(model Model) {
+func (o *Momentum) Update(params layer.Parameters) {
 	if len(o.Vs) == 0 {
 		o.Vs = make(map[string]*tensor.Tensor[float64])
 	}
 
-	params := Params(model, o.Hook)
 	for name, p := range params {
+		if p.Grad == nil {
+			continue
+		}
+
 		if _, ok := o.Vs[name]; !ok {
 			o.Vs[name] = tensor.ZerosLike(p.Data)
 		}

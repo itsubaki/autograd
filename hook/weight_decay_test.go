@@ -20,3 +20,15 @@ func ExampleWeightDecay() {
 	// Output:
 	// variable(1.1)
 }
+
+func ExampleWeightDecay_nograd() {
+	p := variable.New(1.0)
+
+	h := hook.WeightDecay(0.1)
+	h(layer.Parameters{"p": p})
+
+	fmt.Println(p.Grad)
+
+	// Output:
+	// <nil>
+}

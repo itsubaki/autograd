@@ -25,7 +25,7 @@ func Example() {
 
 func Example_numericalDiff() {
 	// p23
-	v := []*variable.Variable{variable.New(0.5)}
+	v := variable.New(0.5)
 	f := func(x ...*variable.Variable) *variable.Variable {
 		A := F.Square
 		B := F.Exp
@@ -453,7 +453,7 @@ func Example_mlp() {
 
 		m.Cleargrads()
 		loss.Backward()
-		o.Update(m)
+		o.Update(m.Params())
 
 		if i%10 == 0 {
 			fmt.Printf("%.8f\n", loss.At())
