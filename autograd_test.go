@@ -453,7 +453,7 @@ func Example_mlp() {
 
 		m.Cleargrads()
 		loss.Backward()
-		o.Update(m)
+		o.Update(m.Params())
 
 		if i%10 == 0 {
 			fmt.Printf("%.8f\n", loss.At())

@@ -124,7 +124,7 @@ func main() {
 				m.Cleargrads()
 				loss.Backward()
 				loss.UnchainBackward()
-				o.Update(m)
+				o.Update(m.Params())
 			}
 		}
 
