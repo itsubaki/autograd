@@ -553,7 +553,7 @@ func ExampleExp() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [2.7183 7.3891 20.0855 54.5982]
+	// [2.7183 7.3891 20.0855 54.5981]
 }
 
 func ExampleLog() {
@@ -580,7 +580,7 @@ func ExampleSin() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [0.0000 0.7071 1.0000 0.7071 0.0000 -0.7071]
+	// [0.0000 0.7071 1.0000 0.7071 -0.0000 -0.7071]
 }
 
 func ExampleCos() {
@@ -594,7 +594,7 @@ func ExampleCos() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [1.0000 0.7071 0.0000 -0.7071 -1.0000 -0.7071]
+	// [1.0000 0.7071 -0.0000 -0.7071 -1.0000 -0.7071]
 }
 
 func ExampleTanh() {

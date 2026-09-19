@@ -19,7 +19,7 @@ func ExampleVariance() {
 	fmt.Println(variable.Clip(-0.333, 0.333)(x.Grad))
 
 	// Output:
-	// variable(0.6666666666666666)
+	// variable(0.6666667)
 	// variable[2 3]([-0.333 0 0.333 -0.333 0 0.333])
 }
 
@@ -36,7 +36,7 @@ func ExampleVariance_axis01() {
 	fmt.Println(variable.Clip(-0.333, 0.333)(x.Grad))
 
 	// Output:
-	// variable(0.6666666666666666)
+	// variable(0.6666667)
 	// variable[2 3]([-0.333 0 0.333 -0.333 0 0.333])
 }
 

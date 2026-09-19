@@ -20,7 +20,7 @@ func Example() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable(3.297442541400256)
+	// variable(3.2974427)
 }
 
 func Example_numericalDiff() {
@@ -36,7 +36,7 @@ func Example_numericalDiff() {
 	fmt.Printf("%.4f\n", numerical.Diff(f, v).At())
 
 	// Output:
-	// 3.2974
+	// 3.2973
 }
 
 func Example_creator() {
@@ -51,7 +51,7 @@ func Example_creator() {
 	fmt.Println(x)
 	fmt.Println(y)
 	fmt.Println(x.Grad)
-	fmt.Println()
+	fmt.Println(".")
 
 	// p40
 	fmt.Println(y.Creator)
@@ -63,10 +63,10 @@ func Example_creator() {
 
 	// Output:
 	// variable(0.5)
-	// variable(1.648721270700128)
-	// variable(3.297442541400256)
-	//
-	// *variable.SquareT[variable(1.2840254166877414)]
+	// variable(1.6487213)
+	// variable(3.2974427)
+	// .
+	// *variable.SquareT[variable(1.2840254)]
 	// true
 	// *variable.ExpT[variable(0.25)]
 	// true
@@ -85,7 +85,7 @@ func Example_func() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable(3.297442541400256)
+	// variable(3.2974427)
 }
 
 func Example_add() {
@@ -201,8 +201,8 @@ func Example_matyas() {
 	fmt.Println(y.Grad)
 
 	// Output:
-	// variable(0.040000000000000036)
-	// variable(0.040000000000000036)
+	// variable(0.03999999)
+	// variable(0.03999999)
 }
 
 func Example_rosenbrock() {
@@ -265,16 +265,16 @@ func Example_gradientDescent() {
 
 	// Output:
 	// variable(0) variable(2)
-	// variable(0.6837118569138317) variable(0.4659526837427042)
-	// variable(0.8263177857050957) variable(0.6820311873361097)
-	// variable(0.8947837494333546) variable(0.8001896451930564)
-	// variable(0.9334871723401226) variable(0.8711213202579401)
-	// variable(0.9569899983530249) variable(0.9156532462021957)
-	// variable(0.9718168065095137) variable(0.9443132014542008)
-	// variable(0.9813809710644894) variable(0.9630332658658076)
-	// variable(0.9876355102559093) variable(0.9753740541653942)
-	// variable(0.9917613994572028) variable(0.9835575421346807)
-	// variable(0.9944984367782456) variable(0.9890050527419593)
+	// variable(0.68371195) variable(0.4659528)
+	// variable(0.82631814) variable(0.6820318)
+	// variable(0.8947841) variable(0.8001903)
+	// variable(0.93348724) variable(0.87112147)
+	// variable(0.9569893) variable(0.9156519)
+	// variable(0.97181624) variable(0.94431216)
+	// variable(0.98138046) variable(0.9630323)
+	// variable(0.9876351) variable(0.9753732)
+	// variable(0.9917611) variable(0.98355687)
+	// variable(0.99449813) variable(0.98900443)
 }
 
 func Example_newton() {
@@ -307,12 +307,12 @@ func Example_newton() {
 
 	// Output:
 	// variable(2)
-	// variable(1.4545454545454546)
-	// variable(1.1510467893775467)
-	// variable(1.0253259289766978)
-	// variable(1.0009084519430513)
-	// variable(1.0000012353089454)
-	// variable(1.000000000002289)
+	// variable(1.4545455)
+	// variable(1.1510468)
+	// variable(1.0253259)
+	// variable(1.0009084)
+	// variable(1.0000012)
+	// variable(1)
 	// variable(1)
 	// variable(1)
 	// variable(1)
@@ -348,12 +348,12 @@ func Example_newton_double() {
 
 	// Output:
 	// variable(2)
-	// variable(1.4545454545454546)
-	// variable(1.1510467893775467)
-	// variable(1.0253259289766978)
-	// variable(1.0009084519430513)
-	// variable(1.0000012353089454)
-	// variable(1.000000000002289)
+	// variable(1.4545455)
+	// variable(1.1510468)
+	// variable(1.0253259)
+	// variable(1.0009084)
+	// variable(1.0000012)
+	// variable(1)
 	// variable(1)
 	// variable(1)
 	// variable(1)
@@ -462,13 +462,13 @@ func Example_mlp() {
 
 	// Output:
 	// 0.17547970
-	// 0.07741569
-	// 0.07284688
-	// 0.07090371
-	// 0.07005858
-	// 0.06968885
-	// 0.06952675
-	// 0.06945531
-	// 0.06942337
-	// 0.06940859
+	// 0.07741570
+	// 0.07284687
+	// 0.07090372
+	// 0.07005857
+	// 0.06968886
+	// 0.06952673
+	// 0.06945530
+	// 0.06942336
+	// 0.06940858
 }
