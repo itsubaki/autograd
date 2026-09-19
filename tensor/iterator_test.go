@@ -37,7 +37,7 @@ func ExampleIterator() {
 }
 
 func ExampleIterator_scalar() {
-	a := tensor.Scalar(1.0)
+	a := tensor.Scalar[float32](1.0)
 	it := tensor.NewIterator(a.Layout())
 	for it.Next() {
 		ia := it.Offset(0)

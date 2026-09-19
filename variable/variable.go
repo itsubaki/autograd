@@ -11,19 +11,19 @@ import (
 // Variable represents a value in the computation graph.
 type Variable struct {
 	Name       string
-	Data       *tensor.Tensor[float64]
+	Data       *tensor.Tensor[float32]
 	Grad       *Variable
 	Creator    *Function
 	Generation int
 }
 
 // New returns a new variable from the given values.
-func New(v ...float64) *Variable {
+func New(v ...float32) *Variable {
 	return &Variable{Data: tensor.New([]int{len(v)}, v)}
 }
 
 // From returns a new variable backed by the given tensor.
-func From(v *tensor.Tensor[float64]) *Variable {
+func From(v *tensor.Tensor[float32]) *Variable {
 	return &Variable{Data: v}
 }
 
@@ -39,12 +39,12 @@ func OnesLike(v *Variable) *Variable {
 
 // Zeros returns a new zero-filled variable with the given shape.
 func Zeros(shape ...int) *Variable {
-	return &Variable{Data: tensor.Zeros[float64](shape...)}
+	return &Variable{Data: tensor.Zeros[float32](shape...)}
 }
 
 // Ones returns a new one-filled variable with the given shape.
 func Ones(shape ...int) *Variable {
-	return &Variable{Data: tensor.Ones[float64](shape...)}
+	return &Variable{Data: tensor.Ones[float32](shape...)}
 }
 
 // Rand returns a new variable with pseudo-random values in [0.0, 1.0).
@@ -58,13 +58,13 @@ func Randn(shape []int, s ...randv2.Source) *Variable {
 }
 
 // Normal returns a new variable with values drawn from the normal distribution with the given mean and standard deviation.
-func Normal(shape []int, mean, stddev float64, s ...randv2.Source) *Variable {
+func Normal(shape []int, mean, stddev float32, s ...randv2.Source) *Variable {
 	return &Variable{Data: tensor.Normal(shape, mean, stddev, s...)}
 }
 
 // At returns the value at the given indices.
 // If no indices are given, it returns the first element.
-func (v *Variable) At(indices ...int) float64 {
+func (v *Variable) At(indices ...int) float32 {
 	return v.Data.At(indices...)
 }
 

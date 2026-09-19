@@ -11,17 +11,17 @@ import (
 )
 
 func ExampleMatMul2D() {
-	a := []float64{
+	a := []float32{
 		1, 2,
 		3, 4,
 	}
 
-	b := []float64{
+	b := []float32{
 		5, 6,
 		7, 8,
 	}
 
-	o := make([]float64, 4)
+	o := make([]float32, 4)
 	tensor.MatMul2D(a, b, o, 2, 2, 2)
 
 	fmt.Printf("%.0f %.0f\n", o[0], o[1])
@@ -33,16 +33,16 @@ func ExampleMatMul2D() {
 }
 
 func benchmarkMatMul2D(b *testing.B, m, n, k int) {
-	a := make([]float64, m*n)
-	c := make([]float64, n*k)
-	o := make([]float64, m*k)
+	a := make([]float32, m*n)
+	c := make([]float32, n*k)
+	o := make([]float32, m*k)
 
 	for i := range a {
-		a[i] = rand.Float64()
+		a[i] = rand.Float32()
 	}
 
 	for i := range c {
-		c[i] = rand.Float64()
+		c[i] = rand.Float32()
 	}
 
 	b.ReportAllocs()
