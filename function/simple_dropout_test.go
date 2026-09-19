@@ -22,7 +22,7 @@ func ExampleDropoutSimple() {
 	}()
 
 	// Output:
-	// variable[5]([2 2 0 0 0])
+	// variable[5]([2 2 2 2 0])
 	// variable[5]([1 1 1 1 1])
 }
 
@@ -36,8 +36,8 @@ func ExampleDropoutSimple_backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[5]([0.2 0.4 0 0 0])
-	// variable[5]([2 2 0 0 0])
+	// variable[5]([0.2 0.4 0.6 0.8 0])
+	// variable[5]([2 2 2 2 0])
 }
 
 func ExampleDropoutSimple_double() {
@@ -55,7 +55,7 @@ func ExampleDropoutSimple_double() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[5]([2 2 0 0 0])
-	// variable[5]([2 2 0 0 0])
+	// variable[5]([2 2 2 2 0])
+	// variable[5]([2 2 2 2 0])
 	// <nil>
 }

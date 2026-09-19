@@ -50,7 +50,7 @@ func Full[T Number](shape []int, value T) *Tensor[T] {
 // Rand returns a new tensor with pseudo-random values in the half-open interval [0.0, 1.0).
 func Rand(shape []int, s ...randv2.Source) *Tensor[float32] {
 	r := rnd(s...)
-	f := func(_ float32) float32 { return float32(r.Float64()) }
+	f := func(_ float32) float32 { return r.Float32() }
 	return F(Zeros[float32](shape...), f)
 }
 

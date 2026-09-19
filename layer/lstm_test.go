@@ -45,7 +45,7 @@ func ExampleLSTM_backward() {
 	y = l.First(x)
 	y.Backward()
 
-	for k, _ := range l.Params().Seq2() {
+	for k := range l.Params().Seq2() {
 		fmt.Println(k)
 	}
 
