@@ -23,7 +23,7 @@ func ExampleDiv() {
 }
 
 func ExampleDivC() {
-	a := 10.0
+	a := float32(10.0)
 	b := variable.New(2)
 	y := variable.DivC(a, b)
 	y.Backward()

@@ -11,21 +11,21 @@ import "C"
 
 import "unsafe"
 
-func matmul(a, b, c []float64, m, k, n int) {
-	C.cblas_dgemm(
+func matmul(a, b, c []float32, m, k, n int) {
+	C.cblas_sgemm(
 		C.CblasRowMajor,
 		C.CblasNoTrans,
 		C.CblasNoTrans,
 		C.int(m),
 		C.int(n),
 		C.int(k),
-		C.double(1.0), // alpha
-		(*C.double)(unsafe.Pointer(&a[0])),
+		C.float(1.0), // alpha
+		(*C.float)(unsafe.Pointer(&a[0])),
 		C.int(k),
-		(*C.double)(unsafe.Pointer(&b[0])),
+		(*C.float)(unsafe.Pointer(&b[0])),
 		C.int(n),
-		C.double(0.0), // beta
-		(*C.double)(unsafe.Pointer(&c[0])),
+		C.float(0.0), // beta
+		(*C.float)(unsafe.Pointer(&c[0])),
 		C.int(n),
 	)
 }

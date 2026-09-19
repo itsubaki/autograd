@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/tensor"
 
 // DivC returns a variable representing c / x[0].
-func DivC(c float64, x ...*Variable) *Variable {
+func DivC(c float32, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &DivT{},
 	}).First(New(c), x[0])

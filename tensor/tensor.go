@@ -3,17 +3,17 @@ package tensor
 import (
 	"fmt"
 	"iter"
-	"math"
 	randv2 "math/rand/v2"
 	"runtime"
 	"sync"
 
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/rand"
 )
 
 // Number is the set of numeric types supported by Tensor.
 type Number interface {
-	~int | ~float64
+	~int | ~float32
 }
 
 // Tensor represents a multi-dimensional array.
@@ -48,24 +48,24 @@ func Full[T Number](shape []int, value T) *Tensor[T] {
 }
 
 // Rand returns a new tensor with pseudo-random values in the half-open interval [0.0, 1.0).
-func Rand(shape []int, s ...randv2.Source) *Tensor[float64] {
+func Rand(shape []int, s ...randv2.Source) *Tensor[float32] {
 	r := rnd(s...)
-	f := func(_ float64) float64 { return r.Float64() }
-	return F(Zeros[float64](shape...), f)
+	f := func(_ float32) float32 { return float32(r.Float64()) }
+	return F(Zeros[float32](shape...), f)
 }
 
-// Randn returns a new tensor with float64 values drawn from the standard normal distribution.
-func Randn(shape []int, s ...randv2.Source) *Tensor[float64] {
+// Randn returns a new tensor with float32 values drawn from the standard normal distribution.
+func Randn(shape []int, s ...randv2.Source) *Tensor[float32] {
 	r := rnd(s...)
-	f := func(_ float64) float64 { return r.NormFloat64() }
-	return F(Zeros[float64](shape...), f)
+	f := func(_ float32) float32 { return float32(r.NormFloat64()) }
+	return F(Zeros[float32](shape...), f)
 }
 
-// Normal returns a new tensor with float64 values drawn from the normal distribution with the given mean and standard deviation.
-func Normal(shape []int, mean, stddev float64, s ...randv2.Source) *Tensor[float64] {
+// Normal returns a new tensor with float32 values drawn from the normal distribution with the given mean and standard deviation.
+func Normal(shape []int, mean, stddev float32, s ...randv2.Source) *Tensor[float32] {
 	r := rnd(s...)
-	f := func(_ float64) float64 { return mean + stddev*r.NormFloat64() }
-	return F(Zeros[float64](shape...), f)
+	f := func(_ float32) float32 { return mean + stddev*float32(r.NormFloat64()) }
+	return F(Zeros[float32](shape...), f)
 }
 
 // Zeros returns a new tensor with elements that are all zero.
@@ -116,15 +116,15 @@ func Arange[T Number](start, stop T, step ...T) *Tensor[T] {
 }
 
 // Linspace returns a new tensor with n evenly spaced samples, calculated over the interval [start, stop].
-func Linspace(start, stop float64, n int) *Tensor[float64] {
+func Linspace(start, stop float32, n int) *Tensor[float32] {
 	if n < 2 {
 		panic("n is less than 2")
 	}
 
-	step := (stop - start) / float64(n-1)
-	data := make([]float64, n)
+	step := (stop - start) / float32(n-1)
+	data := make([]float32, n)
 	for i := range n {
-		data[i] = start + float64(i)*step
+		data[i] = start + float32(i)*step
 	}
 
 	return New([]int{n}, data)
@@ -267,9 +267,9 @@ func Int[T Number](v *Tensor[T]) *Tensor[int] {
 	return F(v, func(a T) int { return int(a) })
 }
 
-// Float64 returns a new tensor with elements cast to float64.
-func Float64[T Number](v *Tensor[T]) *Tensor[float64] {
-	return F(v, func(a T) float64 { return float64(a) })
+// Float32 returns a new tensor with elements cast to float64.
+func Float32[T Number](v *Tensor[T]) *Tensor[float32] {
+	return F(v, func(a T) float32 { return float32(a) })
 }
 
 // AddC returns a new tensor with each element in v added to c.
@@ -288,38 +288,38 @@ func MulC[T Number](c T, v *Tensor[T]) *Tensor[T] {
 }
 
 // Pow returns a new tensor with each element in v raised to the power of p.
-func Pow(p float64, v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Pow(a, p) })
+func Pow(p float32, v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Pow(a, p) })
 }
 
 // Sqrt returns a new tensor with the square root of each element in v.
-func Sqrt(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Sqrt(a) })
+func Sqrt(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Sqrt(a) })
 }
 
 // Exp returns a new tensor with the exponential of each element in v.
-func Exp(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Exp(a) })
+func Exp(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Exp(a) })
 }
 
 // Log returns a new tensor with the natural logarithm of each element in v.
-func Log(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Log(a) })
+func Log(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Log(a) })
 }
 
 // Sin returns a new tensor with the sine of each element in v.
-func Sin(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Sin(a) })
+func Sin(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Sin(a) })
 }
 
 // Cos returns a new tensor with the cosine of each element in v.
-func Cos(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Cos(a) })
+func Cos(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Cos(a) })
 }
 
 // Tanh returns a new tensor with the hyperbolic tangent of each element in v.
-func Tanh(v *Tensor[float64]) *Tensor[float64] {
-	return F(v, func(a float64) float64 { return math.Tanh(a) })
+func Tanh(v *Tensor[float32]) *Tensor[float32] {
+	return F(v, func(a float32) float32 { return math.Tanh(a) })
 }
 
 // Clip returns a new tensor with elements that are clipped to the interval [min, max].
@@ -391,8 +391,8 @@ func Equal(v, w *Tensor[int]) *Tensor[int] {
 }
 
 // IsClose returns a new tensor with elements that are 1 if v and w are close enough and 0 otherwise.
-func IsClose(v, w *Tensor[float64], tol ...float64) *Tensor[int] {
-	return F2(v, w, func(a, b float64) int {
+func IsClose(v, w *Tensor[float32], tol ...float32) *Tensor[int] {
+	return F2(v, w, func(a, b float32) int {
 		if isClose(a, b, tol...) {
 			return 1
 		}
@@ -1096,8 +1096,8 @@ func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 
 // Max returns a new tensor with the maximum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
-func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	return Reduce(v, -math.MaxFloat64, func(acc, x float64) float64 {
+func Max(v *Tensor[float32], axes ...int) *Tensor[float32] {
+	return Reduce(v, -math.MaxFloat32, func(acc, x float32) float32 {
 		if x > acc {
 			return x
 		}
@@ -1108,8 +1108,8 @@ func Max(v *Tensor[float64], axes ...int) *Tensor[float64] {
 
 // Min returns a new tensor with the minimum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
-func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
-	return Reduce(v, math.MaxFloat64, func(acc, x float64) float64 {
+func Min(v *Tensor[float32], axes ...int) *Tensor[float32] {
+	return Reduce(v, math.MaxFloat32, func(acc, x float32) float32 {
 		if x < acc {
 			return x
 		}
@@ -1120,15 +1120,15 @@ func Min(v *Tensor[float64], axes ...int) *Tensor[float64] {
 
 // Mean returns a new tensor with the mean of elements in v.
 // If axes is specified, it reduces along the given axes.
-func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
+func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float32] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Float64(Clone(v))
+		return Float32(Clone(v))
 	}
 
 	if len(axes) == 0 {
 		// mean all
-		return MulC(1/float64(v.Size()), Float64(Sum(v)))
+		return MulC(1/float32(v.Size()), Float32(Sum(v)))
 	}
 
 	ax, _, err := adjAxes(ndim, axes...)
@@ -1143,14 +1143,14 @@ func Mean[T Number](v *Tensor[T], axes ...int) *Tensor[float64] {
 	}
 
 	// mean
-	return MulC(1/float64(size), Float64(Sum(v, ax...)))
+	return MulC(1/float32(size), Float32(Sum(v, ax...)))
 }
 
 // Variance returns a new tensor with the variance of elements in v.
-func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
+func Variance(v *Tensor[float32], axes ...int) *Tensor[float32] {
 	ndim := v.NumDims()
 	if ndim == 0 {
-		return Scalar(0.0)
+		return Scalar(float32(0.0))
 	}
 
 	if len(axes) == 0 {
@@ -1168,7 +1168,7 @@ func Variance(v *Tensor[float64], axes ...int) *Tensor[float64] {
 }
 
 // StdDev returns a new tensor with the standard deviation of elements in v.
-func StdDev(v *Tensor[float64], axes ...int) *Tensor[float64] {
+func StdDev(v *Tensor[float32], axes ...int) *Tensor[float32] {
 	return Sqrt(Variance(v, axes...))
 }
 
@@ -1215,7 +1215,7 @@ func Minimum[T, U Number](v, w *Tensor[T]) (*Tensor[T], *Tensor[U]) {
 }
 
 // MatMul returns the matrix product of v and w.
-func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
+func MatMul(v, w *Tensor[float32]) *Tensor[float32] {
 	a, b := Broadcast(v, w, 2)
 	a, b = Contiguous(a), Contiguous(b)
 	ndim := a.NumDims()
@@ -1234,7 +1234,7 @@ func MatMul(v, w *Tensor[float64]) *Tensor[float64] {
 	// batch
 	batch := a.Shape[:ndim-2]
 	shape := append(batch, arows, bcols)
-	o := Zeros[float64](shape...)
+	o := Zeros[float32](shape...)
 
 	// Determine the number of batch elements each goroutine will handle.
 	// We use ceiling division to ensure all batch elements are assigned.
@@ -1320,7 +1320,7 @@ func EqualAll(v, w *Tensor[int]) bool {
 }
 
 // IsCloseAll returns true if the two tensors are close enough.
-func IsCloseAll(v, w *Tensor[float64], tol ...float64) bool {
+func IsCloseAll(v, w *Tensor[float32], tol ...float32) bool {
 	if !SliceEqual(v.Shape, w.Shape) {
 		return false
 	}
@@ -1565,8 +1565,8 @@ func adjAxes(ndim int, axes ...int) ([]int, map[int]bool, error) {
 }
 
 // isClose returns true if a and b are close enough.
-func isClose(a, b float64, tol ...float64) bool {
-	atol, rtol := func() (float64, float64) {
+func isClose(a, b float32, tol ...float32) bool {
+	atol, rtol := func() (float32, float32) {
 		if len(tol) == 0 {
 			return 1e-8, 1e-5
 		}

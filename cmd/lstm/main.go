@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"iter"
 	"log"
-	"math"
 	"math/rand/v2"
 	"time"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/model"
 	"github.com/itsubaki/autograd/optimizer"
 	"github.com/itsubaki/autograd/variable"
 )
 
 // pi returns a slice of float64 values in [0, c*PI].
-func pi(c float64, N int) []float64 {
-	xs := make([]float64, N)
+func pi(c float32, N int) []float32 {
+	xs := make([]float32, N)
 	for i := range N {
-		xs[i] = c * math.Pi * (float64(i) / float64(N-1))
+		xs[i] = c * math.Pi * (float32(i) / float32(N-1))
 	}
 
 	return xs
@@ -28,15 +28,15 @@ func pi(c float64, N int) []float64 {
 // Sequence is a dataset of N-1 pairs of (data, label).
 type Sequence struct {
 	N     int
-	Data  []float64
-	Label []float64
+	Data  []float32
+	Label []float32
 }
 
 // NewCurve returns a Sequence of N-1 pairs of (data, label) with added noise.
-func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
-	y := make([]float64, N)
+func NewCurve(N int, noise float32, f func(x float32) float32) *Sequence {
+	y := make([]float32, N)
 	for i, x := range pi(2, N) {
-		y[i] = f(x) + rand.Float64()*(2*noise) - noise
+		y[i] = f(x) + rand.Float32()*(2*noise) - noise
 	}
 
 	return &Sequence{
@@ -50,8 +50,8 @@ func NewCurve(N int, noise float64, f func(x float64) float64) *Sequence {
 type DataLoader struct {
 	BatchSize int
 	N         int
-	Data      []float64
-	Label     []float64
+	Data      []float32
+	Label     []float32
 	iter      int
 }
 
@@ -98,7 +98,7 @@ func main() {
 	flag.Float64Var(&noise, "noise", 0.05, "")
 	flag.Parse()
 
-	dataset := NewCurve(N, noise, math.Sin)
+	dataset := NewCurve(N, float32(noise), math.Sin)
 	dataloader := &DataLoader{
 		BatchSize: batchSize,
 		N:         dataset.N,
@@ -108,7 +108,7 @@ func main() {
 
 	m := model.NewLSTM(hiddenSize, 1)
 	o := optimizer.SGD{
-		LearningRate: lr,
+		LearningRate: float32(lr),
 	}
 
 	now := time.Now()
@@ -128,18 +128,18 @@ func main() {
 			}
 		}
 
-		log.Printf("%3d: %f\n", i, loss.At()/float64(count))
+		log.Printf("%3d: %f\n", i, loss.At()/float32(count))
 	}
 	log.Printf("elapsed=%v\n", time.Since(now))
 
 	// cos curve
-	xs := make([]float64, dataset.N)
+	xs := make([]float32, dataset.N)
 	for i, x := range pi(4, len(xs)) {
 		xs[i] = math.Cos(x)
 	}
 
 	// predict
-	ys := make([]float64, len(xs))
+	ys := make([]float32, len(xs))
 	func() {
 		defer variable.Nograd().End()
 		m.ResetState()

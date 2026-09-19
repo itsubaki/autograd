@@ -236,9 +236,9 @@ func Example_gradientDescent() {
 		return F.Add(F.MulC(100, y0), y1)
 	}
 
-	update := func(lr float64, x ...*variable.Variable) {
+	update := func(lr float32, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float32) float32 {
 				return a - lr*b
 			})
 		}
@@ -247,7 +247,7 @@ func Example_gradientDescent() {
 	x0 := variable.New(0.0)
 	x1 := variable.New(2.0)
 
-	lr := 0.001
+	lr := float32(0.001)
 	iters := 10000
 
 	for i := range iters + 1 {
@@ -396,15 +396,15 @@ func Example_linearRegression() {
 		return F.Add(F.MatMul(x, w), b) // y = x.w + b
 	}
 
-	update := func(lr float64, x ...*variable.Variable) {
+	update := func(lr float32, x ...*variable.Variable) {
 		for _, v := range x {
-			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float64) float64 {
+			v.Data = tensor.F2(v.Data, v.Grad.Data, func(a, b float32) float32 {
 				return a - lr*b
 			})
 		}
 	}
 
-	lr := 0.1
+	lr := float32(0.1)
 	iters := 100
 
 	var loss *variable.Variable
