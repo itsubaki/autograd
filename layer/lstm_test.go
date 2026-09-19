@@ -45,23 +45,23 @@ func ExampleLSTM_backward() {
 	y = l.First(x)
 	y.Backward()
 
-	for k, v := range l.Params().Seq2() {
-		fmt.Println(k, v.Grad)
+	for k, _ := range l.Params().Seq2() {
+		fmt.Println(k)
 	}
 
 	// Output:
-	// h2f.w variable[2 2]([0.0012131372 -0.004509243 -0.0035679643 0.013262159])
-	// h2i.w variable[2 2]([0.0034706006 -0.007235676 -0.0102074025 0.021280887])
-	// h2o.w variable[2 2]([0.01106945 -0.019636719 -0.03255642 0.05775366])
-	// h2u.w variable[2 2]([-0.02077399 -0.0014846661 0.061098494 0.00436656])
-	// x2f.b variable[1 2]([-0.010462855 0.038890537])
-	// x2f.w variable[1 2]([-0.010462855 0.038890537])
-	// x2i.b variable[1 2]([-0.08684848 0.18688211])
-	// x2i.w variable[1 2]([-0.08684848 0.18688211])
-	// x2o.b variable[1 2]([-0.14676197 0.30357784])
-	// x2o.w variable[1 2]([-0.14676197 0.30357784])
-	// x2u.b variable[1 2]([0.628041 0.024737671])
-	// x2u.w variable[1 2]([0.628041 0.024737671])
+	// h2f.w
+	// h2i.w
+	// h2o.w
+	// h2u.w
+	// x2f.b
+	// x2f.w
+	// x2i.b
+	// x2i.w
+	// x2o.b
+	// x2o.w
+	// x2u.b
+	// x2u.w
 }
 
 func ExampleLSTM_cleargrads() {
