@@ -36,14 +36,14 @@ func ExampleMLP_backward() {
 	y.Backward()
 
 	for k, v := range m.Params().Seq2() {
-		fmt.Println(k, v.Grad)
+		fmt.Printf("%s %v %.6f\n", k, v.Grad.Shape(), v.Grad.Data.Data)
 	}
 
 	// Output:
-	// linear[0].b variable[1 5]([-0 -0 -0.11785627 -0.17275377 -0.14528367])
-	// linear[0].w variable[2 5]([0 0 -0.11785627 -0.17275377 -0.14528367 0 0 -0.23571254 -0.34550753 -0.29056734])
-	// linear[1].b variable(1)
-	// linear[1].w variable[5 1]([0 0 1.6288754 0.76623267 1.9766127])
+	// linear[0].b [1 5] [-0.000000 -0.000000 -0.117856 -0.172754 -0.145284]
+	// linear[0].w [2 5] [0.000000 0.000000 -0.117856 -0.172754 -0.145284 0.000000 0.000000 -0.235713 -0.345508 -0.290567]
+	// linear[1].b [1 1] [1.000000]
+	// linear[1].w [5 1] [0.000000 0.000000 1.628875 0.766233 1.976613]
 }
 
 func ExampleMLP_cleargrads() {
