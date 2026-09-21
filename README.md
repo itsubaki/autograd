@@ -27,7 +27,7 @@ func main() {
 }
 
 // Output:
-// variable(0.84147096)
+// variable(0.8414709)
 // variable(0.5403023)
 ```
 
