@@ -23,6 +23,49 @@ func Example() {
 	// variable(3.2974427)
 }
 
+func Example_sin() {
+	x := variable.New(1.0)
+	y := F.Sin(x)
+	y.Backward()
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	// Output:
+	// variable(0.84147096)
+	// variable(0.5403023)
+}
+
+func Example_doubleBackword() {
+	x := variable.New(1.0)
+	y := F.Sin(x)
+	y.Backward(variable.Opts{
+		CreateGraph: true,
+	})
+
+	fmt.Println(y)
+	fmt.Println(x.Grad)
+
+	for range 5 {
+		gx := x.Grad
+		x.Cleargrad()
+		gx.Backward(variable.Opts{
+			CreateGraph: true,
+		})
+
+		fmt.Println(x.Grad)
+	}
+
+	// Output:
+	// variable(0.84147096)
+	// variable(0.5403023)
+	// variable(-0.84147096)
+	// variable(-0.5403023)
+	// variable(0.84147096)
+	// variable(0.5403023)
+	// variable(-0.84147096)
+}
+
 func Example_numericalDiff() {
 	// p23
 	v := variable.New(0.5)

@@ -27,8 +27,8 @@ func main() {
 }
 
 // Output:
-// variable(0.8414709848078965)
-// variable(0.5403023058681398)
+// variable(0.84147096)
+// variable(0.5403023)
 ```
 
 ### Composite function
@@ -46,10 +46,12 @@ y := variable.New(1.0)
 z := matyas(x, y)
 z.Backward()
 
-fmt.Println(x.Grad, y.Grad)
+fmt.Println(x.Grad)
+fmt.Println(y.Grad)
 
 // Output:
-// variable(0.040000000000000036) variable(0.040000000000000036)
+// variable(0.03999999)
+// variable(0.03999999)
 ```
 
 ### Gradient descent
@@ -90,17 +92,17 @@ for i := range iters + 1 {
 }
 
 // Output:
-// variable(0) variable(2)
-// variable(0.6837118569138317) variable(0.4659526837427042)
-// variable(0.8263177857050957) variable(0.6820311873361097)
-// variable(0.8947837494333546) variable(0.8001896451930564)
-// variable(0.9334871723401226) variable(0.8711213202579401)
-// variable(0.9569899983530249) variable(0.9156532462021957)
-// variable(0.9718168065095137) variable(0.9443132014542008)
-// variable(0.9813809710644894) variable(0.9630332658658076)
-// variable(0.9876355102559093) variable(0.9753740541653942)
-// variable(0.9917613994572028) variable(0.9835575421346807)
-// variable(0.9944984367782456) variable(0.9890050527419593)
+// variable(0)         variable(2)
+// variable(0.6837119) variable(0.4659528)
+// variable(0.8263181) variable(0.6820318)
+// variable(0.8947841) variable(0.8001903)
+// variable(0.9334872) variable(0.8711214)
+// variable(0.9569893) variable(0.9156519)
+// variable(0.9718162) variable(0.9443121)
+// variable(0.9813804) variable(0.9630323)
+// variable(0.9876351) variable(0.9753732)
+// variable(0.9917611) variable(0.9835568)
+// variable(0.9944981) variable(0.9890044)
 ```
 
 ### Deep Learning
@@ -160,13 +162,13 @@ for range 5 {
 }
 
 // Output:
-// variable(0.8414709848078965)
-// variable(0.5403023058681398)
-// variable(-0.8414709848078965)
-// variable(-0.5403023058681398)
-// variable(0.8414709848078965)
-// variable(0.5403023058681398)
-// variable(-0.8414709848078965)
+// variable(0.84147096)
+// variable(0.5403023)
+// variable(-0.84147096)
+// variable(-0.5403023)
+// variable(0.84147096)
+// variable(0.5403023)
+// variable(-0.84147096)
 ```
 
 ### NoGrad and Test mode
