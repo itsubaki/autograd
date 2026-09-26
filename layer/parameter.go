@@ -36,6 +36,16 @@ func (p Parameters) Cleargrads() {
 	}
 }
 
+// Size returns the total number of elements across all parameters in the collection.
+func (p Parameters) Size() int {
+	var size int
+	for _, v := range p {
+		size += v.Size()
+	}
+
+	return size
+}
+
 // Seq2 returns the parameters in key-sorted order.
 func (p Parameters) Seq2() iter.Seq2[string, Parameter] {
 	keys := make([]string, 0, len(p))
