@@ -37,6 +37,17 @@ func ExampleParameters_Cleargrads() {
 	// w[2]([1 2]) <nil>
 }
 
+func ExampleParameters_Size() {
+	p := make(layer.Parameters)
+	p.Add("w", variable.New(1, 2))
+	p.Add("b", variable.New(3, 4, 5, 6))
+
+	fmt.Println(p.Size())
+
+	// Output:
+	// 6
+}
+
 func ExampleParameters_Seq2_break() {
 	p := make(layer.Parameters)
 	p.Add("w", variable.New(1, 2))
