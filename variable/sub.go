@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/tensor"
 
 // SubC returns a variable representing c - x[0].
-func SubC(c float64, x ...*Variable) *Variable {
+func SubC(c float32, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &SubT{},
 	}).First(New(c), x[0])

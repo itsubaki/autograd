@@ -2,16 +2,16 @@ package tensor_test
 
 import (
 	"fmt"
-	"math"
 	"testing"
 
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/rand"
 	"github.com/itsubaki/autograd/tensor"
 )
 
 func BenchmarkTransposeView(b *testing.B) {
 	rows, cols := 1024, 1024
-	data := make([]float64, rows*cols)
+	data := make([]float32, rows*cols)
 	t := tensor.New([]int{cols, rows}, data)
 
 	b.ReportAllocs()
@@ -22,12 +22,12 @@ func BenchmarkTransposeView(b *testing.B) {
 }
 
 func BenchmarkTransposeMemCopy(b *testing.B) {
-	transpose := func(m [][]float64) [][]float64 {
+	transpose := func(m [][]float32) [][]float32 {
 		rows, cols := len(m), len(m[0])
 
-		dst := make([][]float64, cols)
+		dst := make([][]float32, cols)
 		for i := range dst {
-			dst[i] = make([]float64, rows)
+			dst[i] = make([]float32, rows)
 		}
 
 		for i := range cols {
@@ -40,9 +40,9 @@ func BenchmarkTransposeMemCopy(b *testing.B) {
 	}
 
 	rows, cols := 1024, 1024
-	m := make([][]float64, cols)
+	m := make([][]float32, cols)
 	for i := range cols {
-		m[i] = make([]float64, rows)
+		m[i] = make([]float32, rows)
 	}
 
 	b.ReportAllocs()
@@ -53,7 +53,7 @@ func BenchmarkTransposeMemCopy(b *testing.B) {
 }
 
 func Example() {
-	v := tensor.Zeros[float64](2, 3)
+	v := tensor.Zeros[float32](2, 3)
 
 	v.Set([]int{0, 0}, 1.5)
 	v.Set([]int{0, 1}, 2.5)
@@ -91,7 +91,7 @@ func ExampleTensor_Set() {
 }
 
 func ExampleFull() {
-	v := tensor.Full([]int{2, 3}, 3.14)
+	v := tensor.Full[float32]([]int{2, 3}, 3.14)
 	for _, row := range v.Seq2() {
 		fmt.Println(row)
 	}
@@ -316,7 +316,7 @@ func ExampleClone() {
 }
 
 func ExampleInt() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		1.5, 2.5,
 		3.5, 4.5,
 	})
@@ -334,17 +334,17 @@ func ExampleInt() {
 	// [3 4]
 }
 
-func ExampleFloat64() {
+func ExampleFloat32() {
 	v := tensor.New([]int{2, 2}, []int{
 		1, 2,
 		3, 4,
 	})
 
-	w := tensor.Float64(v)
+	w := tensor.Float32(v)
 	fmt.Printf("%T", w.Data)
 
 	// Output:
-	// []float64
+	// []float32
 }
 
 func ExampleF() {
@@ -518,7 +518,7 @@ func ExampleMulC() {
 }
 
 func ExamplePow() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		1, 2,
 		3, 4,
 	})
@@ -531,7 +531,7 @@ func ExamplePow() {
 }
 
 func ExampleSqrt() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		1, 4,
 		9, 16,
 	})
@@ -544,7 +544,7 @@ func ExampleSqrt() {
 }
 
 func ExampleExp() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		1, 2,
 		3, 4,
 	})
@@ -553,11 +553,11 @@ func ExampleExp() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [2.7183 7.3891 20.0855 54.5982]
+	// [2.7183 7.3891 20.0855 54.5981]
 }
 
 func ExampleLog() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		math.Exp(0), math.Exp(1),
 		math.Exp(2), math.Exp(3),
 	})
@@ -570,7 +570,7 @@ func ExampleLog() {
 }
 
 func ExampleSin() {
-	v := tensor.New([]int{3, 2}, []float64{
+	v := tensor.New([]int{3, 2}, []float32{
 		0 * math.Pi / 4, 1 * math.Pi / 4,
 		2 * math.Pi / 4, 3 * math.Pi / 4,
 		4 * math.Pi / 4, 5 * math.Pi / 4,
@@ -580,11 +580,11 @@ func ExampleSin() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [0.0000 0.7071 1.0000 0.7071 0.0000 -0.7071]
+	// [0.0000 0.7071 1.0000 0.7071 -0.0000 -0.7071]
 }
 
 func ExampleCos() {
-	v := tensor.New([]int{3, 2}, []float64{
+	v := tensor.New([]int{3, 2}, []float32{
 		0 * math.Pi / 4, 1 * math.Pi / 4,
 		2 * math.Pi / 4, 3 * math.Pi / 4,
 		4 * math.Pi / 4, 5 * math.Pi / 4,
@@ -594,11 +594,11 @@ func ExampleCos() {
 	fmt.Printf("%.4f\n", w.Data)
 
 	// Output:
-	// [1.0000 0.7071 0.0000 -0.7071 -1.0000 -0.7071]
+	// [1.0000 0.7071 -0.0000 -0.7071 -1.0000 -0.7071]
 }
 
 func ExampleTanh() {
-	v := tensor.New([]int{1, 9}, []float64{
+	v := tensor.New([]int{1, 9}, []float32{
 		-10, -5, -2, -1, 0, 1, 2, 5, 10,
 	})
 
@@ -681,11 +681,11 @@ func ExampleMul() {
 }
 
 func ExampleDiv() {
-	x := tensor.New([]int{2, 2}, []float64{
+	x := tensor.New([]int{2, 2}, []float32{
 		1, 2,
 		3, 4,
 	})
-	y := tensor.New([]int{2, 2}, []float64{
+	y := tensor.New([]int{2, 2}, []float32{
 		10, 20,
 		30, 40,
 	})
@@ -711,7 +711,7 @@ func ExampleSum() {
 }
 
 func ExampleMax() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		4, 3,
 		2, 1,
 	})
@@ -724,7 +724,7 @@ func ExampleMax() {
 }
 
 func ExampleMin() {
-	v := tensor.New([]int{2, 2}, []float64{
+	v := tensor.New([]int{2, 2}, []float32{
 		1, 2,
 		3, 4,
 	})
@@ -914,11 +914,11 @@ func ExampleUnsqueeze() {
 }
 
 func ExampleMatMul() {
-	x := tensor.New([]int{2, 3}, []float64{
+	x := tensor.New([]int{2, 3}, []float32{
 		1, 2, 3,
 		4, 5, 6,
 	})
-	y := tensor.New([]int{3, 2}, []float64{
+	y := tensor.New([]int{3, 2}, []float32{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -935,10 +935,10 @@ func ExampleMatMul() {
 }
 
 func ExampleMatMul_view() {
-	x := tensor.New([]int{1, 3}, []float64{
+	x := tensor.New([]int{1, 3}, []float32{
 		1, 2, 3,
 	})
-	y := tensor.New([]int{3, 2}, []float64{
+	y := tensor.New([]int{3, 2}, []float32{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -956,7 +956,7 @@ func ExampleMatMul_view() {
 }
 
 func ExampleBroadcastTo() {
-	v := tensor.New([]int{1, 2, 2}, []float64{
+	v := tensor.New([]int{1, 2, 2}, []float32{
 		1, 2,
 		3, 4,
 	})
@@ -989,7 +989,7 @@ func ExampleBroadcastTo() {
 }
 
 func ExampleSumTo() {
-	v := tensor.New([]int{2, 2, 2}, []float64{
+	v := tensor.New([]int{2, 2, 2}, []float32{
 		1, 2,
 		3, 4,
 
@@ -1129,14 +1129,14 @@ func ExampleTril() {
 }
 
 func ExampleMaskFill() {
-	v := tensor.New([]int{3, 3}, []float64{
+	v := tensor.New([]int{3, 3}, []float32{
 		1, 2, 3,
 		4, 5, 6,
 		7, 8, 9,
 	})
 
 	w := tensor.Tril(v)
-	cond := func(m float64) bool { return m == 0 }
+	cond := func(m float32) bool { return m == 0 }
 	filled := tensor.MaskFill(v, w, cond, math.Inf(-1))
 
 	for _, row := range filled.Seq2() {
@@ -1176,8 +1176,8 @@ func ExampleRand_seed() {
 	}
 
 	// Output:
-	// [0.9999 0.8856 0.3815]
-	// [0.4813 0.4442 0.5210]
+	// [1.0000 0.9857 0.9227]
+	// [0.8102 0.3055 0.6901]
 }
 
 func ExampleRandn_seed() {
@@ -1193,11 +1193,11 @@ func ExampleRandn_seed() {
 }
 
 func ExampleIsClose() {
-	x := tensor.New([]int{2, 2}, []float64{
+	x := tensor.New([]int{2, 2}, []float32{
 		1.0, 2.0,
 		3.0, 4.0,
 	})
-	y := tensor.New([]int{2, 2}, []float64{
+	y := tensor.New([]int{2, 2}, []float32{
 		1.0, 2.0,
 		3.0, 5.0,
 	})
@@ -1228,10 +1228,10 @@ func ExampleIsContiguous() {
 }
 
 func ExampleF2() {
-	x := tensor.Scalar(1.0)
-	y := tensor.Scalar(2.0)
+	x := tensor.Scalar[float32](1.0)
+	y := tensor.Scalar[float32](2.0)
 
-	z := tensor.F2(x, y, func(a, b float64) float64 {
+	z := tensor.F2(x, y, func(a, b float32) float32 {
 		return a + b
 	})
 
@@ -1287,14 +1287,14 @@ func ExampleMatMul_invalid() {
 		panic("unexpected panic for index")
 	}()
 
-	x := tensor.New([]int{2, 2, 2}, []float64{
+	x := tensor.New([]int{2, 2, 2}, []float32{
 		1, 2,
 		4, 5,
 
 		6, 7,
 		8, 9,
 	})
-	y := tensor.New([]int{2, 3, 2}, []float64{
+	y := tensor.New([]int{2, 3, 2}, []float32{
 		7, 8,
 		9, 10,
 		11, 12,
@@ -1352,14 +1352,14 @@ func TestArange(t *testing.T) {
 
 func TestArange_f64(t *testing.T) {
 	cases := []struct {
-		start, stop, step float64
-		want              *tensor.Tensor[float64]
+		start, stop, step float32
+		want              *tensor.Tensor[float32]
 	}{
 		{
 			start: 1.2,
 			stop:  5.2,
 			step:  0.5,
-			want: tensor.New([]int{8}, []float64{
+			want: tensor.New([]int{8}, []float32{
 				1.2, 1.7, 2.2, 2.7, 3.2, 3.7, 4.2, 4.7,
 			}),
 		},
@@ -1367,7 +1367,7 @@ func TestArange_f64(t *testing.T) {
 			start: 1.0,
 			stop:  -1.0,
 			step:  -0.3,
-			want: tensor.New([]int{7}, []float64{
+			want: tensor.New([]int{7}, []float32{
 				1.0, 0.7, 0.4, 0.1, -0.2, -0.5, -0.8,
 			}),
 		},
@@ -1571,40 +1571,40 @@ func TestSum(t *testing.T) {
 
 func TestMax(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
-		want *tensor.Tensor[float64]
+		want *tensor.Tensor[float32]
 	}{
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				4,
 			}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 3}, []float64{
+			v: tensor.New([]int{2, 3}, []float32{
 				1, 3, 2,
 				6, 5, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{3}, []float64{
+			want: tensor.New([]int{3}, []float32{
 				6, 5, 4,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 3}, []float64{
+			v: tensor.New([]int{2, 3}, []float32{
 				1, 3, 2,
 				6, 5, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				3, 6,
 			}),
 		},
@@ -1620,40 +1620,40 @@ func TestMax(t *testing.T) {
 
 func TestMin(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
-		want *tensor.Tensor[float64]
+		want *tensor.Tensor[float32]
 	}{
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				1,
 			}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				2, 1,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				2, 1,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				2, 1,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1,
 				3,
 			}),
@@ -1670,69 +1670,69 @@ func TestMin(t *testing.T) {
 
 func TestMean(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
-		want *tensor.Tensor[float64]
+		want *tensor.Tensor[float32]
 	}{
 		{
 			// scalar
-			v:    tensor.New(nil, []float64{42}),
+			v:    tensor.New(nil, []float32{42}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{42}),
+			want: tensor.New(nil, []float32{42}),
 		},
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				2.5,
 			}),
 		},
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				2.5,
 			}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				2, 3,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1.5,
 				3.5,
 			}),
 		},
 		{
 			// axis -1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{-1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1.5,
 				3.5,
 			}),
@@ -1749,75 +1749,75 @@ func TestMean(t *testing.T) {
 
 func TestVariance(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
-		want *tensor.Tensor[float64]
+		want *tensor.Tensor[float32]
 	}{
 		{
 			// scalar
-			v:    tensor.New(nil, []float64{42}),
+			v:    tensor.New(nil, []float32{42}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{0}),
+			want: tensor.New(nil, []float32{0}),
 		},
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				1.25,
 			}),
 		},
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				1.25,
 			}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1, 1,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				0.25,
 				0.25,
 			}),
 		},
 		{
 			// axis -1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{-1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				0.25,
 				0.25,
 			}),
 		},
 		{
-			v: tensor.New([]int{2, 2, 2}, []float64{
+			v: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
@@ -1825,13 +1825,13 @@ func TestVariance(t *testing.T) {
 				7, 8,
 			}),
 			axes: []int{1, 2},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1.25,
 				1.25,
 			}),
 		},
 		{
-			v: tensor.New([]int{2, 2, 2}, []float64{
+			v: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
@@ -1839,31 +1839,31 @@ func TestVariance(t *testing.T) {
 				7, 8,
 			}),
 			axes: []int{0, 1, 2},
-			want: tensor.New(nil, []float64{5.25}),
+			want: tensor.New(nil, []float32{5.25}),
 		},
 		{
-			v: tensor.New([]int{2, 3}, []float64{
+			v: tensor.New([]int{2, 3}, []float32{
 				1, 2, 3,
 				4, 5, 6,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				0.6666666667,
 				0.6666666667,
 			}),
 		},
 		{
 			// 1 row, axis 0, should be all 0
-			v: tensor.New([]int{1, 3}, []float64{
+			v: tensor.New([]int{1, 3}, []float32{
 				10, 20, 30,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{3}, []float64{
+			want: tensor.New([]int{3}, []float32{
 				0, 0, 0,
 			}),
 		},
 		{
-			v: tensor.New([]int{2, 2, 2}, []float64{
+			v: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
@@ -1871,18 +1871,18 @@ func TestVariance(t *testing.T) {
 				7, 8,
 			}),
 			axes: []int{1, -1}, // same as (1, 2)
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1.25,
 				1.25,
 			}),
 		},
 		{
 			// 1 dim
-			v: tensor.New([]int{5}, []float64{
+			v: tensor.New([]int{5}, []float32{
 				1, 2, 3, 4, 5,
 			}),
 			axes: []int{0},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				2.0,
 			}),
 		},
@@ -1898,64 +1898,64 @@ func TestVariance(t *testing.T) {
 
 func TestStdDev(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
-		want *tensor.Tensor[float64]
+		want *tensor.Tensor[float32]
 	}{
 		{
 			// scalar
-			v:    tensor.New(nil, []float64{42}),
+			v:    tensor.New(nil, []float32{42}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{0}),
+			want: tensor.New(nil, []float32{0}),
 		},
 		{
 			// all
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0, 1},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				math.Sqrt(1.25),
 			}),
 		},
 		{
 			// axis 0
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{0},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				1, 1,
 			}),
 		},
 		{
 			// axis 1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				math.Sqrt(0.25),
 				math.Sqrt(0.25),
 			}),
 		},
 		{
 			// axis -1
-			v: tensor.New([]int{2, 2}, []float64{
+			v: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 			axes: []int{-1},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				math.Sqrt(0.25),
 				math.Sqrt(0.25),
 			}),
 		},
 		{
-			v: tensor.New([]int{2, 2, 2}, []float64{
+			v: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
@@ -1963,13 +1963,13 @@ func TestStdDev(t *testing.T) {
 				7, 8,
 			}),
 			axes: []int{1, 2},
-			want: tensor.New([]int{2}, []float64{
+			want: tensor.New([]int{2}, []float32{
 				math.Sqrt(1.25),
 				math.Sqrt(1.25),
 			}),
 		},
 		{
-			v: tensor.New([]int{2, 2, 2}, []float64{
+			v: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
@@ -1977,7 +1977,7 @@ func TestStdDev(t *testing.T) {
 				7, 8,
 			}),
 			axes: []int{0, 1, 2},
-			want: tensor.New(nil, []float64{
+			want: tensor.New(nil, []float32{
 				math.Sqrt(5.25),
 			}),
 		},
@@ -2316,15 +2316,15 @@ func TestEqual(t *testing.T) {
 
 func TestIsClose(t *testing.T) {
 	cases := []struct {
-		v, w *tensor.Tensor[float64]
+		v, w *tensor.Tensor[float32]
 		want *tensor.Tensor[int]
 	}{
 		{
-			v: tensor.New([]int{2, 3}, []float64{
+			v: tensor.New([]int{2, 3}, []float32{
 				1, 2, 3,
 				4, 5, 6,
 			}),
-			w: tensor.New([]int{2, 3}, []float64{
+			w: tensor.New([]int{2, 3}, []float32{
 				1, 2, 3.0000001,
 				4, 5.00001, 6.1,
 			}),
@@ -2375,27 +2375,27 @@ func TestEqualAll(t *testing.T) {
 
 func TestIsCloseAll(t *testing.T) {
 	cases := []struct {
-		v, w *tensor.Tensor[float64]
+		v, w *tensor.Tensor[float32]
 		want bool
 	}{
 		{
-			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
+			v:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6}),
 			want: true,
 		},
 		{
-			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6.0000001}),
+			v:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6.0000001}),
 			want: true,
 		},
 		{
-			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6.1}),
+			v:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6.1}),
 			want: false,
 		},
 		{
-			v:    tensor.New([]int{2, 3}, []float64{1, 2, 3, 4, 5, 6}),
-			w:    tensor.New([]int{3, 2}, []float64{1, 2, 3, 4, 5, 6}),
+			v:    tensor.New([]int{2, 3}, []float32{1, 2, 3, 4, 5, 6}),
+			w:    tensor.New([]int{3, 2}, []float32{1, 2, 3, 4, 5, 6}),
 			want: false,
 		},
 	}
@@ -2490,12 +2490,12 @@ func TestArgmax(t *testing.T) {
 
 func TestMatMul(t *testing.T) {
 	cases := []struct {
-		x, y *tensor.Tensor[float64]
-		out  *tensor.Tensor[float64]
+		x, y *tensor.Tensor[float32]
+		out  *tensor.Tensor[float32]
 	}{
 		{
 			// batch
-			x: tensor.New([]int{2, 2, 2, 3}, []float64{
+			x: tensor.New([]int{2, 2, 2, 3}, []float32{
 				1, 2, 3,
 				4, 5, 6,
 
@@ -2508,7 +2508,7 @@ func TestMatMul(t *testing.T) {
 				3, 3, 3,
 				1, 2, 3,
 			}),
-			y: tensor.New([]int{2, 2, 3, 2}, []float64{
+			y: tensor.New([]int{2, 2, 3, 2}, []float32{
 				1, 0,
 				0, 1,
 				1, 1,
@@ -2525,7 +2525,7 @@ func TestMatMul(t *testing.T) {
 				1, 0,
 				1, 1,
 			}),
-			out: tensor.New([]int{2, 2, 2, 2}, []float64{
+			out: tensor.New([]int{2, 2, 2, 2}, []float32{
 				4, 5,
 				10, 11,
 
@@ -2540,48 +2540,48 @@ func TestMatMul(t *testing.T) {
 			}),
 		},
 		{
-			x: tensor.New([]int{2, 3}, []float64{
+			x: tensor.New([]int{2, 3}, []float32{
 				1, 2, 3,
 				4, 5, 6,
 			}),
-			y: tensor.New([]int{3, 2}, []float64{
+			y: tensor.New([]int{3, 2}, []float32{
 				0, 0,
 				0, 0,
 				0, 0,
 			}),
-			out: tensor.New([]int{2, 2}, []float64{
+			out: tensor.New([]int{2, 2}, []float32{
 				0, 0,
 				0, 0,
 			}),
 		},
 		{
-			x: tensor.New([]int{1, 4}, []float64{
+			x: tensor.New([]int{1, 4}, []float32{
 				1, 2, 3, 4,
 			}),
-			y: tensor.New([]int{4, 1}, []float64{
+			y: tensor.New([]int{4, 1}, []float32{
 				1,
 				2,
 				3,
 				4,
 			}),
-			out: tensor.New([]int{1, 1}, []float64{
+			out: tensor.New([]int{1, 1}, []float32{
 				30,
 			}),
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{1, 2, 2}, []float64{
+			x: tensor.New([]int{1, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2, 2}, []float64{
+			y: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			out: tensor.New([]int{2, 2, 2}, []float64{
+			out: tensor.New([]int{2, 2, 2}, []float32{
 				7, 10,
 				15, 22,
 
@@ -2591,18 +2591,18 @@ func TestMatMul(t *testing.T) {
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{2, 2}, []float64{
+			x: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2, 2}, []float64{
+			y: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			out: tensor.New([]int{2, 2, 2}, []float64{
+			out: tensor.New([]int{2, 2, 2}, []float32{
 				7, 10,
 				15, 22,
 
@@ -2612,19 +2612,19 @@ func TestMatMul(t *testing.T) {
 		},
 		{
 			// broadcast
-			x: tensor.New([]int{2, 2, 2}, []float64{
+			x: tensor.New([]int{2, 2, 2}, []float32{
 				1, 2,
 				3, 4,
 
 				1, 2,
 				3, 4,
 			}),
-			y: tensor.New([]int{2, 2}, []float64{
+			y: tensor.New([]int{2, 2}, []float32{
 				1, 2,
 				3, 4,
 			}),
 
-			out: tensor.New([]int{2, 2, 2}, []float64{
+			out: tensor.New([]int{2, 2, 2}, []float32{
 				7, 10,
 				15, 22,
 
@@ -4038,11 +4038,11 @@ func TestReshape_invalid(t *testing.T) {
 
 func TestMean_invalid(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
 	}{
-		{v: tensor.Zeros[float64](1, 4), axes: []int{10}},
-		{v: tensor.Zeros[float64](1, 4), axes: []int{0, 0}},
+		{v: tensor.Zeros[float32](1, 4), axes: []int{10}},
+		{v: tensor.Zeros[float32](1, 4), axes: []int{0, 0}},
 	}
 
 	for _, c := range cases {
@@ -4063,10 +4063,10 @@ func TestMean_invalid(t *testing.T) {
 
 func TestVariance_invalid(t *testing.T) {
 	cases := []struct {
-		v    *tensor.Tensor[float64]
+		v    *tensor.Tensor[float32]
 		axes []int
 	}{
-		{v: tensor.Zeros[float64](1, 4), axes: []int{10}},
+		{v: tensor.Zeros[float32](1, 4), axes: []int{10}},
 	}
 
 	for _, c := range cases {
@@ -4689,30 +4689,30 @@ func TestMinimum(t *testing.T) {
 	cases := []struct {
 		v, w *tensor.Tensor[int]
 		y    *tensor.Tensor[int]
-		mask *tensor.Tensor[float64]
+		mask *tensor.Tensor[float32]
 	}{
 		{
 			v:    tensor.New([]int{2, 2}, []int{1, 5, 3, 2}),
 			w:    tensor.New([]int{2, 2}, []int{2, 4, 3, 8}),
 			y:    tensor.New([]int{2, 2}, []int{1, 4, 3, 2}),
-			mask: tensor.New([]int{2, 2}, []float64{1, 0, 1, 1}),
+			mask: tensor.New([]int{2, 2}, []float32{1, 0, 1, 1}),
 		},
 		{
 			v:    tensor.New([]int{2, 2}, []int{1, 5, 3, 2}),
 			w:    tensor.New([]int{2}, []int{2, 4}),
 			y:    tensor.New([]int{2, 2}, []int{1, 4, 2, 2}),
-			mask: tensor.New([]int{2, 2}, []float64{1, 0, 0, 1}),
+			mask: tensor.New([]int{2, 2}, []float32{1, 0, 0, 1}),
 		},
 		{
 			v:    tensor.New([]int{3}, []int{1, 2, 3}),
 			w:    tensor.New([]int{3}, []int{1, 1, 3}),
 			y:    tensor.New([]int{3}, []int{1, 1, 3}),
-			mask: tensor.New([]int{3}, []float64{1, 0, 1}),
+			mask: tensor.New([]int{3}, []float32{1, 0, 1}),
 		},
 	}
 
 	for _, c := range cases {
-		y, mask := tensor.Minimum[int, float64](c.v, c.w)
+		y, mask := tensor.Minimum[int, float32](c.v, c.w)
 
 		if !tensor.EqualAll(y, c.y) {
 			t.Errorf("y = %v, want %v", y, c.y)

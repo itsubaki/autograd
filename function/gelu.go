@@ -1,8 +1,7 @@
 package function
 
 import (
-	"math"
-
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
@@ -27,7 +26,7 @@ type GELUT struct {
 func (f *GELUT) Forward(x ...*variable.Variable) []*variable.Variable {
 	f.x = x[0]
 
-	y := tensor.F(x[0].Data, func(x float64) float64 {
+	y := tensor.F(x[0].Data, func(x float32) float32 {
 		return 0.5 * x * (1.0 + math.Tanh(sqrt2overPi*(x+c*x*x*x)))
 	})
 

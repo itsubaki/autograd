@@ -25,8 +25,8 @@ func ExampleAdamW() {
 	}
 
 	// Output:
-	// variable(0.9989684091623926)
-	// variable(0.9979449255202475)
+	// variable(0.9989684)
+	// variable(0.99794495)
 }
 
 func ExampleAdamW_nograd() {
