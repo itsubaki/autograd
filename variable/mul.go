@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/tensor"
 
 // MulC returns a variable representing c * x[0].
-func MulC(c float64, x ...*Variable) *Variable {
+func MulC(c float32, x ...*Variable) *Variable {
 	return (&Function{Forwarder: &MulT{}}).First(New(c), x[0])
 }
 

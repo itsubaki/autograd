@@ -9,7 +9,7 @@ import (
 
 // DropoutSimple returns a function that applies dropout during training
 // by composing primitive operations such as Rand, Mask, Mul, and MulC.
-func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variable) *variable.Variable {
+func DropoutSimple(ratio float32, s ...randv2.Source) func(x ...*variable.Variable) *variable.Variable {
 	return func(x ...*variable.Variable) *variable.Variable {
 		if !variable.Config.Train {
 			return x[0]
@@ -21,6 +21,6 @@ func DropoutSimple(ratio float64, s ...randv2.Source) func(x ...*variable.Variab
 	}
 }
 
-func mask(ratio float64) func(v float64) bool {
-	return func(v float64) bool { return v > ratio }
+func mask(ratio float32) func(v float32) bool {
+	return func(v float32) bool { return v > ratio }
 }

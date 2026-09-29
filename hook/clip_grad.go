@@ -1,16 +1,15 @@
 package hook
 
 import (
-	"math"
-
 	"github.com/itsubaki/autograd/layer"
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/tensor"
 )
 
 // ClipGrad returns a hook that clips the global gradient norm to max.
-func ClipGrad(max float64) func(params layer.Parameters) {
+func ClipGrad(max float32) func(params layer.Parameters) {
 	return func(params layer.Parameters) {
-		var total float64
+		var total float32
 		for _, p := range params {
 			if p.Grad == nil {
 				continue

@@ -49,6 +49,6 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	}
 }
 
-func isClose(a, b *tensor.Tensor[float64]) *tensor.Tensor[float64] {
-	return tensor.Float64(tensor.IsClose(a, b))
+func isClose(a, b *tensor.Tensor[float32]) *tensor.Tensor[float32] {
+	return tensor.Float32(tensor.IsClose(a, b))
 }

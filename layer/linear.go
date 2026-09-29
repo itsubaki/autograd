@@ -1,10 +1,10 @@
 package layer
 
 import (
-	"math"
 	randv2 "math/rand/v2"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
@@ -85,7 +85,7 @@ func (l *LinearT) xparams(x *variable.Variable) []*variable.Variable {
 
 func initw(inSize, outSize int, s randv2.Source) *variable.Variable {
 	w := tensor.Randn([]int{inSize, outSize}, s)
-	xavier := 1.0 / math.Sqrt(float64(inSize))
+	xavier := 1.0 / math.Sqrt(float32(inSize))
 	return variable.From(tensor.MulC(xavier, w))
 }
 

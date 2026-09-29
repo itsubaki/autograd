@@ -40,20 +40,20 @@ func ExampleLSTM_backward() {
 	}
 
 	// Output:
-	// lstm.h2f.w variable(-0.007097596643213066)
-	// lstm.h2i.w variable(-0.0062508612982463485)
-	// lstm.h2o.w variable(-0.017558407475346018)
-	// lstm.h2u.w variable(0.0016808382857761302)
-	// lstm.x2f.b variable(0.013515028138341746)
-	// lstm.x2f.w variable[2 1]([0.013515028138341746 0.027030056276683492])
-	// lstm.x2i.b variable(0.04252623292012907)
-	// lstm.x2i.w variable[2 1]([0.04252623292012907 0.08505246584025813])
-	// lstm.x2o.b variable(0.05279536845172966)
-	// lstm.x2o.w variable[2 1]([0.05279536845172966 0.10559073690345933])
-	// lstm.x2u.b variable(-0.00757230286787535)
-	// lstm.x2u.w variable[2 1]([-0.00757230286787535 -0.0151446057357507])
+	// lstm.h2f.w variable(-0.0070975972)
+	// lstm.h2i.w variable(-0.0062508606)
+	// lstm.h2o.w variable(-0.017558405)
+	// lstm.h2u.w variable(0.001680839)
+	// lstm.x2f.b variable(0.013515029)
+	// lstm.x2f.w variable[2 1]([0.013515029 0.027030058])
+	// lstm.x2i.b variable(0.04252623)
+	// lstm.x2i.w variable[2 1]([0.04252623 0.08505246])
+	// lstm.x2o.b variable(0.052795365)
+	// lstm.x2o.w variable[2 1]([0.052795365 0.10559073])
+	// lstm.x2u.b variable(-0.007572299)
+	// lstm.x2u.w variable[2 1]([-0.007572299 -0.015144598])
 	// linear.b variable(2)
-	// linear.w variable(-1.1705639065492832)
+	// linear.w variable(-1.1705639)
 }
 
 func ExampleLSTM_ResetState() {

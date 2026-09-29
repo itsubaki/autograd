@@ -18,7 +18,7 @@ type ConcatT struct {
 }
 
 func (f *ConcatT) Forward(x ...*Variable) []*Variable {
-	list := make([]*tensor.Tensor[float64], 0)
+	list := make([]*tensor.Tensor[float32], 0)
 	for _, v := range x {
 		list = append(list, v.Data)
 		f.size = append(f.size, v.Shape()[f.Axis])

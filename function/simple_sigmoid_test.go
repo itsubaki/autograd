@@ -16,11 +16,11 @@ func ExampleSigmoidSimple() {
 	fmt.Println(F.SigmoidSimple(variable.New(4)))
 
 	// Output:
-	// variable(0.01798620996209156)
-	// variable(0.11920292202211755)
+	// variable(0.01798621)
+	// variable(0.11920292)
 	// variable(0.5)
-	// variable(0.8807970779778823)
-	// variable(0.9820137900379085)
+	// variable(0.880797)
+	// variable(0.98201376)
 }
 
 func ExampleSigmoidSimple_backward() {
@@ -31,7 +31,7 @@ func ExampleSigmoidSimple_backward() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[5]([0.017662706213291118 0.1049935854035065 0.25 0.1049935854035065 0.017662706213291114])
+	// variable[5]([0.017662708 0.104993574 0.25 0.104993574 0.017662706])
 }
 
 func ExampleSigmoidSimple_double() {
@@ -47,6 +47,6 @@ func ExampleSigmoidSimple_double() {
 	fmt.Println(x.Grad)
 
 	// Output:
-	// variable[5]([0.017662706213291118 0.1049935854035065 0.25 0.1049935854035065 0.017662706213291114])
-	// variable[5]([0.017027335928389127 -0.07996250105615305 -0 -0.07996250105615305 -0.017027335928389127])
+	// variable[5]([0.017662708 0.104993574 0.25 0.104993574 0.017662706])
+	// variable[5]([0.017027339 -0.07996249 -0 -0.07996249 -0.017027335])
 }

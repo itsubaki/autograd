@@ -2,16 +2,16 @@ package function_test
 
 import (
 	"fmt"
-	"math"
 
 	F "github.com/itsubaki/autograd/function"
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
 func ExampleMaskFill() {
-	mask := tensor.Tril(tensor.Ones[float64](3, 3))
-	f := F.MaskFill(mask, func(m float64) bool { return m == 0 }, math.Inf(-1))
+	mask := tensor.Tril(tensor.Ones[float32](3, 3))
+	f := F.MaskFill(mask, func(m float32) bool { return m == 0 }, math.Inf(-1))
 
 	x := variable.New(
 		1, 2, 3,
@@ -31,8 +31,8 @@ func ExampleMaskFill() {
 }
 
 func ExampleMaskFill_double() {
-	mask := tensor.Tril(tensor.Ones[float64](3, 3))
-	f := F.MaskFill(mask, func(m float64) bool { return m == 0 }, math.Inf(-1))
+	mask := tensor.Tril(tensor.Ones[float32](3, 3))
+	f := F.MaskFill(mask, func(m float32) bool { return m == 0 }, math.Inf(-1))
 
 	x := variable.New(
 		1, 2, 3,

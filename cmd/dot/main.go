@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// input
-	x := variable.New(xval)
+	x := variable.New(float32(xval))
 	x.Name = "x"
 
 	// func
