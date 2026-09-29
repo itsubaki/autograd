@@ -2,10 +2,10 @@ package math
 
 import "math"
 
-var (
-	Pi         = float32(math.Pi)
-	Sqrt2      = float32(math.Sqrt2)
-	MaxFloat32 = float32(math.MaxFloat32)
+const (
+	Pi         = math.Pi
+	Sqrt2      = math.Sqrt2
+	MaxFloat32 = math.MaxFloat32
 )
 
 func Sin(x float32) float32 { return float32(math.Sin(float64(x))) }
