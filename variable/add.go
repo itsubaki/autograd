@@ -3,7 +3,7 @@ package variable
 import "github.com/itsubaki/autograd/tensor"
 
 // AddC returns a variable representing c + x[0].
-func AddC(c float64, x ...*Variable) *Variable {
+func AddC(c float32, x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &AddT{},
 	}).First(New(c), x[0])

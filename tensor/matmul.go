@@ -2,7 +2,7 @@
 
 package tensor
 
-func matmul(a, b, o []float64, m, k, n int) {
+func matmul(a, b, o []float32, m, k, n int) {
 	for i := range m {
 		ai := i * k
 		oi := i * n

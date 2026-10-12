@@ -7,15 +7,15 @@ import (
 
 // Momentum is an optimizer that uses momentum-based gradient descent.
 type Momentum struct {
-	LearningRate float64
-	Momentum     float64
-	Vs           map[string]*tensor.Tensor[float64]
+	LearningRate float32
+	Momentum     float32
+	Vs           map[string]*tensor.Tensor[float32]
 }
 
 // Update updates the parameters of the model.
 func (o *Momentum) Update(params layer.Parameters) {
 	if len(o.Vs) == 0 {
-		o.Vs = make(map[string]*tensor.Tensor[float64])
+		o.Vs = make(map[string]*tensor.Tensor[float32])
 	}
 
 	for name, p := range params {
@@ -34,6 +34,6 @@ func (o *Momentum) Update(params layer.Parameters) {
 }
 
 // momentum returns a function that computes the momentum update for a given velocity v and gradient grad.
-func momentum(momentum, lr float64) func(v, grad float64) float64 {
-	return func(v, grad float64) float64 { return momentum*v - lr*grad }
+func momentum(momentum, lr float32) func(v, grad float32) float32 {
+	return func(v, grad float32) float32 { return momentum*v - lr*grad }
 }

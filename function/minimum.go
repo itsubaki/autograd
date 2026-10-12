@@ -13,11 +13,11 @@ func Minimum(x ...*variable.Variable) *variable.Variable {
 }
 
 type MinimumT struct {
-	mask *tensor.Tensor[float64]
+	mask *tensor.Tensor[float32]
 }
 
 func (f *MinimumT) Forward(x ...*variable.Variable) []*variable.Variable {
-	y, mask := tensor.Minimum[float64, float64](x[0].Data, x[1].Data)
+	y, mask := tensor.Minimum[float32, float32](x[0].Data, x[1].Data)
 	f.mask = mask
 
 	return []*variable.Variable{

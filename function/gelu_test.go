@@ -42,5 +42,5 @@ func ExampleGELU_double() {
 	// Output:
 	// variable[1 3]([-0 0 10])
 	// variable[1 3]([0 0.5 1])
-	// variable[1 3]([0 0.7978845608028654 0])
+	// variable[1 3]([0 0.7978846 0])
 }

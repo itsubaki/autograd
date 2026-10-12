@@ -1,8 +1,7 @@
 package function
 
 import (
-	"math"
-
+	"github.com/itsubaki/autograd/math"
 	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
@@ -35,6 +34,6 @@ func (f *ReLUT) Backward(gy ...*variable.Variable) []*variable.Variable {
 	}
 }
 
-func maximum(v float64) float64 { return math.Max(v, 0.0) }
+func maximum(v float32) float32 { return math.Max(v, 0.0) }
 
-func relu(v float64) bool { return v > 0 }
+func relu(v float32) bool { return v > 0 }

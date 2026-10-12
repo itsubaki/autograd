@@ -16,5 +16,5 @@ func ExampleDiff() {
 	fmt.Println(numerical.Diff(f, v))
 
 	// Output:
-	// variable(4.000000000004)
+	// variable(3.9982796)
 }
