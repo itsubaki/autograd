@@ -21,6 +21,7 @@
 go.work
 
 # add
+.DS_Store
 coverage.html
 coverage.txt
 sample.dot

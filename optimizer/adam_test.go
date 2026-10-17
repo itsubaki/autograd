@@ -12,14 +12,14 @@ func ExampleAdam() {
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Adam{
+	optim := &optimizer.Adam{
 		Alpha: 0.001,
 		Beta1: 0.9,
 		Beta2: 0.999,
 	}
 
 	for range 2 {
-		o.Update(m.Params())
+		optim.Update(m.Params())
 		fmt.Println(p)
 
 	}
@@ -33,13 +33,13 @@ func ExampleAdam_nograd() {
 	p := variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Adam{
+	optim := &optimizer.Adam{
 		Alpha: 0.001,
 		Beta1: 0.9,
 		Beta2: 0.999,
 	}
 
-	o.Update(m.Params())
+	optim.Update(m.Params())
 	fmt.Println(p)
 
 	// Output:
