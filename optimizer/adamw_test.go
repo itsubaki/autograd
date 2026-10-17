@@ -12,7 +12,7 @@ func ExampleAdamW() {
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.AdamW{
+	optim := &optimizer.AdamW{
 		Alpha:       0.001,
 		Beta1:       0.9,
 		Beta2:       0.999,
@@ -20,7 +20,7 @@ func ExampleAdamW() {
 	}
 
 	for range 2 {
-		o.Update(m.Params())
+		optim.Update(m.Params())
 		fmt.Println(p)
 	}
 
@@ -33,14 +33,14 @@ func ExampleAdamW_nograd() {
 	p := variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.AdamW{
+	optim := &optimizer.AdamW{
 		Alpha:       0.001,
 		Beta1:       0.9,
 		Beta2:       0.999,
 		WeightDecay: 0.1,
 	}
 
-	o.Update(m.Params())
+	optim.Update(m.Params())
 	fmt.Println(p)
 
 	// Output:

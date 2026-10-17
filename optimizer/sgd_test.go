@@ -12,11 +12,11 @@ func ExampleSGD() {
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.SGD{
+	optim := &optimizer.SGD{
 		LearningRate: 0.1,
 	}
 
-	o.Update(m.Params())
+	optim.Update(m.Params())
 	fmt.Println(p)
 
 	// Output:
@@ -27,11 +27,11 @@ func ExampleSGD_nograd() {
 	p := variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.SGD{
+	optim := &optimizer.SGD{
 		LearningRate: 0.1,
 	}
 
-	o.Update(m.Params())
+	optim.Update(m.Params())
 	fmt.Println(p)
 
 	// Output:

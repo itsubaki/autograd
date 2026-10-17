@@ -483,7 +483,7 @@ func Example_mlp() {
 		model.WithMLPActivation(F.ReLU),
 	)
 
-	o := optimizer.SGD{
+	optim := &optimizer.SGD{
 		LearningRate: 0.2,
 	}
 
@@ -496,7 +496,7 @@ func Example_mlp() {
 
 		m.Cleargrads()
 		loss.Backward()
-		o.Update(m.Params())
+		optim.Update(m.Params())
 
 		if i%10 == 0 {
 			fmt.Printf("%.4f\n", loss.At())

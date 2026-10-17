@@ -117,7 +117,7 @@ dataloader := &DataLoader{
 }
 
 m := model.NewLSTM(hiddenSize, 1)
-o := optimizer.SGD{
+optim := &optimizer.SGD{
 	LearningRate: 0.01,
 }
 
@@ -133,7 +133,7 @@ for i := range epochs {
 			m.Cleargrads()
 			loss.Backward()
 			loss.UnchainBackward()
-			o.Update(m)
+			optim.Update(m)
 		}
 	}
 }

@@ -12,13 +12,13 @@ func ExampleMomentum() {
 	p.Grad = variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Momentum{
+	optim := &optimizer.Momentum{
 		LearningRate: 0.001,
 		Momentum:     0.9,
 	}
 
 	for range 2 {
-		o.Update(m.Params())
+		optim.Update(m.Params())
 		fmt.Println(p)
 	}
 
@@ -31,12 +31,12 @@ func ExampleMomentum_nograd() {
 	p := variable.New(1.0)
 	m := &TestModel{P: p}
 
-	o := optimizer.Momentum{
+	optim := &optimizer.Momentum{
 		LearningRate: 0.001,
 		Momentum:     0.9,
 	}
 
-	o.Update(m.Params())
+	optim.Update(m.Params())
 	fmt.Println(p)
 
 	// Output:

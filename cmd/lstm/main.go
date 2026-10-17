@@ -107,7 +107,7 @@ func main() {
 	}
 
 	m := model.NewLSTM(hiddenSize, 1)
-	o := optimizer.SGD{
+	optim := &optimizer.SGD{
 		LearningRate: float32(lr),
 	}
 
@@ -124,7 +124,7 @@ func main() {
 				m.Cleargrads()
 				loss.Backward()
 				loss.UnchainBackward()
-				o.Update(m.Params())
+				optim.Update(m.Params())
 			}
 		}
 
