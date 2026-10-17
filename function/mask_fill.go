@@ -8,7 +8,7 @@ import (
 // MaskFill returns a function that fills elements of x with the given value v where the corresponding elements of mask are 0.
 // This is typically used for attention masking in Transformer models,
 // e.g. filling masked positions with a large negative value before softmax.
-func MaskFill(mask *tensor.Tensor[float64], f func(m float64) bool, v float64) func(x ...*variable.Variable) *variable.Variable {
+func MaskFill(mask *tensor.Tensor[float32], f func(m float32) bool, v float32) func(x ...*variable.Variable) *variable.Variable {
 	return (&variable.Function{
 		Forwarder: &MaskFillT{
 			mask: mask,
@@ -19,9 +19,9 @@ func MaskFill(mask *tensor.Tensor[float64], f func(m float64) bool, v float64) f
 }
 
 type MaskFillT struct {
-	mask *tensor.Tensor[float64]
-	fill float64
-	cond func(m float64) bool
+	mask *tensor.Tensor[float32]
+	fill float32
+	cond func(m float32) bool
 }
 
 func (f *MaskFillT) Forward(x ...*variable.Variable) []*variable.Variable {

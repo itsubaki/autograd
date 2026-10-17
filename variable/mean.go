@@ -30,7 +30,7 @@ func (f *MeanT) Backward(gy ...*Variable) []*Variable {
 		size := f.x.Data.Size()
 		bgy := BroadcastTo(f.x.Shape()...)(gy[0])
 		return []*Variable{
-			MulC(1/float64(size), bgy),
+			MulC(1/float32(size), bgy),
 		}
 	}
 
@@ -46,6 +46,6 @@ func (f *MeanT) Backward(gy ...*Variable) []*Variable {
 	gy0 := Reshape(reshape...)(gy[0])
 	bgy := BroadcastTo(shape...)(gy0)
 	return []*Variable{
-		MulC(1/float64(size), bgy),
+		MulC(1/float32(size), bgy),
 	}
 }

@@ -7,7 +7,7 @@ import (
 
 // SGD is an optimizer that uses the stochastic gradient descent algorithm.
 type SGD struct {
-	LearningRate float64
+	LearningRate float32
 }
 
 // Update updates the parameters of the model.
@@ -22,6 +22,6 @@ func (o *SGD) Update(params layer.Parameters) {
 }
 
 // sgd returns a function that computes the SGD update for a given parameter value a and gradient b using the specified learning rate lr.
-func sgd(lr float64) func(a, b float64) float64 {
-	return func(a, b float64) float64 { return a - lr*b }
+func sgd(lr float32) func(a, b float32) float32 {
+	return func(a, b float32) float32 { return a - lr*b }
 }

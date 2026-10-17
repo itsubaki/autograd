@@ -38,7 +38,7 @@ func (f *CrossEntropyT) Forward(x ...*variable.Variable) []*variable.Variable {
 	sum := tensor.Sum(logp).At()                                      // scalar
 
 	return []*variable.Variable{
-		variable.New(-1.0 / float64(f.N) * sum),
+		variable.New(-1.0 / float32(f.N) * sum),
 	}
 }
 
@@ -53,7 +53,7 @@ func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable 
 	y := Softmax(1)(f.x)                                    // (N, C)
 	mask := ignoreMask(f.label, f.C, f.ignoreIndex)         // (N, C)
 	diff := Mul(Sub(y, t), mask)                            // (y-t) * mask
-	yt := MulC(1.0/float64(f.N), diff)                      // (y-t) * mask/N
+	yt := MulC(1.0/float32(f.N), diff)                      // (y-t) * mask/N
 	gx := Mul(yt, gy[0])                                    // (y-t) * mask/N * gy
 	return []*variable.Variable{
 		Reshape(f.x.Shape()...)(gx),
@@ -61,8 +61,8 @@ func (f *CrossEntropyT) Backward(gy ...*variable.Variable) []*variable.Variable 
 }
 
 // oneHot converts a slice of integer labels into a one-hot encoded tensor.
-func oneHot(label []int, CNums int, ignoreIndex int) *tensor.Tensor[float64] {
-	out := tensor.Zeros[float64](len(label), CNums)
+func oneHot(label []int, CNums int, ignoreIndex int) *tensor.Tensor[float32] {
+	out := tensor.Zeros[float32](len(label), CNums)
 	for i, v := range label {
 		if v == ignoreIndex {
 			continue
@@ -75,7 +75,7 @@ func oneHot(label []int, CNums int, ignoreIndex int) *tensor.Tensor[float64] {
 }
 
 // logsumexp computes log(sum(exp(x))) for the input tensor x.
-func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
+func logsumexp(x *tensor.Tensor[float32]) *tensor.Tensor[float32] {
 	// log(sum(exp(x))) = m + log(sum(exp(x - max)))
 	max1 := tensor.Unsqueeze(tensor.Max(x, 1), 1)    // max1 = max(x, axis=1)
 	expy := tensor.Exp(tensor.Sub(x, max1))          // expy = exp(x - max1)
@@ -85,8 +85,8 @@ func logsumexp(x *tensor.Tensor[float64]) *tensor.Tensor[float64] {
 }
 
 // logp extracts the values from x corresponding to the true labels.
-func logp(x *tensor.Tensor[float64], label []int, ignoreIndex int) *tensor.Tensor[float64] {
-	out := tensor.Zeros[float64](len(label), 1)
+func logp(x *tensor.Tensor[float32], label []int, ignoreIndex int) *tensor.Tensor[float32] {
+	out := tensor.Zeros[float32](len(label), 1)
 	for i, v := range label {
 		if v == ignoreIndex {
 			continue
@@ -112,7 +112,7 @@ func count(label []int, ignoreIndex int) int {
 }
 
 func ignoreMask(label []int, C, ignoreIndex int) *variable.Variable {
-	mask := tensor.Ones[float64](len(label), C)
+	mask := tensor.Ones[float32](len(label), C)
 	for i, v := range label {
 		if v != ignoreIndex {
 			continue

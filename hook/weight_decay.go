@@ -6,7 +6,7 @@ import (
 )
 
 // WeightDecay returns a hook that adds L2 weight decay to gradients.
-func WeightDecay(lambda float64) func(params layer.Parameters) {
+func WeightDecay(lambda float32) func(params layer.Parameters) {
 	return func(params layer.Parameters) {
 		for _, p := range params {
 			if p.Grad == nil {
@@ -19,6 +19,6 @@ func WeightDecay(lambda float64) func(params layer.Parameters) {
 }
 
 // decay returns a function that adds lambda times b to a.
-func decay(lambda float64) func(a, b float64) float64 {
-	return func(a, b float64) float64 { return a + lambda*b }
+func decay(lambda float32) func(a, b float32) float32 {
+	return func(a, b float32) float32 { return a + lambda*b }
 }
