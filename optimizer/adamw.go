@@ -51,9 +51,10 @@ func (o *AdamW) Update(params layer.Parameters) {
 			return lr * m / (math.Sqrt(v) + 1e-8)
 		})
 
-		p.Data = tensor.Sub(p.Data, step)
 		p.Data = tensor.F(p.Data, func(w float32) float32 {
-			return w * (1 - lr*o.WeightDecay)
+			return w * (1 - o.Alpha*o.WeightDecay)
 		})
+
+		p.Data = tensor.Sub(p.Data, step)
 	}
 }
