@@ -31,6 +31,15 @@ func (f *MeanSquaredErrorT) Backward(gy ...*variable.Variable) []*variable.Varia
 	diff := Sub(f.x0, f.x1)                                 // x0 - x1
 	gx0 := MulC(2.0/float32(diff.Size()), Mul(gy[0], diff)) // gy * (x0 - x1) * 2/N
 	gx1 := Neg(gx0)                                         // -gx0
+
+	if !tensor.SliceEqual(gx0.Shape(), f.x0.Shape()) {
+		gx0 = SumTo(f.x0.Shape()...)(gx0)
+	}
+
+	if !tensor.SliceEqual(gx1.Shape(), f.x1.Shape()) {
+		gx1 = SumTo(f.x1.Shape()...)(gx1)
+	}
+
 	return []*variable.Variable{
 		gx0,
 		gx1,
