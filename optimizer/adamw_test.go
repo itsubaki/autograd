@@ -58,14 +58,18 @@ func TestAdamW(t *testing.T) {
 		want  []float32
 	}{
 		{
-			name: "zero gradient",
-			grad: 0, alpha: 0.001, decay: 0.1,
-			want: []float32{0.9999, 0.99980001},
+			name:  "zero gradient",
+			grad:  0,
+			alpha: 0.001,
+			decay: 0.1,
+			want:  []float32{0.9999, 0.99980001},
 		},
 		{
-			name: "decay before gradient update",
-			grad: 1, alpha: 0.1, decay: 0.2,
-			want: []float32{0.88, 0.7624},
+			name:  "decay before gradient update",
+			grad:  1,
+			alpha: 0.1,
+			decay: 0.2,
+			want:  []float32{0.88, 0.7624},
 		},
 	}
 
