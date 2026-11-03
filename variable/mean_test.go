@@ -8,7 +8,7 @@ import (
 	"github.com/itsubaki/autograd/variable"
 )
 
-func TestMeanNegativeAxes(t *testing.T) {
+func TestMean_negativeAxes(t *testing.T) {
 	cases := []struct {
 		name      string
 		axes      []int
