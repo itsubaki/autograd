@@ -169,6 +169,44 @@ func TestTranspose(t *testing.T) {
 	}
 }
 
+func TestTransposeDefaultAxes(t *testing.T) {
+	cases := []struct {
+		name         string
+		x, y, gy, gx *variable.Variable
+	}{
+		{
+			name: "matrix",
+			x:    variable.New(1, 2, 3, 4, 5, 6).Reshape(2, 3),
+			y:    variable.New(1, 4, 2, 5, 3, 6).Reshape(3, 2),
+			gy:   variable.New(1, 2, 3, 4, 5, 6).Reshape(3, 2),
+			gx:   variable.New(1, 3, 5, 2, 4, 6).Reshape(2, 3),
+		},
+		{
+			name: "three dimensions",
+			x:    variable.New(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).Reshape(2, 2, 3),
+			y:    variable.New(1, 7, 4, 10, 2, 8, 5, 11, 3, 9, 6, 12).Reshape(3, 2, 2),
+			gy:   variable.New(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).Reshape(3, 2, 2),
+			gx:   variable.New(1, 5, 9, 3, 7, 11, 2, 6, 10, 4, 8, 12).Reshape(2, 2, 3),
+		},
+	}
+	for _, c := range cases {
+		y := variable.Transpose()(c.x)
+		if !tensor.SliceEqual(y.Shape(), c.y.Shape()) || !tensor.IsCloseAll(y.Data, c.y.Data) {
+			t.Errorf("y=%v, want=%v", y, c.y)
+		}
+
+		y.Grad = c.gy
+		y.Backward()
+		if c.x.Grad == nil {
+			t.Fatal("missing input gradient")
+		}
+
+		if !tensor.SliceEqual(c.x.Grad.Shape(), c.gx.Shape()) || !tensor.IsCloseAll(c.x.Grad.Data, c.gx.Data) {
+			t.Errorf("gx=%v, want=%v", c.x.Grad, c.gx)
+		}
+	}
+}
+
 func TestInvPerm_invalid(t *testing.T) {
 	cases := []struct {
 		ndim int

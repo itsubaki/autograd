@@ -23,6 +23,7 @@ func TransposeMatMul(ndim int) func(x ...*Variable) *Variable {
 }
 
 // Transpose returns a function that transposes x[0] using the given axes.
+// If no axes are given, it reverses the order of the axes.
 func Transpose(axes ...int) func(x ...*Variable) *Variable {
 	return (&Function{
 		Forwarder: &TransposeT{
@@ -55,6 +56,14 @@ func (f *TransposeT) Backward(gy ...*Variable) []*Variable {
 // invperm returns the inverse permutation of the given axes for a tensor with ndim dimensions.
 func invperm(ndim int, axes ...int) []int {
 	out := make([]int, ndim)
+	if len(axes) == 0 {
+		for i := range ndim {
+			out[i] = ndim - 1 - i
+		}
+
+		return out
+	}
+
 	for i, a := range axes {
 		if a < 0 {
 			a += ndim

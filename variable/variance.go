@@ -41,6 +41,10 @@ func (f *VarianceT) Backward(gy ...*Variable) []*Variable {
 	shape := f.x.Shape()
 	size := 1
 	for _, ax := range f.Axes {
+		if ax < 0 {
+			ax += len(shape)
+		}
+
 		size *= shape[ax]
 	}
 
