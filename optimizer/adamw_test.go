@@ -49,7 +49,7 @@ func ExampleAdamW_nograd() {
 	// variable(1)
 }
 
-func TestAdamWWeightDecay(t *testing.T) {
+func TestAdamW(t *testing.T) {
 	cases := []struct {
 		name  string
 		grad  float32
