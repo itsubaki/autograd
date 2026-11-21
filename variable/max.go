@@ -28,7 +28,7 @@ func (f *MaxT) Forward(x ...*Variable) []*Variable {
 
 func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	if len(f.Axes) == 0 {
-		mask := isClose(f.x.Data, f.y.Data)
+		mask := equal(f.x.Data, f.y.Data)
 		return []*Variable{
 			Mul(gy[0], From(mask)),
 		}
@@ -39,7 +39,7 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 
 	// mask
 	y := tensor.Reshape(f.y.Data, shape...)
-	mask := isClose(f.x.Data, y)
+	mask := equal(f.x.Data, y)
 
 	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
@@ -49,6 +49,12 @@ func (f *MaxT) Backward(gy ...*Variable) []*Variable {
 	}
 }
 
-func isClose(a, b *tensor.Tensor[float32]) *tensor.Tensor[float32] {
-	return tensor.Float32(tensor.IsClose(a, b))
+func equal(a, b *tensor.Tensor[float32]) *tensor.Tensor[float32] {
+	return tensor.F2(a, b, func(a, b float32) float32 {
+		if a == b {
+			return 1
+		}
+
+		return 0
+	})
 }

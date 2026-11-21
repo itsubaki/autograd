@@ -28,7 +28,7 @@ func (f *MinT) Forward(x ...*Variable) []*Variable {
 
 func (f *MinT) Backward(gy ...*Variable) []*Variable {
 	if len(f.Axes) == 0 {
-		mask := isClose(f.x.Data, f.y.Data)
+		mask := equal(f.x.Data, f.y.Data)
 		return []*Variable{
 			Mul(gy[0], From(mask)),
 		}
@@ -39,7 +39,7 @@ func (f *MinT) Backward(gy ...*Variable) []*Variable {
 
 	// mask
 	y := tensor.Reshape(f.y.Data, shape...)
-	mask := isClose(f.x.Data, y)
+	mask := equal(f.x.Data, y)
 
 	// broadcast
 	gy0 := Reshape(shape...)(gy[0])
