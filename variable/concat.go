@@ -21,7 +21,7 @@ func (f *ConcatT) Forward(x ...*Variable) []*Variable {
 	list := make([]*tensor.Tensor[float32], 0)
 	for _, v := range x {
 		list = append(list, v.Data)
-		f.size = append(f.size, v.Shape()[f.Axis])
+		f.size = append(f.size, v.Size(f.Axis))
 	}
 
 	y := tensor.Concat(list, f.Axis)
