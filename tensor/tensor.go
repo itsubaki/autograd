@@ -989,12 +989,14 @@ func Argmax[T Number](v *Tensor[T], axis int) *Tensor[int] {
 		panic(err)
 	}
 
-	// axis=1, (2, 3, 4) -> (2, 4, 3)
+	// Move the selected axis to the end, preserving the order of the others.
 	perm := make([]int, ndim)
 	for i := range ndim {
 		perm[i] = i
 	}
-	perm[ax], perm[ndim-1] = perm[ndim-1], perm[ax]
+	copy(perm[ax:], perm[ax+1:])
+	perm[ndim-1] = ax
+
 	vt := Contiguous(Transpose(v, perm...))
 	axSize := vt.Shape[ndim-1]
 

@@ -764,6 +764,27 @@ func ExampleArgmax() {
 	// [1 1 0 0]
 }
 
+func ExampleArgmax_axisOrder() {
+	v := tensor.New([]int{2, 3, 4}, []int{
+		1, 9, 3, 8,
+		8, 2, 7, 6,
+		4, 5, 1, 9,
+
+		4, 5, 6, 1,
+		1, 9, 0, 7,
+		4, 1, 8, 2,
+	})
+
+	w := tensor.Argmax(v, 0)
+
+	fmt.Println(w.Shape)
+	fmt.Println(w.Data)
+
+	// Output:
+	// [3 4]
+	// [1 0 1 0 0 1 0 1 0 0 1 0]
+}
+
 func ExampleMask() {
 	v := tensor.New([]int{2, 2}, []int{
 		-1, 2,
@@ -2484,6 +2505,88 @@ func TestArgmax(t *testing.T) {
 		got := tensor.Argmax(c.in, c.axis)
 		if !tensor.EqualAll(got, c.out) {
 			t.Errorf("axis=%d, got=%v(%v), want=%v(%v)", c.axis, got.Data, got.Shape, c.out.Data, c.out.Shape)
+		}
+	}
+}
+
+func TestArgmax_axisOrder(t *testing.T) {
+	v := tensor.New([]int{2, 3, 4}, []int{
+		1, 9, 3, 8,
+		8, 2, 7, 6,
+		4, 5, 1, 9,
+
+		4, 5, 6, 1,
+		1, 9, 0, 7,
+		4, 1, 8, 2,
+	})
+
+	cases := []struct {
+		name string
+		in   *tensor.Tensor[int]
+		axis int
+		want *tensor.Tensor[int]
+	}{
+		{
+			name: "three dimensional first axis",
+			in:   v,
+			axis: 0,
+			want: tensor.New([]int{3, 4}, []int{1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0}),
+		},
+		{
+			name: "three dimensional middle axis",
+			in:   v,
+			axis: 1,
+			want: tensor.New([]int{2, 4}, []int{1, 0, 1, 2, 0, 1, 2, 1}),
+		},
+		{
+			name: "three dimensional last axis",
+			in:   v,
+			axis: 2,
+			want: tensor.New([]int{2, 3}, []int{1, 0, 3, 2, 1, 2}),
+		},
+		{
+			name: "four dimensional middle axis",
+			in:   tensor.Reshape(v, 2, 2, 3, 2),
+			axis: 1,
+			want: tensor.New([]int{2, 3, 2}, []int{1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0}),
+		},
+		{
+			name: "equal sized remaining axes",
+			in:   tensor.New([]int{2, 2, 2}, []int{0, 4, 0, 5, 3, 1, 2, 6}),
+			axis: 0,
+			want: tensor.New([]int{2, 2}, []int{1, 0, 1, 1}),
+		},
+		{
+			name: "noncontiguous view",
+			in:   tensor.Transpose(v, 2, 0, 1),
+			axis: 0,
+			want: tensor.New([]int{2, 3}, []int{1, 0, 3, 2, 1, 2}),
+		},
+		{
+			name: "broadcast view keeps first index on ties",
+			in:   tensor.BroadcastTo(tensor.New([]int{1, 2, 3}, []int{1, 3, 2, 4, 0, 5}), 2, 2, 3),
+			axis: 0,
+			want: tensor.Zeros[int](2, 3),
+		},
+		{
+			name: "vector keeps first index on ties",
+			in:   tensor.New([]int{5}, []int{1, 7, 3, 7, 2}),
+			axis: 0,
+			want: tensor.Scalar(1),
+		},
+	}
+
+	for _, c := range cases {
+		for _, axis := range []int{c.axis, c.axis - c.in.NumDims()} {
+			got := tensor.Argmax(c.in, axis)
+			if !tensor.SliceEqual(got.Shape, c.want.Shape) || !tensor.EqualAll(got, c.want) {
+				t.Errorf("%s, axis %d: got %v(%v), want %v(%v)", c.name, axis, got.Data, got.Shape, c.want.Data, c.want.Shape)
+			}
+
+			gotFloat := tensor.Argmax(tensor.Float32(c.in), axis)
+			if !tensor.SliceEqual(gotFloat.Shape, c.want.Shape) || !tensor.EqualAll(gotFloat, c.want) {
+				t.Errorf("%s, axis %d (float32): got %v(%v), want %v(%v)", c.name, axis, gotFloat.Data, gotFloat.Shape, c.want.Data, c.want.Shape)
+			}
 		}
 	}
 }
