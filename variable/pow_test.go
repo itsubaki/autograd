@@ -2,9 +2,7 @@ package variable_test
 
 import (
 	"fmt"
-	"testing"
 
-	"github.com/itsubaki/autograd/tensor"
 	"github.com/itsubaki/autograd/variable"
 )
 
@@ -58,21 +56,16 @@ func ExamplePow_double() {
 	// variable(0)
 }
 
-func TestPow_zeroExponent(t *testing.T) {
+func ExamplePow_zero() {
 	x := variable.New(0, -2, 3, 0).Reshape(2, 2)
 	y := variable.Pow(0)(x)
 	y.Grad = variable.New(1, 2, 3, 4).Reshape(2, 2)
 	y.Backward()
 
-	if !tensor.IsCloseAll(y.Data, tensor.Ones[float32](2, 2)) {
-		t.Errorf("y=%v, want all ones", y)
-	}
+	fmt.Println(y)
+	fmt.Println(x.Grad)
 
-	if x.Grad == nil {
-		t.Fatal("missing input gradient")
-	}
-
-	if !tensor.SliceEqual(x.Grad.Shape(), x.Shape()) || !tensor.IsCloseAll(x.Grad.Data, tensor.Zeros[float32](2, 2)) {
-		t.Errorf("gx=%v, want zeros with shape %v", x.Grad, x.Shape())
-	}
+	// Output:
+	// variable[2 2]([1 1 1 1])
+	// variable[2 2]([0 0 0 0])
 }
