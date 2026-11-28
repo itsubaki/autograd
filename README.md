@@ -207,6 +207,11 @@ dot sample.dot -T png -o sample.png
 
 <img src="https://github.com/itsubaki/autograd/blob/main/dtanh.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh2.png" height="240px"><img src="https://github.com/itsubaki/autograd/blob/main/dtanh3.png" height="240px">
 
+## Notes
+
+- Function instances cannot be reused.
+- Double backward is supported only for a subset of functions.
+
 ## References
 
 - [ゼロから作るDeep Learning ❸](https://www.oreilly.co.jp/books/9784873119069/)
