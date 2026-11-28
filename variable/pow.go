@@ -27,6 +27,10 @@ func (f *PowT) Forward(x ...*Variable) []*Variable {
 }
 
 func (f *PowT) Backward(gy ...*Variable) []*Variable {
+	if f.P == 0 {
+		return []*Variable{ZerosLike(f.x)}
+	}
+
 	return []*Variable{
 		Mul(gy[0], MulC(f.P, Pow(f.P-1)(f.x))), // gy * c * x^(c-1)
 	}
