@@ -723,6 +723,17 @@ func ExampleMax() {
 	// 4
 }
 
+func ExampleMax_inf() {
+	v := tensor.Full([]int{2, 2}, math.Inf(-1))
+
+	fmt.Println(tensor.Max(v).At())
+	fmt.Println(tensor.Max(v, 1).Data)
+
+	// Output:
+	// -Inf
+	// [-Inf -Inf]
+}
+
 func ExampleMin() {
 	v := tensor.New([]int{2, 2}, []float32{
 		1, 2,
@@ -734,6 +745,17 @@ func ExampleMin() {
 
 	// Output:
 	// 1
+}
+
+func ExampleMin_inf() {
+	v := tensor.Full([]int{2, 2}, math.Inf(1))
+
+	fmt.Println(tensor.Min(v).At())
+	fmt.Println(tensor.Min(v, 1).Data)
+
+	// Output:
+	// +Inf
+	// [+Inf +Inf]
 }
 
 func ExampleMean() {

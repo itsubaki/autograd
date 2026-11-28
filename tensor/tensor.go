@@ -1099,7 +1099,7 @@ func Sum[T Number](v *Tensor[T], axes ...int) *Tensor[T] {
 // Max returns a new tensor with the maximum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Max(v *Tensor[float32], axes ...int) *Tensor[float32] {
-	return Reduce(v, -math.MaxFloat32, func(acc, x float32) float32 {
+	return Reduce(v, math.Inf(-1), func(acc, x float32) float32 {
 		if x > acc {
 			return x
 		}
@@ -1111,7 +1111,7 @@ func Max(v *Tensor[float32], axes ...int) *Tensor[float32] {
 // Min returns a new tensor with the minimum value among all elements in v.
 // If axes is specified, it reduces along the given axes.
 func Min(v *Tensor[float32], axes ...int) *Tensor[float32] {
-	return Reduce(v, math.MaxFloat32, func(acc, x float32) float32 {
+	return Reduce(v, math.Inf(1), func(acc, x float32) float32 {
 		if x < acc {
 			return x
 		}
